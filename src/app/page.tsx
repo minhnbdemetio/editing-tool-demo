@@ -193,7 +193,34 @@ export default function Home() {
               </div>
             )}
             {object === 'photos' && (
-              <div>
+              <div className="flex flex-col gap-3">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={e => {
+                    const file = e.target.files?.item(0);
+
+                    if (file) {
+                      // Read the uploaded image file
+                      const reader = new FileReader();
+                      reader.onload = event => {
+                        const imageUrl = event.target?.result?.toString();
+
+                        if (imageUrl) {
+                          // Create a Fabric image object
+                          fabric.Image.fromURL(imageUrl, img => {
+                            // Add the image to the canvas
+                            canvas?.add(img);
+                          });
+                        }
+                      };
+
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                />
+
+                <p>Or use existing image:</p>
                 <button onClick={handleAddPhoto}>
                   <Image
                     src={'/dog.jpg'}
