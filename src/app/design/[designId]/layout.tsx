@@ -1,5 +1,5 @@
 import { Header } from '@/app/organisms/Header';
-import { CurrentCanvasProvider } from '@/app/providers/CurrentContextProvider';
+import { CurrentCanvasProvider } from '@/app/providers/CurrentCanvasProvider';
 
 export default function DesignDetailLayout({
   children,
