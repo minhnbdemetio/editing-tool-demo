@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import { MenuSection } from './Menu';
+import { UploadPopover } from '../molecules/UploadPopover';
 
 interface SideMenuProps {
   selectedSection: MenuSection;
