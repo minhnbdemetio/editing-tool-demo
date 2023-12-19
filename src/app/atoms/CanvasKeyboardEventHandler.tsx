@@ -1,24 +1,40 @@
-import { useCallback, useEffect } from 'react';
-import { useCurrentCanvas } from '../hooks/contexts/useCurrentCanvas';
+import { useEffect } from 'react';
+import {
+  useDeleteActiveObject,
+  useRotateActiveObject,
+} from '../hooks/active-object/useActiveObject';
 
 export const CanvasKeyboardEventHandler = () => {
-  const { currentCanvas } = useCurrentCanvas();
-
-  const deleteEventHandler = useCallback(() => {
-    const activeObject = currentCanvas?.getActiveObject();
-    if (activeObject) {
-      currentCanvas?.remove(activeObject);
-    }
-  }, [currentCanvas]);
+  const deleteEventHandler = useDeleteActiveObject();
+  const rotateClockwiseEventHandler = useRotateActiveObject('clockwise');
+  const rotateCounterclockwiseEventHandler =
+    useRotateActiveObject('counterclockwise');
 
   useEffect(() => {
     document.addEventListener('keydown', function (event) {
+      const isCmdOrCtrlPressed = event.metaKey || event.ctrlKey;
       if (event.key === 'Delete' || event.key === 'Backspace') {
         event.preventDefault();
         deleteEventHandler();
       }
+
+      if (isCmdOrCtrlPressed && event.key === 'ArrowLeft') {
+        event.preventDefault();
+        rotateClockwiseEventHandler();
+      }
+
+      if (isCmdOrCtrlPressed && event.key === 'ArrowRight') {
+        event.preventDefault();
+        rotateCounterclockwiseEventHandler();
+      }
     });
-  }, [deleteEventHandler]);
+
+    return () => document.removeEventListener('keydown', () => {});
+  }, [
+    deleteEventHandler,
+    rotateClockwiseEventHandler,
+    rotateCounterclockwiseEventHandler,
+  ]);
 
   return null;
 };
