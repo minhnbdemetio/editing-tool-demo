@@ -15,7 +15,7 @@ export const UploadPopover: React.FC<UploadPopoverProps> = ({}) => {
             <DotsHorizontal className="w-[20px] h-[20px]" />
           </button>
         </PopoverTrigger>
-        <PopoverContent className="min-w-[340px] upload-popover">
+        <PopoverContent  className="min-w-[340px] upload-popover">
           <UploadPopoverContent />
         </PopoverContent>
       </Popover>
