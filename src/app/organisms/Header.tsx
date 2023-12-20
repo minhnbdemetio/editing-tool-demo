@@ -21,6 +21,8 @@ import { MoreModal } from '../molecules/MoreModal';
 import useMediaQuery from '../hooks/useMediaQuery';
 import { UploadPopover } from '../molecules/UploadPopover';
 import clsx from 'clsx';
+import { FilePopover } from '../molecules/FilePopover';
+import { EditableTextField } from '../atoms/EditableTextField';
 
 export const Header: FC = () => {
   const [openModal, setOpenModal] = useState<
@@ -31,7 +33,7 @@ export const Header: FC = () => {
 
   return (
     <>
-      <header className="flex items-center justify-between px-[10px] h-[48px] shadow-sm py-2 desktop:shadow-md">
+      <header className="flex items-center justify-between px-[10px] h-[48px] desktop:h-[60px]  shadow-sm py-2 desktop:shadow-md">
         <div className="flex items-center gap-4 h-full">
           <Link
             href={'/workspace'}
@@ -47,16 +49,7 @@ export const Header: FC = () => {
           </Link>
 
           <div className="hidden desktop:flex items-center gap-4 h-full">
-            <button className="h-full">
-              <p
-                className={clsx(
-                  'font-normal text-md text-gray-400 ',
-                  'duration-100 hover:text-primary',
-                )}
-              >
-                File
-              </p>
-            </button>
+            <FilePopover />
             <button
               className={clsx(
                 'font-normal text-md  text-gray-400 h-full min-w-[50px] ',
@@ -93,6 +86,8 @@ export const Header: FC = () => {
                 )}
               />
             </button>
+
+            <EditableTextField fallbackValue="Please enter a title" />
           </div>
         </div>
         <div className=" flex items-center h-full">
