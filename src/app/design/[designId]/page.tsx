@@ -3,9 +3,11 @@ import { Menu } from '@/app/organisms/Menu';
 
 export default function DesignDetail() {
   return (
-    <div className="h-full">
+    <div className="h-full flex">
       <Menu />
-      <Editor />
+      <div className="flex-auto overflow-auto">
+        <Editor />
+      </div>
     </div>
   );
 }
