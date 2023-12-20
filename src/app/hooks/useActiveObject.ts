@@ -4,12 +4,12 @@ import {
   ROTATE_ANGLE_OFFSET,
 } from '@/app/constants/canvas-constants';
 import { fabric } from 'fabric';
-import { useCurrentCanvas } from '../contexts/useCurrentCanvas';
+import { usePageCanvas } from './usePageCanvas';
 
 export const useRotateActiveObject = (
   direction: 'clockwise' | 'counterclockwise',
 ) => {
-  const { currentCanvas } = useCurrentCanvas();
+  const [currentCanvas] = usePageCanvas();
 
   const handleRotateActiveObject = () => {
     const activeObject = currentCanvas?.getActiveObject();
@@ -27,7 +27,7 @@ export const useRotateActiveObject = (
 };
 
 export const useDeleteActiveObject = () => {
-  const { currentCanvas } = useCurrentCanvas();
+  const [currentCanvas] = usePageCanvas();
 
   const handleDeleteActiveObject = () => {
     const activeObject = currentCanvas?.getActiveObject();
@@ -40,7 +40,7 @@ export const useDeleteActiveObject = () => {
 };
 
 export const useCopyActiveObject = () => {
-  const { currentCanvas } = useCurrentCanvas();
+  const [currentCanvas] = usePageCanvas();
 
   const handleCopyObject = () => {
     const activeObject = currentCanvas?.getActiveObject();

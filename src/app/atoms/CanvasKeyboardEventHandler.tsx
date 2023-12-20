@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import {
   useDeleteActiveObject,
   useRotateActiveObject,
-} from '../hooks/active-object/useActiveObject';
+} from '../hooks/useActiveObject';
 
 export const CanvasKeyboardEventHandler = () => {
   const deleteEventHandler = useDeleteActiveObject();

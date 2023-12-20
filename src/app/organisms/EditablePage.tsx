@@ -1,6 +1,6 @@
 'use client';
 import { FC, useEffect, useRef, useState } from 'react';
-import { useCurrentCanvas } from '../hooks/contexts/useCurrentCanvas';
+import { usePageCanvas } from '../hooks/usePageCanvas';
 import { fabric } from 'fabric';
 import { ObjectToolbar } from '../molecules/ObjectToolbar';
 import { CanvasKeyboardEventHandler } from '../atoms/CanvasKeyboardEventHandler';
@@ -9,11 +9,17 @@ import {
   getToolBarHorizontalCenterPosition,
   getToolBarVerticalPosition,
 } from '../utils/canvas-utils';
+import { withCurrentPage } from '../hocs/withCurrentPage';
 
 const DEFAULT_TOOLBAR_POSITION = 0;
 
-export const Canvas: FC = () => {
-  const { currentCanvas, setCurrentCanvas } = useCurrentCanvas();
+export interface EditablePageProps {
+  pageId: string;
+}
+
+const EditableCanvas: FC<EditablePageProps> = () => {
+  const [pageCanvas, setPageCanvas] = usePageCanvas();
+
   const canvasEl = useRef<HTMLCanvasElement>(null);
   const canvasContainerEl = useRef<HTMLDivElement>(null);
   const toolbarEl = useRef<HTMLDivElement>(null);
@@ -128,14 +134,14 @@ export const Canvas: FC = () => {
       handleHideToolbarOnEvent();
     });
 
-    setCurrentCanvas(canvas);
+    setPageCanvas(canvas);
 
     return () => {
       canvas.off();
-      currentCanvas?.off();
-      currentCanvas?.dispose();
+      pageCanvas?.off();
+      pageCanvas?.dispose();
       canvas.dispose();
-      setCurrentCanvas(null);
+      setPageCanvas(null);
     };
   }, []);
 
@@ -143,21 +149,24 @@ export const Canvas: FC = () => {
   useEffect(() => {
     window.addEventListener('resize', () => {
       if (canvasContainerEl.current) {
-        currentCanvas?.setDimensions({
+        pageCanvas?.setDimensions({
           width: canvasContainerEl.current.clientWidth,
           height: canvasContainerEl.current.clientHeight,
         });
-        currentCanvas?.renderAll();
+        pageCanvas?.renderAll();
       }
     });
 
     return () => {
       window.removeEventListener('resize', () => {});
     };
-  }, [currentCanvas]);
+  }, [pageCanvas]);
 
   return (
-    <div ref={canvasContainerEl} className="w-full h-full relative">
+    <div
+      ref={canvasContainerEl}
+      className="w-full h-full relative bg-white aspect-video"
+    >
       <CanvasKeyboardEventHandler />
       <canvas ref={canvasEl}></canvas>
 
@@ -170,7 +179,6 @@ export const Canvas: FC = () => {
           visibility: showToolbar ? 'initial' : 'hidden',
         }}
       />
-
       <ObjectRotator
         ref={rotatorEl}
         className="absolute"
@@ -183,3 +191,5 @@ export const Canvas: FC = () => {
     </div>
   );
 };
+
+export const EditablePage = withCurrentPage(EditableCanvas);

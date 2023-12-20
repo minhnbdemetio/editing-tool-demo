@@ -2,7 +2,7 @@
 
 - [NextUI](https://nextui.org/)
 - TailwindCSS
-- [Fabric.js](http://fabricjs.com/)
+- [Moveable](https://github.com/daybrush/moveable/)
 
 ## Design
 

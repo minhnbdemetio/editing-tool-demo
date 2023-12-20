@@ -1,7 +1,7 @@
 import { HTMLAttributes, forwardRef } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { IconButton } from '../../atoms/IconButton';
-import { useRotateActiveObject } from '@/app/hooks/active-object/useActiveObject';
+import { useRotateActiveObject } from '@/app/hooks/useActiveObject';
 
 interface ObjectRotatorProps extends HTMLAttributes<HTMLDivElement> {}
 
