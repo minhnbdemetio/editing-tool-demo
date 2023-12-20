@@ -10,7 +10,7 @@ import { Share } from './Share';
 import { Play } from './Play';
 import { CodeBracket } from './CodeBracket';
 import { ViewColumns } from './ViewColumns';
-import { ArchiveBox } from './ArchiveBox';
+import { ArchiveBoxArrowDown } from './ArchiveBoxArrowDown';
 import { Clock } from './Clock';
 import { Ruler } from './Ruler';
 import { File } from './File';
@@ -21,6 +21,19 @@ import { Setting } from './Setting';
 import { Help } from './Help';
 import { User } from './User';
 import { ChevronDown } from './ChevronDown';
+import { ArchiveBox } from './ArchiveBox';
+import { Photo } from './Photo';
+import { CloudArrowUp } from './CloudArrowUp';
+import { AdjustmentsHorizontal } from './AdjustmentsHorizontal';
+import { Text } from './Text';
+import { UserPlus } from './UserPlus';
+import { PlayCircle } from './PlayCircle';
+import { MusicalNote } from './MusicalNote';
+import { Palette } from './Palette';
+import { Background } from './Background';
+import { Heart } from './Heart';
+import { Barcode } from './Barcode';
+import { ChevronDoubleLeft } from './ChevronDoubleLeft';
 
 export {
   Home,
@@ -35,7 +48,7 @@ export {
   Share,
   CodeBracket,
   ViewColumns,
-  ArchiveBox,
+  ArchiveBoxArrowDown,
   Clock,
   Ruler,
   File,
@@ -46,4 +59,17 @@ export {
   Help,
   User,
   ChevronDown,
+  ArchiveBox,
+  Photo,
+  CloudArrowUp,
+  AdjustmentsHorizontal,
+  Text,
+  UserPlus,
+  PlayCircle,
+  MusicalNote,
+  Palette,
+  Background,
+  Heart,
+  Barcode,
+  ChevronDoubleLeft,
 };

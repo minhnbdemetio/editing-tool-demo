@@ -25,6 +25,7 @@ const config: Config = {
         'icon-bold': '#25282f',
       },
       fontSize: {
+        xs: '10px',
         sm: '11px',
         md: '14px',
         lg: '20px',
@@ -36,6 +37,7 @@ const config: Config = {
         main: '#fff',
         border: 'rgba(37,40,47,0.1)',
         'green-500': 'rgb(34, 204, 136)',
+        'green-200': 'rgba(34, 204, 136, 0.15)',
       },
 
       backgroundImage: {
@@ -59,6 +61,17 @@ const config: Config = {
         '3': '12px',
         '4': '16px',
         '5': '20px',
+        '6': '24px',
+      },
+      animation: {
+        fade: 'fadeIn .5s ease-in-out',
+      },
+
+      keyframes: {
+        fadeIn: {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
       },
     },
   },

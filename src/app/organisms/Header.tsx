@@ -2,7 +2,7 @@
 
 import { FC, useState } from 'react';
 import {
-  ArchiveBox,
+  ArchiveBoxArrowDown,
   ArrowUTurnLeft,
   ArrowUTurnRight,
   ChevronDown,
@@ -20,6 +20,7 @@ import { UploadModal } from '../molecules/UploadModal';
 import { MoreModal } from '../molecules/MoreModal';
 import useMediaQuery from '../hooks/useMediaQuery';
 import { UploadPopover } from '../molecules/UploadPopover';
+import clsx from 'clsx';
 
 export const Header: FC = () => {
   const [openModal, setOpenModal] = useState<
@@ -34,20 +35,42 @@ export const Header: FC = () => {
         <div className="flex items-center gap-4 h-full">
           <Link
             href={'/workspace'}
-            className="flex items-center w-[58px]  justify-center"
+            className={clsx(
+              'flex items-center w-[58px]  justify-center text-icon-gray text-[24px] ',
+              'duration-100 hover:text-primary',
+            )}
           >
-            <ChevronLeft className="hidden text-[24px] w-[20px] h-[20px] text-icon-gray desktop:block" />
-            <Home className="text-[20px] text-icon-gray w-[20px] h-[20px]" />
+            <ChevronLeft
+              className={clsx('hidden   w-[20px] h-[20px] desktop:block')}
+            />
+            <Home className={clsx('text-[20px] w-[20px] h-[20px]')} />
           </Link>
 
           <div className="hidden desktop:flex items-center gap-4 h-full">
             <button className="h-full">
-              <p className="font-normal text-md text-gray-400 ">File</p>
+              <p
+                className={clsx(
+                  'font-normal text-md text-gray-400 ',
+                  'duration-100 hover:text-primary',
+                )}
+              >
+                File
+              </p>
             </button>
-            <button className="font-normal text-md  text-gray-400 h-full min-w-[50px]">
+            <button
+              className={clsx(
+                'font-normal text-md  text-gray-400 h-full min-w-[50px] ',
+                'duration-100 hover:text-primary',
+              )}
+            >
               <p>Settings</p>
             </button>
-            <button className="font-normal text-md text-gray-400 h-full min-w-[50px] flex items-center">
+            <button
+              className={clsx(
+                'font-normal text-md text-gray-400 h-full min-w-[50px] flex items-center',
+                'duration-100 hover:text-primary',
+              )}
+            >
               <p>1080px x 1080px</p>{' '}
               <ChevronDown className="text-gray-200 w-[28px] h-[18px]" />
             </button>
@@ -55,17 +78,32 @@ export const Header: FC = () => {
 
           <div className="flex items-center">
             <button className="p-[4px] h-[40px] w-[40px] flex justify-center items-center">
-              <ArrowUTurnLeft className="w-[20px] h-[20px] text-icon-light-gray" />
+              <ArrowUTurnLeft
+                className={clsx(
+                  'w-[20px] h-[20px] text-icon-light-gray',
+                  'duration-100 hover:text-primary',
+                )}
+              />
             </button>
             <button className="p-[4px] h-[40px] w-[40px] flex justify-center items-center">
-              <ArrowUTurnRight className="w-[20px] h-[20px] text-icon-light-gray scale-y-[-1]" />
+              <ArrowUTurnRight
+                className={clsx(
+                  'w-[20px] h-[20px] text-icon-light-gray scale-y-[-1]',
+                  'duration-100 hover:text-primary',
+                )}
+              />
             </button>
           </div>
         </div>
         <div className=" flex items-center h-full">
           <div className="hidden desktop:flex h-full items-center gap-2 ">
             <button className="h-full  px-3 border-[1px] border-border border-solid rounded-md">
-              <ArchiveBox className="w-[20px] h-[20px] text-black-500" />
+              <ArchiveBoxArrowDown
+                className={clsx(
+                  'w-[20px] h-[20px] text-black-500',
+                  'duration-100 hover:text-primary',
+                )}
+              />
             </button>
             <button className="h-full  px-3 text-md font-normal border-green-500 text-primary border-[1px] border-solid rounded-md">
               <p>Share</p>
