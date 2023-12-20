@@ -8,7 +8,7 @@ interface PagesState {
   getPageCanvas: (pageId: string) => fabric.Canvas | null;
 }
 
-export const usePages = create<PagesState>((set, get) => ({
+export const useEditablePages = create<PagesState>((set, get) => ({
   pages: {},
   setPages: (pages: Record<string, fabric.Canvas | null>) =>
     set(() => ({ pages })),

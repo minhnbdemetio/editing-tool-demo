@@ -1,10 +1,9 @@
 import { FC } from 'react';
-import { MenuSection } from '../Menu';
 import { TemplatesMenuContent } from './TemplatesMenuContent';
 import { PhotosMenuContent } from './PhotosMenuContent';
 
 interface MenuContentProps {
-  section: MenuSection;
+  section: string;
 }
 
 export const MenuContent: FC<MenuContentProps> = ({ section }) => {

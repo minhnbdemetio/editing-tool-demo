@@ -3,10 +3,10 @@
 import { FC } from 'react';
 import { Button } from '../atoms/Button';
 import { EditablePage } from './EditablePage';
-import { usePages } from '../store/pages';
+import { useEditablePages } from '../store/editable-pages';
 
 export const Editor: FC = () => {
-  const { pages, addBlankPage } = usePages();
+  const { pages, addBlankPage } = useEditablePages();
 
   const handleAddPage = () => {
     const randomId = new Date().getTime();
