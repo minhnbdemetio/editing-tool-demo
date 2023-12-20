@@ -1,4 +1,5 @@
 'use client';
+
 import { FC, useEffect, useRef, useState } from 'react';
 import { usePageCanvas } from '../hooks/usePageCanvas';
 import { fabric } from 'fabric';
@@ -8,8 +9,9 @@ import { ObjectRotator } from '../molecules/ObjectToolbar/ObjectRotator';
 import {
   getToolBarHorizontalCenterPosition,
   getToolBarVerticalPosition,
-} from '../utils/canvas-utils';
+} from '../utilities/canvas';
 import { withCurrentPage } from '../hocs/withCurrentPage';
+import { useActiveObject } from '../store/active-object';
 
 const DEFAULT_TOOLBAR_POSITION = 0;
 
@@ -19,6 +21,7 @@ export interface EditablePageProps {
 
 const EditableCanvas: FC<EditablePageProps> = () => {
   const [pageCanvas, setPageCanvas] = usePageCanvas();
+  const { setActiveObject } = useActiveObject();
 
   const canvasEl = useRef<HTMLCanvasElement>(null);
   const canvasContainerEl = useRef<HTMLDivElement>(null);
@@ -34,6 +37,15 @@ const EditableCanvas: FC<EditablePageProps> = () => {
     left: DEFAULT_TOOLBAR_POSITION,
     top: DEFAULT_TOOLBAR_POSITION,
   });
+
+  const updateActiveObjectOnEvent = (event: fabric.IEvent<MouseEvent>) => {
+    const target = event.selected ? event.selected[0] : event.target;
+    setActiveObject(target);
+  };
+
+  const clearActiveObject = () => {
+    setActiveObject(null);
+  };
 
   const handleShowToolBarOnEvent = (event: fabric.IEvent<MouseEvent>) => {
     setShowToolbar(true);
@@ -104,14 +116,17 @@ const EditableCanvas: FC<EditablePageProps> = () => {
 
     canvas.on('selection:created', event => {
       handleShowToolBarOnEvent(event);
+      updateActiveObjectOnEvent(event);
     });
 
     canvas.on('selection:updated', event => {
       handleShowToolBarOnEvent(event);
+      updateActiveObjectOnEvent(event);
     });
 
     canvas.on('selection:cleared', event => {
       handleHideToolbarOnEvent();
+      clearActiveObject();
     });
 
     canvas.on('object:moving', event => {
@@ -142,6 +157,7 @@ const EditableCanvas: FC<EditablePageProps> = () => {
       pageCanvas?.dispose();
       canvas.dispose();
       setPageCanvas(null);
+      setActiveObject(null);
     };
   }, []);
 
