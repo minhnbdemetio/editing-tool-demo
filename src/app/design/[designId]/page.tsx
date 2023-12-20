@@ -1,11 +1,14 @@
 import { Editor } from '@/app/organisms/Editor';
 import { Menu } from '@/app/organisms/Menu';
+import { twMerge } from 'tailwind-merge';
 
 export default function DesignDetail() {
   return (
-    <div className="h-full">
+    <div className="h-full flex">
       <Menu />
-      <Editor />
+      <div className="flex-auto">
+        <Editor />
+      </div>
     </div>
   );
 }

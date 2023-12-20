@@ -1,7 +1,7 @@
 import { Avatar, Modal, ModalContent, ModalProps } from '@nextui-org/react';
 import React from 'react';
 import {
-  ArchiveBox,
+  ArchiveBoxArrowDown,
   Clock,
   CodeBracket,
   Download,
@@ -62,7 +62,7 @@ export const MoreModal: React.FC<MoreModalProps> = ({ ...props }) => {
                 <p className="text-md font-normal ">Create copy</p>
               </div>
               <div className="flex gap-[12px] items-center py-[10px]">
-                <ArchiveBox className="w-[20px] h-[20px]" />
+                <ArchiveBoxArrowDown className="w-[20px] h-[20px]" />
                 <p className="text-md font-normal ">Save</p>
               </div>
             </div>
