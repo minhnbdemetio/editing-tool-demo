@@ -20,12 +20,7 @@ export const SideMenu: FC<SideMenuProps> = ({
   const listRef = useRef<HTMLDivElement>(null);
 
   const scrollTo = useCallback((e: MouseEvent) => {
-    if (listRef.current) {
-      listRef.current.scrollTo({
-        top: e.currentTarget.getBoundingClientRect().top - 200,
-        behavior: 'smooth',
-      });
-    }
+    e.currentTarget.scrollIntoView({ block: 'center', behavior: 'smooth' });
   }, []);
 
   return (
