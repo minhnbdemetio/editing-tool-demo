@@ -19,7 +19,7 @@ export const SideMenu: FC<SideMenuProps> = ({
 }) => {
   const listRef = useRef<HTMLDivElement>(null);
 
-  const scrollTo = useCallback((e: MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const scrollTo = useCallback((e: MouseEvent) => {
     if (listRef.current) {
       listRef.current.scrollTo({
         top: e.currentTarget.getBoundingClientRect().top - 200,
@@ -47,7 +47,6 @@ export const SideMenu: FC<SideMenuProps> = ({
             onClick={e => {
               e.persist();
               scrollTo(e);
-
               onChange(key);
             }}
             className={twMerge(
