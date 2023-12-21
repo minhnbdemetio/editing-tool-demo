@@ -7,36 +7,37 @@ import {
   ShoppingCart,
   ViewColumns,
 } from '../icons';
+import { MenuItem } from '../atoms/MenuItem';
 
 interface UploadPopoverContentProps {}
 
 export const UploadPopoverContent: React.FC<UploadPopoverContentProps> = () => {
   return (
     <div className="py-2 w-full">
-      <div className="flex gap-[12px] items-center py-[10px] hover:bg-gray-200 px-4 cursor-pointer">
+      <MenuItem>
         <ShoppingCart className="w-[20px] h-[20px]" />
         <p className="text-[13px] font-normal ">Print your design</p>
-      </div>
-      <div className="flex gap-[12px] items-center py-[10px] hover:bg-gray-200 px-4 cursor-pointer">
+      </MenuItem>
+      <MenuItem>
         <Download className="w-[20px] h-[20px]" />
         <p className="text-[13px] font-normal ">Download</p>
-      </div>
-      <div className="flex gap-[12px] items-center py-[10px] hover:bg-gray-200 px-4 cursor-pointer">
+      </MenuItem>
+      <MenuItem>
         <Share className="w-[20px] h-[20px]" />
         <p className="text-[13px] font-normal ">Share</p>
-      </div>
-      <div className="flex gap-[12px] items-center py-[10px] hover:bg-gray-200 px-4 cursor-pointer">
+      </MenuItem>
+      <MenuItem>
         <Play className="w-[20px] h-[20px]" />
         <p className="text-[13px] font-normal ">View slide show</p>
-      </div>
-      <div className="flex gap-[12px] items-center py-[10px] hover:bg-gray-200 px-4 cursor-pointer">
+      </MenuItem>
+      <MenuItem>
         <CodeBracket className="w-[20px] h-[20px]" />
         <p className="text-[13px] font-normal ">Insert</p>
-      </div>
-      <div className="flex gap-[12px] items-center py-[10px] hover:bg-gray-200 px-4 cursor-pointer">
+      </MenuItem>
+      <MenuItem>
         <ViewColumns className="w-[20px] h-[20px]" />
         <p className="text-[13px] font-normal ">Create template</p>
-      </div>
+      </MenuItem>
     </div>
   );
 };
