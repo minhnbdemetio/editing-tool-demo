@@ -22,6 +22,7 @@ import clsx from 'clsx';
 import { FilePopover } from '../molecules/FilePopover';
 import { EditableTextField } from '../atoms/EditableTextField';
 import { SettingsPopover } from '../molecules/SettingsPopover';
+import { BackgroundSizePopover } from '../molecules/BackgroundSizePopover';
 
 export const Header: FC = () => {
   const [openModal, setOpenModal] = useState<
@@ -50,15 +51,7 @@ export const Header: FC = () => {
           <div className="hidden desktop:flex items-center gap-4 h-full">
             <FilePopover />
             <SettingsPopover />
-            <button
-              className={clsx(
-                'font-normal text-md text-gray-400 h-full min-w-[50px] flex items-center',
-                'duration-100 hover:text-primary',
-              )}
-            >
-              <p>1080px x 1080px</p>{' '}
-              <ChevronDown className="text-gray-200 w-[28px] h-[18px]" />
-            </button>
+            <BackgroundSizePopover />
           </div>
 
           <div className="flex items-center">

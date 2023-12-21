@@ -36,6 +36,8 @@ import { Barcode } from './Barcode';
 import { ChevronDoubleLeft } from './ChevronDoubleLeft';
 import { Close } from './Close';
 import { ChevronRight } from './ChevronRight';
+import { LockClosed } from './LockClosed';
+import { LockOpen } from './LockOpen';
 
 export {
   Home,
@@ -76,4 +78,6 @@ export {
   ChevronDoubleLeft,
   Close,
   ChevronRight,
+  LockClosed,
+  LockOpen,
 };
