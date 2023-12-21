@@ -20,12 +20,7 @@ export const SideMenu: FC<SideMenuProps> = ({
   const listRef = useRef<HTMLDivElement>(null);
 
   const scrollTo = useCallback((e: MouseEvent) => {
-    if (listRef.current) {
-      listRef.current.scrollTo({
-        top: e.currentTarget.getBoundingClientRect().top - 200,
-        behavior: 'smooth',
-      });
-    }
+    e.currentTarget.scrollIntoView({ block: 'center', behavior: 'smooth' });
   }, []);
 
   return (
@@ -39,7 +34,7 @@ export const SideMenu: FC<SideMenuProps> = ({
         ref={listRef}
         className={twMerge(
           'h-[calc(100%-100px)] overflow-y-auto w-full no-scrollbar ',
-          'desktop:h-auto  desktop:flex-auto mt-4 ',
+          'desktop:h-auto  desktop:flex-auto desktop:mt-4 ',
         )}
       >
         {SideMenuItems.map(({ icon: Icon, key, label }) => (
