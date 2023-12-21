@@ -34,6 +34,8 @@ import { Background } from './Background';
 import { Heart } from './Heart';
 import { Barcode } from './Barcode';
 import { ChevronDoubleLeft } from './ChevronDoubleLeft';
+import { Close } from './Close';
+import { ChevronRight } from './ChevronRight';
 
 export {
   Home,
@@ -72,4 +74,6 @@ export {
   Heart,
   Barcode,
   ChevronDoubleLeft,
+  Close,
+  ChevronRight,
 };
