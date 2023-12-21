@@ -13,14 +13,20 @@ export const useRotateActiveObject = (
 
   const handleRotateActiveObject = () => {
     const activeObject = currentCanvas?.getActiveObject();
-    if (!activeObject) return;
+    if (!activeObject) return 0;
     const currentAngle = activeObject.angle || INITIAL_ANGLE;
+    const rotateAngle =
+      direction === 'clockwise'
+        ? currentAngle + ROTATE_ANGLE_OFFSET
+        : currentAngle - ROTATE_ANGLE_OFFSET;
+
     activeObject.rotate(
       direction === 'clockwise'
         ? currentAngle + ROTATE_ANGLE_OFFSET
         : currentAngle - ROTATE_ANGLE_OFFSET,
     );
     currentCanvas?.renderAll();
+    return rotateAngle;
   };
 
   return handleRotateActiveObject;
@@ -33,7 +39,9 @@ export const useDeleteActiveObject = () => {
     const activeObject = currentCanvas?.getActiveObject();
     if (activeObject) {
       currentCanvas?.remove(activeObject);
+      return true;
     }
+    return false;
   };
 
   return handleDeleteActiveObject;
@@ -44,7 +52,7 @@ export const useCopyActiveObject = () => {
 
   const handleCopyObject = () => {
     const activeObject = currentCanvas?.getActiveObject();
-    if (!activeObject) return;
+    if (!activeObject) return false;
 
     const clonedObject = fabric.util.object.clone(activeObject);
     const activeObjectLeft = activeObject.getBoundingRect().left;
@@ -57,6 +65,7 @@ export const useCopyActiveObject = () => {
     currentCanvas?.add(clonedObject);
     currentCanvas?.discardActiveObject();
     currentCanvas?.setActiveObject(clonedObject);
+    return true;
   };
 
   return handleCopyObject;

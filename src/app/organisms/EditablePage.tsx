@@ -6,14 +6,10 @@ import { fabric } from 'fabric';
 import { ObjectToolbar } from '../molecules/ObjectToolbar';
 import { CanvasKeyboardEventHandler } from '../atoms/CanvasKeyboardEventHandler';
 import { ObjectRotator } from '../molecules/ObjectToolbar/ObjectRotator';
-import {
-  getToolBarHorizontalCenterPosition,
-  getToolBarVerticalPosition,
-} from '../utilities/canvas';
+import { calculateToolbarPosition, getEventTarget } from '../utilities/canvas';
 import { withCurrentPage } from '../hocs/withCurrentPage';
 import { useActiveObject } from '../store/active-object';
-
-const DEFAULT_TOOLBAR_POSITION = 0;
+import { DEFAULT_TOOLBAR_POSITION } from '../constants/canvas-constants';
 
 export interface EditablePageProps {
   pageId: string;
@@ -39,7 +35,7 @@ const EditableCanvas: FC<EditablePageProps> = () => {
   });
 
   const updateActiveObjectOnEvent = (event: fabric.IEvent<MouseEvent>) => {
-    const target = event.selected ? event.selected[0] : event.target;
+    const target = getEventTarget(event);
     setActiveObject(target);
   };
 
@@ -49,28 +45,9 @@ const EditableCanvas: FC<EditablePageProps> = () => {
 
   const handleShowToolBarOnEvent = (event: fabric.IEvent<MouseEvent>) => {
     setShowToolbar(true);
-    const target = event.selected ? event.selected[0] : event.target;
-    if (!target || !toolbarEl.current || !rotatorEl.current) return;
-
-    const toolbarLeft = getToolBarHorizontalCenterPosition(
-      target,
-      toolbarEl.current,
-    );
-    const toolbarTop = getToolBarVerticalPosition(
-      target,
-      toolbarEl.current,
-      'top',
-    );
-
-    const rotatorLeft = getToolBarHorizontalCenterPosition(
-      target,
-      rotatorEl.current,
-    );
-    const rotatorTop = getToolBarVerticalPosition(
-      target,
-      toolbarEl.current,
-      'bottom',
-    );
+    const target = getEventTarget(event);
+    const { rotatorLeft, rotatorTop, toolbarLeft, toolbarTop } =
+      calculateToolbarPosition(target, toolbarEl, rotatorEl);
 
     setToolbarPosition({
       left: toolbarLeft,
