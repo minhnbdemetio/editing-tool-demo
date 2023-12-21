@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useRef, useState } from 'react';
+import { FC, useState } from 'react';
 import {
   ArchiveBoxArrowDown,
   ArrowUTurnLeft,
@@ -10,12 +10,10 @@ import {
   DotsHorizontal,
   Download,
   Home,
-  Share,
   ShoppingCart,
   UploadIcon,
 } from '../icons';
 import Link from 'next/link';
-import { Modal, ModalContent } from '@nextui-org/react';
 import { UploadModal } from '../molecules/UploadModal';
 import { MoreModal } from '../molecules/MoreModal';
 import useMediaQuery from '../hooks/useMediaQuery';
