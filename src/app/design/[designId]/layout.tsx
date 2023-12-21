@@ -8,7 +8,7 @@ export default function DesignDetailLayout({
 }) {
   return (
     <div className="flex flex-col h-screen">
-      <div className={clsx('flex-1 relative z-10', 'desktop:z-50')}>
+      <div className={clsx(' relative z-10', 'desktop:z-50')}>
         <Header />
       </div>
       <div className="flex-auto overflow-hidden">{children}</div>

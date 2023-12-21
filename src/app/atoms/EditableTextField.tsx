@@ -1,21 +1,35 @@
-import React, { useRef, useState } from 'react';
+import React, {
+  HtmlHTMLAttributes,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import { Pencil } from '../icons';
 import clsx from 'clsx';
 import { twMerge } from '../utilities/tailwind';
 
-interface EditableTextFieldProps {
-  defaultValue?: string;
+interface EditableTextFieldProps extends HtmlHTMLAttributes<HTMLInputElement> {
   fallbackValue?: string;
 }
 
-export const EditableTextField: React.FC<EditableTextFieldProps> = ({
-  defaultValue,
-  fallbackValue,
-}) => {
+// eslint-disable-next-line react/display-name
+export const EditableTextField = forwardRef<
+  HTMLInputElement | null,
+  EditableTextFieldProps
+>(({ defaultValue, fallbackValue, ...rest }: EditableTextFieldProps, ref) => {
   const [edit, setEdit] = useState(false);
   const [value, setValue] = useState(defaultValue || fallbackValue || '');
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useImperativeHandle(
+    ref,
+    () => {
+      return inputRef.current as HTMLInputElement;
+    },
+    [],
+  );
 
   const isEmpty = value === fallbackValue;
 
@@ -25,6 +39,7 @@ export const EditableTextField: React.FC<EditableTextFieldProps> = ({
         onClick={() => {
           if (!edit) {
             setEdit(true);
+            console.debug(inputRef.current);
             setTimeout(() => {
               inputRef.current?.focus();
               if (value === fallbackValue) {
@@ -61,6 +76,7 @@ export const EditableTextField: React.FC<EditableTextFieldProps> = ({
             })}
             value={value}
             ref={inputRef}
+            {...rest}
             onBlur={() => setEdit(false)}
             onChange={e => setValue(e.target.value)}
           />
@@ -70,4 +86,4 @@ export const EditableTextField: React.FC<EditableTextFieldProps> = ({
       </div>
     </div>
   );
-};
+});
