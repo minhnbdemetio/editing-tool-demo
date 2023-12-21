@@ -39,7 +39,6 @@ export const EditableTextField = forwardRef<
         onClick={() => {
           if (!edit) {
             setEdit(true);
-            console.debug(inputRef.current);
             setTimeout(() => {
               inputRef.current?.focus();
               if (value === fallbackValue) {
