@@ -22,7 +22,7 @@ export const Menu: FC = () => {
       > */}
       <div
         className={twMerge(
-          'absolute  duration-300 h-full left-[-100%] w-fit h-full top-0  z-30',
+          'absolute  duration-300 h-full left-[-100%] w-fit h-full top-0  z-30 flex',
           {
             'left-0': open,
           },
@@ -35,7 +35,7 @@ export const Menu: FC = () => {
           onChange={setSelectedSection}
           selectedSection={selectedSection}
         />
-        <MenuContent section={selectedSection} />
+        <MenuContent section={selectedSection} menuExpand={menuExpand} />
       </div>
       {/* backdrop */}
 
