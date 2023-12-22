@@ -24,7 +24,7 @@ export const FilePopover: React.FC<FilePopoverProps> = ({}) => {
             </p>
           </button>
         </PopoverTrigger>
-        <PopoverContent className="min-w-[320px] upload-popover rounded-md px-0">
+        <PopoverContent className="min-w-[320px] max-h-[75vh] upload-popover rounded-md px-0">
           <FilePopoverContent />
         </PopoverContent>
       </Popover>
