@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react';
 import { useEditablePages } from '../store/editable-pages';
 import { useCurrentPage } from './useCurrentPage';
-import { usePageCanvas } from './usePageCanvas';
+import { useCurrentPageCanvas } from './usePageCanvas';
 
 jest.mock('./useCurrentPage');
 jest.mock('../store/editable-pages');
@@ -22,7 +22,7 @@ describe('Test usePageCanvas', () => {
     (useEditablePages as unknown as jest.Mock).mockReturnValueOnce(
       useEditablePagesMockValue,
     );
-    const { result } = renderHook(() => usePageCanvas());
+    const { result } = renderHook(() => useCurrentPageCanvas());
     expect(result.current[0]).toBe(pageCanvasMockValue);
     expect(typeof result.current[1]).toBe('function');
   });
