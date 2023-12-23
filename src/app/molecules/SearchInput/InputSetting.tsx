@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { InputSettingFormat } from './InputSettingFormat';
 import { Button, Divider } from '@nextui-org/react';
 import { SettingFilterGroupProps, SettingTypeEnum } from '.';
@@ -14,14 +14,20 @@ export interface SettingFilterProps {
 export interface InputSettingProps {
   settingFilters: SettingFilterGroupProps[];
   onApplyFilter: (settingFilters: SettingFilterGroupProps[]) => void;
+  onResetFilter?: () => void;
 }
 
 export const InputSetting: FC<InputSettingProps> = ({
   settingFilters,
   onApplyFilter,
+  onResetFilter,
 }) => {
   const [settings, setSettings] =
     useState<SettingFilterGroupProps[]>(settingFilters);
+
+  useEffect(() => {
+    setSettings(settingFilters);
+  }, [settingFilters]);
 
   const handleSelect = (format: SettingFilterGroupProps) => {
     const newSetting = [...settings]?.map(item => {
@@ -37,11 +43,20 @@ export const InputSetting: FC<InputSettingProps> = ({
   };
   return (
     <div className="w-full h-fit py-2">
-      {settings?.map(setting => (
+      {settings?.map((setting, index) => (
         <div key={setting.key}>
-          <span className="text-[#70798f] text-md cursor-default">
-            {setting.name}
-          </span>
+          <div className="flex justify-between align-center">
+            <span className="text-[#70798f] text-md cursor-default">
+              {setting.name}
+            </span>
+            <div>
+              {!index && (
+                <Button size="sm" variant="ghost" onClick={onResetFilter}>
+                  Reset
+                </Button>
+              )}
+            </div>
+          </div>
           {setting.type === SettingTypeEnum.Format && (
             <InputSettingFormat
               setting={setting}

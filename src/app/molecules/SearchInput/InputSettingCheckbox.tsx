@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { SettingFilterGroupProps } from '.';
 import { SettingFilterProps } from './InputSetting';
 import { Checkbox } from '@nextui-org/react';
 

@@ -30,6 +30,7 @@ interface SearchInputProps {
   placeholder?: string;
   settingFilters?: SettingFilterGroupProps[];
   applyFilter?: (settingFilters: SettingFilterGroupProps[]) => void;
+  onResetFilter?: () => void;
 }
 
 export const SearchInput: FC<SearchInputProps> = ({
@@ -38,6 +39,7 @@ export const SearchInput: FC<SearchInputProps> = ({
   placeholder = '',
   settingFilters = [],
   applyFilter,
+  onResetFilter,
 }) => {
   const [showFilter, setShowFilter] = useState<boolean>(false);
   const [showRecommended, setShowRecommended] = useState<boolean>(false);
@@ -124,6 +126,7 @@ export const SearchInput: FC<SearchInputProps> = ({
           <InputSetting
             settingFilters={settingFilters}
             onApplyFilter={setting => onApplyFilter(setting)}
+            onResetFilter={onResetFilter}
           />
         </div>
       )}

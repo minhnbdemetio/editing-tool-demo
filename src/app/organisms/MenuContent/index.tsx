@@ -26,7 +26,7 @@ export const MenuContent: FC<MenuContentProps> = ({ section, menuExpand }) => {
   return (
     <div
       className={clsx(
-        'absolute top-0 fadein fadeout z-20 left-[56px] w-[360px] h-full bg-white]',
+        'z-20 w-[360px] h-full bg-white',
         {
           hidden: menuExpand,
         },

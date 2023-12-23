@@ -22,37 +22,43 @@ const settingsFormat: SettingFilterProps[] = [
   { key: 'vertical', icon: Vertical, label: 'Vertical' },
 ];
 const settingsPrice: SettingFilterProps[] = [
-  { key: 'free', label: 'Free' },
-  { key: 'premium', label: 'Premium' },
+  { key: 'free', label: 'Free', isSelect: false },
+  { key: 'premium', label: 'Premium', isSelect: false },
 ];
 const settingsTempo: SettingFilterProps[] = [
-  { key: 'slow', label: 'Slow' },
-  { key: 'fast', label: 'Fast' },
+  { key: 'slow', label: 'Slow', isSelect: false },
+  { key: 'fast', label: 'Fast', isSelect: false },
 ];
 
+const defaultTemplateSetting = [
+  {
+    key: 'format',
+    type: SettingTypeEnum.Format,
+    name: 'Format',
+    settingFilter: settingsFormat,
+  },
+  {
+    key: 'Price',
+    type: SettingTypeEnum.Checkbox,
+    name: 'Price',
+    settingFilter: settingsPrice,
+  },
+  {
+    key: 'tempo',
+    type: SettingTypeEnum.CheckboxSingle,
+    name: 'Tempo',
+    settingFilter: settingsTempo,
+  },
+];
 export const TemplatesMenuContent: FC = () => {
   const [templateSettingFormat, setTemplateSettingFormat] = useState<
     SettingFilterGroupProps[]
-  >([
-    {
-      key: 'format',
-      type: SettingTypeEnum.Format,
-      name: 'Format',
-      settingFilter: settingsFormat,
-    },
-    {
-      key: 'Price',
-      type: SettingTypeEnum.Checkbox,
-      name: 'Price',
-      settingFilter: settingsPrice,
-    },
-    {
-      key: 'tempo',
-      type: SettingTypeEnum.CheckboxSingle,
-      name: 'Tempo',
-      settingFilter: settingsTempo,
-    },
-  ]);
+  >(defaultTemplateSetting);
+
+  const onResetFilter = () => {
+    setTemplateSettingFormat([]);
+    setTemplateSettingFormat(defaultTemplateSetting);
+  };
   return (
     <div className="w-full h-full">
       <div className="p-6 w-full h-fit">
@@ -64,6 +70,7 @@ export const TemplatesMenuContent: FC = () => {
           applyFilter={newSetting => {
             setTemplateSettingFormat(newSetting);
           }}
+          onResetFilter={onResetFilter}
         />
       </div>
     </div>
