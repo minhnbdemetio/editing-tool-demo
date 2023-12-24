@@ -1,7 +1,6 @@
 import { FC } from 'react';
-import { SettingFilterGroupProps } from '.';
-import { SettingFilterProps } from './InputSetting';
 import { Checkbox } from '@nextui-org/react';
+import { SettingFilterGroupProps, SettingFilterProps } from './searchInput';
 
 export interface InputSettingCheckboxProps {
   setting: SettingFilterGroupProps;
@@ -27,11 +26,11 @@ export const InputSettingCheckbox: FC<InputSettingCheckboxProps> = ({
   return (
     <div className="w-full h-fit px-2">
       {setting.settingFilter?.map((format, index) => {
-        const { label, isSelect } = format;
+        const { key, label, isSelect } = format;
         return (
           <div
             className="w-full flex p-2 cursor-pointer justify-between items-center hover:bg-slate-100 rounded-md"
-            key={index}
+            key={key}
           >
             <div className="flex items-center">
               <Checkbox

@@ -4,25 +4,8 @@ import { useOutsideClick } from '../../hooks/useClickOutside';
 import { Badge, Button, Input } from '@nextui-org/react';
 import { RecommendedComplete } from './RecommendedComplete';
 import { RecommendedKeywords } from './RecommendedKeywords';
-import { InputSetting, SettingFilterProps } from './InputSetting';
-
-export interface SettingFilterGroupProps {
-  name: string;
-  settingFilter: SettingFilterProps[];
-  type: SettingTypeEnum;
-  key?: string;
-}
-
-export enum SettingTypeEnum {
-  Format,
-  Checkbox,
-  CheckboxSingle,
-}
-
-export interface RecommendedKeywordsProps {
-  onValueChange: (value: string) => void;
-  recommendedKeywords: string[];
-}
+import { InputSetting } from './InputSetting';
+import { SettingFilterGroupProps } from './searchInput';
 
 interface SearchInputProps {
   recommendedKeywords?: string[];

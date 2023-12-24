@@ -1,11 +1,12 @@
 import { FC, useState } from 'react';
 import { Square, Horizontal, Vertical } from '@/app/icons';
+import { SearchInput } from '@/app/molecules/SearchInput';
 import {
-  SearchInput,
+  DefaultInput,
   SettingFilterGroupProps,
+  SettingFilterProps,
   SettingTypeEnum,
-} from '@/app/molecules/SearchInput';
-import { SettingFilterProps } from '@/app/molecules/SearchInput/InputSetting';
+} from '@/app/molecules/SearchInput/searchInput';
 
 const recommendedKeywords = [
   'Xuân',
@@ -30,7 +31,23 @@ const settingsTempo: SettingFilterProps[] = [
   { key: 'fast', label: 'Fast', isSelect: false },
 ];
 
+const settingColor: SettingFilterProps[] = [
+  { key: DefaultInput, value: '#ffffff', isSelect: false },
+  { key: '#50d71e', value: '#50d71e', isSelect: false },
+  { key: '#ef4444', value: '#ef4444', isSelect: false },
+  { key: '#84cc16', value: '#84cc16', isSelect: false },
+  { key: '#06b6d4', value: '#06b6d4', isSelect: false },
+  { key: '#6366f1', value: '#6366f1', isSelect: false },
+  { key: '#db2777', value: '#db2777', isSelect: false },
+];
+
 const defaultTemplateSetting = [
+  {
+    key: 'color',
+    type: SettingTypeEnum.Color,
+    name: 'Color',
+    settingFilter: settingColor,
+  },
   {
     key: 'format',
     type: SettingTypeEnum.Format,

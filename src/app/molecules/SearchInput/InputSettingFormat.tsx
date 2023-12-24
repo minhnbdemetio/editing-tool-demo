@@ -1,8 +1,6 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { Check } from '@/app/icons';
-import { SettingFilterGroupProps } from '.';
-import { SettingFilterProps } from './InputSetting';
-
+import { SettingFilterGroupProps, SettingFilterProps } from './searchInput';
 export interface InputSettingFormatProps {
   setting: SettingFilterGroupProps;
   changeSettingFormat: (settingsFormat: SettingFilterGroupProps) => void;
@@ -24,12 +22,12 @@ export const InputSettingFormat: FC<InputSettingFormatProps> = ({
   };
   return (
     <div className="w-full h-fit px-2">
-      {setting.settingFilter?.map((format, index) => {
-        const { icon: Icon, label, isSelect } = format;
+      {setting.settingFilter?.map(format => {
+        const { key, icon: Icon, label, isSelect } = format;
         return (
           <div
             className="w-full flex p-2 cursor-pointer justify-between items-center hover:bg-slate-100 rounded-md"
-            key={index}
+            key={key}
             onClick={() => handlechangeSelect(format)}
           >
             <div className="flex items-center">

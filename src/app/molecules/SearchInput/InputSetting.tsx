@@ -1,15 +1,9 @@
 import { FC, useEffect, useState } from 'react';
 import { InputSettingFormat } from './InputSettingFormat';
 import { Button, Divider } from '@nextui-org/react';
-import { SettingFilterGroupProps, SettingTypeEnum } from '.';
 import { InputSettingCheckbox } from './InputSettingCheckbox';
-
-export interface SettingFilterProps {
-  key: string;
-  icon?: FC<{ className?: string }>;
-  label: string;
-  isSelect?: boolean;
-}
+import { InputSettingColorPicker } from './InputSettingColorPicker';
+import { SettingFilterGroupProps, SettingTypeEnum } from './searchInput';
 
 export interface InputSettingProps {
   settingFilters: SettingFilterGroupProps[];
@@ -41,17 +35,22 @@ export const InputSetting: FC<InputSettingProps> = ({
   const handleApplyFilter = () => {
     onApplyFilter(settings);
   };
+
+  const handleResetFilter = () => {
+    setSettings(settingFilters);
+    onResetFilter && onResetFilter();
+  };
   return (
     <div className="w-full h-fit py-2">
       {settings?.map((setting, index) => (
         <div key={setting.key}>
-          <div className="flex justify-between align-center">
+          <div className="flex justify-between align-center my-1">
             <span className="text-[#70798f] text-md cursor-default">
               {setting.name}
             </span>
             <div>
               {!index && (
-                <Button size="sm" variant="ghost" onClick={onResetFilter}>
+                <Button size="sm" variant="ghost" onClick={handleResetFilter}>
                   Reset
                 </Button>
               )}
@@ -59,6 +58,12 @@ export const InputSetting: FC<InputSettingProps> = ({
           </div>
           {setting.type === SettingTypeEnum.Format && (
             <InputSettingFormat
+              setting={setting}
+              changeSettingFormat={handleSelect}
+            />
+          )}
+          {setting.type === SettingTypeEnum.Color && (
+            <InputSettingColorPicker
               setting={setting}
               changeSettingFormat={handleSelect}
             />
