@@ -28,7 +28,7 @@ export const convertFrameSize = (
 
   const round = (number: number) => {
     if (decimals == null) return number;
-    if (decimals == 0) return Math.round(number);
+    // if (decimals == 0) return Math.round(number);
 
     return +number.toFixed(decimals);
   };
