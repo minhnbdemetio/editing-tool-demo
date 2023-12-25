@@ -2,7 +2,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
 import clsx from 'clsx';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ChevronDown, LockClosed, LockOpen, Ruler } from '../icons';
-import { getDisplayDimension } from '../utilities/units';
+import { convertFrameSize } from '../utilities/units';
 import { UNITS } from '../constants/unit-constants';
 
 interface BackgroundSizePopoverProps {}
@@ -10,6 +10,14 @@ interface BackgroundSizePopoverProps {}
 export const BackgroundSizePopover: React.FC<
   BackgroundSizePopoverProps
 > = () => {
+  const [originalSize, setOriginalSize] = useState<{
+    width: number;
+    height: number;
+  }>({
+    width: 1080,
+    height: 1080,
+  });
+
   const [width, setWidth] = useState(1080);
   const [height, setHeight] = useState(1080);
   const [unit, setUnit] = useState('px');
@@ -21,17 +29,29 @@ export const BackgroundSizePopover: React.FC<
     () => setRatioLocked(prev => !prev),
     [],
   );
+  const updateOriginalSize = useCallback(
+    (w: number, h: number) => {
+      setOriginalSize({
+        width: convertFrameSize(unit, 'px', w, null),
+        height: convertFrameSize(unit, 'px', h, null),
+      });
+    },
+    [unit],
+  );
 
   const changeHeight = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const newHeight = +e.currentTarget.value;
       setHeight(+e.currentTarget.value);
       if (ratioLocked) {
-        const newWidth = Math.ceil(newHeight * ratio);
+        const newWidth = Math.ceil((newHeight || 0) * ratio);
         setWidth(newWidth);
+        updateOriginalSize(newWidth, newHeight);
+      } else {
+        updateOriginalSize(width, newHeight);
       }
     },
-    [ratio, ratioLocked],
+    [ratio, ratioLocked, updateOriginalSize, width],
   );
 
   const changeWidth = useCallback(
@@ -39,25 +59,28 @@ export const BackgroundSizePopover: React.FC<
       const newWidth = +e.currentTarget.value;
       setWidth(newWidth);
       if (ratioLocked) {
-        const newHeight = Math.ceil(newWidth * ratio);
+        const newHeight = Math.ceil((newWidth || 0) * ratio);
         setHeight(newHeight);
+        updateOriginalSize(newWidth, newHeight);
+      } else {
+        updateOriginalSize(newWidth, height);
       }
     },
-    [ratio, ratioLocked],
+    [height, ratio, ratioLocked, updateOriginalSize],
   );
 
   const changeUnit = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const newUnit = e.currentTarget.value;
 
-      const newWidth = getDisplayDimension(unit, newUnit, width);
-      const newHeight = getDisplayDimension(unit, newUnit, height);
+      const newWidth = convertFrameSize('px', newUnit, originalSize.width);
+      const newHeight = convertFrameSize('px', newUnit, originalSize.height);
 
-      setUnit(newUnit);
       setWidth(+newWidth);
       setHeight(+newHeight);
+      setUnit(newUnit);
     },
-    [unit, width, height],
+    [originalSize],
   );
 
   return (
