@@ -95,4 +95,14 @@ describe('Test convertFrameSize function', () => {
 
     expect(actual).toBe(randomInches * unitRate);
   });
+
+  test('should return a decimal value!', () => {
+    const randomInches = random(1, 10000);
+
+    const actual = convertFrameSize('ml', 'px', randomInches, 2);
+
+    const unitRate = 1 / 3.77952755906;
+
+    expect(actual).toBe(+(randomInches / unitRate).toFixed(2));
+  });
 });
