@@ -1,7 +1,7 @@
 'use client';
 
 import { FC, useEffect, useRef, useState } from 'react';
-import { usePageCanvas } from '../hooks/usePageCanvas';
+import { useCurrentPageCanvas } from '../hooks/usePageCanvas';
 import { fabric } from 'fabric';
 import { ObjectToolbar } from '../molecules/ObjectToolbar';
 import { CanvasKeyboardEventHandler } from '../atoms/CanvasKeyboardEventHandler';
@@ -16,7 +16,7 @@ export interface EditablePageProps {
 }
 
 const EditableCanvas: FC<EditablePageProps> = () => {
-  const [pageCanvas, setPageCanvas] = usePageCanvas();
+  const [pageCanvas, setPageCanvas] = useCurrentPageCanvas();
   const { setActiveObject } = useActiveObject();
 
   const canvasEl = useRef<HTMLCanvasElement>(null);

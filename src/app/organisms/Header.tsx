@@ -5,7 +5,6 @@ import {
   ArchiveBoxArrowDown,
   ArrowUTurnLeft,
   ArrowUTurnRight,
-  ChevronDown,
   ChevronLeft,
   DotsHorizontal,
   Download,
@@ -21,6 +20,10 @@ import { UploadPopover } from '../molecules/UploadPopover';
 import clsx from 'clsx';
 import { FilePopover } from '../molecules/FilePopover';
 import { EditableTextField } from '../atoms/EditableTextField';
+import {
+  useRedoCommand,
+  useUndoCommand,
+} from '../hooks/editor-commands/useCommand';
 import { SettingsPopover } from '../molecules/SettingsPopover';
 import { BackgroundSizePopover } from '../molecules/BackgroundSizePopover';
 
@@ -30,6 +33,8 @@ export const Header: FC = () => {
   >(null);
 
   const isMobile = useMediaQuery('mobile');
+  const handleUndo = useUndoCommand();
+  const handleRedo = useRedoCommand();
 
   return (
     <>
@@ -55,7 +60,10 @@ export const Header: FC = () => {
           </div>
 
           <div className="flex items-center">
-            <button className="p-[4px] h-[40px] w-[40px] flex justify-center items-center">
+            <button
+              onClick={handleUndo}
+              className="p-[4px] h-[40px] w-[40px] flex justify-center items-center"
+            >
               <ArrowUTurnLeft
                 className={clsx(
                   'w-[20px] h-[20px] text-icon-light-gray',
@@ -63,7 +71,10 @@ export const Header: FC = () => {
                 )}
               />
             </button>
-            <button className="p-[4px] h-[40px] w-[40px] flex justify-center items-center">
+            <button
+              onClick={handleRedo}
+              className="p-[4px] h-[40px] w-[40px] flex justify-center items-center"
+            >
               <ArrowUTurnRight
                 className={clsx(
                   'w-[20px] h-[20px] text-icon-light-gray scale-y-[-1]',
