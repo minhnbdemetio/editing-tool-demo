@@ -19,16 +19,30 @@ export const usePageCanvasById = (pageId: string) => {
 };
 
 export const usePageCanvasJSON = () => {
-  const [currentPage] = useCurrentPageCanvas();
+  const [currentPage] = factory.useCurrentPageCanvas();
+
+  return currentPage?.toJSON();
+};
+
+export const usePageCanvasJSONById = (pageId: string) => {
+  const [currentPage] = factory.usePageCanvasById(pageId);
 
   return currentPage?.toJSON();
 };
 
 export const useLoadPageCanvasState = (pageId: string) => {
-  const [currentPage] = usePageCanvasById(pageId);
+  const [currentPage] = factory.usePageCanvasById(pageId);
 
   return (canvasState: { version: string; objects: Object[] } | undefined) =>
     currentPage?.loadFromJSON(canvasState, () => {
       currentPage.renderAll();
     });
+};
+
+export const factory = {
+  useCurrentPageCanvas,
+  usePageCanvasJSON,
+  usePageCanvasById,
+  usePageCanvasJSONById,
+  useLoadPageCanvasState,
 };

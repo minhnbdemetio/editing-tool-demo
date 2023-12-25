@@ -1,11 +1,10 @@
 'use client';
 
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import {
   ArchiveBoxArrowDown,
   ArrowUTurnLeft,
   ArrowUTurnRight,
-  ChevronDown,
   ChevronLeft,
   DotsHorizontal,
   Download,
@@ -25,7 +24,6 @@ import {
   useRedoCommand,
   useUndoCommand,
 } from '../hooks/editor-commands/useCommand';
-import { useCommandHistory } from '../store/editor-command-history';
 import { SettingsPopover } from '../molecules/SettingsPopover';
 import { BackgroundSizePopover } from '../molecules/BackgroundSizePopover';
 
@@ -37,12 +35,6 @@ export const Header: FC = () => {
   const isMobile = useMediaQuery('mobile');
   const handleUndo = useUndoCommand();
   const handleRedo = useRedoCommand();
-
-  const { commandHistory, undoneCommandHistory } = useCommandHistory();
-
-  useEffect(() => {
-    console.log(commandHistory, undoneCommandHistory);
-  }, [commandHistory, undoneCommandHistory]);
 
   return (
     <>
