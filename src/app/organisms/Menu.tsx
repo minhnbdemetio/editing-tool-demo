@@ -22,11 +22,11 @@ export const Menu: FC = () => {
       > */}
       <div
         className={twMerge(
-          'absolute  duration-300 h-full left-[-100%] w-fit h-full top-0  z-30',
+          'absolute  duration-300  w-full max-h-[80%] left-0  -bottom-[100%]  z-30 flex flex-col-reverse',
           {
-            'left-0': open,
+            'bottom-0': open,
           },
-          'desktop:relative desktop:left-0',
+          'desktop:relative desktop:top-0 desktop:left-0  desktop:h-full desktop:w-fit desktop:flex-row',
         )}
       >
         <SideMenu
@@ -35,7 +35,8 @@ export const Menu: FC = () => {
           onChange={setSelectedSection}
           selectedSection={selectedSection}
         />
-        <MenuContent section={selectedSection} />
+
+        <MenuContent section={selectedSection} menuExpand={menuExpand} />
       </div>
       {/* backdrop */}
 
@@ -48,7 +49,7 @@ export const Menu: FC = () => {
           {
             'hidden ': !open,
           },
-          'md:hidden',
+          'desktop:hidden',
         )}
       ></div>
       {/* </div> */}

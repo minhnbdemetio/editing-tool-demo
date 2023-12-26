@@ -5,7 +5,6 @@ import {
   ArchiveBoxArrowDown,
   ArrowUTurnLeft,
   ArrowUTurnRight,
-  ChevronDown,
   ChevronLeft,
   DotsHorizontal,
   Download,
@@ -21,6 +20,12 @@ import { UploadPopover } from '../molecules/UploadPopover';
 import clsx from 'clsx';
 import { FilePopover } from '../molecules/FilePopover';
 import { EditableTextField } from '../atoms/EditableTextField';
+import {
+  useRedoCommand,
+  useUndoCommand,
+} from '../hooks/editor-commands/useCommand';
+import { SettingsPopover } from '../molecules/SettingsPopover';
+import { BackgroundSizePopover } from '../molecules/BackgroundSizePopover';
 
 export const Header: FC = () => {
   const [openModal, setOpenModal] = useState<
@@ -28,6 +33,8 @@ export const Header: FC = () => {
   >(null);
 
   const isMobile = useMediaQuery('mobile');
+  const handleUndo = useUndoCommand();
+  const handleRedo = useRedoCommand();
 
   return (
     <>
@@ -48,27 +55,15 @@ export const Header: FC = () => {
 
           <div className="hidden desktop:flex items-center gap-4 h-full">
             <FilePopover />
-            <button
-              className={clsx(
-                'font-normal text-md  text-gray-400 h-full min-w-[50px] ',
-                'duration-100 hover:text-primary',
-              )}
-            >
-              <p>Settings</p>
-            </button>
-            <button
-              className={clsx(
-                'font-normal text-md text-gray-400 h-full min-w-[50px] flex items-center',
-                'duration-100 hover:text-primary',
-              )}
-            >
-              <p>1080px x 1080px</p>{' '}
-              <ChevronDown className="text-gray-200 w-[28px] h-[18px]" />
-            </button>
+            <SettingsPopover />
+            <BackgroundSizePopover />
           </div>
 
           <div className="flex items-center">
-            <button className="p-[4px] h-[40px] w-[40px] flex justify-center items-center">
+            <button
+              onClick={handleUndo}
+              className="p-[4px] h-[40px] w-[40px] flex justify-center items-center"
+            >
               <ArrowUTurnLeft
                 className={clsx(
                   'w-[20px] h-[20px] text-icon-light-gray',
@@ -76,7 +71,10 @@ export const Header: FC = () => {
                 )}
               />
             </button>
-            <button className="p-[4px] h-[40px] w-[40px] flex justify-center items-center">
+            <button
+              onClick={handleRedo}
+              className="p-[4px] h-[40px] w-[40px] flex justify-center items-center"
+            >
               <ArrowUTurnRight
                 className={clsx(
                   'w-[20px] h-[20px] text-icon-light-gray scale-y-[-1]',
@@ -85,7 +83,9 @@ export const Header: FC = () => {
               />
             </button>
 
-            <EditableTextField fallbackValue="Please enter a title" />
+            <div className="hidden desktop:block">
+              <EditableTextField fallbackValue="Please enter a title" />
+            </div>
           </div>
         </div>
         <div className=" flex items-center h-full">

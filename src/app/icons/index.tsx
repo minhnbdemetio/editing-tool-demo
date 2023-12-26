@@ -34,6 +34,14 @@ import { Background } from './Background';
 import { Heart } from './Heart';
 import { Barcode } from './Barcode';
 import { ChevronDoubleLeft } from './ChevronDoubleLeft';
+import { Close } from './Close';
+import { ChevronRight } from './ChevronRight';
+import { LockClosed } from './LockClosed';
+import { LockOpen } from './LockOpen';
+import { Check } from './Check';
+import { Square } from './Square';
+import { Horizontal } from './Horizontal';
+import { Vertical } from './Vertical';
 
 export {
   Home,
@@ -72,4 +80,12 @@ export {
   Heart,
   Barcode,
   ChevronDoubleLeft,
+  Close,
+  ChevronRight,
+  LockClosed,
+  LockOpen,
+  Check,
+  Square,
+  Horizontal,
+  Vertical,
 };

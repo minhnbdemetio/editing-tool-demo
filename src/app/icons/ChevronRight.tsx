@@ -1,21 +1,21 @@
 import { IconProps } from '../types';
 import { twMerge } from '../utilities/tailwind';
 
-export const Clock: React.FC<IconProps> = ({ className }) => {
+export const ChevronRight: React.FC<IconProps> = ({ className }) => {
   return (
     <svg
-      className={twMerge('w-6 h-6', className)}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
       strokeWidth="1.5"
       stroke="currentColor"
       data-slot="icon"
+      className={twMerge('w-6 h-6', className)}
     >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
-        d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+        d="m8.25 4.5 7.5 7.5-7.5 7.5"
       />
     </svg>
   );

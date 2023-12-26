@@ -9,7 +9,7 @@ import {
   INITIAL_ANGLE,
   ROTATE_ANGLE_OFFSET,
 } from '../constants/canvas-constants';
-import { usePageCanvas } from './usePageCanvas';
+import { useCurrentPageCanvas } from './usePageCanvas';
 import { fabric } from 'fabric';
 
 jest.mock('./usePageCanvas');
@@ -23,7 +23,7 @@ describe('useRotateActiveObject', () => {
     jest.restoreAllMocks();
   });
   test('handles clockwise rotation', () => {
-    (usePageCanvas as jest.Mock).mockReturnValueOnce([
+    (useCurrentPageCanvas as jest.Mock).mockReturnValueOnce([
       {
         getActiveObject: jest.fn(() => ({
           rotate: jest.fn(),
@@ -41,7 +41,7 @@ describe('useRotateActiveObject', () => {
   });
 
   test('handles counterclockwise rotation', () => {
-    (usePageCanvas as jest.Mock).mockReturnValueOnce([
+    (useCurrentPageCanvas as jest.Mock).mockReturnValueOnce([
       {
         getActiveObject: jest.fn(() => ({
           rotate: jest.fn(),
@@ -61,7 +61,7 @@ describe('useRotateActiveObject', () => {
   });
 
   test('handles no active object', () => {
-    (usePageCanvas as jest.Mock).mockReturnValueOnce([null]);
+    (useCurrentPageCanvas as jest.Mock).mockReturnValueOnce([null]);
     const { result } = renderHook(() => useRotateActiveObject('clockwise'));
     const handleRotate = result.current;
 
@@ -71,7 +71,7 @@ describe('useRotateActiveObject', () => {
   });
 
   test('handles has active object but angle is undefined', () => {
-    (usePageCanvas as jest.Mock).mockReturnValueOnce([
+    (useCurrentPageCanvas as jest.Mock).mockReturnValueOnce([
       {
         getActiveObject: jest.fn(() => ({
           rotate: jest.fn(),
@@ -100,7 +100,7 @@ describe('useDeleteActiveObject', () => {
     jest.restoreAllMocks();
   });
   test('handles has active object', () => {
-    (usePageCanvas as jest.Mock).mockReturnValueOnce([
+    (useCurrentPageCanvas as jest.Mock).mockReturnValueOnce([
       {
         getActiveObject: jest.fn().mockReturnValueOnce(new fabric.Object()),
         remove: jest.fn(),
@@ -115,7 +115,7 @@ describe('useDeleteActiveObject', () => {
   });
 
   test('handles no active object', () => {
-    (usePageCanvas as jest.Mock).mockReturnValueOnce([null]);
+    (useCurrentPageCanvas as jest.Mock).mockReturnValueOnce([null]);
     const { result } = renderHook(() => useDeleteActiveObject());
     const handleDelete = result.current;
 
@@ -130,7 +130,7 @@ describe('useDeleteActiveObject', () => {
     jest.restoreAllMocks();
   });
   test('handles has active object', () => {
-    (usePageCanvas as jest.Mock).mockReturnValueOnce([
+    (useCurrentPageCanvas as jest.Mock).mockReturnValueOnce([
       {
         getActiveObject: jest.fn().mockReturnValueOnce(new fabric.Object()),
         setActiveObject: jest.fn(),
@@ -147,7 +147,7 @@ describe('useDeleteActiveObject', () => {
   });
 
   test('handles no active object', () => {
-    (usePageCanvas as jest.Mock).mockReturnValueOnce([null]);
+    (useCurrentPageCanvas as jest.Mock).mockReturnValueOnce([null]);
     const { result } = renderHook(() => useCopyActiveObject());
     const handleCopy = result.current;
 
