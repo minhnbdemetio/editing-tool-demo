@@ -83,7 +83,9 @@ export const Header: FC = () => {
               />
             </button>
 
-            <EditableTextField fallbackValue="Please enter a title" />
+            <div className="hidden desktop:block">
+              <EditableTextField fallbackValue="Please enter a title" />
+            </div>
           </div>
         </div>
         <div className=" flex items-center h-full">
