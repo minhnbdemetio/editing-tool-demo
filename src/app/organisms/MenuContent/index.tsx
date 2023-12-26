@@ -2,6 +2,7 @@ import { FC } from 'react';
 import { TemplatesMenuContent } from './TemplatesMenuContent';
 import { PhotosMenuContent } from './PhotosMenuContent';
 import clsx from 'clsx';
+import { ElementsMenuContent } from './ElementsMenuContent';
 
 interface MenuContentProps {
   section: string;
@@ -17,8 +18,11 @@ export const MenuContent: FC<MenuContentProps> = ({ section, menuExpand }) => {
       case 'photos': {
         return <PhotosMenuContent />;
       }
+      case 'elements': {
+        return <ElementsMenuContent />;
+      }
       default: {
-        return <PhotosMenuContent />;
+        return <ElementsMenuContent />;
       }
     }
   };
