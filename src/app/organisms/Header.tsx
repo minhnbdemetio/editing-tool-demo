@@ -32,7 +32,7 @@ export const Header: FC = () => {
     null | 'upload-modal' | 'more-modal'
   >(null);
 
-  const isMobile = useMediaQuery('mobile');
+  const isMobile = useMediaQuery(s => s.device === 'mobile');
   const handleUndo = useUndoCommand();
   const handleRedo = useRedoCommand();
 
