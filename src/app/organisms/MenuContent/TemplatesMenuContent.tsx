@@ -1,17 +1,13 @@
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { SearchInput } from '@/app/molecules/SearchInput';
 import { Popover } from '@/app/atoms/Popover';
 import { TemplateFilterModal } from '@/app/molecules/TemplateFilterModal';
 import { TemplateFilters } from '@/app/molecules/TemplateFilters';
-import useMediaQuery from '@/app/hooks/useMediaQuery';
-import {
-  DefaultInput,
-  SettingFilterGroupProps,
-  SettingFilterProps,
-  SettingTypeEnum,
-} from '@/app/molecules/SearchInput/searchInput';
+import useMediaQuery from '@/app/store/useMediaQuery';
 import SliderShow from '@/app/molecules/SliderShow';
 import { SliderItem } from '@/app/molecules/SliderShow/sliderShow';
+import { useTemplateFilters } from '@/app/store/template-filters';
+import { getFilterOptions } from '@/app/services/template.service';
 
 const recommendedKeywords = [
   'Xuân',
@@ -21,43 +17,6 @@ const recommendedKeywords = [
   'Động vật',
   'Thời tiết',
   'Màu sắc',
-];
-
-const settingColor: SettingFilterProps[] = [
-  { key: DefaultInput, value: '#ffffff', isSelect: false },
-  { key: '#50d71e', value: '#50d71e', isSelect: false },
-  { key: '#ef4444', value: '#ef4444', isSelect: false },
-  { key: '#84cc16', value: '#84cc16', isSelect: false },
-  { key: '#06b6d4', value: '#06b6d4', isSelect: false },
-  { key: '#6366f1', value: '#6366f1', isSelect: false },
-  { key: '#db2777', value: '#db2777', isSelect: false },
-];
-
-const defaultTemplateSetting = [
-  {
-    key: 'color',
-    type: SettingTypeEnum.Color,
-    name: 'Color',
-    settingFilter: settingColor,
-  },
-  {
-    key: 'format',
-    type: SettingTypeEnum.Format,
-    name: 'Format',
-    settingFilter: settingsFormat,
-  },
-  {
-    key: 'Price',
-    type: SettingTypeEnum.Checkbox,
-    name: 'Price',
-    settingFilter: settingsPrice,
-  },
-  {
-    key: 'tempo',
-    type: SettingTypeEnum.CheckboxSingle,
-    name: 'Tempo',
-    settingFilter: settingsTempo,
-  },
 ];
 
 const recentlyUsed: SliderItem[] = [
@@ -108,6 +67,16 @@ export const TemplatesMenuContent: FC = () => {
     useState<HTMLButtonElement | null>(null);
 
   const isMobile = useMediaQuery(s => s.device === 'mobile');
+
+  const setTemplateFilters = useTemplateFilters(s => s.setTemplates);
+
+  useEffect(() => {
+    (async () => {
+      const templateFilters = await getFilterOptions();
+
+      setTemplateFilters(templateFilters);
+    })();
+  }, [setTemplateFilters]);
 
   const onSettingClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {

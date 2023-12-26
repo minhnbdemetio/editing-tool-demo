@@ -1,45 +1,25 @@
+'use client';
+
 import React, { useCallback, useState } from 'react';
 import { FilterSection } from '../atoms/ FilterSection';
 import { ColorFilterSetting } from './ColorFilterSettings';
 import { twMerge } from '../utilities/tailwind';
 import { Checkbox } from '@nextui-org/react';
+import { useTemplateFilters } from '../store/template-filters';
+import { TemplateFilterType } from '../types';
 
 interface TemplateFiltersProps {}
-
-const DEFAULT_VALUES = [
-  'rgb(255, 82, 82)',
-  'rgb(255, 158, 72)',
-  'rgb(254, 230, 13)',
-  'rgb(169, 234, 46)',
-  'rgb(13, 200, 77)',
-  'rgb(147, 242, 221)',
-  'rgb(56, 128, 255)',
-  'rgb(47, 65, 249)',
-  'rgb(153, 94, 255)',
-  'rgb(255, 132, 234)',
-  'rgb(255, 255, 255)',
-  'rgb(191, 191, 191)',
-  'rgb(0, 0, 0)',
-];
-
-const PRICE_FILTER = [
-  { label: 'Cheap', id: 1 },
-  { label: 'Normal', id: 2 },
-  { label: 'High-end', id: 3 },
-];
-
-const DEFAULT_SELECTED_COLOR = DEFAULT_VALUES[0];
 
 export const TemplateFilters: React.FC<TemplateFiltersProps> = () => {
   const [selectedColor, setSelectedColor] = useState('rgb(191, 191, 191)');
 
-  const onReset = useCallback(() => {
-    setSelectedColor(DEFAULT_SELECTED_COLOR);
-  }, []);
+  const templateFilters = useTemplateFilters(s => s.templates);
 
-  return (
-    <>
-      <div className="px-4 pb-2">
+  const onReset = useCallback(() => {}, []);
+
+  const renderTemplateFilter = (templateFilter: TemplateFilterType) => {
+    if (templateFilter.type === 'color') {
+      return (
         <FilterSection
           title="Color"
           endAdornment={
@@ -57,12 +37,17 @@ export const TemplateFilters: React.FC<TemplateFiltersProps> = () => {
           <ColorFilterSetting
             selected={selectedColor}
             onChange={setSelectedColor}
-            defaultValues={DEFAULT_VALUES}
+            defaultValues={templateFilter.colors}
           />
         </FilterSection>
+      );
+    }
+
+    if (templateFilter.type === 'price') {
+      return (
         <FilterSection title="Price">
           <div className={twMerge('grid grid-cols-2 gap-2')}>
-            {PRICE_FILTER.map(price => (
+            {templateFilter.prices.map(price => (
               <Checkbox
                 classNames={{
                   label: 'text-md font-normal text-black-500',
@@ -77,6 +62,18 @@ export const TemplateFilters: React.FC<TemplateFiltersProps> = () => {
             ))}
           </div>
         </FilterSection>
+      );
+    }
+
+    return null;
+  };
+
+  return (
+    <>
+      <div className="px-4 pb-2">
+        {templateFilters.map(template => (
+          <div key={template.id}>{renderTemplateFilter(template)}</div>
+        ))}
       </div>
 
       <div className="pt-2 px-4 border-t-border border-t-[1px] border-solid">

@@ -2,7 +2,7 @@
 
 import tailwindConfig from '../../../tailwind.config';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import useMediaQuery from '../hooks/useMediaQuery';
+import useMediaQuery from '../store/useMediaQuery';
 
 const getScreenSize = () => {
   const screenConfig = tailwindConfig.theme?.extend?.screens;

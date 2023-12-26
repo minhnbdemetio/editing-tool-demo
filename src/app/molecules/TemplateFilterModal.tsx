@@ -41,7 +41,7 @@ export const TemplateFilterModal: React.FC<TemplateFilterModalProps> = ({
                 Done
               </button>
             </ModalHeader>
-            <ModalBody>
+            <ModalBody className="!px-0">
               <TemplateFilters />
             </ModalBody>
           </>

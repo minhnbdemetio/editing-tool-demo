@@ -4,14 +4,14 @@ export declare type IconProps = {
 
 export declare type PriceFilterType = {
   type: 'price';
+  id: number;
+  prices: { id: number; label: string }[];
 };
 
-export declare type SimpleFilterType = {
-  type: 'simple';
+export declare type ColorFilterType = {
+  type: 'color';
+  id: number;
+  colors: string[];
 };
 
-export declare type PopularityFilterType = {
-  type: 'popularity';
-};
-
-export declare type FilterType = PriceFilterType | SimpleFilterType;
+export declare type TemplateFilterType = PriceFilterType | ColorFilterType;

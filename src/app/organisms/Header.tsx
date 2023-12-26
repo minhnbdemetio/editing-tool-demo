@@ -15,7 +15,7 @@ import {
 import Link from 'next/link';
 import { UploadModal } from '../molecules/UploadModal';
 import { MoreModal } from '../molecules/MoreModal';
-import useMediaQuery from '../hooks/useMediaQuery';
+import useMediaQuery from '../store/useMediaQuery';
 import { UploadPopover } from '../molecules/UploadPopover';
 import clsx from 'clsx';
 import { FilePopover } from '../molecules/FilePopover';
