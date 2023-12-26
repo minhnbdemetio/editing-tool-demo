@@ -1,9 +1,6 @@
-import { FC, useCallback, useState } from 'react';
+import { FC, useState } from 'react';
+import { Square, Horizontal, Vertical } from '@/app/icons';
 import { SearchInput } from '@/app/molecules/SearchInput';
-import { Popover } from '@/app/atoms/Popover';
-import { TemplateFilterModal } from '@/app/molecules/TemplateFilterModal';
-import { TemplateFilters } from '@/app/molecules/TemplateFilters';
-import useMediaQuery from '@/app/hooks/useMediaQuery';
 import {
   DefaultInput,
   SettingFilterGroupProps,
@@ -21,6 +18,19 @@ const recommendedKeywords = [
   'Động vật',
   'Thời tiết',
   'Màu sắc',
+];
+const settingsFormat: SettingFilterProps[] = [
+  { key: 'square', icon: Square, label: 'Square' },
+  { key: 'horizontal', icon: Horizontal, label: 'Horizontal' },
+  { key: 'vertical', icon: Vertical, label: 'Vertical' },
+];
+const settingsPrice: SettingFilterProps[] = [
+  { key: 'free', label: 'Free', isSelect: false },
+  { key: 'premium', label: 'Premium', isSelect: false },
+];
+const settingsTempo: SettingFilterProps[] = [
+  { key: 'slow', label: 'Slow', isSelect: false },
+  { key: 'fast', label: 'Fast', isSelect: false },
 ];
 
 const settingColor: SettingFilterProps[] = [
@@ -103,53 +113,32 @@ const recentlyUsed: SliderItem[] = [
   },
 ];
 
-export const TemplatesMenuContent: FC = () => {
-  const [filterAnchorEl, setFilterAnchorEl] =
-    useState<HTMLButtonElement | null>(null);
+export const ElementsMenuContent: FC = () => {
+  const [templateSettingFormat, setTemplateSettingFormat] = useState<
+    SettingFilterGroupProps[]
+  >(defaultTemplateSetting);
 
-  const isMobile = useMediaQuery(s => s.device === 'mobile');
-
-  const onSettingClick = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
-      setFilterAnchorEl(e.currentTarget);
-    },
-    [],
-  );
-
+  const onResetFilter = () => {
+    setTemplateSettingFormat([]);
+    setTemplateSettingFormat(defaultTemplateSetting);
+  };
   return (
     <div className="w-full h-full">
       <div className="p-6 w-full h-fit">
         <SearchInput
           recommendedKeywords={recommendedKeywords}
-          placeholder="Search templates"
+          placeholder="Search element"
+          settingFilters={templateSettingFormat}
           hasSetting
-          onClickSetting={onSettingClick}
+          applyFilter={newSetting => {
+            setTemplateSettingFormat(newSetting);
+          }}
+          onResetFilter={onResetFilter}
         />
       </div>
-      {!isMobile && (
-        <Popover
-          name="template-filters"
-          className="w-[310px] !px-[0]"
-          placement="bottom"
-          offset={{ x: -121, y: 4 }}
-          anchorEl={filterAnchorEl}
-          onClose={() => setFilterAnchorEl(null)}
-        >
-          <TemplateFilters />
-        </Popover>
-      )}
-      {isMobile && (
-        <TemplateFilterModal
-          onClose={() => setFilterAnchorEl(null)}
-          open={Boolean(filterAnchorEl)}
-        />
-      )}
       <div className="w-[360]  mx-2">
         <SliderShow items={recentlyUsed} title="Recently Used" />
         <SliderShow items={recentlyUsed} title="Medic" />
-        <SliderShow items={recentlyUsed} title="Wedding" />
-        <SliderShow items={recentlyUsed} title="Supper Bowl" />
-        <SliderShow items={recentlyUsed} title="Cute" />
       </div>
     </div>
   );
