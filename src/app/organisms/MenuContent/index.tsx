@@ -30,7 +30,7 @@ export const MenuContent: FC<MenuContentProps> = ({ section, menuExpand }) => {
   return (
     <div
       className={clsx(
-        'z-20 w-full h-full rounded-t-xl bg-white',
+        'z-20 w-full h-full rounded-t-xl bg-white min-h-0',
         {
           hidden: menuExpand,
         },

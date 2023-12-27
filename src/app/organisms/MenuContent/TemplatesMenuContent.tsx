@@ -124,27 +124,27 @@ export const TemplatesMenuContent: FC = () => {
     setTemplateSettingFormat(defaultTemplateSetting);
   };
   return (
-    <div className="w-full h-full">
-      <div className="p-6 w-full h-fit">
-        <SearchInput
-          recommendedKeywords={recommendedKeywords}
-          placeholder="Search templates"
-          settingFilters={templateSettingFormat}
-          hasSetting
-          applyFilter={newSetting => {
-            setTemplateSettingFormat(newSetting);
-          }}
-          onResetFilter={onResetFilter}
-        />
-        <TemplateSelector />
-      </div>
-      <div className="w-[360]  mx-2">
+    <div className="w-full h-full p-6 flex flex-col">
+      <SearchInput
+        recommendedKeywords={recommendedKeywords}
+        placeholder="Search templates"
+        settingFilters={templateSettingFormat}
+        hasSetting
+        applyFilter={newSetting => {
+          setTemplateSettingFormat(newSetting);
+        }}
+        onResetFilter={onResetFilter}
+      />
+
+      <TemplateSelector />
+
+      {/* <div className="w-[360]  mx-2">
         <SliderShow items={recentlyUsed} title="Recently Used" />
         <SliderShow items={recentlyUsed} title="Medic" />
         <SliderShow items={recentlyUsed} title="Wedding" />
         <SliderShow items={recentlyUsed} title="Supper Bowl" />
         <SliderShow items={recentlyUsed} title="Cute" />
-      </div>
+      </div> */}
     </div>
   );
 };

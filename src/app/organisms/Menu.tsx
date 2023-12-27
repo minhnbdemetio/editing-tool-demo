@@ -17,16 +17,13 @@ export const Menu: FC = () => {
 
   return (
     <>
-      {/* <div
-        className={twMerge('absolute top-0 transition-all z-30 w-full h-full')}
-      > */}
       <div
         className={twMerge(
-          'absolute duration-300 w-full max-h-[80%] left-0 -bottom-[100%] z-30 flex flex-col-reverse h-full',
+          'absolute duration-300 w-full max-h-[80%] left-0  z-30 flex flex-col-reverse h-full',
           {
             'bottom-0': open,
           },
-          'desktop:relative desktop:top-0 desktop:left-0  desktop:h-full desktop:w-fit desktop:flex-row',
+          'desktop:relative desktop:top-0 desktop:left-0  desktop:h-full desktop:w-fit desktop:flex-row desktop:max-h-full',
         )}
       >
         <SideMenu

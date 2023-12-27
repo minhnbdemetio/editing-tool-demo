@@ -48,8 +48,12 @@ export const TemplateSelector: FC = () => {
   };
 
   const toggleSelector = () => {
-    setSearchOpen(!searchOpen);
-    setShowTemplates(!showTemplates);
+    if (!showTemplates) {
+      setSearchOpen(!searchOpen);
+    } else {
+      setSearchOpen(true);
+      setShowTemplates(false);
+    }
   };
 
   useEffect(() => {
@@ -57,11 +61,14 @@ export const TemplateSelector: FC = () => {
   }, []);
 
   return (
-    <div className="h-full">
-      <div className="flex items-center gap-3">
+    <div className="flex flex-col h-full min-h-0 mt-3">
+      <div className="flex items-center gap-3 mb-3">
         {showTemplates && (
-          <Button className="border-1 border-gray-100 w-[28px] bg-transparent">
-            <ChevronLeft />
+          <Button
+            onClick={() => setShowTemplates(false)}
+            className="border-1 border-gray-100 w-[28px] min-w-0 bg-transparent p-0"
+          >
+            <ChevronLeft className="w-[28px]" />
           </Button>
         )}
         <Button
@@ -75,8 +82,8 @@ export const TemplateSelector: FC = () => {
         </Button>
       </div>
 
-      {!showTemplates && (
-        <div className="">
+      {searchOpen && !showTemplates && (
+        <div className="flex flex-col gap-3 h-full min-h-0">
           <div className="flex h-12 items-center gap-3">
             <Search />
             <input
@@ -89,7 +96,7 @@ export const TemplateSelector: FC = () => {
               <Spinner />
             </div>
           ) : (
-            <Accordion className="px-0 overflow-auto h-full">
+            <Accordion className="px-0 h-full min-h-0 overflow-y-scroll">
               {categories.map(category => (
                 <AccordionItem
                   className="accordion__item"
