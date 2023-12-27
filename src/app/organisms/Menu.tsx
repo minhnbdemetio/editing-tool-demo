@@ -26,7 +26,7 @@ export const Menu: FC = () => {
           {
             'bottom-0': open,
           },
-          'desktop:relative desktop:top-0 desktop:left-0  desktop:h-full desktop:w-fit desktop:flex-row',
+          'desktop:relative desktop:top-0 desktop:left-0 desktop:max-h-none  desktop:h-full desktop:w-fit desktop:flex-row',
         )}
       >
         <SideMenu

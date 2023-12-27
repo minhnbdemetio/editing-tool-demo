@@ -4,6 +4,7 @@ import {
   PIXEL_TO_MILLIMETER,
   UNITS,
 } from '../constants/unit-constants';
+import { PageSizeUnits } from '../types';
 
 export const pixelsToInches = (pixels: number) => pixels / PIXEL_TO_INCH;
 export const pixelsToCentiMeters = (pixels: number) =>
@@ -65,4 +66,8 @@ export const convertFrameSize = (
 
   // not support others case
   return dimension;
+};
+
+export const getDisplayDimension = (unit: PageSizeUnits, dimension: number) => {
+  return convertFrameSize(UNITS.PIXEL, unit, dimension, 2) + unit;
 };
