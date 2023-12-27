@@ -100,6 +100,16 @@ export const SearchInput: FC<SearchInputProps> = ({
         }
       />
 
+      {/* {showFilter && (
+        <div className="w-full px-4 py-2 bg-white absolute right-0 top-12 rounded-md shadow-lg flex z-20">
+          <InputSetting
+            settingFilters={settingFilters}
+            onApplyFilter={setting => onApplyFilter(setting)}
+            onResetFilter={onResetFilter}
+          />
+        </div>
+      )} */}
+
       {showRecommended && (
         <>
           {searchKey ? (
