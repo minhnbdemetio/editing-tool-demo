@@ -3,6 +3,7 @@ import { LockClosed, LockOpen } from '../icons';
 import { UNITS } from '../constants/unit-constants';
 import { PageSizeUnits } from '../types';
 import { convertFrameSize } from '../utilities/units';
+import { Tooltip } from '@nextui-org/react';
 
 interface PageSizeGroupInputProps {
   unit: PageSizeUnits;
@@ -11,6 +12,7 @@ interface PageSizeGroupInputProps {
   changeUnit: (unit: PageSizeUnits) => void;
   changeWidth: (width: number) => void;
   changeHeight: (height: number) => void;
+  errors?: { width?: string; height?: string };
 }
 
 export const PageSizeGroupInput: React.FC<PageSizeGroupInputProps> = ({
@@ -20,6 +22,7 @@ export const PageSizeGroupInput: React.FC<PageSizeGroupInputProps> = ({
   changeWidth,
   changeHeight,
   changeUnit,
+  errors = {},
 }) => {
   const [inputWidth, setInputWidth] = useState(
     convertFrameSize(UNITS.PIXEL, unit, width, 2),
@@ -114,14 +117,24 @@ export const PageSizeGroupInput: React.FC<PageSizeGroupInputProps> = ({
     [changeHeight, changeWidth, ratio, ratioLocked, unit],
   );
 
+  console.debug(errors);
+
   return (
     <>
       <div className="flex items-center gap-2">
-        <input
-          value={inputWidth}
-          onChange={handleChangeWidth}
-          className="w-[72px] border-[1px] border-border border-solid text-md rounded-sm font-normal text-black-500  p-2"
-        />
+        <Tooltip
+          showArrow
+          placement="top"
+          isOpen={!!errors.width}
+          content={errors.width}
+        >
+          <input
+            value={inputWidth}
+            type="number"
+            onChange={handleChangeWidth}
+            className="w-[72px] border-[1px] border-border border-solid text-md rounded-sm font-normal text-black-500  p-2"
+          />
+        </Tooltip>
         <button type="button" onClick={() => setRatioLocked(!ratioLocked)}>
           {ratioLocked ? (
             <LockClosed className="w-[14px] h-[14px]" />
@@ -129,11 +142,19 @@ export const PageSizeGroupInput: React.FC<PageSizeGroupInputProps> = ({
             <LockOpen className="w-[14px] h-[14px]" />
           )}
         </button>
-        <input
-          value={inputHeight}
-          onChange={handleChangeHeight}
-          className="w-[72px] border-[1px] border-border border-solid text-md rounded-sm font-normal text-black-500  p-2"
-        />
+        <Tooltip
+          showArrow
+          placement="top"
+          isOpen={!!errors.height}
+          content={errors.height}
+        >
+          <input
+            value={inputHeight}
+            type="number"
+            onChange={handleChangeHeight}
+            className="w-[72px] border-[1px] border-border border-solid text-md rounded-sm font-normal text-black-500  p-2"
+          />
+        </Tooltip>
 
         <select
           value={unit}
