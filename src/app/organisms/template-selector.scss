@@ -1,0 +1,7 @@
+.accordion {
+  &__item {
+    [data-open='true'] {
+      background-color: gray;
+    }
+  }
+}

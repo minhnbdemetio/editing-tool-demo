@@ -1,10 +1,10 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 import { SearchInput } from '@/app/molecules/SearchInput';
+import { TemplateSelector } from '../TemplateSelector';
 import { Popover } from '@/app/atoms/Popover';
 import { TemplateFilterModal } from '@/app/molecules/TemplateFilterModal';
 import { TemplateFilters } from '@/app/molecules/TemplateFilters';
 import useMediaQuery from '@/app/store/useMediaQuery';
-import SliderShow from '@/app/molecules/SliderShow';
 import { SliderItem } from '@/app/molecules/SliderShow/sliderShow';
 import { useTemplateFilters } from '@/app/store/template-filters';
 import { getFilterOptions } from '@/app/services/template.service';
@@ -104,15 +104,16 @@ export const TemplatesMenuContent: FC = () => {
   };
 
   return (
-    <div className="w-full h-full">
-      <div className="p-6 w-full h-fit">
-        <SearchInput
-          recommendedKeywords={recommendedKeywords}
-          placeholder="Search templates"
-          hasSetting
-          onClickSetting={onSettingClick}
-        />
-      </div>
+    <div className="w-full h-full p-6 flex flex-col">
+      <SearchInput
+        recommendedKeywords={recommendedKeywords}
+        placeholder="Search templates"
+        hasSetting
+        onClickSetting={onSettingClick}
+      />
+
+      <TemplateSelector />
+
       {!isMobile && (
         <Popover
           name="template-filters"
@@ -131,7 +132,7 @@ export const TemplatesMenuContent: FC = () => {
           open={Boolean(filterAnchorEl)}
         />
       )}
-      <div className="w-[360]  mx-2">
+      {/* <div className="w-[360]  mx-2">
         <SliderShow
           items={recentlyUsed}
           title="Recently Used"
@@ -157,7 +158,7 @@ export const TemplatesMenuContent: FC = () => {
           title="Cute"
           handleClickItem={handleAddPhoto}
         />
-      </div>
+      </div> */}
     </div>
   );
 };
