@@ -7,7 +7,7 @@ export const RecommendedKeywords: FC<RecommendedKeywordsProps> = ({
 }) => {
   if (!recommendedKeywords?.length) return <></>;
   return (
-    <div className="w-full h-fit bg-white absolute right-0 top-12 rounded-md shadow-lg justify-between z-10 p-4 flex flex-col">
+    <div className="w-full h-fit bg-white absolute right-0 top-12 rounded-md shadow-lg justify-between z-20 p-4 flex flex-col">
       <span className="text-[#70798f] text-md">Recommended keywords</span>
       <div className="block">
         {recommendedKeywords?.map(keyword => (

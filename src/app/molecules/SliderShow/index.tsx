@@ -8,9 +8,14 @@ const delay = 2500;
 export interface SlideshowProps {
   items?: SliderItem[];
   title: string;
+  handleClickItem?: (item: SliderItem) => void;
 }
 
-const Slideshow: FC<SlideshowProps> = ({ items = [], title }) => {
+const Slideshow: FC<SlideshowProps> = ({
+  items = [],
+  title,
+  handleClickItem,
+}) => {
   const [indexTransform, setIndexTransform] = React.useState(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -104,6 +109,7 @@ const Slideshow: FC<SlideshowProps> = ({ items = [], title }) => {
                 }}
                 className="inline-block h-28 w-fit rounded-lg mx-1 cursor-pointer"
                 key={index}
+                onClick={() => handleClickItem && handleClickItem(item)}
               >
                 <Image
                   className="object-contain h-28"

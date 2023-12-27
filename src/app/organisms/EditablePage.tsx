@@ -10,14 +10,19 @@ import { calculateToolbarPosition, getEventTarget } from '../utilities/canvas';
 import { withCurrentPage } from '../hocs/withCurrentPage';
 import { useActiveObject } from '../store/active-object';
 import { DEFAULT_TOOLBAR_POSITION } from '../constants/canvas-constants';
+import { twMerge } from '../utilities/tailwind';
+import { useActivePage } from '../store/active-page';
+import { useEditablePages } from '../store/editable-pages';
 
 export interface EditablePageProps {
   pageId: string;
 }
 
-const EditableCanvas: FC<EditablePageProps> = () => {
+const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   const [pageCanvas, setPageCanvas] = useCurrentPageCanvas();
   const { setActiveObject } = useActiveObject();
+  const { pages } = useEditablePages();
+  const { activePage, setActivePage } = useActivePage();
 
   const canvasEl = useRef<HTMLCanvasElement>(null);
   const canvasContainerEl = useRef<HTMLDivElement>(null);
@@ -158,7 +163,13 @@ const EditableCanvas: FC<EditablePageProps> = () => {
   return (
     <div
       ref={canvasContainerEl}
-      className="w-full h-full relative bg-white aspect-video"
+      className={twMerge(`w-full h-full relative bg-white aspect-video`, {
+        'shadow-[0_0_0_2px_#00dcf0]': pageId === activePage.id,
+      })}
+      id={pageId}
+      onClick={() => {
+        setActivePage(pages?.[pageId], pageId);
+      }}
     >
       <CanvasKeyboardEventHandler />
       <canvas ref={canvasEl}></canvas>
