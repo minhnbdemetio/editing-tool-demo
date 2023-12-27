@@ -22,7 +22,7 @@ export const Menu: FC = () => {
       > */}
       <div
         className={twMerge(
-          'absolute  duration-300  w-full max-h-[80%] left-0  -bottom-[100%]  z-30 flex flex-col-reverse',
+          'absolute duration-300 w-full max-h-[80%] left-0 -bottom-[100%] z-30 flex flex-col-reverse h-full',
           {
             'bottom-0': open,
           },
@@ -52,7 +52,6 @@ export const Menu: FC = () => {
           'desktop:hidden',
         )}
       ></div>
-      {/* </div> */}
 
       <button
         onClick={() => {

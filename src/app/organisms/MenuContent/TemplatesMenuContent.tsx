@@ -7,6 +7,7 @@ import {
   SettingFilterProps,
   SettingTypeEnum,
 } from '@/app/molecules/SearchInput/searchInput';
+import { TemplateSelector } from '../TemplateSelector';
 
 const recommendedKeywords = [
   'Xuân',
@@ -77,19 +78,18 @@ export const TemplatesMenuContent: FC = () => {
     setTemplateSettingFormat(defaultTemplateSetting);
   };
   return (
-    <div className="w-full h-full">
-      <div className="p-6 w-full h-fit">
-        <SearchInput
-          recommendedKeywords={recommendedKeywords}
-          placeholder="Search templates"
-          settingFilters={templateSettingFormat}
-          hasSetting
-          applyFilter={newSetting => {
-            setTemplateSettingFormat(newSetting);
-          }}
-          onResetFilter={onResetFilter}
-        />
-      </div>
+    <div className="w-full h-full p-6">
+      <SearchInput
+        recommendedKeywords={recommendedKeywords}
+        placeholder="Search templates"
+        settingFilters={templateSettingFormat}
+        hasSetting
+        applyFilter={newSetting => {
+          setTemplateSettingFormat(newSetting);
+        }}
+        onResetFilter={onResetFilter}
+      />
+      <TemplateSelector />
     </div>
   );
 };
