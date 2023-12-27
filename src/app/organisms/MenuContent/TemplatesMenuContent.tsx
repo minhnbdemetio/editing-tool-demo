@@ -1,17 +1,15 @@
-import { FC, useState } from 'react';
-import { Square, Horizontal, Vertical } from '@/app/icons';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { SearchInput } from '@/app/molecules/SearchInput';
-import {
-  DefaultInput,
-  SettingFilterGroupProps,
-  SettingFilterProps,
-  SettingTypeEnum,
-} from '@/app/molecules/SearchInput/searchInput';
 import { TemplateSelector } from '../TemplateSelector';
-import SliderShow from '@/app/molecules/SliderShow';
+import { Popover } from '@/app/atoms/Popover';
+import { TemplateFilterModal } from '@/app/molecules/TemplateFilterModal';
+import { TemplateFilters } from '@/app/molecules/TemplateFilters';
+import useMediaQuery from '@/app/store/useMediaQuery';
 import { SliderItem } from '@/app/molecules/SliderShow/sliderShow';
-import { fabric } from 'fabric';
+import { useTemplateFilters } from '@/app/store/template-filters';
+import { getFilterOptions } from '@/app/services/template.service';
 import { useActivePage } from '@/app/store/active-page';
+import { fabric } from 'fabric';
 
 const recommendedKeywords = [
   'Xuân',
@@ -21,56 +19,6 @@ const recommendedKeywords = [
   'Động vật',
   'Thời tiết',
   'Màu sắc',
-];
-const settingsFormat: SettingFilterProps[] = [
-  { key: 'square', icon: Square, label: 'Square' },
-  { key: 'horizontal', icon: Horizontal, label: 'Horizontal' },
-  { key: 'vertical', icon: Vertical, label: 'Vertical' },
-];
-const settingsPrice: SettingFilterProps[] = [
-  { key: 'free', label: 'Free', isSelect: false },
-  { key: 'premium', label: 'Premium', isSelect: false },
-];
-const settingsTempo: SettingFilterProps[] = [
-  { key: 'slow', label: 'Slow', isSelect: false },
-  { key: 'fast', label: 'Fast', isSelect: false },
-];
-
-const settingColor: SettingFilterProps[] = [
-  { key: DefaultInput, value: '#ffffff', isSelect: false },
-  { key: '#50d71e', value: '#50d71e', isSelect: false },
-  { key: '#ef4444', value: '#ef4444', isSelect: false },
-  { key: '#84cc16', value: '#84cc16', isSelect: false },
-  { key: '#06b6d4', value: '#06b6d4', isSelect: false },
-  { key: '#6366f1', value: '#6366f1', isSelect: false },
-  { key: '#db2777', value: '#db2777', isSelect: false },
-];
-
-const defaultTemplateSetting = [
-  {
-    key: 'color',
-    type: SettingTypeEnum.Color,
-    name: 'Color',
-    settingFilter: settingColor,
-  },
-  {
-    key: 'format',
-    type: SettingTypeEnum.Format,
-    name: 'Format',
-    settingFilter: settingsFormat,
-  },
-  {
-    key: 'Price',
-    type: SettingTypeEnum.Checkbox,
-    name: 'Price',
-    settingFilter: settingsPrice,
-  },
-  {
-    key: 'tempo',
-    type: SettingTypeEnum.CheckboxSingle,
-    name: 'Tempo',
-    settingFilter: settingsTempo,
-  },
 ];
 
 const recentlyUsed: SliderItem[] = [
@@ -117,9 +65,28 @@ const recentlyUsed: SliderItem[] = [
 ];
 
 export const TemplatesMenuContent: FC = () => {
-  const [templateSettingFormat, setTemplateSettingFormat] = useState<
-    SettingFilterGroupProps[]
-  >(defaultTemplateSetting);
+  const [filterAnchorEl, setFilterAnchorEl] =
+    useState<HTMLButtonElement | null>(null);
+
+  const isMobile = useMediaQuery(s => s.device === 'mobile');
+
+  const setTemplateFilters = useTemplateFilters(s => s.setTemplates);
+
+  useEffect(() => {
+    (async () => {
+      const templateFilters = await getFilterOptions();
+
+      setTemplateFilters(templateFilters);
+    })();
+  }, [setTemplateFilters]);
+
+  const onSettingClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      setFilterAnchorEl(e.currentTarget);
+    },
+    [],
+  );
+
   const { activePage } = useActivePage();
 
   const handleAddPhoto = (item: SliderItem) => {
@@ -136,25 +103,35 @@ export const TemplatesMenuContent: FC = () => {
     );
   };
 
-  const onResetFilter = () => {
-    setTemplateSettingFormat([]);
-    setTemplateSettingFormat(defaultTemplateSetting);
-  };
   return (
     <div className="w-full h-full p-6 flex flex-col">
       <SearchInput
         recommendedKeywords={recommendedKeywords}
         placeholder="Search templates"
-        settingFilters={templateSettingFormat}
         hasSetting
-        applyFilter={newSetting => {
-          setTemplateSettingFormat(newSetting);
-        }}
-        onResetFilter={onResetFilter}
+        onClickSetting={onSettingClick}
       />
 
       <TemplateSelector />
 
+      {!isMobile && (
+        <Popover
+          name="template-filters"
+          className="w-[310px] !px-[0]"
+          placement="bottom"
+          offset={{ x: -121, y: 4 }}
+          anchorEl={filterAnchorEl}
+          onClose={() => setFilterAnchorEl(null)}
+        >
+          <TemplateFilters />
+        </Popover>
+      )}
+      {isMobile && (
+        <TemplateFilterModal
+          onClose={() => setFilterAnchorEl(null)}
+          open={Boolean(filterAnchorEl)}
+        />
+      )}
       {/* <div className="w-[360]  mx-2">
         <SliderShow
           items={recentlyUsed}

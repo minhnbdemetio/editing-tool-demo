@@ -13,6 +13,7 @@ const config: Config = {
       borderColor: {
         main: 'rgba(37,40,47,0.1)',
         'gray-100': 'rgba(37,40,47,0.15)',
+        'green-500': 'rgb(34, 204, 136)',
       },
       textColor: {
         primary: 'rgb(34, 204, 136)',
