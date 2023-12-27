@@ -14,6 +14,7 @@ interface SearchInputProps {
   settingFilters?: SettingFilterGroupProps[];
   applyFilter?: (settingFilters: SettingFilterGroupProps[]) => void;
   onResetFilter?: () => void;
+  onClickSetting?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 export const SearchInput: FC<SearchInputProps> = ({
@@ -21,8 +22,7 @@ export const SearchInput: FC<SearchInputProps> = ({
   hasSetting = false,
   placeholder = '',
   settingFilters = [],
-  applyFilter,
-  onResetFilter,
+  onClickSetting,
 }) => {
   const [showFilter, setShowFilter] = useState<boolean>(false);
   const [showRecommended, setShowRecommended] = useState<boolean>(false);
@@ -69,10 +69,6 @@ export const SearchInput: FC<SearchInputProps> = ({
   const onValueChange = (value: string) => {
     setSearchKey(value);
   };
-  const onApplyFilter = (setting: SettingFilterGroupProps[]) => {
-    setShowFilter(false);
-    applyFilter && applyFilter(setting);
-  };
 
   return (
     <div className="relative" ref={ref}>
@@ -90,7 +86,7 @@ export const SearchInput: FC<SearchInputProps> = ({
               isIconOnly
               color="primary"
               variant="light"
-              onClick={() => handleFocusSetting()}
+              onClick={onClickSetting}
             >
               <Badge
                 content={countIsSelectTrue(settingFilters)}
@@ -104,7 +100,7 @@ export const SearchInput: FC<SearchInputProps> = ({
         }
       />
 
-      {showFilter && (
+      {/* {showFilter && (
         <div className="w-full px-4 py-2 bg-white absolute right-0 top-12 rounded-md shadow-lg flex z-20">
           <InputSetting
             settingFilters={settingFilters}
@@ -112,7 +108,7 @@ export const SearchInput: FC<SearchInputProps> = ({
             onResetFilter={onResetFilter}
           />
         </div>
-      )}
+      )} */}
 
       {showRecommended && (
         <>

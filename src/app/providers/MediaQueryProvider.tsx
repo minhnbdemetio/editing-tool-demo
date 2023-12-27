@@ -1,5 +1,8 @@
+'use client';
+
 import tailwindConfig from '../../../tailwind.config';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import useMediaQuery from '../store/useMediaQuery';
 
 const getScreenSize = () => {
   const screenConfig = tailwindConfig.theme?.extend?.screens;
@@ -7,7 +10,7 @@ const getScreenSize = () => {
   if (!screenConfig) {
     throw new Error('Not found screens config inside tailwind config!');
   } else {
-    let screen: 'mobile' | 'desktop' = 'desktop';
+    let screen: 'mobile' | 'desktop' = 'mobile';
 
     const toSizeNumber = (sizeStr: string) => +sizeStr.replace('px', '');
 
@@ -31,34 +34,31 @@ const getScreenSize = () => {
     return screen;
   }
 };
-
-const useMediaQuery = (screen: 'mobile' | 'desktop') => {
-  const [currentScreen, setCurrentScreen] = useState<'mobile' | 'desktop'>(
-    getScreenSize(),
-  );
+export function MediaQueryProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const setMediaQuery = useMediaQuery(s => s.setDevice);
+  const mediaQuery = useMediaQuery(s => s.device);
 
   const handleResize = useCallback(() => {
     const checkScreen = getScreenSize();
 
-    if (checkScreen !== currentScreen) {
-      setCurrentScreen(checkScreen);
+    if (checkScreen !== mediaQuery) {
+      setMediaQuery(checkScreen);
     }
-  }, [currentScreen]);
+  }, [mediaQuery, setMediaQuery]);
 
   useEffect(() => {
-    // Initial screen size detection
     handleResize();
 
-    // Add event listener to track screen size changes
     window.addEventListener('resize', handleResize);
 
-    // Clean up the event listener on component unmount
     return () => {
       window.removeEventListener('resize', handleResize);
     };
   }, [handleResize]);
 
-  return useMemo(() => screen === currentScreen, [screen, currentScreen]);
-};
-
-export default useMediaQuery;
+  return <>{children}</>;
+}
