@@ -9,6 +9,8 @@ import {
 } from '@/app/molecules/SearchInput/searchInput';
 import SliderShow from '@/app/molecules/SliderShow';
 import { SliderItem } from '@/app/molecules/SliderShow/sliderShow';
+import { fabric } from 'fabric';
+import { useActivePage } from '@/app/store/active-page';
 
 const recommendedKeywords = [
   'Xuân',
@@ -117,6 +119,21 @@ export const TemplatesMenuContent: FC = () => {
   const [templateSettingFormat, setTemplateSettingFormat] = useState<
     SettingFilterGroupProps[]
   >(defaultTemplateSetting);
+  const { activePage } = useActivePage();
+
+  const handleAddPhoto = (item: SliderItem) => {
+    fabric.Image.fromURL(
+      item.url,
+      image => (activePage.canvas as fabric.Canvas)?.add(image),
+      {
+        hasControls: true,
+        hasRotatingPoint: true,
+        selectable: true,
+        scaleX: 0.1,
+        scaleY: 0.1,
+      },
+    );
+  };
 
   const onResetFilter = () => {
     setTemplateSettingFormat([]);
@@ -137,11 +154,31 @@ export const TemplatesMenuContent: FC = () => {
         />
       </div>
       <div className="w-[360]  mx-2">
-        <SliderShow items={recentlyUsed} title="Recently Used" />
-        <SliderShow items={recentlyUsed} title="Medic" />
-        <SliderShow items={recentlyUsed} title="Wedding" />
-        <SliderShow items={recentlyUsed} title="Supper Bowl" />
-        <SliderShow items={recentlyUsed} title="Cute" />
+        <SliderShow
+          items={recentlyUsed}
+          title="Recently Used"
+          handleClickItem={handleAddPhoto}
+        />
+        <SliderShow
+          items={recentlyUsed}
+          title="Medic"
+          handleClickItem={handleAddPhoto}
+        />
+        <SliderShow
+          items={recentlyUsed}
+          title="Wedding"
+          handleClickItem={handleAddPhoto}
+        />
+        <SliderShow
+          items={recentlyUsed}
+          title="Supper Bowl"
+          handleClickItem={handleAddPhoto}
+        />
+        <SliderShow
+          items={recentlyUsed}
+          title="Cute"
+          handleClickItem={handleAddPhoto}
+        />
       </div>
     </div>
   );
