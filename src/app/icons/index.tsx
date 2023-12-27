@@ -42,6 +42,8 @@ import { Check } from './Check';
 import { Square } from './Square';
 import { Horizontal } from './Horizontal';
 import { Vertical } from './Vertical';
+import { Next } from './Next';
+import { Prev } from './Prev';
 
 export {
   Home,
@@ -88,4 +90,6 @@ export {
   Square,
   Horizontal,
   Vertical,
+  Next,
+  Prev,
 };

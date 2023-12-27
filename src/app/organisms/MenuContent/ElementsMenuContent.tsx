@@ -7,7 +7,6 @@ import {
   SettingFilterProps,
   SettingTypeEnum,
 } from '@/app/molecules/SearchInput/searchInput';
-import { TemplateSelector } from '../TemplateSelector';
 import SliderShow from '@/app/molecules/SliderShow';
 import { SliderItem } from '@/app/molecules/SliderShow/sliderShow';
 
@@ -114,7 +113,7 @@ const recentlyUsed: SliderItem[] = [
   },
 ];
 
-export const TemplatesMenuContent: FC = () => {
+export const ElementsMenuContent: FC = () => {
   const [templateSettingFormat, setTemplateSettingFormat] = useState<
     SettingFilterGroupProps[]
   >(defaultTemplateSetting);
@@ -128,7 +127,7 @@ export const TemplatesMenuContent: FC = () => {
       <div className="p-6 w-full h-fit">
         <SearchInput
           recommendedKeywords={recommendedKeywords}
-          placeholder="Search templates"
+          placeholder="Search element"
           settingFilters={templateSettingFormat}
           hasSetting
           applyFilter={newSetting => {
@@ -136,14 +135,10 @@ export const TemplatesMenuContent: FC = () => {
           }}
           onResetFilter={onResetFilter}
         />
-        <TemplateSelector />
       </div>
       <div className="w-[360]  mx-2">
         <SliderShow items={recentlyUsed} title="Recently Used" />
         <SliderShow items={recentlyUsed} title="Medic" />
-        <SliderShow items={recentlyUsed} title="Wedding" />
-        <SliderShow items={recentlyUsed} title="Supper Bowl" />
-        <SliderShow items={recentlyUsed} title="Cute" />
       </div>
     </div>
   );
