@@ -15,3 +15,4 @@ export declare type ColorFilterType = {
 };
 
 export declare type TemplateFilterType = PriceFilterType | ColorFilterType;
+export declare type PageSizeUnits = 'ml' | 'cm' | 'px' | 'in';
