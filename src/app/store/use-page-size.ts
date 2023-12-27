@@ -16,7 +16,6 @@ export const usePageSize = create<{
     workingWidthPixels?: number;
     workingHeightPixels?: number;
     workingUnit?: PageSizeUnits;
-
     cuttingWidthPixels?: number;
     cuttingHeightPixels?: number;
     cuttingUnit?: PageSizeUnits;
