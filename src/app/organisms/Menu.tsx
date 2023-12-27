@@ -7,6 +7,8 @@ import clsx from 'clsx';
 import { twMerge } from '../utilities/tailwind';
 import { Add } from '../icons/Add';
 import { SideMenuItem } from './SideMenu/items';
+import { useActiveObject } from '../store/active-object';
+import { MenuProperty } from './MenuProperty';
 
 export const Menu: FC = () => {
   const [selectedSection, setSelectedSection] =
@@ -14,19 +16,17 @@ export const Menu: FC = () => {
 
   const [menuExpand, setMenuExpand] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
+  const { activeObject } = useActiveObject();
 
   return (
     <>
-      {/* <div
-        className={twMerge('absolute top-0 transition-all z-30 w-full h-full')}
-      > */}
       <div
         className={twMerge(
-          'absolute  duration-300  w-full max-h-[80%] left-0  -bottom-[100%]  z-30 flex flex-col-reverse',
+          'absolute duration-300 w-full max-h-[80%] left-0  z-30 flex flex-col-reverse h-full -bottom-full',
           {
             'bottom-0': open,
           },
-          'desktop:relative desktop:top-0 desktop:left-0  desktop:h-full desktop:w-fit desktop:flex-row',
+          'desktop:relative desktop:top-0 desktop:left-0  desktop:h-full desktop:w-fit desktop:flex-row desktop:max-h-full',
         )}
       >
         <SideMenu
@@ -36,7 +36,14 @@ export const Menu: FC = () => {
           selectedSection={selectedSection}
         />
 
-        <MenuContent section={selectedSection} menuExpand={menuExpand} />
+        <MenuContent
+          section={selectedSection}
+          menuExpand={menuExpand || Boolean(activeObject)}
+        />
+        <MenuProperty
+          section={selectedSection}
+          menuExpand={menuExpand || !Boolean(activeObject)}
+        />
       </div>
       {/* backdrop */}
 
@@ -52,7 +59,6 @@ export const Menu: FC = () => {
           'desktop:hidden',
         )}
       ></div>
-      {/* </div> */}
 
       <button
         onClick={() => {

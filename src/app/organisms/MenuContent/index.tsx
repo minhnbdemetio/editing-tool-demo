@@ -10,7 +10,7 @@ interface MenuContentProps {
 }
 
 export const MenuContent: FC<MenuContentProps> = ({ section, menuExpand }) => {
-  const menuContentComponent = () => {
+  const renderMenuContentComponent = () => {
     switch (section) {
       case 'templates': {
         return <TemplatesMenuContent />;
@@ -30,14 +30,14 @@ export const MenuContent: FC<MenuContentProps> = ({ section, menuExpand }) => {
   return (
     <div
       className={clsx(
-        'z-20 w-full h-full rounded-t-xl  bg-white',
+        'z-20 w-full h-full rounded-t-xl bg-white min-h-0',
         {
           hidden: menuExpand,
         },
         'desktop:relative desktop:left-0 desktop:rounded-t-none desktop:w-[360px]',
       )}
     >
-      {menuContentComponent()}
+      {renderMenuContentComponent()}
     </div>
   );
 };

@@ -12,6 +12,8 @@ const config: Config = {
     extend: {
       borderColor: {
         main: 'rgba(37,40,47,0.1)',
+        'gray-100': 'rgba(37,40,47,0.15)',
+        'green-500': 'rgb(34, 204, 136)',
       },
       textColor: {
         primary: 'rgb(34, 204, 136)',
@@ -20,6 +22,7 @@ const config: Config = {
         'gray-500': 'rgba(157,158,163,1)',
         'gray-400': 'rgba(37,40,47,0.65)',
         'gray-200': 'rgba(37,40,47,0.3)',
+
         'icon-gray': '#7a7b80',
         'icon-light-gray': '#c4c5c6',
         'icon-bold': '#25282f',

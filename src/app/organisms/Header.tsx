@@ -15,7 +15,7 @@ import {
 import Link from 'next/link';
 import { UploadModal } from '../molecules/UploadModal';
 import { MoreModal } from '../molecules/MoreModal';
-import useMediaQuery from '../hooks/useMediaQuery';
+import useMediaQuery from '../store/useMediaQuery';
 import { UploadPopover } from '../molecules/UploadPopover';
 import clsx from 'clsx';
 import { FilePopover } from '../molecules/FilePopover';
@@ -32,7 +32,7 @@ export const Header: FC = () => {
     null | 'upload-modal' | 'more-modal'
   >(null);
 
-  const isMobile = useMediaQuery('mobile');
+  const isMobile = useMediaQuery(s => s.device === 'mobile');
   const handleUndo = useUndoCommand();
   const handleRedo = useRedoCommand();
 
