@@ -44,6 +44,10 @@ import { Horizontal } from './Horizontal';
 import { Vertical } from './Vertical';
 import { Next } from './Next';
 import { Prev } from './Prev';
+import { CopyStyle } from './CopyStyle';
+import { FullLock } from './FullLock';
+import { Information } from './Information';
+import { Link } from './Link';
 
 export {
   Home,
@@ -92,4 +96,8 @@ export {
   Vertical,
   Next,
   Prev,
+  CopyStyle,
+  FullLock,
+  Information,
+  Link,
 };

@@ -7,6 +7,8 @@ import clsx from 'clsx';
 import { twMerge } from '../utilities/tailwind';
 import { Add } from '../icons/Add';
 import { SideMenuItem } from './SideMenu/items';
+import { useActiveObject } from '../store/active-object';
+import { MenuProperty } from './MenuProperty';
 
 export const Menu: FC = () => {
   const [selectedSection, setSelectedSection] =
@@ -14,6 +16,7 @@ export const Menu: FC = () => {
 
   const [menuExpand, setMenuExpand] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
+  const { activeObject } = useActiveObject();
 
   return (
     <>
@@ -36,7 +39,14 @@ export const Menu: FC = () => {
           selectedSection={selectedSection}
         />
 
-        <MenuContent section={selectedSection} menuExpand={menuExpand} />
+        <MenuContent
+          section={selectedSection}
+          menuExpand={menuExpand || Boolean(activeObject)}
+        />
+        <MenuProperty
+          section={selectedSection}
+          menuExpand={menuExpand || !Boolean(activeObject)}
+        />
       </div>
       {/* backdrop */}
 
