@@ -12,3 +12,16 @@ export declare type PageSize = {
   cuttingWidth: number;
   cuttingHeight: number;
 };
+export declare type PriceFilterType = {
+  type: 'price';
+  id: number;
+  prices: { id: number; label: string }[];
+};
+
+export declare type ColorFilterType = {
+  type: 'color';
+  id: number;
+  colors: string[];
+};
+
+export declare type TemplateFilterType = PriceFilterType | ColorFilterType;
