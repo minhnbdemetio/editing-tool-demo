@@ -12,6 +12,7 @@ interface PageSizeGroupInputProps {
   changeUnit: (unit: PageSizeUnits) => void;
   changeWidth: (width: number) => void;
   changeHeight: (height: number) => void;
+  label?: string;
   errors?: { width?: string; height?: string };
 }
 
@@ -22,6 +23,7 @@ export const PageSizeGroupInput: React.FC<PageSizeGroupInputProps> = ({
   changeWidth,
   changeHeight,
   changeUnit,
+  label,
   errors = {},
 }) => {
   const [inputWidth, setInputWidth] = useState(
@@ -62,6 +64,8 @@ export const PageSizeGroupInput: React.FC<PageSizeGroupInputProps> = ({
   const handleChangeWidth = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const newWidth = (+e.target.value as number) || 0;
+      console.debug(newWidth);
+
       const newPixelsWidth = convertFrameSize(
         unit,
         UNITS.PIXEL,
@@ -117,11 +121,14 @@ export const PageSizeGroupInput: React.FC<PageSizeGroupInputProps> = ({
     [changeHeight, changeWidth, ratio, ratioLocked, unit],
   );
 
-  console.debug(errors);
-
   return (
     <>
       <div className="flex items-center gap-2">
+        {label && (
+          <p className="text-md font-normal text-black-500 flex-auto">
+            {label}
+          </p>
+        )}
         <Tooltip
           showArrow
           placement="top"
