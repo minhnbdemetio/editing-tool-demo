@@ -65,6 +65,9 @@ const config: Config = {
         '4': '16px',
         '5': '20px',
         '6': '24px',
+        '7': '28px',
+        '8': '32px',
+        '9': '36px',
       },
       animation: {
         fade: 'fadeIn .5s ease-in-out',

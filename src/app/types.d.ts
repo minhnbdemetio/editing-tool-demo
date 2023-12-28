@@ -2,6 +2,17 @@ export declare type IconProps = {
   className?: string;
 };
 
+export declare type PageSizeUnits = 'mm' | 'cm' | 'px' | 'in';
+
+export declare type PageSize = {
+  id: number;
+  unit: PageSizeUnits;
+  width: number;
+  height: number;
+  workingWidth?: number;
+  workingHeight?: number;
+  label: string;
+};
 export declare type PriceFilterType = {
   type: 'price';
   id: number;
@@ -15,13 +26,3 @@ export declare type ColorFilterType = {
 };
 
 export declare type TemplateFilterType = PriceFilterType | ColorFilterType;
-export declare type PageSizeUnits = 'ml' | 'cm' | 'px' | 'in';
-
-export declare type PageSize = {
-  id: number;
-  unit: PageSizeUnits;
-  width: number;
-  height: number;
-  cuttingWidth: number;
-  cuttingHeight: number;
-};

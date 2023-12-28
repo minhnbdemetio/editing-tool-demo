@@ -1,7 +1,7 @@
 export enum UNITS {
   PIXEL = 'px',
   CENTIMETER = 'cm',
-  MILLIMETER = 'ml',
+  MILLIMETER = 'mm',
   INCH = 'in',
 }
 export const PIXEL_TO_INCH = 96;
