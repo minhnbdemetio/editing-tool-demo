@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 import { Square, Horizontal, Vertical } from '@/app/icons';
-import { SearchInput } from '@/app/molecules/SearchInput';
+import SearchInput from '@/app/molecules/SearchInput';
 import {
   DefaultInput,
   SettingFilterGroupProps,
