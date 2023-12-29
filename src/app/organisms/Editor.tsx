@@ -14,7 +14,7 @@ export const Editor: FC = () => {
   };
 
   return (
-    <div className="bg-gray-200 p-10">
+    <div id="editor-container" className="bg-gray-200 p-10">
       <div className="flex flex-col gap-10 h-full">
         {Object.entries(pages).map(([pageId]) => (
           <div key={pageId}>
