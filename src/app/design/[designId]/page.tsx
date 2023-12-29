@@ -5,7 +5,7 @@ export default function DesignDetail() {
   return (
     <div className="h-full flex desktop:flex-row">
       <Menu />
-      <div className="flex-auto overflow-auto">
+      <div className=" flex-auto overflow-auto">
         <Editor />
       </div>
     </div>

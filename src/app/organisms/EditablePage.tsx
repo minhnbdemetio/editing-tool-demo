@@ -12,6 +12,9 @@ import { useActiveObject } from '../store/active-object';
 import { DEFAULT_TOOLBAR_POSITION } from '../constants/canvas-constants';
 import { twMerge } from '../utilities/tailwind';
 import { useActivePage } from '../store/active-page';
+import { useEditablePages } from '../store/editable-pages';
+import { CuttingZoneReminder } from '../molecules/CuttingZoneReminder';
+import { usePageSize } from '../store/use-page-size';
 
 export interface EditablePageProps {
   pageId: string;
@@ -164,36 +167,43 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
     };
   }, [pageCanvas]);
 
-  return (
-    <div
-      ref={canvasContainerEl}
-      className={twMerge(`w-full h-full relative bg-white aspect-video`, {
-        'shadow-[0_0_0_2px_#00dcf0]': pageId === activePage,
-      })}
-      id={pageId}
-    >
-      <CanvasKeyboardEventHandler />
-      <canvas ref={canvasEl}></canvas>
+  const { workingHeightPixels, workingWidthPixels } = usePageSize();
 
-      <ObjectToolbar
-        ref={toolbarEl}
-        className="absolute"
-        style={{
-          left: toolbarPosition.left,
-          top: toolbarPosition.top,
-          visibility: showToolbar ? 'initial' : 'hidden',
-        }}
-      />
-      <ObjectRotator
-        ref={rotatorEl}
-        className="absolute"
-        style={{
-          left: rotatorPosition.left,
-          top: rotatorPosition.top,
-          visibility: showToolbar ? 'initial' : 'hidden',
-        }}
-      />
-    </div>
+  return (
+    <CuttingZoneReminder>
+      <div
+        style={{ maxWidth: workingWidthPixels, maxHeight: workingHeightPixels }}
+        ref={canvasContainerEl}
+        className={twMerge(`w-full  relative bg-white aspect-video`, {
+          'shadow-[0_0_0_2px_#00dcf0]': pageId === activePage,
+        })}
+        id={pageId}
+      >
+        <CanvasKeyboardEventHandler />
+        <canvas ref={canvasEl}></canvas>
+
+        <ObjectToolbar
+          ref={toolbarEl}
+          className="absolute"
+          style={{
+            left: toolbarPosition.left,
+            top: toolbarPosition.top,
+            visibility: showToolbar ? 'initial' : 'hidden',
+          }}
+        />
+        <ObjectRotator
+          ref={rotatorEl}
+          className="absolute"
+          style={{
+            left: rotatorPosition.left,
+            top: rotatorPosition.top,
+            visibility: showToolbar ? 'initial' : 'hidden',
+          }}
+        />
+
+        <div></div>
+      </div>
+    </CuttingZoneReminder>
   );
 };
 
