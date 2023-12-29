@@ -19,7 +19,7 @@ export const ObjectToolbar = forwardRef<HTMLDivElement, ObjectToolbarProps>(
       <div
         ref={ref}
         {...props}
-        className={twMerge('flex gap-3', props.className)}
+        className={twMerge('flex gap-3 z-30', props.className)}
       >
         <IconButton onClick={handleCopyObject}>Copy</IconButton>
         <IconButton onClick={handleDeleteObject}>Delete</IconButton>
