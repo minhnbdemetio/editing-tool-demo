@@ -7,9 +7,10 @@ import useMediaQuery from '@/app/store/useMediaQuery';
 import { SliderItem } from '@/app/molecules/SliderShow/sliderShow';
 import { useTemplateFilters } from '@/app/store/template-filters';
 import { getFilterOptions } from '@/app/services/template.service';
-import { useActivePage } from '@/app/store/active-page';
 import { fabric } from 'fabric';
 import SearchInput from '@/app/molecules/SearchInput';
+import { useActivePageCanvas } from '@/app/hooks/useActivePage';
+import SliderShow from '@/app/molecules/SliderShow';
 
 const recommendedKeywords = [
   'Xuân',
@@ -87,20 +88,16 @@ export const TemplatesMenuContent: FC = () => {
     [],
   );
 
-  const { activePage } = useActivePage();
+  const activePageCanvas = useActivePageCanvas();
 
   const handleAddPhoto = (item: SliderItem) => {
-    fabric.Image.fromURL(
-      item.url,
-      image => (activePage.canvas as fabric.Canvas)?.add(image),
-      {
-        hasControls: true,
-        hasRotatingPoint: true,
-        selectable: true,
-        scaleX: 0.1,
-        scaleY: 0.1,
-      },
-    );
+    fabric.Image.fromURL(item.url, image => activePageCanvas?.add(image), {
+      hasControls: true,
+      hasRotatingPoint: true,
+      selectable: true,
+      scaleX: 0.1,
+      scaleY: 0.1,
+    });
   };
 
   return (

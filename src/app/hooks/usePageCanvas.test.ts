@@ -48,6 +48,23 @@ describe('Test usePageCanvasById', () => {
     expect(result.current[0]).toBe(pageCanvasMockValue);
     expect(typeof result.current[1]).toBe('function');
   });
+
+  test('Should return null if pageId is null', () => {
+    const randomPageId = null;
+    (useCurrentPage as jest.Mock).mockReturnValueOnce({ pageId: randomPageId });
+    const pageCanvasMockValue = 'someCanvas';
+    const setPageCanvasMockValue = jest.fn();
+    const useEditablePagesMockValue = {
+      getPageCanvas: () => pageCanvasMockValue,
+      setPageCanvas: setPageCanvasMockValue,
+    };
+    (useEditablePages as unknown as jest.Mock).mockReturnValueOnce(
+      useEditablePagesMockValue,
+    );
+    const { result } = renderHook(() => usePageCanvasById(randomPageId));
+    expect(result.current[0]).toBe(null);
+    expect(result.current[1]).toBe(null);
+  });
 });
 
 describe('Test usePageCanvasJSON', () => {
