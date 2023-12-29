@@ -23,7 +23,7 @@ describe('Test convertFrameSize function', () => {
   test('should return a correctly converted millimeter from pixels!', () => {
     const randomPixels = random(1, 10000);
 
-    const actual = convertFrameSize('px', 'ml', randomPixels);
+    const actual = convertFrameSize('px', 'mm', randomPixels);
 
     const unitRate = 3.77952755906;
 
@@ -61,7 +61,7 @@ describe('Test convertFrameSize function', () => {
   test('should return a correctly converted pixels from millimeter!', () => {
     const randomInches = random(1, 10000);
 
-    const actual = convertFrameSize('ml', 'px', randomInches);
+    const actual = convertFrameSize('mm', 'px', randomInches);
 
     const unitRate = 1 / 3.77952755906;
 
@@ -79,7 +79,7 @@ describe('Test convertFrameSize function', () => {
   test('should return the input value cause from and to parameters is not valid!', () => {
     const randomNumber = random(1, 10000);
 
-    const actual = convertFrameSize('cm', 'ml', randomNumber);
+    const actual = convertFrameSize('cm', 'mm', randomNumber);
 
     const unitRate = 1;
 
@@ -89,7 +89,7 @@ describe('Test convertFrameSize function', () => {
   test('should return an original value!', () => {
     const randomInches = random(1, 10000);
 
-    const actual = convertFrameSize('ml', 'px', randomInches, null);
+    const actual = convertFrameSize('mm', 'px', randomInches, null);
 
     const unitRate = 3.77952755906;
 
