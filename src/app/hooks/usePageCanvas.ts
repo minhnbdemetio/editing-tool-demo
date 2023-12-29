@@ -10,8 +10,9 @@ export const useCurrentPageCanvas = () => {
   ] as const;
 };
 
-export const usePageCanvasById = (pageId: string) => {
+export const usePageCanvasById = (pageId: string | null) => {
   const { getPageCanvas, setPageCanvas } = useEditablePages();
+  if (!pageId) return [null, null];
   return [
     getPageCanvas(pageId),
     (canvas: fabric.Canvas | null) => setPageCanvas(pageId, canvas),
