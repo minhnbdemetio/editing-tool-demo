@@ -24,115 +24,44 @@ export const CuttingZoneReminder: React.FC<CuttingZoneReminderProps> = ({
     workingHeightPixels,
     workingWidthPixels,
   ]);
+
   return (
-    <div className="relative h-fit w-fit">
+    <div className="relative h-fit w-fit ">
       {children}
 
       <div
-        className={
-          ' absolute top-0 left-0 flex justify-center h-full flex-col items-center border-collapse'
-        }
-        style={{ width: paddingX }}
-      >
-        <div
-          style={{
-            borderBottom: `${paddingY}px solid #93a5b563`,
-            borderRight: `${paddingY}px solid transparent`,
-          }}
-        ></div>
-        <div
-          className="w-full bg-[#93a5b563]"
-          style={{
-            height: `calc(100% - ${paddingY * 2}px)`,
-          }}
-        ></div>
-        <div
-          style={{
-            borderTop: `${paddingY}px solid #93a5b563`,
-            borderRight: `${paddingY}px solid transparent`,
-          }}
-        ></div>
-      </div>
-
-      <div
-        className={
-          ' absolute top-0 right-0 flex justify-center h-full flex-col items-center border-collapse'
-        }
-        style={{ width: paddingX }}
-      >
-        <div
-          style={{
-            borderBottom: `${paddingY}px solid #93a5b563`,
-            borderLeft: `${paddingY}px solid transparent`,
-          }}
-        ></div>
-        <div
-          className="w-full bg-[#93a5b563]"
-          style={{
-            height: `calc(100% - ${paddingY * 2}px)`,
-          }}
-        ></div>
-        <div
-          style={{
-            width: 0,
-            borderTop: `${paddingY}px solid #93a5b563`,
-            borderLeft: `${paddingY}px solid transparent`,
-          }}
-        ></div>
-      </div>
-
-      <div
-        className={
-          ' absolute top-0 left-0 flex justify-center w-full flex-row items-center border-collapse'
-        }
+        className={twMerge(
+          'top-0 left-0 w-full absolute bg-gray-200 bg-[#93a5b563] ',
+        )}
         style={{ height: paddingY }}
+      ></div>
+      <div
+        className={twMerge(
+          'bottom-0 left-0 w-full absolute bg-gray-200 bg-[#93a5b563] ',
+        )}
+        style={{ height: paddingY }}
+      ></div>
+
+      <div
+        className={twMerge('top-0 left-0 h-full absolute flex flex-col  ')}
+        style={{
+          width: paddingX,
+          paddingTop: paddingY,
+          paddingBottom: paddingY,
+        }}
       >
-        <div
-          style={{
-            borderTop: `${paddingY}px solid #93a5b563`,
-            borderLeft: `${paddingY}px solid transparent`,
-          }}
-        ></div>
-        <div
-          className="h-full bg-[#93a5b563]"
-          style={{
-            width: `calc(100% - ${paddingY * 2}px)`,
-          }}
-        ></div>
-        <div
-          style={{
-            width: 0,
-            borderTop: `${paddingY}px solid #93a5b563`,
-            borderRight: `${paddingY}px solid transparent`,
-          }}
-        ></div>
+        <div className={twMerge('w-full h-full bg-[#93a5b563]')}></div>
       </div>
 
       <div
-        className={
-          ' absolute bottom-0 left-0 flex justify-center w-full flex-row items-center border-collapse'
-        }
-        style={{ height: paddingY }}
+        className={twMerge('top-0 right-0 h-full absolute flex flex-col ')}
+        style={{
+          width: paddingX,
+          paddingTop: paddingY,
+          paddingBottom: paddingY,
+        }}
       >
-        <div
-          style={{
-            borderBottom: `${paddingY}px solid #93a5b563`,
-            borderLeft: `${paddingY}px solid transparent`,
-          }}
-        ></div>
-        <div
-          className="h-full bg-[#93a5b563]"
-          style={{
-            width: `calc(100% - ${paddingY * 2}px)`,
-          }}
-        ></div>
-        <div
-          style={{
-            width: 0,
-            borderBottom: `${paddingY}px solid #93a5b563`,
-            borderRight: `${paddingY}px solid transparent`,
-          }}
-        ></div>
+        <div className={twMerge('w-full h-full bg-[#93a5b563]')}></div>
       </div>
     </div>
   );

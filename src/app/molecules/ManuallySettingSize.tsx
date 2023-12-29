@@ -85,7 +85,14 @@ export const ManuallySettingSize: React.FC<ManuallySettingSizeProps> = () => {
 
         setErrors({});
 
-        pageSize.update(pageSizeForm);
+        pageSize.update({
+          cuttingUnit: pageSizeForm.cuttingUnit,
+          workingUnit: pageSizeForm.workingUnit,
+          cuttingHeightPixels: pageSizeForm.cuttingHeight,
+          cuttingWidthPixels: pageSizeForm.cuttingWidth,
+          workingHeightPixels: pageSizeForm.workingHeight,
+          workingWidthPixels: pageSizeForm.workingWidth,
+        });
       } catch (e) {
         if (e instanceof ValidationError) {
           const tempErrors: { [k: string]: string } = {};
