@@ -172,9 +172,12 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   return (
     <CuttingZoneReminder>
       <div
-        style={{ maxWidth: workingWidthPixels, maxHeight: workingHeightPixels }}
+        style={{
+          width: '100%',
+          aspectRatio: workingWidthPixels / workingHeightPixels,
+        }}
         ref={canvasContainerEl}
-        className={twMerge(`w-full  relative bg-white aspect-video`, {
+        className={twMerge(` relative bg-white `, {
           'shadow-[0_0_0_2px_#00dcf0]': pageId === activePage,
         })}
         id={pageId}

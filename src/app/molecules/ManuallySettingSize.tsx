@@ -115,6 +115,35 @@ export const ManuallySettingSize: React.FC<ManuallySettingSizeProps> = () => {
         <div className="grid grid-cols-1 gap-1">
           <PageSizeGroupInput
             label="Cutting Line"
+            changeHeight={cuttingHeightPixels => {
+              // pageSize.update({ cuttingHeightPixels });
+              setPageSizeForm(s => ({
+                ...s,
+                cuttingHeight: cuttingHeightPixels,
+              }));
+            }}
+            changeWidth={cuttingWidthPixels => {
+              setPageSizeForm(s => ({
+                ...s,
+                cuttingWidth: cuttingWidthPixels,
+              }));
+            }}
+            changeUnit={cuttingUnit => {
+              setPageSizeForm(s => ({
+                ...s,
+                cuttingUnit,
+              }));
+            }}
+            height={pageSizeForm.cuttingHeight}
+            width={pageSizeForm.cuttingWidth}
+            unit={pageSizeForm.cuttingUnit}
+            errors={{
+              width: errors.cuttingWidth,
+              height: errors.cuttingHeight,
+            }}
+          />
+          <PageSizeGroupInput
+            label="Printing Line"
             changeHeight={workingHeightPixels => {
               console.debug(workingHeightPixels);
               // pageSize.update({ workingHeightPixels });
@@ -136,41 +165,12 @@ export const ManuallySettingSize: React.FC<ManuallySettingSizeProps> = () => {
                 workingUnit: workingUnit,
               }))
             }
-            height={pageSize.workingHeightPixels}
-            width={pageSize.workingWidthPixels}
-            unit={pageSize.workingUnit}
+            height={pageSizeForm.workingHeight}
+            width={pageSizeForm.workingWidth}
+            unit={pageSizeForm.workingUnit}
             errors={{
               width: errors.workingWidth,
               height: errors.workingHeight,
-            }}
-          />
-          <PageSizeGroupInput
-            label="Printing Line"
-            changeHeight={cuttingHeightPixels => {
-              // pageSize.update({ cuttingHeightPixels });
-              setPageSizeForm(s => ({
-                ...s,
-                cuttingHeight: cuttingHeightPixels,
-              }));
-            }}
-            changeWidth={cuttingWidthPixels => {
-              setPageSizeForm(s => ({
-                ...s,
-                cuttingWidth: cuttingWidthPixels,
-              }));
-            }}
-            changeUnit={cuttingUnit => {
-              setPageSizeForm(s => ({
-                ...s,
-                cuttingUnit,
-              }));
-            }}
-            height={pageSize.cuttingHeightPixels}
-            width={pageSize.cuttingWidthPixels}
-            unit={pageSize.cuttingUnit}
-            errors={{
-              width: errors.cuttingWidth,
-              height: errors.cuttingHeight,
             }}
           />
         </div>

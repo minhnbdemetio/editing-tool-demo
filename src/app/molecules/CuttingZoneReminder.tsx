@@ -1,6 +1,7 @@
 import React, { PropsWithChildren, useMemo } from 'react';
 import { usePageSize } from '../store/use-page-size';
 import { twMerge } from '../utilities/tailwind';
+import { useLineEnabled } from '../store/line-preview';
 
 interface CuttingZoneReminderProps extends PropsWithChildren {}
 
@@ -13,6 +14,9 @@ export const CuttingZoneReminder: React.FC<CuttingZoneReminderProps> = ({
     cuttingHeightPixels,
     cuttingWidthPixels,
   } = usePageSize();
+
+  const { lineEnabled } = useLineEnabled();
+
   const { paddingX, paddingY } = useMemo(() => {
     return {
       paddingX: Math.round((workingWidthPixels - cuttingWidthPixels) / 2),
@@ -25,8 +29,10 @@ export const CuttingZoneReminder: React.FC<CuttingZoneReminderProps> = ({
     workingWidthPixels,
   ]);
 
+  if (!lineEnabled) return children;
+
   return (
-    <div className="relative h-fit w-fit ">
+    <div className="relative h-fit w-full ">
       {children}
 
       <div
