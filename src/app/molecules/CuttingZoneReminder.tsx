@@ -29,46 +29,47 @@ export const CuttingZoneReminder: React.FC<CuttingZoneReminderProps> = ({
     workingWidthPixels,
   ]);
 
-  if (!lineEnabled) return children;
-
   return (
-    <div className="relative h-fit w-full ">
+    <div className="relative h-fit w-full">
       {children}
+      {lineEnabled && (
+        <>
+          <div
+            className={twMerge(
+              'top-0 left-0 w-full absolute bg-gray-200 bg-[#93a5b563] ',
+            )}
+            style={{ height: paddingY }}
+          ></div>
+          <div
+            className={twMerge(
+              'bottom-0 left-0 w-full absolute bg-gray-200 bg-[#93a5b563] ',
+            )}
+            style={{ height: paddingY }}
+          ></div>
 
-      <div
-        className={twMerge(
-          'top-0 left-0 w-full absolute bg-gray-200 bg-[#93a5b563] ',
-        )}
-        style={{ height: paddingY }}
-      ></div>
-      <div
-        className={twMerge(
-          'bottom-0 left-0 w-full absolute bg-gray-200 bg-[#93a5b563] ',
-        )}
-        style={{ height: paddingY }}
-      ></div>
+          <div
+            className={twMerge('top-0 left-0 h-full absolute flex flex-col  ')}
+            style={{
+              width: paddingX,
+              paddingTop: paddingY,
+              paddingBottom: paddingY,
+            }}
+          >
+            <div className={twMerge('w-full h-full bg-[#93a5b563]')}></div>
+          </div>
 
-      <div
-        className={twMerge('top-0 left-0 h-full absolute flex flex-col  ')}
-        style={{
-          width: paddingX,
-          paddingTop: paddingY,
-          paddingBottom: paddingY,
-        }}
-      >
-        <div className={twMerge('w-full h-full bg-[#93a5b563]')}></div>
-      </div>
-
-      <div
-        className={twMerge('top-0 right-0 h-full absolute flex flex-col ')}
-        style={{
-          width: paddingX,
-          paddingTop: paddingY,
-          paddingBottom: paddingY,
-        }}
-      >
-        <div className={twMerge('w-full h-full bg-[#93a5b563]')}></div>
-      </div>
+          <div
+            className={twMerge('top-0 right-0 h-full absolute flex flex-col ')}
+            style={{
+              width: paddingX,
+              paddingTop: paddingY,
+              paddingBottom: paddingY,
+            }}
+          >
+            <div className={twMerge('w-full h-full bg-[#93a5b563]')}></div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
