@@ -4,8 +4,8 @@ import { useOutsideClick } from '../../hooks/useClickOutside';
 import { Badge, Button, Input } from '@nextui-org/react';
 import { RecommendedComplete } from './RecommendedComplete';
 import { RecommendedKeywords } from './RecommendedKeywords';
-import { InputSetting } from './InputSetting';
 import { SettingFilterGroupProps } from './searchInput';
+import { findKeyword } from '@/app/utilities/utils';
 
 interface SearchInputProps {
   recommendedKeywords?: string[];
@@ -16,8 +16,23 @@ interface SearchInputProps {
   onResetFilter?: () => void;
   onClickSetting?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
+export function countIsSelectTrue(data: SettingFilterGroupProps[]) {
+  let count = 0;
 
-export const SearchInput: FC<SearchInputProps> = ({
+  data.forEach(item => {
+    if (item.settingFilter) {
+      item.settingFilter.forEach(filter => {
+        if (filter.isSelect === true) {
+          count++;
+        }
+      });
+    }
+  });
+
+  return count;
+}
+
+const SearchInput: FC<SearchInputProps> = ({
   recommendedKeywords = [],
   hasSetting = false,
   placeholder = '',
@@ -43,29 +58,6 @@ export const SearchInput: FC<SearchInputProps> = ({
     setShowRecommended(false);
   };
 
-  function countIsSelectTrue(data: SettingFilterGroupProps[]) {
-    let count = 0;
-
-    data.forEach(item => {
-      if (item.settingFilter) {
-        item.settingFilter.forEach(filter => {
-          if (filter.isSelect === true) {
-            count++;
-          }
-        });
-      }
-    });
-
-    return count;
-  }
-
-  function findKeyword(keywords: string[], input: string): string[] {
-    const inputLowerCase = input.toLowerCase();
-
-    return keywords.filter(keyword =>
-      keyword.toLowerCase().includes(inputLowerCase),
-    );
-  }
   const onValueChange = (value: string) => {
     setSearchKey(value);
   };
@@ -131,3 +123,5 @@ export const SearchInput: FC<SearchInputProps> = ({
     </div>
   );
 };
+
+export default SearchInput;

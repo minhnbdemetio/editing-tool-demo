@@ -1,5 +1,4 @@
 import { FC, useCallback, useEffect, useState } from 'react';
-import { SearchInput } from '@/app/molecules/SearchInput';
 import { TemplateSelector } from '../TemplateSelector';
 import { Popover } from '@/app/atoms/Popover';
 import { TemplateFilterModal } from '@/app/molecules/TemplateFilterModal';
@@ -10,6 +9,7 @@ import { useTemplateFilters } from '@/app/store/template-filters';
 import { getFilterOptions } from '@/app/services/template.service';
 import { useActivePage } from '@/app/store/active-page';
 import { fabric } from 'fabric';
+import SearchInput from '@/app/molecules/SearchInput';
 
 const recommendedKeywords = [
   'Xuân',
