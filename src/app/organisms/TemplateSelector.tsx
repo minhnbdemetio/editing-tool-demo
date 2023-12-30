@@ -1,26 +1,31 @@
 'use client';
 
-import { Accordion, AccordionItem, Button, Spinner } from '@nextui-org/react';
+import { Button, Spinner } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 import { ChevronDown, ChevronLeft, Search } from '../icons';
 import { TemplateList } from '../molecules/TemplateList';
-import { TemplateCategory } from '../services/templates/types/category';
+import { TemplateCategory } from '../services/template/types/category';
 import {
   getCategories,
   getCategoryTemplates,
-} from '../services/templates/category';
-import { Template } from '../services/templates/types';
+} from '../services/template/template.service';
+import { Template } from '../services/template/types';
 import './template-selector.scss';
+import { TemplateCategorySelector } from '../molecules/TemplateCategoriesSelector';
+import { TemplateCategories } from '../molecules/TemplateCategories';
 
 export const TemplateSelector: FC = () => {
   const [searchOpen, setSearchOpen] = useState(false);
-  const [showTemplates, setShowTemplates] = useState(false);
+  const [showTemplatesSearchResult, setShowTemplatesSearchResult] =
+    useState(false);
 
   const [categories, setCategories] = useState<TemplateCategory[]>([]);
   const [templates, setTemplates] = useState<Template[]>([]);
 
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [loadingTemplates, setLoadingTemplates] = useState(false);
+
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const fetchCategories = async () => {
     try {
@@ -34,10 +39,12 @@ export const TemplateSelector: FC = () => {
     }
   };
 
-  const fetchCategoryTemplates = async () => {
+  const fetchCategoryTemplates = async (categoryName: string) => {
     try {
-      setShowTemplates(true);
+      setShowTemplatesSearchResult(true);
       setLoadingTemplates(true);
+      setSelectedCategory(categoryName);
+
       const response = await getCategoryTemplates();
       setTemplates(response);
     } catch (e) {
@@ -48,11 +55,12 @@ export const TemplateSelector: FC = () => {
   };
 
   const toggleSelector = () => {
-    if (!showTemplates) {
+    setSelectedCategory('all');
+    if (!showTemplatesSearchResult) {
       setSearchOpen(!searchOpen);
     } else {
       setSearchOpen(true);
-      setShowTemplates(false);
+      setShowTemplatesSearchResult(false);
     }
   };
 
@@ -63,9 +71,12 @@ export const TemplateSelector: FC = () => {
   return (
     <div className="flex flex-col h-full min-h-0 mt-3">
       <div className="flex items-center gap-3 mb-3">
-        {showTemplates && (
+        {showTemplatesSearchResult && (
           <Button
-            onClick={() => setShowTemplates(false)}
+            onClick={() => {
+              setSelectedCategory('all');
+              setShowTemplatesSearchResult(false);
+            }}
             className="border-1 border-gray-100 w-[28px] min-w-0 bg-transparent p-0"
           >
             <ChevronLeft className="w-[28px]" />
@@ -76,13 +87,15 @@ export const TemplateSelector: FC = () => {
           onClick={toggleSelector}
         >
           <div className="flex justify-between items-center w-full">
-            <span>All templates</span>
+            <span>
+              {selectedCategory === 'all' ? 'All templates' : selectedCategory}
+            </span>
             <ChevronDown />
           </div>
         </Button>
       </div>
 
-      {searchOpen && !showTemplates && (
+      {searchOpen && !showTemplatesSearchResult && (
         <div className="flex flex-col gap-3 h-full min-h-0">
           <div className="flex h-12 items-center gap-3">
             <Search />
@@ -96,33 +109,19 @@ export const TemplateSelector: FC = () => {
               <Spinner />
             </div>
           ) : (
-            <Accordion className="px-0 h-full min-h-0 overflow-y-scroll">
-              {categories.map(category => (
-                <AccordionItem
-                  className="accordion__item"
-                  key={category.title}
-                  title={category.title}
-                >
-                  <ul>
-                    {category.subCategories.map(subCategory => (
-                      <li key={subCategory.title}>
-                        <button
-                          className="w-full text-left h-10"
-                          onClick={fetchCategoryTemplates}
-                        >
-                          {subCategory.title}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </AccordionItem>
-              ))}
-            </Accordion>
+            <TemplateCategorySelector
+              categories={categories}
+              onSelectCategory={fetchCategoryTemplates}
+            />
           )}
         </div>
       )}
 
-      {showTemplates && (
+      {!searchOpen && !showTemplatesSearchResult && (
+        <TemplateCategories showAllCategoryTemplates={fetchCategoryTemplates} />
+      )}
+
+      {showTemplatesSearchResult && (
         <>
           {loadingTemplates ? (
             <div className="flex items-center justify-center">

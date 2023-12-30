@@ -9,12 +9,14 @@ export interface SlideshowProps {
   items?: SliderItem[];
   title: string;
   handleClickItem?: (item: SliderItem) => void;
+  handleShowAll: any;
 }
 
 const Slideshow: FC<SlideshowProps> = ({
   items = [],
   title,
   handleClickItem,
+  handleShowAll,
 }) => {
   const [indexTransform, setIndexTransform] = React.useState(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -56,7 +58,7 @@ const Slideshow: FC<SlideshowProps> = ({
       <div className="flex justify-between align-center my-1 items-center	">
         <span className="text-[#70798f] text-md cursor-default">{title}</span>
         <div>
-          <Button variant="light" color="primary">
+          <Button onClick={handleShowAll} variant="light" color="primary">
             Show all
           </Button>
         </div>

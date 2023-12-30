@@ -4,13 +4,9 @@ import { Popover } from '@/app/atoms/Popover';
 import { TemplateFilterModal } from '@/app/molecules/TemplateFilterModal';
 import { TemplateFilters } from '@/app/molecules/TemplateFilters';
 import useMediaQuery from '@/app/store/useMediaQuery';
-import { SliderItem } from '@/app/molecules/SliderShow/sliderShow';
 import { useTemplateFilters } from '@/app/store/template-filters';
-import { getFilterOptions } from '@/app/services/template.service';
-import { fabric } from 'fabric';
+import { getFilterOptions } from '@/app/services/template/template.service';
 import SearchInput from '@/app/molecules/SearchInput';
-import { useActivePageCanvas } from '@/app/hooks/useActivePage';
-import SliderShow from '@/app/molecules/SliderShow';
 
 const recommendedKeywords = [
   'Xuân',
@@ -20,49 +16,6 @@ const recommendedKeywords = [
   'Động vật',
   'Thời tiết',
   'Màu sắc',
-];
-
-const recentlyUsed: SliderItem[] = [
-  {
-    key: 'id001',
-    url: 'https://shorturl.at/opuxU',
-  },
-  {
-    key: 'id002',
-    url: 'https://shorturl.at/tKORW',
-  },
-  {
-    key: 'id003',
-    url: 'https://shorturl.at/GQXY4',
-  },
-  {
-    key: 'id004',
-    url: 'https://shorturl.at/hmW27',
-  },
-  {
-    key: 'id005',
-    url: 'https://shorturl.at/dKNY0',
-  },
-  {
-    key: 'id006',
-    url: 'https://shorturl.at/opuxU',
-  },
-  {
-    key: 'id007',
-    url: 'https://shorturl.at/tKORW',
-  },
-  {
-    key: 'id008',
-    url: 'https://shorturl.at/GQXY4',
-  },
-  {
-    key: 'id009',
-    url: 'https://shorturl.at/hmW27',
-  },
-  {
-    key: 'id0010',
-    url: 'https://shorturl.at/dKNY0',
-  },
 ];
 
 export const TemplatesMenuContent: FC = () => {
@@ -87,18 +40,6 @@ export const TemplatesMenuContent: FC = () => {
     },
     [],
   );
-
-  const activePageCanvas = useActivePageCanvas();
-
-  const handleAddPhoto = (item: SliderItem) => {
-    fabric.Image.fromURL(item.url, image => activePageCanvas?.add(image), {
-      hasControls: true,
-      hasRotatingPoint: true,
-      selectable: true,
-      scaleX: 0.1,
-      scaleY: 0.1,
-    });
-  };
 
   return (
     <div className="w-full h-full p-6 flex flex-col">
@@ -129,33 +70,6 @@ export const TemplatesMenuContent: FC = () => {
           open={Boolean(filterAnchorEl)}
         />
       )}
-      {/* <div className="w-[360]  mx-2">
-        <SliderShow
-          items={recentlyUsed}
-          title="Recently Used"
-          handleClickItem={handleAddPhoto}
-        />
-        <SliderShow
-          items={recentlyUsed}
-          title="Medic"
-          handleClickItem={handleAddPhoto}
-        />
-        <SliderShow
-          items={recentlyUsed}
-          title="Wedding"
-          handleClickItem={handleAddPhoto}
-        />
-        <SliderShow
-          items={recentlyUsed}
-          title="Supper Bowl"
-          handleClickItem={handleAddPhoto}
-        />
-        <SliderShow
-          items={recentlyUsed}
-          title="Cute"
-          handleClickItem={handleAddPhoto}
-        />
-      </div> */}
     </div>
   );
 };
