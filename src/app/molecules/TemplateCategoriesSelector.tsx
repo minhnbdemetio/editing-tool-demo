@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { TemplateCategory } from '../services/template/types/category';
+import { TemplateCategory } from '@/app/services/template/template';
 import { Accordion, AccordionItem } from '@nextui-org/react';
 
 interface TemplateCategoryProps {
@@ -21,7 +21,7 @@ export const TemplateCategorySelector: FC<TemplateCategoryProps> = ({
             title={category.title}
           >
             <ul>
-              {category.subCategories.map(subCategory => (
+              {category.subCategories?.map(subCategory => (
                 <li key={subCategory.title}>
                   <button
                     className="w-full text-left h-10"

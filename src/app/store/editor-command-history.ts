@@ -1,7 +1,8 @@
 import { create } from 'zustand';
+import { CanvasData } from '../types';
 
 export interface Command {
-  currentStateJSON: { version: string; objects: Object[] } | undefined;
+  currentStateJSON: CanvasData | undefined;
   pageId: string | undefined;
 }
 

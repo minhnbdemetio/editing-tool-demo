@@ -1,3 +1,5 @@
+'use client';
+
 import { Header } from '@/app/organisms/Header';
 import clsx from 'clsx';
 
