@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { TemplateSlideshow } from './TemplateCarousel';
+import { TemplateCarousel } from './TemplateCarousel';
 import { TemplateCategory } from '@/app/services/template/template';
 
 interface TemplateCategoriesProps {
@@ -15,7 +15,7 @@ export const TemplateCategories: FC<TemplateCategoriesProps> = ({
     <>
       <div className="overflow-x-hidden mx-2 overflow-y-scroll">
         {categories.map(category => (
-          <TemplateSlideshow
+          <TemplateCarousel
             category={category}
             handleShowAll={() => showAllCategoryTemplates(category.title)}
             key={category.title}

@@ -6,13 +6,16 @@ import { TemplateCategory } from '@/app/services/template/template';
 import { TemplateItem } from './TemplateItem';
 import { Button } from '@nextui-org/react';
 import { Next, Prev } from '@/app/icons';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation } from 'swiper/modules';
+import { DraggableItem } from '../atoms/DraggableItem';
 
-export interface TemplateSlideshowProps {
+export interface TemplateCarouselProps {
   category: TemplateCategory;
   handleShowAll: any;
 }
 
-export const TemplateSlideshow: FC<TemplateSlideshowProps> = ({
+export const TemplateCarousel: FC<TemplateCarouselProps> = ({
   category,
   handleShowAll,
 }) => {
@@ -26,16 +29,45 @@ export const TemplateSlideshow: FC<TemplateSlideshowProps> = ({
           Show all
         </Button>
       </div>
-      <Slider
-        arrows
+      <Swiper
+        slidesPerView={2}
+        navigation={true}
+        modules={[Navigation]}
+        className="mySwiper"
+      >
+        {category.templates?.map((template, index) => (
+          <DraggableItem
+            key={template.thumbnail + index}
+            onDrop={() => {}}
+            type="template"
+          >
+            <SwiperSlide>
+              <TemplateItem template={template} />
+            </SwiperSlide>
+          </DraggableItem>
+        ))}
+      </Swiper>
+      {/* <Slider
         slidesToShow={2}
         prevArrow={
-          <Button size="sm" isIconOnly color="primary" variant="faded">
+          <Button
+            className="z-30"
+            size="sm"
+            isIconOnly
+            color="primary"
+            variant="faded"
+          >
             <Prev className="text-2xl text-default-400 pointer-events-none flex-shrink-0 w-4 h-4" />
           </Button>
         }
         nextArrow={
-          <Button size="sm" isIconOnly color="primary" variant="faded">
+          <Button
+            className="z-30"
+            size="sm"
+            isIconOnly
+            color="primary"
+            variant="faded"
+          >
             <Next className="text-2xl text-default-400 pointer-events-none flex-shrink-0 w-4 h-4" />
           </Button>
         }
@@ -45,7 +77,7 @@ export const TemplateSlideshow: FC<TemplateSlideshowProps> = ({
             <TemplateItem template={template} />
           </div>
         ))}
-      </Slider>
+      </Slider> */}
     </div>
   );
 };
