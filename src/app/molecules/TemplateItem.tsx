@@ -1,10 +1,9 @@
 'use client';
 
-import { FC, HTMLAttributes, useEffect } from 'react';
+import { FC, HTMLAttributes } from 'react';
 import { Template } from '@/app/services/template/template';
 import { useActivePageCanvas } from '../hooks/useActivePage';
 import { useDrag } from 'react-dnd';
-import { register } from 'swiper/element/bundle';
 
 interface TemplateItemProps extends HTMLAttributes<HTMLImageElement> {
   template: Template;
@@ -35,10 +34,6 @@ export const TemplateItem: FC<TemplateItemProps> = ({ template, ...rest }) => {
     }),
     [template, activePageCanvas],
   );
-
-  useEffect(() => {
-    register();
-  }, []);
 
   return (
     <button ref={drag} onClick={loadTemplate}>
