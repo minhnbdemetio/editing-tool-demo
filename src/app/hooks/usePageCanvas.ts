@@ -1,5 +1,6 @@
 import { useEditablePages } from '@/app/store/editable-pages';
 import { useCurrentPage } from './useCurrentPage';
+import { CanvasData } from '../types';
 
 export const useCurrentPageCanvas = () => {
   const currentPage = useCurrentPage();
@@ -34,7 +35,7 @@ export const usePageCanvasJSONById = (pageId: string) => {
 export const useLoadPageCanvasState = (pageId: string) => {
   const [currentPage] = factory.usePageCanvasById(pageId);
 
-  return (canvasState: { version: string; objects: Object[] } | undefined) =>
+  return (canvasState: CanvasData | undefined) =>
     currentPage?.loadFromJSON(canvasState, () => {
       currentPage.renderAll();
     });

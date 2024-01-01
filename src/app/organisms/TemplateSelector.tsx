@@ -4,12 +4,12 @@ import { Button, Spinner } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 import { ChevronDown, ChevronLeft, Search } from '../icons';
 import { TemplateList } from '../molecules/TemplateList';
-import { TemplateCategory } from '../services/template/types/category';
+import { TemplateCategory, Template } from '@/app/services/template/template';
 import {
   getCategories,
   getCategoryTemplates,
 } from '../services/template/template.service';
-import { Template } from '../services/template/types';
+
 import './template-selector.scss';
 import { TemplateCategorySelector } from '../molecules/TemplateCategoriesSelector';
 import { TemplateCategories } from '../molecules/TemplateCategories';
@@ -118,7 +118,18 @@ export const TemplateSelector: FC = () => {
       )}
 
       {!searchOpen && !showTemplatesSearchResult && (
-        <TemplateCategories showAllCategoryTemplates={fetchCategoryTemplates} />
+        <>
+          {loadingCategories ? (
+            <div className="flex items-center justify-center">
+              <Spinner />
+            </div>
+          ) : (
+            <TemplateCategories
+              categories={categories}
+              showAllCategoryTemplates={fetchCategoryTemplates}
+            />
+          )}
+        </>
       )}
 
       {showTemplatesSearchResult && (

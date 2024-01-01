@@ -1,5 +1,6 @@
 import { FC } from 'react';
-import { Template } from '../services/template/types';
+import { TemplateItem } from './TemplateItem';
+import { Template } from '../services/template/template';
 
 export interface TemplateListProps {
   templates: Template[];
@@ -11,7 +12,7 @@ export const TemplateList: FC<TemplateListProps> = ({ templates }) => {
       <ul className="grid grid-cols-3 gap-2">
         {templates.map(template => (
           <li key={template.thumbnail} className="relative">
-            <img alt="template thumbnail" src={template.thumbnail} />
+            <TemplateItem template={template} />
           </li>
         ))}
       </ul>
