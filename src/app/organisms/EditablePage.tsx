@@ -12,7 +12,6 @@ import { useActiveObject } from '../store/active-object';
 import { DEFAULT_TOOLBAR_POSITION } from '../constants/canvas-constants';
 import { twMerge } from '../utilities/tailwind';
 import { useActivePage } from '../store/active-page';
-import { useEditablePages } from '../store/editable-pages';
 import { CuttingZoneReminder } from '../molecules/CuttingZoneReminder';
 import { usePageSize } from '../store/use-page-size';
 
@@ -203,8 +202,6 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
             visibility: showToolbar ? 'initial' : 'hidden',
           }}
         />
-
-        <div></div>
       </div>
     </CuttingZoneReminder>
   );

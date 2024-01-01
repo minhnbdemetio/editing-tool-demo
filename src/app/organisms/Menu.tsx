@@ -22,7 +22,7 @@ export const Menu: FC = () => {
     <>
       <div
         className={twMerge(
-          'absolute duration-300 w-full max-h-[80%] left-0  z-30 flex flex-col-reverse h-full -bottom-full',
+          'absolute duration-300 w-full max-h-[80%] left-0 z-30 flex flex-col-reverse h-full -bottom-full',
           {
             'bottom-0': open,
           },
@@ -40,10 +40,7 @@ export const Menu: FC = () => {
           section={selectedSection}
           menuExpand={menuExpand || Boolean(activeObject)}
         />
-        <MenuProperty
-          section={selectedSection}
-          menuExpand={menuExpand || !Boolean(activeObject)}
-        />
+        <MenuProperty menuExpand={menuExpand || !Boolean(activeObject)} />
       </div>
       {/* backdrop */}
 
