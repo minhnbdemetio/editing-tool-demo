@@ -47,7 +47,7 @@ export const InputSettingColorPicker: FC<InputSettingFormatProps> = ({
         if (key === DefaultInput)
           return (
             <div
-              className={`w-8 h-8 rounded-md bg-[${value}] cursor-pointer border-1 border-[rgba(90, 101, 119, 0.24)] relative ${
+              className={`w-8 h-8 rounded-md bg-[${value}] cursor-pointer border-2 border-[rgba(90, 101, 119, 0.24)] relative ${
                 isSelect &&
                 'border-2	border-white shadow-[0px_0px_0px_2px_rgba(39,199,217,1)]'
               }`}
@@ -65,14 +65,14 @@ export const InputSettingColorPicker: FC<InputSettingFormatProps> = ({
                 value={value}
                 ref={colorInputRef}
               ></input>
-              <div className="absolute top-1 left-1 w-6 h-6 rounded-full bg-white border-1 border-[rgba(90, 101, 119, 0.24)] flex items-center justify-center">
+              <div className="absolute top-0.5 left-0.5 w-6 h-6 rounded-full bg-white border-1 border-[rgba(90, 101, 119, 0.24)] flex items-center justify-center">
                 <Add className="w-6 h-6" />
               </div>
             </div>
           );
         return (
           <div
-            className={`w-8 h-8 rounded-md bg-[${value}] cursor-pointer border-1 border-[rgba(90, 101, 119, 0.24)] ${
+            className={`w-8 h-8 rounded-md bg-[${value}] cursor-pointer border-2 border-[rgba(90, 101, 119, 0.24)] ${
               isSelect &&
               'border-2	border-white shadow-[0px_0px_0px_2px_rgba(39,199,217,1)]'
             }`}

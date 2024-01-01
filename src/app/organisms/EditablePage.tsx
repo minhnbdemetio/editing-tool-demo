@@ -13,6 +13,8 @@ import { DEFAULT_TOOLBAR_POSITION } from '../constants/canvas-constants';
 import { twMerge } from '../utilities/tailwind';
 import { useActivePage } from '../store/active-page';
 import { useEditablePages } from '../store/editable-pages';
+import { CuttingZoneReminder } from '../molecules/CuttingZoneReminder';
+import { usePageSize } from '../store/use-page-size';
 
 export interface EditablePageProps {
   pageId: string;
@@ -21,7 +23,6 @@ export interface EditablePageProps {
 const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   const [pageCanvas, setPageCanvas] = useCurrentPageCanvas();
   const { setActiveObject } = useActiveObject();
-  const { pages } = useEditablePages();
   const { activePage, setActivePage } = useActivePage();
 
   const canvasEl = useRef<HTMLCanvasElement>(null);
@@ -131,7 +132,12 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
       handleHideToolbarOnEvent();
     });
 
+    canvas.on('mouse:down', () => {
+      setActivePage(pageId);
+    });
+
     setPageCanvas(canvas);
+    setActivePage(pageId);
 
     return () => {
       canvas.off();
@@ -140,6 +146,7 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
       canvas.dispose();
       setPageCanvas(null);
       setActiveObject(null);
+      setActivePage(null);
     };
   }, []);
 
@@ -160,39 +167,46 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
     };
   }, [pageCanvas]);
 
-  return (
-    <div
-      ref={canvasContainerEl}
-      className={twMerge(`w-full h-full relative bg-white aspect-video`, {
-        'shadow-[0_0_0_2px_#00dcf0]': pageId === activePage.id,
-      })}
-      id={pageId}
-      onClick={() => {
-        setActivePage(pages?.[pageId], pageId);
-      }}
-    >
-      <CanvasKeyboardEventHandler />
-      <canvas ref={canvasEl}></canvas>
+  const { workingHeightPixels, workingWidthPixels } = usePageSize();
 
-      <ObjectToolbar
-        ref={toolbarEl}
-        className="absolute"
+  return (
+    <CuttingZoneReminder>
+      <div
         style={{
-          left: toolbarPosition.left,
-          top: toolbarPosition.top,
-          visibility: showToolbar ? 'initial' : 'hidden',
+          width: '100%',
+          aspectRatio: workingWidthPixels / workingHeightPixels,
         }}
-      />
-      <ObjectRotator
-        ref={rotatorEl}
-        className="absolute"
-        style={{
-          left: rotatorPosition.left,
-          top: rotatorPosition.top,
-          visibility: showToolbar ? 'initial' : 'hidden',
-        }}
-      />
-    </div>
+        ref={canvasContainerEl}
+        className={twMerge(` relative bg-white `, {
+          'shadow-[0_0_0_2px_#00dcf0]': pageId === activePage,
+        })}
+        id={pageId}
+      >
+        <CanvasKeyboardEventHandler />
+        <canvas ref={canvasEl}></canvas>
+
+        <ObjectToolbar
+          ref={toolbarEl}
+          className="absolute"
+          style={{
+            left: toolbarPosition.left,
+            top: toolbarPosition.top,
+            visibility: showToolbar ? 'initial' : 'hidden',
+          }}
+        />
+        <ObjectRotator
+          ref={rotatorEl}
+          className="absolute"
+          style={{
+            left: rotatorPosition.left,
+            top: rotatorPosition.top,
+            visibility: showToolbar ? 'initial' : 'hidden',
+          }}
+        />
+
+        <div></div>
+      </div>
+    </CuttingZoneReminder>
   );
 };
 

@@ -1,92 +1,59 @@
-import { Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
+import {
+  Accordion,
+  AccordionItem,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@nextui-org/react';
 import clsx from 'clsx';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ChevronDown, LockClosed, LockOpen, Ruler } from '../icons';
-import { convertFrameSize } from '../utilities/units';
+import React, { useEffect, useState } from 'react';
+import { ChevronDown, Ruler } from '../icons';
+import { convertFrameSize, getDisplayDimension } from '../utilities/units';
+import { usePageSize } from '../store/use-page-size';
+import { PageSize } from '../types';
+import { ListRecommendedSizes } from './ListRecommendedSizes';
+import { getRecommendedSize } from '../services/page.service';
 import { UNITS } from '../constants/unit-constants';
+import { ManuallySettingSize } from './ManuallySettingSize';
 
 interface BackgroundSizePopoverProps {}
 
 export const BackgroundSizePopover: React.FC<
   BackgroundSizePopoverProps
 > = () => {
-  const [originalSize, setOriginalSize] = useState<{
-    width: number;
-    height: number;
-  }>({
-    width: 1080,
-    height: 1080,
-  });
+  const pageSize = usePageSize();
 
-  const [width, setWidth] = useState(1080);
-  const [height, setHeight] = useState(1080);
-  const [unit, setUnit] = useState('px');
-  const [ratioLocked, setRatioLocked] = useState(true);
+  const [sizes, setSizes] = useState<PageSize[]>([]);
 
-  const [ratio, setRatio] = useState(width / height);
+  const onSelectRecommendedSize = (size: PageSize) => {
+    const width = convertFrameSize(size.unit, UNITS.PIXEL, size.width, null);
+    const height = convertFrameSize(size.unit, UNITS.PIXEL, size.height, null);
 
-  useEffect(() => {
-    if (ratioLocked) {
-      setRatio(width / height);
-    }
+    const defaultCuttingSize = convertFrameSize(
+      UNITS.MILLIMETER,
+      UNITS.PIXEL,
+      2,
+      null,
+    );
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ratioLocked]);
+    const workingHeightPixels = size.workingHeight
+      ? convertFrameSize(size.unit, 'px', size.workingHeight, null)
+      : height + defaultCuttingSize;
+    const workingWidthPixels = size.workingWidth
+      ? convertFrameSize(size.unit, 'px', size.workingWidth, null)
+      : width + defaultCuttingSize;
 
-  const collapseRatioLock = useCallback(
-    () => setRatioLocked(prev => !prev),
-    [],
-  );
+    pageSize.update({
+      workingUnit: size.unit,
+      cuttingUnit: size.unit,
+      workingHeightPixels,
+      workingWidthPixels,
+      cuttingHeightPixels: height,
+      cuttingWidthPixels: width,
+    });
+  };
 
-  const changeHeight = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newHeight = +e.currentTarget.value;
-      const newOrgHeight = convertFrameSize(unit, 'px', newHeight, null);
-      const newOrgWidth = ratioLocked
-        ? (newHeight || 0) * ratio
-        : originalSize.width;
-
-      setHeight(+e.currentTarget.value);
-
-      setWidth(convertFrameSize('px', unit, newOrgWidth));
-
-      setOriginalSize({
-        width: newOrgWidth,
-        height: newOrgHeight,
-      });
-    },
-    [originalSize.width, ratio, ratioLocked, unit],
-  );
-
-  const changeWidth = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newWidth = +e.currentTarget.value;
-      const newOrgWidth = convertFrameSize(unit, 'px', newWidth, null);
-      const newOrgHeight = ratioLocked
-        ? (newOrgWidth || 0) / ratio
-        : originalSize.height;
-
-      setWidth(newWidth);
-      setHeight(convertFrameSize('px', unit, newOrgHeight));
-
-      setOriginalSize({ width: newOrgWidth, height: newOrgHeight });
-    },
-    [originalSize.height, ratio, ratioLocked, unit],
-  );
-
-  const changeUnit = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const newUnit = e.currentTarget.value;
-
-      const newWidth = convertFrameSize('px', newUnit, originalSize.width);
-      const newHeight = convertFrameSize('px', newUnit, originalSize.height);
-
-      setWidth(+newWidth);
-      setHeight(+newHeight);
-      setUnit(newUnit);
-    },
-    [originalSize],
-  );
+  useFetchPageSizes(setSizes);
 
   return (
     <>
@@ -94,71 +61,89 @@ export const BackgroundSizePopover: React.FC<
         <PopoverTrigger>
           <button
             className={clsx(
-              'font-normal text-md text-gray-400 h-full min-w-[50px] flex items-center ',
+              'font-normal  text-md text-gray-400 h-full min-w-[50px] flex items-center ',
               'duration-100 hover:text-primary',
             )}
           >
             <p>
-              {Math.ceil(width)}
-              {unit} x {Math.ceil(height)}
-              {unit}
+              {getDisplayDimension(
+                pageSize.workingUnit,
+                pageSize.workingWidthPixels,
+              )}{' '}
+              x{' '}
+              {getDisplayDimension(
+                pageSize.workingUnit,
+                pageSize.workingHeightPixels,
+              )}
             </p>
             <ChevronDown className="text-gray-200 w-[28px] h-[18px]" />
           </button>
         </PopoverTrigger>
-        <PopoverContent className=" upload-popover rounded-md px-0">
-          <div className="w-full px-4 py-2">
-            <div className="flex items-center justify-between py-2">
-              <div className="flex items-center gap-[10px]">
-                <Ruler className="w-[20px] h-[20px] text-black-500" />
-                <p className="text-md font-normal text-black-500">
-                  Enter manually
-                </p>
-              </div>
+        <PopoverContent className=" upload-popover rounded-md px-0 w-[420px]">
+          <Accordion showDivider={false} className="w-full px-0">
+            <AccordionItem
+              classNames={{
+                trigger: 'py-1 px-4',
+                content: 'px-0',
+              }}
+              aria-label="Enter manually"
+              title={
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-[10px]">
+                    <Ruler className="w-[20px] h-[20px] text-black-500" />
+                    <p className="text-md font-normal text-gray-500">
+                      Enter manually
+                    </p>
+                  </div>
+                </div>
+              }
+            >
+              <ManuallySettingSize />
+            </AccordionItem>
 
-              {/* <ChevronDown className="w-[20px] h-[20px] text-black-500" /> */}
-            </div>
-
-            <form>
-              <div className="flex items-center gap-2">
-                <input
-                  value={width}
-                  onChange={changeWidth}
-                  className="w-[72px] border-[1px] border-border border-solid text-md rounded-sm font-normal text-black-500  p-2"
+            <AccordionItem
+              aria-label="Standard print size"
+              classNames={{
+                trigger: 'py-1 px-4',
+                content: 'px-0',
+              }}
+              title={
+                <div className="flex items-center justify-between ">
+                  <div className="flex items-center gap-[10px]">
+                    <Ruler className="w-[20px] h-[20px] text-black-500" />
+                    <p className="text-md font-normal text-gray-500">
+                      Standard print size
+                    </p>
+                  </div>
+                </div>
+              }
+            >
+              <div className="w-full ">
+                <ListRecommendedSizes
+                  onSelect={onSelectRecommendedSize}
+                  sizes={sizes}
                 />
-                <button type="button" onClick={collapseRatioLock}>
-                  {ratioLocked ? (
-                    <LockClosed className="w-[14px] h-[14px]" />
-                  ) : (
-                    <LockOpen className="w-[14px] h-[14px]" />
-                  )}
-                </button>
-                <input
-                  value={height}
-                  onChange={changeHeight}
-                  className="w-[72px] border-[1px] border-border border-solid text-md rounded-sm font-normal text-black-500  p-2"
-                />
-
-                <select
-                  value={unit}
-                  onChange={changeUnit}
-                  className="w-[72px] border-[1px] border-border border-solid text-md rounded-sm font-normal text-black-500 p-2"
-                >
-                  {Object.values(UNITS).map(u => (
-                    <option key={u} value={u}>
-                      {u}
-                    </option>
-                  ))}
-                </select>
               </div>
-
-              <button className="w-full text-md font-normal text-primaryContrast bg-green-500 h-[40px] rounded-sm mt-4">
-                Apply
-              </button>
-            </form>
-          </div>
+            </AccordionItem>
+          </Accordion>
         </PopoverContent>
       </Popover>
     </>
   );
 };
+
+function useFetchPageSizes(
+  setSizes: React.Dispatch<React.SetStateAction<PageSize[]>>,
+) {
+  useEffect(() => {
+    (async () => {
+      try {
+        const sizes = await getRecommendedSize();
+        setSizes(sizes);
+      } catch (e) {
+        console.error(e);
+      } finally {
+      }
+    })();
+  }, [setSizes]);
+}

@@ -1,14 +1,12 @@
 import { FC, useState } from 'react';
 import { Square, Horizontal, Vertical } from '@/app/icons';
-import { SearchInput } from '@/app/molecules/SearchInput';
+import SearchInput from '@/app/molecules/SearchInput';
 import {
   DefaultInput,
   SettingFilterGroupProps,
   SettingFilterProps,
   SettingTypeEnum,
 } from '@/app/molecules/SearchInput/searchInput';
-import SliderShow from '@/app/molecules/SliderShow';
-import { SliderItem } from '@/app/molecules/SliderShow/sliderShow';
 
 const recommendedKeywords = [
   'Xuân',
@@ -70,49 +68,6 @@ const defaultTemplateSetting = [
   },
 ];
 
-const recentlyUsed: SliderItem[] = [
-  {
-    key: 'id001',
-    url: 'https://shorturl.at/opuxU',
-  },
-  {
-    key: 'id002',
-    url: 'https://shorturl.at/tKORW',
-  },
-  {
-    key: 'id003',
-    url: 'https://shorturl.at/GQXY4',
-  },
-  {
-    key: 'id004',
-    url: 'https://shorturl.at/hmW27',
-  },
-  {
-    key: 'id005',
-    url: 'https://shorturl.at/dKNY0',
-  },
-  {
-    key: 'id006',
-    url: 'https://shorturl.at/opuxU',
-  },
-  {
-    key: 'id007',
-    url: 'https://shorturl.at/tKORW',
-  },
-  {
-    key: 'id008',
-    url: 'https://shorturl.at/GQXY4',
-  },
-  {
-    key: 'id009',
-    url: 'https://shorturl.at/hmW27',
-  },
-  {
-    key: 'id0010',
-    url: 'https://shorturl.at/dKNY0',
-  },
-];
-
 export const ElementsMenuContent: FC = () => {
   const [templateSettingFormat, setTemplateSettingFormat] = useState<
     SettingFilterGroupProps[]
@@ -135,10 +90,6 @@ export const ElementsMenuContent: FC = () => {
           }}
           onResetFilter={onResetFilter}
         />
-      </div>
-      <div className="w-[360]  mx-2">
-        <SliderShow items={recentlyUsed} title="Recently Used" />
-        <SliderShow items={recentlyUsed} title="Medic" />
       </div>
     </div>
   );

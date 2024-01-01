@@ -1,23 +1,24 @@
-import React, { FC, useRef } from 'react';
-import { Button, Image } from '@nextui-org/react';
-import { Next, Prev } from '@/app/icons';
-import { SliderItem } from './sliderShow';
+import { Button } from '@nextui-org/react';
+import {
+  FC,
+  useRef,
+  useEffect,
+  Children,
+  PropsWithChildren,
+  useMemo,
+  useState,
+} from 'react';
+import { Prev, Next } from '../icons';
+import { generateRandomString } from '../utilities/string';
 
 const delay = 2500;
 
-export interface SlideshowProps {
-  items?: SliderItem[];
-  title: string;
-  handleClickItem?: (item: SliderItem) => void;
-}
+export interface SlideshowProps extends PropsWithChildren {}
 
-const Slideshow: FC<SlideshowProps> = ({
-  items = [],
-  title,
-  handleClickItem,
-}) => {
-  const [indexTransform, setIndexTransform] = React.useState(0);
+export const Slideshow: FC<SlideshowProps> = ({ children }) => {
+  const [indexTransform, setIndexTransform] = useState(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const items = useMemo(() => Children.toArray(children), [children]);
 
   function resetTimeout() {
     if (timeoutRef.current) {
@@ -25,7 +26,7 @@ const Slideshow: FC<SlideshowProps> = ({
     }
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     resetTimeout();
     if (timeoutRef.current)
       timeoutRef.current = setTimeout(
@@ -53,14 +54,6 @@ const Slideshow: FC<SlideshowProps> = ({
 
   return (
     <div className="max-w-full">
-      <div className="flex justify-between align-center my-1 items-center	">
-        <span className="text-[#70798f] text-md cursor-default">{title}</span>
-        <div>
-          <Button variant="light" color="primary">
-            Show all
-          </Button>
-        </div>
-      </div>
       <div className="mx-auto my-0 overflow-hidden max-w-full relative">
         <div
           className={`absolute left-0 top-[calc(50%-20px)] z-10 ${
@@ -108,15 +101,9 @@ const Slideshow: FC<SlideshowProps> = ({
                     : itemEls.current.push(element);
                 }}
                 className="inline-block h-28 w-fit rounded-lg mx-1 cursor-pointer"
-                key={index}
-                onClick={() => handleClickItem && handleClickItem(item)}
+                key={generateRandomString(5)}
               >
-                <Image
-                  className="object-contain h-28"
-                  isZoomed
-                  alt={item.key}
-                  src={item.url}
-                />
+                {item}
               </div>
             ))}
           </div>
@@ -125,5 +112,3 @@ const Slideshow: FC<SlideshowProps> = ({
     </div>
   );
 };
-
-export default Slideshow;

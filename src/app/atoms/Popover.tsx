@@ -1,14 +1,8 @@
-import React, {
-  PropsWithChildren,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import React, { PropsWithChildren, useState } from 'react';
 import { usePopper } from 'react-popper';
 import { Placement, Offsets } from '@popperjs/core';
 import { twMerge } from '../utilities/tailwind';
 import { createPortal } from 'react-dom';
-import { useOutsideClick } from '../hooks/useClickOutside';
 
 interface PopoverProps extends PropsWithChildren {
   anchorEl?: HTMLElement | null;
