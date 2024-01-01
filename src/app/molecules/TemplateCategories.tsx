@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { TemplateCarousel } from './TemplateCarousel';
 import { TemplateCategory } from '@/app/services/template/template';
+import { generateRandomString } from '../utilities/string';
 
 interface TemplateCategoriesProps {
   categories: TemplateCategory[];
@@ -18,7 +19,7 @@ export const TemplateCategories: FC<TemplateCategoriesProps> = ({
           <TemplateCarousel
             category={category}
             handleShowAll={() => showAllCategoryTemplates(category.title)}
-            key={category.title}
+            key={generateRandomString(5)}
           />
         ))}
       </div>

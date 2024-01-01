@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useState } from 'react';
-import { FilterSection } from '../atoms/ FilterSection';
+import { FilterSection } from '../atoms/FilterSection';
 import { ColorFilterSetting } from './ColorFilterSettings';
 import { twMerge } from '../utilities/tailwind';
 import { Checkbox } from '@nextui-org/react';

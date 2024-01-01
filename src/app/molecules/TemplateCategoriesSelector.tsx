@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { TemplateCategory } from '@/app/services/template/template';
 import { Accordion, AccordionItem } from '@nextui-org/react';
+import { generateRandomString } from '../utilities/string';
 
 interface TemplateCategoryProps {
   categories: TemplateCategory[];
@@ -17,12 +18,12 @@ export const TemplateCategorySelector: FC<TemplateCategoryProps> = ({
         {categories.map(category => (
           <AccordionItem
             className="accordion__item"
-            key={category.title}
+            key={generateRandomString(5)}
             title={category.title}
           >
             <ul>
               {category.subCategories?.map(subCategory => (
-                <li key={subCategory.title}>
+                <li key={generateRandomString(5)}>
                   <button
                     className="w-full text-left h-10"
                     onClick={() => onSelectCategory(subCategory.title)}
