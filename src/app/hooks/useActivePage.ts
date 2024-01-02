@@ -8,3 +8,9 @@ export const useActivePageCanvas = () => {
 
   return pageCanvas;
 };
+
+export const useActivePageCanvasJSON = () => {
+  const activePage = useActivePageCanvas();
+
+  return activePage?.toJSON();
+};

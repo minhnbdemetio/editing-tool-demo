@@ -1,11 +1,12 @@
 import { useCommandHistory } from '@/app/store/editor-command-history';
 import {
   useLoadPageCanvasState,
-  usePageCanvasJSON,
   usePageCanvasJSONById,
 } from '../usePageCanvas';
 import { useCurrentPage } from '../useCurrentPage';
 import { useCallback } from 'react';
+import { useActivePageCanvasJSON } from '../useActivePage';
+import { useActivePage } from '@/app/store/active-page';
 
 export const useUndoCommand = () => {
   const { popCommand, commandHistory, pushUndoCommand } = useCommandHistory();
@@ -63,16 +64,19 @@ export const useRedoCommand = () => {
   ]);
 };
 
-export const useExecuteCommand = (commandFunction: () => any) => {
-  const currentStateJSON = usePageCanvasJSON();
+export const useExecuteCommand = <T extends (...args: any) => any>(
+  commandFunction: T,
+) => {
+  const currentStateJSON = useActivePageCanvasJSON();
   const { pageId } = useCurrentPage();
+  const { activePage } = useActivePage();
   const { pushCommand } = useCommandHistory();
 
-  return () => {
-    commandFunction();
+  return (...params: Parameters<T>) => {
+    commandFunction(...params);
     pushCommand({
       currentStateJSON,
-      pageId,
+      pageId: pageId || activePage || undefined,
     });
   };
 };

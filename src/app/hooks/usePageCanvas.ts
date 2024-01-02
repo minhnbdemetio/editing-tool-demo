@@ -1,6 +1,6 @@
 import { useEditablePages } from '@/app/store/editable-pages';
-import { useCurrentPage } from './useCurrentPage';
 import { CanvasData } from '../types';
+import { useCurrentPage } from './useCurrentPage';
 
 export const useCurrentPageCanvas = () => {
   const currentPage = useCurrentPage();
@@ -9,6 +9,12 @@ export const useCurrentPageCanvas = () => {
     getPageCanvas(currentPage.pageId),
     (canvas: fabric.Canvas | null) => setPageCanvas(currentPage.pageId, canvas),
   ] as const;
+};
+
+export const usePageCanvasJSON = () => {
+  const [currentPage] = factory.useCurrentPageCanvas();
+
+  return currentPage?.toJSON();
 };
 
 export const usePageCanvasById = (pageId: string | null) => {
@@ -20,16 +26,10 @@ export const usePageCanvasById = (pageId: string | null) => {
   ] as const;
 };
 
-export const usePageCanvasJSON = () => {
-  const [currentPage] = factory.useCurrentPageCanvas();
-
-  return currentPage?.toJSON();
-};
-
 export const usePageCanvasJSONById = (pageId: string) => {
-  const [currentPage] = factory.usePageCanvasById(pageId);
+  const [currentPageCanvas] = factory.usePageCanvasById(pageId);
 
-  return currentPage?.toJSON();
+  return currentPageCanvas?.toJSON();
 };
 
 export const useLoadPageCanvasState = (pageId: string) => {
@@ -42,8 +42,8 @@ export const useLoadPageCanvasState = (pageId: string) => {
 };
 
 export const factory = {
-  useCurrentPageCanvas,
   usePageCanvasJSON,
+  useCurrentPageCanvas,
   usePageCanvasById,
   usePageCanvasJSONById,
   useLoadPageCanvasState,

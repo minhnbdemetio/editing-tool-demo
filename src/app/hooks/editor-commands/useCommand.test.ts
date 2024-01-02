@@ -1,7 +1,6 @@
 import { useCommandHistory } from '@/app/store/editor-command-history';
 import {
   useLoadPageCanvasState,
-  usePageCanvasJSON,
   usePageCanvasJSONById,
 } from '../usePageCanvas';
 import {
@@ -10,10 +9,14 @@ import {
   useUndoCommand,
 } from './useCommand';
 import { useCurrentPage } from '../useCurrentPage';
+import { useActivePageCanvasJSON } from '../useActivePage';
+import { useActivePage } from '@/app/store/active-page';
 
 jest.mock('../../store/editor-command-history');
 jest.mock('../usePageCanvas');
 jest.mock('../useCurrentPage');
+jest.mock('../useActivePage');
+jest.mock('../../store/active-page');
 jest.mock('react', () => ({
   ...jest.requireActual('react'),
   useCallback: jest.fn().mockImplementation((callback: any) => callback),
@@ -119,8 +122,11 @@ describe('Test useExecuteCommand', () => {
     });
     const loadCanvasMock = jest.fn();
 
-    (usePageCanvasJSON as jest.Mock).mockReturnValueOnce(loadCanvasMock);
+    (useActivePageCanvasJSON as jest.Mock).mockReturnValueOnce(loadCanvasMock);
     (useCurrentPage as jest.Mock).mockReturnValueOnce({ pageId: 'someId' });
+    (useActivePage as unknown as jest.Mock).mockReturnValueOnce({
+      activePage: 'someId',
+    });
     const commandFunction = jest.fn();
 
     const executeCommandFunction = useExecuteCommand(commandFunction);

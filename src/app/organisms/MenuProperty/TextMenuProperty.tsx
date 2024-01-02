@@ -1,65 +1,47 @@
-import { useCurrentPageCanvas } from '@/app/hooks/usePageCanvas';
+import {
+  useChangeActiveObjectFontSizeCommand,
+  useChangeTextColorCommand,
+  useToggleBoldTextCommand,
+  useToggleItalicTextCommand,
+  useToggleUnderlineTextCommand,
+} from '@/app/hooks/editor-commands/useActiveObjectCommand';
 import { useActiveObject } from '@/app/store/active-object';
 import { Button, Input } from '@nextui-org/react';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { ColorResult, SketchPicker } from 'react-color';
+
+const FONT_SIZE_OFFSET = 1;
 
 export const TextMenuProperty: FC = () => {
   const { activeObject } = useActiveObject();
-  const [currentPageCanvas] = useCurrentPageCanvas();
   const [fontSize, setFontSize] = useState(activeObject?.get('fontSize'));
   const [textColor, setTextColor] = useState<string | undefined>(
     activeObject?.fill?.toString(),
   );
 
-  const handleChangeFontSize = (value: number) => {
-    setFontSize(value);
-    activeObject?.set('fontSize', value);
-    currentPageCanvas?.renderAll();
-  };
+  const handleChangeFontSize = useChangeActiveObjectFontSizeCommand();
 
   const decreaseFontSize = () => {
-    handleChangeFontSize(fontSize - 1);
+    const decreasedFontSize = fontSize - FONT_SIZE_OFFSET;
+    handleChangeFontSize(decreasedFontSize, () =>
+      setFontSize(decreasedFontSize),
+    );
   };
 
   const increaseFontSize = () => {
-    handleChangeFontSize(fontSize + 1);
+    const increasedFontSize = fontSize + FONT_SIZE_OFFSET;
+    handleChangeFontSize(increasedFontSize, () =>
+      setFontSize(increasedFontSize),
+    );
   };
 
-  const toggleBoldText = () => {
-    const isBold = activeObject?.get('fontWeight') === 'bold';
-    if (isBold) {
-      activeObject.set('fontWeight', 400);
-    } else {
-      activeObject?.set('fontWeight', 'bold');
-    }
-    currentPageCanvas?.renderAll();
-  };
-
-  const toggleItalicText = () => {
-    const isItalic = activeObject?.get('fontStyle') === 'italic';
-    if (isItalic) {
-      activeObject.set('fontStyle', 'normal');
-    } else {
-      activeObject?.set('fontStyle', 'italic');
-    }
-    currentPageCanvas?.renderAll();
-  };
-
-  const toggleUnderlineText = () => {
-    const isUnderlined = activeObject?.get('textDecoration') === 'underline';
-    if (isUnderlined) {
-      activeObject.set('textDecoration', '');
-    } else {
-      activeObject?.set('textDecoration', 'underline');
-    }
-    currentPageCanvas?.renderAll();
-  };
+  const toggleBoldText = useToggleBoldTextCommand();
+  const toggleItalicText = useToggleItalicTextCommand();
+  const toggleUnderlineText = useToggleUnderlineTextCommand();
+  const changeColorCommand = useChangeTextColorCommand();
 
   const handleChangeTextColor = (color: ColorResult) => {
-    setTextColor(color.hex);
-    activeObject?.set({ fill: color.hex });
-    currentPageCanvas?.renderAll();
+    changeColorCommand(color.hex, () => setTextColor(color.hex));
   };
 
   return (
@@ -80,17 +62,19 @@ export const TextMenuProperty: FC = () => {
           <Input
             type="number"
             value={fontSize}
-            onValueChange={value => handleChangeFontSize(+value)}
+            onValueChange={value =>
+              handleChangeFontSize(+value, () => setFontSize(+value))
+            }
           ></Input>
           <Button onClick={increaseFontSize}>+</Button>
         </div>
-        <Button onClick={toggleBoldText}>
+        <Button onClick={() => toggleBoldText()}>
           <strong>B</strong>
         </Button>
-        <Button onClick={toggleItalicText}>
+        <Button onClick={() => toggleItalicText()}>
           <i>I</i>
         </Button>
-        <Button onClick={toggleUnderlineText}>U</Button>
+        <Button onClick={() => toggleUnderlineText()}>U</Button>
         <SketchPicker color={textColor} onChange={handleChangeTextColor} />
       </div>
     </div>

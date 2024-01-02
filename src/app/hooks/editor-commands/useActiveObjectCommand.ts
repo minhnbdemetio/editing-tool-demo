@@ -1,17 +1,46 @@
-import { useCopyActiveObject, useDeleteActiveObject } from '../useActiveObject';
+import {
+  useChangeActiveObjectFontSize,
+  useChangeTextColor,
+  useCopyActiveObject,
+  useDeleteActiveObject,
+  useToggleBoldText,
+  useToggleItalicText,
+  useToggleUnderlineText,
+} from '../useActiveObject';
 
 import { useExecuteCommand } from './useCommand';
 
 export const useCopyActiveObjectCommand = () => {
   const copyObjectFunction = useCopyActiveObject();
-  const execute = useExecuteCommand(copyObjectFunction);
-
-  return execute;
+  return useExecuteCommand(copyObjectFunction);
 };
 
 export const useDeleteActiveObjectCommand = () => {
   const deleteObjectFunction = useDeleteActiveObject();
-  const execute = useExecuteCommand(deleteObjectFunction);
+  return useExecuteCommand(deleteObjectFunction);
+};
 
-  return execute;
+export const useChangeActiveObjectFontSizeCommand = () => {
+  const changeFontSizeFunction = useChangeActiveObjectFontSize();
+  return useExecuteCommand(changeFontSizeFunction);
+};
+
+export const useToggleBoldTextCommand = () => {
+  const toggleBoldTextFunction = useToggleBoldText();
+  return useExecuteCommand(toggleBoldTextFunction);
+};
+
+export const useToggleItalicTextCommand = () => {
+  const toggleItalicTextFunction = useToggleItalicText();
+  return useExecuteCommand(toggleItalicTextFunction);
+};
+
+export const useToggleUnderlineTextCommand = () => {
+  const toggleUnderlineTextFunction = useToggleUnderlineText();
+  return useExecuteCommand(toggleUnderlineTextFunction);
+};
+
+export const useChangeTextColorCommand = () => {
+  const changeTextColorFunction = useChangeTextColor();
+  return useExecuteCommand(changeTextColorFunction);
 };
