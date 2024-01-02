@@ -1,35 +1,11 @@
-import {
-  useChangeActiveObjectFontSizeCommand,
-  useChangeTextColorCommand,
-  useToggleBoldTextCommand,
-  useToggleItalicTextCommand,
-  useToggleUnderlineTextCommand,
-} from '@/app/hooks/editor-commands/useActiveObjectCommand';
-import { useActiveObject } from '@/app/store/active-object';
 import { Button } from '@nextui-org/react';
-import { FC, useState } from 'react';
-import { ColorResult } from 'react-color';
-import { FontProperty } from '../ObjectProperty/Text/FontProperty';
+import { FC } from 'react';
 import {
   SelectedProperty,
   useSelectedProperty,
 } from '@/app/store/selected-property';
 
 export const TextProperties: FC = () => {
-  const { activeObject } = useActiveObject();
-  const [textColor, setTextColor] = useState<string | undefined>(
-    activeObject?.fill?.toString(),
-  );
-
-  const toggleBoldText = useToggleBoldTextCommand();
-  const toggleItalicText = useToggleItalicTextCommand();
-  const toggleUnderlineText = useToggleUnderlineTextCommand();
-  const changeColorCommand = useChangeTextColorCommand();
-
-  const handleChangeTextColor = (color: ColorResult) => {
-    changeColorCommand(color.hex, () => setTextColor(color.hex));
-  };
-
   const { setSelectedProperty } = useSelectedProperty();
 
   return (
@@ -55,8 +31,6 @@ export const TextProperties: FC = () => {
       <Button>Position</Button>
       <Button>Nudge</Button>
       <Button>More</Button>
-
-      <FontProperty />
     </div>
   );
 };

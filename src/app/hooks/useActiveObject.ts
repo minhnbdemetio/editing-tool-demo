@@ -157,11 +157,11 @@ export const useToggleUnderlineText = () => {
 export const useChangeTextColor = () => {
   const activePageCanvas = useActivePageCanvas();
 
-  const changeTextColor = (color: string, callback: Function) => {
+  const changeTextColor = (color: string, callback?: Function) => {
     const activeObject = activePageCanvas?.getActiveObject();
     activeObject?.set({ fill: color });
     activePageCanvas?.renderAll();
-    callback();
+    callback && callback();
     return true;
   };
 
