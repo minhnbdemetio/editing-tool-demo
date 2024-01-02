@@ -5,6 +5,14 @@ import {
 } from '@/app/constants/canvas-constants';
 import { fabric } from 'fabric';
 import { useActivePageCanvas } from './useActivePage';
+import { useActiveObject } from '../store/active-object';
+import { isIText } from '../utilities/canvas';
+
+export const useActiveITextObject = () => {
+  const { activeObject } = useActiveObject();
+
+  return isIText(activeObject) ? activeObject : null;
+};
 
 export const useRotateActiveObject = (
   direction: 'clockwise' | 'counterclockwise',
@@ -76,6 +84,7 @@ export const useChangeActiveObjectFontSize = () => {
 
   const handleChangeFontSize = (fontSize: number, callback: Function) => {
     const activeObject = activePageCanvas?.getActiveObject();
+    if (!isIText(activeObject)) return false;
     activeObject?.set('fontSize', fontSize);
     activePageCanvas?.renderAll();
     callback();
@@ -90,6 +99,7 @@ export const useToggleBoldText = () => {
 
   const toggleBoldText = (callback?: Function) => {
     const activeObject = activePageCanvas?.getActiveObject();
+    if (!isIText(activeObject)) return false;
     const isBold = activeObject?.get('fontWeight') === 'bold';
     if (isBold) {
       activeObject.set('fontWeight', 'normal');
@@ -109,6 +119,7 @@ export const useToggleItalicText = () => {
 
   const toggleItalicText = (callback?: Function) => {
     const activeObject = activePageCanvas?.getActiveObject();
+    if (!isIText(activeObject)) return false;
     const isItalic = activeObject?.get('fontStyle') === 'italic';
     if (isItalic) {
       activeObject.set('fontStyle', 'normal');
@@ -128,11 +139,12 @@ export const useToggleUnderlineText = () => {
 
   const toggleUnderlineText = (callback?: Function) => {
     const activeObject = activePageCanvas?.getActiveObject();
-    const isUnderlined = activeObject?.get('textDecoration') === 'underline';
+    if (!isIText(activeObject)) return false;
+    const isUnderlined = activeObject?.get('underline') === true;
     if (isUnderlined) {
-      activeObject.set('textDecoration', '');
+      activeObject.set('underline', false);
     } else {
-      activeObject?.set('textDecoration', 'underline');
+      activeObject?.set('underline', true);
     }
     activePageCanvas?.renderAll();
     callback && callback();

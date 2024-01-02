@@ -8,7 +8,10 @@ import { twMerge } from '../utilities/tailwind';
 import { Add } from '../icons/Add';
 import { SideMenuItem } from './SideMenu/items';
 import { useActiveObject } from '../store/active-object';
-import { MenuProperty } from './MenuProperty';
+import { ObjectProperties } from './ObjectProperties';
+import { TransparentModal } from '../atoms/TransparentModal';
+import { SelectedObjectProperty } from './ObjectProperty/SelectedObjectProperty';
+import { useSelectedProperty } from '../store/selected-property';
 
 export const Menu: FC = () => {
   const [selectedSection, setSelectedSection] =
@@ -17,6 +20,7 @@ export const Menu: FC = () => {
   const [menuExpand, setMenuExpand] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
   const { activeObject } = useActiveObject();
+  const { selectedProperty } = useSelectedProperty();
 
   return (
     <>
@@ -40,9 +44,7 @@ export const Menu: FC = () => {
           section={selectedSection}
           menuExpand={menuExpand || Boolean(activeObject)}
         />
-        <MenuProperty menuExpand={menuExpand || !Boolean(activeObject)} />
       </div>
-      {/* backdrop */}
 
       <div
         onClick={() => {
@@ -57,17 +59,30 @@ export const Menu: FC = () => {
         )}
       ></div>
 
-      <button
-        onClick={() => {
-          setOpen(o => !o);
-        }}
-        className={twMerge(
-          'bg-green-500 p-3 rounded-[50%] z-10 shadow-lg fixed right-[10px] bottom-[10px]',
-          'desktop:hidden',
-        )}
-      >
-        <Add className="text-primaryContrast w-[24px] h-[24px]" />
-      </button>
+      <div className={'z-10 fixed bottom-0 max-w-full w-full'}>
+        <div
+          className={clsx('py-1 flex items-center', {
+            hidden: Boolean(selectedProperty),
+          })}
+        >
+          <button
+            onClick={() => {
+              setOpen(o => !o);
+            }}
+            className={twMerge(
+              'bg-green-500 p-3 rounded-[50%] shadow-lg mx-2',
+              'desktop:hidden',
+            )}
+          >
+            <Add className="text-primaryContrast w-[24px] h-[24px]" />
+          </button>
+          {activeObject && <ObjectProperties />}
+        </div>
+
+        <TransparentModal className={clsx({ hidden: !selectedProperty })}>
+          <SelectedObjectProperty />
+        </TransparentModal>
+      </div>
     </>
   );
 };

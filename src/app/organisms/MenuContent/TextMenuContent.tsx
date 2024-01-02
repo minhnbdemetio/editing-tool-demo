@@ -1,8 +1,12 @@
 import SearchInput from '@/app/molecules/SearchInput';
 import { FC, useCallback, useState } from 'react';
-import { Tabs, Tab, Card, CardBody, Button } from '@nextui-org/react';
+import { Button } from '@nextui-org/react';
 import { useActivePageCanvas } from '@/app/hooks/useActivePage';
-import { fabric } from 'fabric';
+import {
+  BodyText,
+  HeadingText,
+  SubheadingText,
+} from '@/app/factories/text-element';
 
 const recommendedKeywords = [
   'Xuân',
@@ -28,42 +32,15 @@ export const TextMenuContent: FC = () => {
   const activePageCanvas = useActivePageCanvas();
 
   const handleAddTitle = () => {
-    const text = new fabric.IText('Add a heading', {
-      left: 50,
-      top: 50,
-      fontSize: 20,
-      fontFamily: 'Arial',
-      fill: 'black',
-      hasControls: true,
-      hasRotatingPoint: true,
-      selectable: true,
-    });
+    const text = new HeadingText();
     activePageCanvas?.add(text);
   };
   const handleAddSubtitle = () => {
-    const text = new fabric.IText('Add a subheading', {
-      left: 50,
-      top: 50,
-      fontSize: 15,
-      fontFamily: 'Arial',
-      fill: 'black',
-      hasControls: true,
-      hasRotatingPoint: true,
-      selectable: true,
-    });
+    const text = new SubheadingText();
     activePageCanvas?.add(text);
   };
   const handleAddBodyText = () => {
-    const text = new fabric.IText('Add a body text', {
-      left: 50,
-      top: 50,
-      fontSize: 10,
-      fontFamily: 'Arial',
-      fill: 'black',
-      hasControls: true,
-      hasRotatingPoint: true,
-      selectable: true,
-    });
+    const text = new BodyText();
     activePageCanvas?.add(text);
   };
 
@@ -71,41 +48,22 @@ export const TextMenuContent: FC = () => {
     <div className="w-full h-full p-6 flex flex-col">
       <SearchInput
         recommendedKeywords={recommendedKeywords}
-        placeholder="Search templates"
+        placeholder="Search fonts and combinations"
         hasSetting
         onClickSetting={onSettingClick}
       />
-      <Tabs className="mt-3" aria-label="Options">
-        <Tab key="style" title="Style">
-          <div className="flex flex-col gap-3">
-            <Button onClick={handleAddTitle}>
-              <div className="flex items-center justify-between">
-                <span>Add title text</span>
-              </div>
-            </Button>
-            <Button onClick={handleAddSubtitle}>Add subtitle text</Button>
-            <Button onClick={handleAddBodyText}>Add body text</Button>
-          </div>
-        </Tab>
-        <Tab key="font" title="Font">
-          <Card>
-            <CardBody>
-              Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur.
-            </CardBody>
-          </Card>
-        </Tab>
-        <Tab key="symbol" title="Symbol">
-          <Card>
-            <CardBody>
-              Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
-              officia deserunt mollit anim id est laborum.
-            </CardBody>
-          </Card>
-        </Tab>
-      </Tabs>
+      <Button className="bg-green-500 text-white my-3">Add a text box</Button>
+      <span className="mb-1">Tap text to add to page</span>
+      <Button className="mb-3">Add your brand fonts</Button>
+      <span className="mb-1">Default text styles</span>
+      <Button onClick={handleAddTitle} className="mb-2">
+        Add a heading
+      </Button>
+      <Button onClick={handleAddSubtitle} className="mb-2">
+        Add a subheading
+      </Button>
+      <Button onClick={handleAddBodyText}>Add a little bit of body text</Button>
+      <span className="mt-3">Font combinations</span>
     </div>
   );
 };

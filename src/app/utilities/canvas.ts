@@ -1,6 +1,7 @@
 import { RefObject } from 'react';
 import {
   DEFAULT_TOOLBAR_POSITION,
+  FABRIC_OBJECT_TYPE,
   TOOLBAR_VERTICAL_OFFSET,
 } from '../constants/canvas-constants';
 
@@ -72,3 +73,9 @@ export const calculateToolbarPosition = (
 
   return { toolbarLeft, toolbarTop, rotatorLeft, rotatorTop };
 };
+
+export function isIText(
+  fabricObject: fabric.Object | null | undefined,
+): fabricObject is fabric.IText {
+  return fabricObject?.type === FABRIC_OBJECT_TYPE.ITEXT;
+}
