@@ -1,7 +1,6 @@
 'use client';
 
 import { FC, useEffect, useRef, useState } from 'react';
-import { useCurrentPageCanvas } from '../hooks/usePageCanvas';
 import { fabric } from 'fabric';
 import { ObjectToolbar } from '../molecules/ObjectToolbar';
 import { CanvasKeyboardEventHandler } from '../atoms/CanvasKeyboardEventHandler';
@@ -12,9 +11,9 @@ import { useActiveObject } from '../store/active-object';
 import { DEFAULT_TOOLBAR_POSITION } from '../constants/canvas-constants';
 import { twMerge } from '../utilities/tailwind';
 import { useActivePage } from '../store/active-page';
-import { useEditablePages } from '../store/editable-pages';
 import { CuttingZoneReminder } from '../molecules/CuttingZoneReminder';
 import { usePageSize } from '../store/use-page-size';
+import { useCurrentPageCanvas } from '../hooks/usePageCanvas';
 
 export interface EditablePageProps {
   pageId: string;
@@ -136,15 +135,14 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
       setActivePage(pageId);
     });
 
-    setPageCanvas(canvas);
     setActivePage(pageId);
+    setPageCanvas(canvas);
 
     return () => {
       canvas.off();
       pageCanvas?.off();
       pageCanvas?.dispose();
       canvas.dispose();
-      setPageCanvas(null);
       setActiveObject(null);
       setActivePage(null);
     };
@@ -203,8 +201,6 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
             visibility: showToolbar ? 'initial' : 'hidden',
           }}
         />
-
-        <div></div>
       </div>
     </CuttingZoneReminder>
   );

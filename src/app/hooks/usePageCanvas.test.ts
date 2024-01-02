@@ -28,6 +28,21 @@ describe('Test useCurrentPageCanvas', () => {
   });
 });
 
+describe('Test usePageCanvasJSON', () => {
+  afterAll(() => {
+    jest.resetAllMocks();
+  });
+  test('Should return value', async () => {
+    const mockJSON = { version: '5.3.0', objects: [] };
+
+    const { factory } = await import('./usePageCanvas');
+    jest
+      .spyOn(factory, 'useCurrentPageCanvas')
+      .mockReturnValueOnce([{ toJSON: () => mockJSON }] as any);
+    expect(factory.usePageCanvasJSON()).toEqual(mockJSON);
+  });
+});
+
 describe('Test usePageCanvasById', () => {
   afterAll(() => {
     jest.resetAllMocks();
@@ -64,21 +79,6 @@ describe('Test usePageCanvasById', () => {
     const { result } = renderHook(() => usePageCanvasById(randomPageId));
     expect(result.current[0]).toBe(null);
     expect(result.current[1]).toBe(null);
-  });
-});
-
-describe('Test usePageCanvasJSON', () => {
-  afterAll(() => {
-    jest.resetAllMocks();
-  });
-  test('Should return value', async () => {
-    const mockJSON = { version: '5.3.0', objects: [] };
-
-    const { factory } = await import('./usePageCanvas');
-    jest
-      .spyOn(factory, 'useCurrentPageCanvas')
-      .mockReturnValueOnce([{ toJSON: () => mockJSON }] as any);
-    expect(factory.usePageCanvasJSON()).toEqual(mockJSON);
   });
 });
 

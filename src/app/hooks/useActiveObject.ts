@@ -4,12 +4,12 @@ import {
   ROTATE_ANGLE_OFFSET,
 } from '@/app/constants/canvas-constants';
 import { fabric } from 'fabric';
-import { useCurrentPageCanvas } from './usePageCanvas';
+import { useActivePageCanvas } from './useActivePage';
 
 export const useRotateActiveObject = (
   direction: 'clockwise' | 'counterclockwise',
 ) => {
-  const [currentCanvas] = useCurrentPageCanvas();
+  const currentCanvas = useActivePageCanvas();
 
   const handleRotateActiveObject = () => {
     const activeObject = currentCanvas?.getActiveObject();
@@ -33,7 +33,7 @@ export const useRotateActiveObject = (
 };
 
 export const useDeleteActiveObject = () => {
-  const [currentCanvas] = useCurrentPageCanvas();
+  const currentCanvas = useActivePageCanvas();
 
   const handleDeleteActiveObject = () => {
     const activeObject = currentCanvas?.getActiveObject();
@@ -48,7 +48,7 @@ export const useDeleteActiveObject = () => {
 };
 
 export const useCopyActiveObject = () => {
-  const [currentCanvas] = useCurrentPageCanvas();
+  const currentCanvas = useActivePageCanvas();
 
   const handleCopyObject = () => {
     const activeObject = currentCanvas?.getActiveObject();
@@ -69,4 +69,89 @@ export const useCopyActiveObject = () => {
   };
 
   return handleCopyObject;
+};
+
+export const useChangeActiveObjectFontSize = () => {
+  const activePageCanvas = useActivePageCanvas();
+
+  const handleChangeFontSize = (fontSize: number, callback: Function) => {
+    const activeObject = activePageCanvas?.getActiveObject();
+    activeObject?.set('fontSize', fontSize);
+    activePageCanvas?.renderAll();
+    callback();
+    return true;
+  };
+
+  return handleChangeFontSize;
+};
+
+export const useToggleBoldText = () => {
+  const activePageCanvas = useActivePageCanvas();
+
+  const toggleBoldText = (callback?: Function) => {
+    const activeObject = activePageCanvas?.getActiveObject();
+    const isBold = activeObject?.get('fontWeight') === 'bold';
+    if (isBold) {
+      activeObject.set('fontWeight', 'normal');
+    } else {
+      activeObject?.set('fontWeight', 'bold');
+    }
+    activePageCanvas?.renderAll();
+    callback && callback();
+    return true;
+  };
+
+  return toggleBoldText;
+};
+
+export const useToggleItalicText = () => {
+  const activePageCanvas = useActivePageCanvas();
+
+  const toggleItalicText = (callback?: Function) => {
+    const activeObject = activePageCanvas?.getActiveObject();
+    const isItalic = activeObject?.get('fontStyle') === 'italic';
+    if (isItalic) {
+      activeObject.set('fontStyle', 'normal');
+    } else {
+      activeObject?.set('fontStyle', 'italic');
+    }
+    activePageCanvas?.renderAll();
+    callback && callback();
+    return true;
+  };
+
+  return toggleItalicText;
+};
+
+export const useToggleUnderlineText = () => {
+  const activePageCanvas = useActivePageCanvas();
+
+  const toggleUnderlineText = (callback?: Function) => {
+    const activeObject = activePageCanvas?.getActiveObject();
+    const isUnderlined = activeObject?.get('textDecoration') === 'underline';
+    if (isUnderlined) {
+      activeObject.set('textDecoration', '');
+    } else {
+      activeObject?.set('textDecoration', 'underline');
+    }
+    activePageCanvas?.renderAll();
+    callback && callback();
+    return true;
+  };
+
+  return toggleUnderlineText;
+};
+
+export const useChangeTextColor = () => {
+  const activePageCanvas = useActivePageCanvas();
+
+  const changeTextColor = (color: string, callback: Function) => {
+    const activeObject = activePageCanvas?.getActiveObject();
+    activeObject?.set({ fill: color });
+    activePageCanvas?.renderAll();
+    callback();
+    return true;
+  };
+
+  return changeTextColor;
 };
