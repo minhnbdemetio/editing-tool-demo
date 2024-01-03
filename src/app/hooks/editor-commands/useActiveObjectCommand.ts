@@ -5,6 +5,7 @@ import {
   useDeleteActiveObject,
   useToggleBoldText,
   useToggleItalicText,
+  useToggleStrokeText,
   useToggleUnderlineText,
 } from '../useActiveObject';
 
@@ -43,4 +44,9 @@ export const useToggleUnderlineTextCommand = () => {
 export const useChangeTextColorCommand = () => {
   const changeTextColorFunction = useChangeTextColor();
   return useExecuteCommand(changeTextColorFunction, { debounce: true });
+};
+
+export const useToggleStrokeTextCommand = () => {
+  const toggleStrokeTextFunction = useToggleStrokeText();
+  return useExecuteCommand(toggleStrokeTextFunction);
 };

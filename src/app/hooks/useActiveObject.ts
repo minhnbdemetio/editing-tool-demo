@@ -142,7 +142,7 @@ export const useToggleUnderlineText = () => {
   const toggleUnderlineText = (callback?: Function) => {
     const activeObject = activePageCanvas?.getActiveObject();
     if (!isIText(activeObject)) return false;
-    const isUnderlined = activeObject?.get('underline') === true;
+    const isUnderlined = activeObject?.get('underline');
     if (isUnderlined) {
       activeObject.set('underline', false);
     } else {
@@ -154,6 +154,51 @@ export const useToggleUnderlineText = () => {
   };
 
   return useCallback(toggleUnderlineText, [activePageCanvas]);
+};
+
+export const useToggleStrokeText = () => {
+  const activePageCanvas = useActivePageCanvas();
+
+  const toggleStrokeText = (callback?: Function) => {
+    const activeObject = activePageCanvas?.getActiveObject();
+    if (!isIText(activeObject)) return false;
+
+    const isStroke = activeObject?.get('linethrough');
+    if (isStroke) {
+      activeObject.set('linethrough', false);
+    } else {
+      activeObject?.set('linethrough', true);
+    }
+    activePageCanvas?.renderAll();
+    callback && callback();
+    return true;
+  };
+
+  return useCallback(toggleStrokeText, [activePageCanvas]);
+};
+
+export const useToggleCapitalText = () => {
+  const activePageCanvas = useActivePageCanvas();
+
+  const toggleStrokeText = (callback?: Function) => {
+    const activeObject = activePageCanvas?.getActiveObject();
+    if (!isIText(activeObject)) return false;
+
+    const isCapitalized = activeObject.get('styles');
+    console.log({ isCapitalized });
+
+    // if (isCapitalized) {
+    //   activeObject.set('text', originalText);
+    //   setOriginalText(originalText);
+    // } else {
+    //   activeObject?.set('text', capitalizedText);
+    // }
+    // activePageCanvas?.renderAll();
+    callback && callback();
+    return true;
+  };
+
+  return useCallback(toggleStrokeText, [activePageCanvas]);
 };
 
 export const useChangeTextColor = () => {

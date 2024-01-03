@@ -6,6 +6,7 @@ import { FC } from 'react';
 import { FontProperty } from './Text/FontProperty';
 import { FontSizeProperty } from './Text/FontSizeProperty';
 import { ColorProperty } from './Text/ColorProperty';
+import { FormatProperty } from './Text/FormatProperty';
 
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
@@ -20,6 +21,9 @@ export const SelectedObjectProperty: FC = () => {
       }
       case SelectedProperty.TextColor: {
         return <ColorProperty />;
+      }
+      case SelectedProperty.TextFormat: {
+        return <FormatProperty />;
       }
       default: {
         return null;
