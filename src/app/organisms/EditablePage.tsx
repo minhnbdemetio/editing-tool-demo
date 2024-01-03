@@ -14,10 +14,13 @@ import { useActivePage } from '../store/active-page';
 import { CuttingZoneReminder } from '../molecules/CuttingZoneReminder';
 import { usePageSize } from '../store/use-page-size';
 import { useCurrentPageCanvas } from '../hooks/usePageCanvas';
+import { LineEventHandler } from '../utilities/lineEventHandler';
 
 export interface EditablePageProps {
   pageId: string;
 }
+
+let selectedElement: fabric.Object | null = null;
 
 const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   const [pageCanvas, setPageCanvas] = useCurrentPageCanvas();
@@ -131,12 +134,14 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
       handleHideToolbarOnEvent();
     });
 
-    canvas.on('mouse:down', () => {
+    canvas.on('mouse:down', event => {
       setActivePage(pageId);
     });
 
     setActivePage(pageId);
     setPageCanvas(canvas);
+
+    new LineEventHandler(canvas);
 
     return () => {
       canvas.off();
