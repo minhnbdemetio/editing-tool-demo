@@ -6,6 +6,7 @@ import {
   createDashedLine,
   createDotsLine,
   createSolidLine,
+  widthEndArrow,
 } from '@/app/utilities/line';
 
 interface LinesProps {}
@@ -37,6 +38,18 @@ export const Lines: React.FC<LinesProps> = () => {
           const line = createDotsLine([20, 20, 100, 20], {
             stroke: 'red',
           });
+
+          canvas?.add(line);
+          canvas?.renderAll();
+          return;
+        }
+        case 'arrow-closed': {
+          console.debug('????');
+          const line = widthEndArrow(
+            createDotsLine([20, 20, 100, 20], {
+              stroke: 'red',
+            }),
+          );
 
           canvas?.add(line);
           canvas?.renderAll();
