@@ -1,5 +1,6 @@
 import {
   useToggleBoldTextCommand,
+  useToggleCapitalTextCommand,
   useToggleItalicTextCommand,
   useToggleStrokeTextCommand,
   useToggleUnderlineTextCommand,
@@ -22,14 +23,14 @@ import { Underline } from '@/app/icons/Underline';
 import { Button, ButtonGroup } from '@nextui-org/react';
 import { FC, useState } from 'react';
 
-export const FormatProperty: FC = () => {
+interface FormatPropertyProps {}
+
+export const FormatProperty: FC<FormatPropertyProps> = ({}) => {
   const toggleBoldTextCommand = useToggleBoldTextCommand();
   const toggleItalicTextCommand = useToggleItalicTextCommand();
   const toggleUnderlineTextCommand = useToggleUnderlineTextCommand();
   const toggleStrokeTextCommand = useToggleStrokeTextCommand();
-  const toggleCapitalTextCommand = useToggleCapitalText();
-  const activeIText = useActiveITextObject();
-  const [originalText, setOriginalText] = useState(activeIText?.text);
+  const toggleCapitalTextCommand = useToggleCapitalTextCommand();
 
   return (
     <div className="w-full h-full">

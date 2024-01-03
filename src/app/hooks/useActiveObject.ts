@@ -9,6 +9,7 @@ import { useActiveObject } from '../store/active-object';
 import { isIText } from '../utilities/canvas';
 import { GradientStop } from '../utilities/color.type';
 import { useCallback } from 'react';
+import { HeadingText } from '../factories/text-element';
 
 export const useActiveITextObject = () => {
   const { activeObject } = useActiveObject();
@@ -181,19 +182,18 @@ export const useToggleCapitalText = () => {
   const activePageCanvas = useActivePageCanvas();
 
   const toggleStrokeText = (callback?: Function) => {
-    const activeObject = activePageCanvas?.getActiveObject();
+    const activeObject = activePageCanvas?.getActiveObject() as HeadingText;
     if (!isIText(activeObject)) return false;
 
-    const isCapitalized = activeObject.get('styles');
-    console.log({ isCapitalized });
+    const textTransform = activeObject?.textTransform;
+    const isCapitalized = textTransform === 'uppercase';
 
-    // if (isCapitalized) {
-    //   activeObject.set('text', originalText);
-    //   setOriginalText(originalText);
-    // } else {
-    //   activeObject?.set('text', capitalizedText);
-    // }
-    // activePageCanvas?.renderAll();
+    if (isCapitalized) {
+      activeObject.setTextTransform('normal');
+    } else {
+      activeObject.setTextTransform('uppercase');
+    }
+    activePageCanvas?.renderAll();
     callback && callback();
     return true;
   };

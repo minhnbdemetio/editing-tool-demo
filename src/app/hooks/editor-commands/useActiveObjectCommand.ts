@@ -4,6 +4,7 @@ import {
   useCopyActiveObject,
   useDeleteActiveObject,
   useToggleBoldText,
+  useToggleCapitalText,
   useToggleItalicText,
   useToggleStrokeText,
   useToggleUnderlineText,
@@ -49,4 +50,9 @@ export const useChangeTextColorCommand = () => {
 export const useToggleStrokeTextCommand = () => {
   const toggleStrokeTextFunction = useToggleStrokeText();
   return useExecuteCommand(toggleStrokeTextFunction);
+};
+
+export const useToggleCapitalTextCommand = () => {
+  const toggleCapitalText = useToggleCapitalText();
+  return useExecuteCommand(toggleCapitalText);
 };

@@ -1,6 +1,7 @@
 import { fabric } from 'fabric';
 
 export class HeadingText extends fabric.IText {
+  textTransform: string;
   constructor() {
     super('Add a heading', {
       left: 50,
@@ -12,6 +13,23 @@ export class HeadingText extends fabric.IText {
       hasRotatingPoint: true,
       selectable: true,
     });
+    this.textTransform = 'normal'
+  }
+
+  transform(ctx: CanvasRenderingContext2D): void {
+    if (this.textTransform === 'uppercase') {
+      this.text = (this.text || '').toUpperCase();
+    } else if (this.textTransform === 'lowercase') {
+      this.text = (this.text || '').toLowerCase();
+    } else {
+      this.text = this.text;
+    }
+    super.transform(ctx);
+  }
+
+  setTextTransform(textTransform: 'normal' | 'uppercase' | 'lowercase') {
+    this.textTransform = textTransform;
+    this.enterEditing();
   }
 }
 
