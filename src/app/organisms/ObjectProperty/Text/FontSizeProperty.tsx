@@ -1,6 +1,5 @@
 import { useChangeActiveObjectFontSizeCommand } from '@/app/hooks/editor-commands/useActiveObjectCommand';
 import { useActiveITextObject } from '@/app/hooks/useActiveObject';
-import { useActiveObject } from '@/app/store/active-object';
 import { Slider, Tooltip } from '@nextui-org/react';
 import { FC, useState } from 'react';
 

@@ -7,6 +7,8 @@ import { fabric } from 'fabric';
 import { useActivePageCanvas } from './useActivePage';
 import { useActiveObject } from '../store/active-object';
 import { isIText } from '../utilities/canvas';
+import { GradientStop } from '../utilities/color.type';
+import { useCallback } from 'react';
 
 export const useActiveITextObject = () => {
   const { activeObject } = useActiveObject();
@@ -37,7 +39,7 @@ export const useRotateActiveObject = (
     return rotateAngle;
   };
 
-  return handleRotateActiveObject;
+  return useCallback(handleRotateActiveObject, [currentCanvas, direction]);
 };
 
 export const useDeleteActiveObject = () => {
@@ -52,7 +54,7 @@ export const useDeleteActiveObject = () => {
     return false;
   };
 
-  return handleDeleteActiveObject;
+  return useCallback(handleDeleteActiveObject, [currentCanvas]);
 };
 
 export const useCopyActiveObject = () => {
@@ -76,7 +78,7 @@ export const useCopyActiveObject = () => {
     return true;
   };
 
-  return handleCopyObject;
+  return useCallback(handleCopyObject, [currentCanvas]);
 };
 
 export const useChangeActiveObjectFontSize = () => {
@@ -91,7 +93,7 @@ export const useChangeActiveObjectFontSize = () => {
     return true;
   };
 
-  return handleChangeFontSize;
+  return useCallback(handleChangeFontSize, [activePageCanvas]);
 };
 
 export const useToggleBoldText = () => {
@@ -111,7 +113,7 @@ export const useToggleBoldText = () => {
     return true;
   };
 
-  return toggleBoldText;
+  return useCallback(toggleBoldText, [activePageCanvas]);
 };
 
 export const useToggleItalicText = () => {
@@ -131,7 +133,7 @@ export const useToggleItalicText = () => {
     return true;
   };
 
-  return toggleItalicText;
+  return useCallback(toggleItalicText, [activePageCanvas]);
 };
 
 export const useToggleUnderlineText = () => {
@@ -151,7 +153,7 @@ export const useToggleUnderlineText = () => {
     return true;
   };
 
-  return toggleUnderlineText;
+  return useCallback(toggleUnderlineText, [activePageCanvas]);
 };
 
 export const useChangeTextColor = () => {
@@ -165,5 +167,28 @@ export const useChangeTextColor = () => {
     return true;
   };
 
-  return changeTextColor;
+  return useCallback(changeTextColor, [activePageCanvas]);
+};
+
+export const useChangeTextColorGradient = () => {
+  const activePageCanvas = useActivePageCanvas();
+
+  const changeTextColorGradient = (
+    colorStops: GradientStop[],
+    callback?: Function,
+  ) => {
+    const activeObject = activePageCanvas?.getActiveObject();
+    const gradient = new fabric.Gradient({
+      type: 'linear',
+      coords: { x1: 0, y1: 0, x2: 0, y2: 1 },
+      gradientUnits: 'percentage',
+      colorStops,
+    });
+    activeObject?.set({ fill: gradient });
+    activePageCanvas?.renderAll();
+    callback && callback();
+    return true;
+  };
+
+  return useCallback(changeTextColorGradient, [activePageCanvas]);
 };

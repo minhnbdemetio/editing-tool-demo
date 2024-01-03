@@ -4,7 +4,7 @@ import { useChangeTextColorCommand } from '../hooks/editor-commands/useActiveObj
 import { useActiveITextObject } from '../hooks/useActiveObject';
 
 interface TextColorPickerProps {
-  onSelectColor: (color: string) => any;
+  onSelectColor?: (color: string) => any;
 }
 
 export const TextColorPicker: FC<TextColorPickerProps> = ({
@@ -18,7 +18,7 @@ export const TextColorPicker: FC<TextColorPickerProps> = ({
 
   const handleChangeColor = (color: ColorResult) => {
     changeColorCommand(color.hex, () => setColor(color.hex));
-    onSelectColor(color.hex);
+    onSelectColor && onSelectColor(color.hex);
   };
 
   return (

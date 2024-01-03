@@ -4,6 +4,9 @@ import {
   FABRIC_OBJECT_TYPE,
   TOOLBAR_VERTICAL_OFFSET,
 } from '../constants/canvas-constants';
+// @ts-ignore
+import ColorThief from 'colorthief';
+import { rgbToHex } from './color';
 
 export const getToolBarHorizontalCenterPosition = (
   targetObject: fabric.Object,
@@ -79,3 +82,33 @@ export function isIText(
 ): fabricObject is fabric.IText {
   return fabricObject?.type === FABRIC_OBJECT_TYPE.ITEXT;
 }
+
+const MAX_PALETTE_COLORS = 15;
+
+export const getCanvasPalette = async (
+  canvas: fabric.Canvas | null,
+): Promise<Array<string>> => {
+  if (!canvas) return [];
+
+  const canvasImgSrc = canvas.toDataURL();
+  const canvasImgEl = document.createElement('img');
+  canvasImgEl.src = canvasImgSrc;
+
+  const colorThief = new ColorThief();
+  let palette: number[][] = [];
+  if (canvasImgEl.complete) {
+    palette = await colorThief.getPalette(canvasImgEl, MAX_PALETTE_COLORS);
+  } else {
+    palette = await new Promise(res => {
+      canvasImgEl.addEventListener('load', function () {
+        res(colorThief.getPalette(canvasImgEl, MAX_PALETTE_COLORS));
+      });
+    });
+  }
+
+  return Array.from(
+    new Set(
+      palette.map((color: number[]) => rgbToHex(color[0], color[1], color[2])),
+    ),
+  );
+};

@@ -26,9 +26,10 @@ export const Menu: FC = () => {
     <>
       <div
         className={twMerge(
-          'absolute duration-300 w-full max-h-[80%] left-0 z-30 flex flex-col-reverse h-full -bottom-full',
+          'absolute duration-300 w-full max-h-[80%] left-0 z-30 flex flex-col-reverse h-full',
           {
             'bottom-0': open,
+            hidden: !open,
           },
           'desktop:relative desktop:top-0 desktop:left-0 desktop:max-h-none  desktop:h-full desktop:w-fit desktop:flex-row',
         )}
@@ -40,10 +41,7 @@ export const Menu: FC = () => {
           selectedSection={selectedSection}
         />
 
-        <MenuContent
-          section={selectedSection}
-          menuExpand={menuExpand || Boolean(activeObject)}
-        />
+        <MenuContent section={selectedSection} menuExpand={menuExpand} />
       </div>
 
       <div
@@ -59,30 +57,32 @@ export const Menu: FC = () => {
         )}
       ></div>
 
-      <div className={'z-10 fixed bottom-0 max-w-full w-full'}>
-        <div
-          className={clsx('py-1 flex items-center', {
-            hidden: Boolean(selectedProperty),
-          })}
+      <div
+        className={clsx('py-1 flex items-center fixed bottom-0 z-10 w-full', {
+          hidden: Boolean(selectedProperty),
+        })}
+      >
+        <button
+          onClick={() => {
+            setOpen(o => !o);
+          }}
+          className={twMerge(
+            'bg-green-500 p-3 rounded-[50%] shadow-lg mx-2',
+            'desktop:hidden',
+          )}
         >
-          <button
-            onClick={() => {
-              setOpen(o => !o);
-            }}
-            className={twMerge(
-              'bg-green-500 p-3 rounded-[50%] shadow-lg mx-2',
-              'desktop:hidden',
-            )}
-          >
-            <Add className="text-primaryContrast w-[24px] h-[24px]" />
-          </button>
-          {activeObject && <ObjectProperties />}
-        </div>
-
-        <TransparentModal className={clsx({ hidden: !selectedProperty })}>
-          <SelectedObjectProperty />
-        </TransparentModal>
+          <Add className="text-primaryContrast w-[24px] h-[24px]" />
+        </button>
+        {activeObject && <ObjectProperties />}
       </div>
+
+      <TransparentModal
+        className={clsx('z-10 fixed bottom-0 max-h-[80%]', {
+          hidden: !selectedProperty,
+        })}
+      >
+        <SelectedObjectProperty />
+      </TransparentModal>
     </>
   );
 };
