@@ -57,6 +57,23 @@ export class HeadingText extends CustomizableIText {
       hasRotatingPoint: true,
       selectable: true,
     });
+    this.textTransform = 'normal'
+  }
+
+  transform(ctx: CanvasRenderingContext2D): void {
+    if (this.textTransform === 'uppercase') {
+      this.text = (this.text || '').toUpperCase();
+    } else if (this.textTransform === 'lowercase') {
+      this.text = (this.text || '').toLowerCase();
+    } else {
+      this.text = this.text;
+    }
+    super.transform(ctx);
+  }
+
+  setTextTransform(textTransform: 'normal' | 'uppercase' | 'lowercase') {
+    this.textTransform = textTransform;
+    this.enterEditing();
   }
 }
 
