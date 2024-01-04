@@ -237,3 +237,65 @@ export const useChangeTextColorGradient = () => {
 
   return useCallback(changeTextColorGradient, [activePageCanvas]);
 };
+
+export const useChangeTextAlige = () => {
+  const activePageCanvas = useActivePageCanvas();
+
+  const changeTextAlige = (textAlign: string, callback?: Function) => {
+    const activeObject = activePageCanvas?.getActiveObject();
+    if (!isIText(activeObject)) return false;
+    const width = activeObject.width;
+    activeObject?.set('textAlign', textAlign).set('width', width).setCoords();
+    activePageCanvas?.renderAll();
+    callback && callback();
+    return true;
+  };
+
+  return useCallback(changeTextAlige, [activePageCanvas]);
+};
+
+export const useToggleListTypeDiscText = () => {
+  const activePageCanvas = useActivePageCanvas();
+
+  const toggleListTypeDiscText = (callback?: Function) => {
+    const activeObject = activePageCanvas?.getActiveObject();
+    if (!isCustomizableText(activeObject)) return false;
+
+    const listTypeText = activeObject?.listType;
+    const isDiscType = listTypeText === 'disc';
+
+    if (isDiscType) {
+      activeObject.setOrderListText('normal');
+    } else {
+      activeObject.setOrderListText('disc');
+    }
+    activePageCanvas?.renderAll();
+    callback && callback();
+    return true;
+  };
+
+  return useCallback(toggleListTypeDiscText, [activePageCanvas]);
+};
+
+export const useToggleListTypeNumberText = () => {
+  const activePageCanvas = useActivePageCanvas();
+
+  const toggleListTypeText = (callback?: Function) => {
+    const activeObject = activePageCanvas?.getActiveObject();
+    if (!isCustomizableText(activeObject)) return false;
+
+    const listTypeText = activeObject?.listType;
+    const isNumberType = listTypeText === 'number';
+
+    if (isNumberType) {
+      activeObject.setOrderListText('normal');
+    } else {
+      activeObject.setOrderListText('number');
+    }
+    activePageCanvas?.renderAll();
+    callback && callback();
+    return true;
+  };
+
+  return useCallback(toggleListTypeText, [activePageCanvas]);
+};

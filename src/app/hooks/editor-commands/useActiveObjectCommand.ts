@@ -1,11 +1,14 @@
 import {
   useChangeActiveObjectFontSize,
+  useChangeTextAlige,
   useChangeTextColor,
   useCopyActiveObject,
   useDeleteActiveObject,
   useToggleBoldText,
   useToggleCapitalText,
   useToggleItalicText,
+  useToggleListTypeDiscText,
+  useToggleListTypeNumberText,
   useToggleStrokeText,
   useToggleUnderlineText,
 } from '../useActiveObject';
@@ -55,4 +58,19 @@ export const useToggleStrokeTextCommand = () => {
 export const useToggleCapitalTextCommand = () => {
   const toggleCapitalText = useToggleCapitalText();
   return useExecuteCommand(toggleCapitalText);
+};
+
+export const useChangeTextAlignCommand = () => {
+  const changeTextAlign = useChangeTextAlige();
+  return useExecuteCommand(changeTextAlign);
+};
+
+export const useToggleListTypeDiscTextCommand = () => {
+  const toggleListTypeText = useToggleListTypeDiscText();
+  return useExecuteCommand(toggleListTypeText);
+};
+
+export const useToggleListTypeNumberTextCommand = () => {
+  const toggleListTypeNumberText = useToggleListTypeNumberText();
+  return useExecuteCommand(toggleListTypeNumberText);
 };
