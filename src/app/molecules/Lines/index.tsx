@@ -6,7 +6,24 @@ import {
   createDashedLine,
   createDotsLine,
   createSolidLine,
-  widthEndArrow,
+  withEndArrow,
+  withEndCircle,
+  widthEndTriangle,
+  withStartArrow,
+  widthStartTriangle,
+  withStartCircle,
+  withEndOutlineCircle,
+  withStartOutlineCircle,
+  withStartOutlineSquare,
+  withEndOutlineSquare,
+  withStartSquare,
+  withEndSquare,
+  withEndRhombus,
+  withStartRhombus,
+  withEndOutlineRhombus,
+  withStartOutlineRhombus,
+  withStartLine,
+  withEndLine,
 } from '@/app/utilities/line';
 
 interface LinesProps {}
@@ -43,15 +60,167 @@ export const Lines: React.FC<LinesProps> = () => {
           canvas?.renderAll();
           return;
         }
-        case 'arrow-closed': {
-          console.debug('????');
+        case 'end-triangle': {
           if (canvas) {
-            const line = widthEndArrow(
-              createDotsLine([190, 190, 150, 100], {
+            const line = widthEndTriangle(
+              createSolidLine([100, 100, 150, 100], {
                 stroke: 'red',
               }),
               canvas,
             );
+
+            canvas?.add(line);
+            canvas?.renderAll();
+          }
+          return;
+        }
+        case 'dots-end-arrow': {
+          if (canvas) {
+            const line = createDotsLine([20, 20, 100, 20], {
+              stroke: 'red',
+            });
+            canvas?.add(line);
+            withEndArrow(line, canvas);
+
+            canvas?.renderAll();
+
+            canvas.renderAll();
+          }
+          return;
+        }
+        case 'dots-closed-triangle': {
+          if (canvas) {
+            const line = createDotsLine([20, 20, 100, 20], {
+              stroke: 'red',
+            });
+            canvas?.add(line);
+
+            widthEndTriangle(line, canvas);
+            widthStartTriangle(line, canvas);
+
+            canvas?.renderAll();
+          }
+          return;
+        }
+        case 'arrow-closed': {
+          if (canvas) {
+            const line = createSolidLine([20, 20, 100, 20], {
+              stroke: 'red',
+            });
+
+            withEndArrow(line, canvas);
+            withStartArrow(line, canvas);
+
+            canvas?.add(line);
+            canvas?.renderAll();
+          }
+          return;
+        }
+        case 'end-arrow': {
+          if (canvas) {
+            const line = createSolidLine([20, 20, 100, 20], {
+              stroke: 'red',
+            });
+
+            withEndArrow(line, canvas);
+
+            canvas?.add(line);
+            canvas?.renderAll();
+          }
+          return;
+        }
+        case 'line-closed-circle': {
+          if (canvas) {
+            const line = createSolidLine([20, 20, 100, 20], {
+              stroke: 'red',
+            });
+
+            withEndCircle(line, canvas);
+            withStartCircle(line, canvas);
+
+            canvas?.add(line);
+            canvas?.renderAll();
+          }
+          return;
+        }
+        case 'line-closed-outline-circle': {
+          if (canvas) {
+            const line = createSolidLine([20, 20, 100, 20], {
+              stroke: 'red',
+            });
+
+            withEndOutlineCircle(line, canvas);
+            withStartOutlineCircle(line, canvas);
+
+            canvas?.add(line);
+            canvas?.renderAll();
+          }
+          return;
+        }
+        case 'line-closed-outline-square': {
+          if (canvas) {
+            const line = createSolidLine([20, 20, 100, 20], {
+              stroke: 'red',
+            });
+
+            withStartOutlineSquare(line, canvas);
+            withEndOutlineSquare(line, canvas);
+
+            canvas?.add(line);
+            canvas?.renderAll();
+          }
+          return;
+        }
+        case 'line-closed-square': {
+          if (canvas) {
+            const line = createSolidLine([20, 20, 100, 20], {
+              stroke: 'red',
+            });
+
+            withStartSquare(line, canvas);
+            withEndSquare(line, canvas);
+
+            canvas?.add(line);
+            canvas?.renderAll();
+          }
+          return;
+        }
+        case 'line-closed-rhombus': {
+          if (canvas) {
+            const line = createSolidLine([20, 20, 100, 20], {
+              stroke: 'red',
+            });
+
+            withEndRhombus(line, canvas);
+            withStartRhombus(line, canvas);
+
+            canvas?.add(line);
+            canvas?.renderAll();
+          }
+          return;
+        }
+        case 'line-closed-outline-rhombus': {
+          if (canvas) {
+            const line = createSolidLine([20, 20, 100, 20], {
+              stroke: 'red',
+            });
+
+            withEndOutlineRhombus(line, canvas);
+            withStartOutlineRhombus(line, canvas);
+
+            canvas?.add(line);
+            canvas?.renderAll();
+          }
+          return;
+        }
+        case 'closed': {
+          if (canvas) {
+            const line = createSolidLine([20, 20, 100, 20], {
+              stroke: 'red',
+            });
+
+            withStartLine(line, canvas);
+            withEndLine(line, canvas);
 
             canvas?.add(line);
             canvas?.renderAll();
