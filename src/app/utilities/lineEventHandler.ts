@@ -1,5 +1,6 @@
 import { Canvas, Point } from 'fabric/fabric-impl';
 import { fabric } from 'fabric';
+import { getAngle, getEndPosition } from './line';
 
 export class LineEventHandler {
   canvas: Canvas;
@@ -69,10 +70,9 @@ export class LineEventHandler {
   }
 
   makeScaler(left: number, top: number, position: 'left' | 'right') {
-    const centerLine = this.getVerticalCenterLine();
     const c = new fabric.Circle({
-      left: left - 5 + centerLine,
-      top: top - 5 + centerLine,
+      left: left,
+      top: top,
       strokeWidth: 1,
       radius: 5,
       fill: '#fff',
@@ -85,6 +85,8 @@ export class LineEventHandler {
       selectable: false,
       hasBorders: false,
       hasControls: true,
+      originX: 'center',
+      originY: 'center',
     });
 
     return c;
@@ -94,8 +96,15 @@ export class LineEventHandler {
     if (this.selectedLine) {
       const x1 = this.selectedLine.get('x1' as any);
       const y1 = this.selectedLine.get('y1' as any);
-      const x2 = this.selectedLine.get('x2' as any);
-      const y2 = this.selectedLine.get('y2' as any);
+      let x2 = this.selectedLine.get('x2' as any);
+      let y2 = this.selectedLine.get('y2' as any);
+
+      if (this.selectedLine.data?.end) {
+        const end = this.selectedLine.data.end as fabric.Triangle;
+
+        x2 = end.oCoords?.mt.x;
+        y2 = end.oCoords?.mt.y;
+      }
 
       this.canvas.add(this.makeScaler(x1, y1, 'left'));
       this.canvas.add(this.makeScaler(x2, y2, 'right'));
@@ -120,8 +129,11 @@ export class LineEventHandler {
       const position = this.selectedScaler.data.position as 'left' | 'right';
 
       if (position === 'right') {
-        const x2 = pointer.x;
-        const y2 = pointer.y;
+        let x2 = pointer.x;
+        let y2 = pointer.y;
+
+        this.moveAdornments();
+
         this.selectedLine.set({ x2, y2 } as any);
         this.selectedLine.setCoords(true);
       }
@@ -133,6 +145,19 @@ export class LineEventHandler {
       }
 
       this.canvas.renderAll();
+    }
+  }
+
+  moveAdornments() {
+    if (this.selectedLine) {
+      const end = this.selectedLine.data?.end as fabric.Triangle | undefined;
+      if (end && this.selectedLine) {
+        const endPosition = getEndPosition(this.selectedLine as fabric.Line);
+        end.left = endPosition.left;
+        end.top = endPosition.top;
+        end.angle = getAngle(this.selectedLine as fabric.Line);
+        end.setCoords();
+      }
     }
   }
 
@@ -149,6 +174,8 @@ export class LineEventHandler {
       const y1 = this.selectedLine.get('y1' as any) + yChanged;
       const x2 = this.selectedLine.get('x2' as any) + xChanged;
       const y2 = this.selectedLine.get('y2' as any) + yChanged;
+
+      this.moveAdornments();
 
       this.selectedLine.set({ x2, y2, x1, y1 } as any);
       this.selectedLine.setCoords(true);

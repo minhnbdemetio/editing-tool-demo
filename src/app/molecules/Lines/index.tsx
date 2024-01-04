@@ -45,14 +45,17 @@ export const Lines: React.FC<LinesProps> = () => {
         }
         case 'arrow-closed': {
           console.debug('????');
-          const line = widthEndArrow(
-            createDotsLine([20, 20, 100, 20], {
-              stroke: 'red',
-            }),
-          );
+          if (canvas) {
+            const line = widthEndArrow(
+              createDotsLine([190, 190, 150, 100], {
+                stroke: 'red',
+              }),
+              canvas,
+            );
 
-          canvas?.add(line);
-          canvas?.renderAll();
+            canvas?.add(line);
+            canvas?.renderAll();
+          }
           return;
         }
       }
