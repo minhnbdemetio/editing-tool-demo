@@ -10,8 +10,10 @@ export const ObjectRotator = forwardRef<HTMLDivElement, ObjectRotatorProps>(
     const handleRotateObject = useRotateActiveObject('counterclockwise');
 
     return (
-      <div ref={ref} className={twMerge('flex', props.className)} {...props}>
-        <IconButton onClick={handleRotateObject}>Rotate</IconButton>
+      <div ref={ref} className={twMerge('flex ', props.className)} {...props}>
+        <IconButton className="" onClick={handleRotateObject}>
+          Rotate
+        </IconButton>
       </div>
     );
   },

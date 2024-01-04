@@ -11,25 +11,29 @@ export const CanvasKeyboardEventHandler = () => {
     useRotateActiveObject('counterclockwise');
 
   useEffect(() => {
-    document.addEventListener('keydown', function (event) {
-      const isCmdOrCtrlPressed = event.metaKey || event.ctrlKey;
-      if (event.key === 'Delete' || event.key === 'Backspace') {
-        event.preventDefault();
-        deleteEventHandler();
-      }
+    const editorContainer = document.getElementById('editor-container');
 
-      if (isCmdOrCtrlPressed && event.key === 'ArrowLeft') {
-        event.preventDefault();
-        rotateClockwiseEventHandler();
-      }
+    if (editorContainer) {
+      editorContainer.addEventListener('keydown', function (event) {
+        const isCmdOrCtrlPressed = event.metaKey || event.ctrlKey;
+        if (event.key === 'Delete' || event.key === 'Backspace') {
+          event.preventDefault();
+          deleteEventHandler();
+        }
 
-      if (isCmdOrCtrlPressed && event.key === 'ArrowRight') {
-        event.preventDefault();
-        rotateCounterclockwiseEventHandler();
-      }
-    });
+        if (isCmdOrCtrlPressed && event.key === 'ArrowLeft') {
+          event.preventDefault();
+          rotateClockwiseEventHandler();
+        }
 
-    return () => document.removeEventListener('keydown', () => {});
+        if (isCmdOrCtrlPressed && event.key === 'ArrowRight') {
+          event.preventDefault();
+          rotateCounterclockwiseEventHandler();
+        }
+      });
+
+      return () => document.removeEventListener('keydown', () => {});
+    }
   }, [
     deleteEventHandler,
     rotateClockwiseEventHandler,

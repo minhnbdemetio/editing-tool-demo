@@ -146,7 +146,6 @@ export default function Home() {
 
   return (
     <main className="min-h-screen ">
-      <button onClick={() => console.log(canvas?.toJSON())}>export</button>
       <div className="flex gap-20 items-stretch">
         <div className="flex gap-3">
           <div className="flex flex-col justify-start ">

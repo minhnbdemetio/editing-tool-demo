@@ -9,7 +9,7 @@ interface UploadPopoverProps {}
 export const UploadPopover: React.FC<UploadPopoverProps> = ({}) => {
   return (
     <>
-      <Popover placement="bottom" offset={0}>
+      <Popover placement="bottom" offset={10}>
         <PopoverTrigger>
           <button className=" p-3">
             <DotsHorizontal className="w-[20px] h-[20px]" />

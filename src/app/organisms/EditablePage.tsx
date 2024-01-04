@@ -1,24 +1,28 @@
 'use client';
+
 import { FC, useEffect, useRef, useState } from 'react';
-import { usePageCanvas } from '../hooks/usePageCanvas';
 import { fabric } from 'fabric';
 import { ObjectToolbar } from '../molecules/ObjectToolbar';
 import { CanvasKeyboardEventHandler } from '../atoms/CanvasKeyboardEventHandler';
 import { ObjectRotator } from '../molecules/ObjectToolbar/ObjectRotator';
-import {
-  getToolBarHorizontalCenterPosition,
-  getToolBarVerticalPosition,
-} from '../utils/canvas-utils';
+import { calculateToolbarPosition, getEventTarget } from '../utilities/canvas';
 import { withCurrentPage } from '../hocs/withCurrentPage';
-
-const DEFAULT_TOOLBAR_POSITION = 0;
+import { useActiveObject } from '../store/active-object';
+import { DEFAULT_TOOLBAR_POSITION } from '../constants/canvas-constants';
+import { twMerge } from '../utilities/tailwind';
+import { useActivePage } from '../store/active-page';
+import { CuttingZoneReminder } from '../molecules/CuttingZoneReminder';
+import { usePageSize } from '../store/use-page-size';
+import { useCurrentPageCanvas } from '../hooks/usePageCanvas';
 
 export interface EditablePageProps {
   pageId: string;
 }
 
-const EditableCanvas: FC<EditablePageProps> = () => {
-  const [pageCanvas, setPageCanvas] = usePageCanvas();
+const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
+  const [pageCanvas, setPageCanvas] = useCurrentPageCanvas();
+  const { setActiveObject } = useActiveObject();
+  const { activePage, setActivePage } = useActivePage();
 
   const canvasEl = useRef<HTMLCanvasElement>(null);
   const canvasContainerEl = useRef<HTMLDivElement>(null);
@@ -35,30 +39,20 @@ const EditableCanvas: FC<EditablePageProps> = () => {
     top: DEFAULT_TOOLBAR_POSITION,
   });
 
+  const updateActiveObjectOnEvent = (event: fabric.IEvent<MouseEvent>) => {
+    const target = getEventTarget(event);
+    setActiveObject(target);
+  };
+
+  const clearActiveObject = () => {
+    setActiveObject(null);
+  };
+
   const handleShowToolBarOnEvent = (event: fabric.IEvent<MouseEvent>) => {
     setShowToolbar(true);
-    const target = event.selected ? event.selected[0] : event.target;
-    if (!target || !toolbarEl.current || !rotatorEl.current) return;
-
-    const toolbarLeft = getToolBarHorizontalCenterPosition(
-      target,
-      toolbarEl.current,
-    );
-    const toolbarTop = getToolBarVerticalPosition(
-      target,
-      toolbarEl.current,
-      'top',
-    );
-
-    const rotatorLeft = getToolBarHorizontalCenterPosition(
-      target,
-      rotatorEl.current,
-    );
-    const rotatorTop = getToolBarVerticalPosition(
-      target,
-      toolbarEl.current,
-      'bottom',
-    );
+    const target = getEventTarget(event);
+    const { rotatorLeft, rotatorTop, toolbarLeft, toolbarTop } =
+      calculateToolbarPosition(target, toolbarEl, rotatorEl);
 
     setToolbarPosition({
       left: toolbarLeft,
@@ -104,14 +98,17 @@ const EditableCanvas: FC<EditablePageProps> = () => {
 
     canvas.on('selection:created', event => {
       handleShowToolBarOnEvent(event);
+      updateActiveObjectOnEvent(event);
     });
 
     canvas.on('selection:updated', event => {
       handleShowToolBarOnEvent(event);
+      updateActiveObjectOnEvent(event);
     });
 
     canvas.on('selection:cleared', event => {
       handleHideToolbarOnEvent();
+      clearActiveObject();
     });
 
     canvas.on('object:moving', event => {
@@ -134,6 +131,11 @@ const EditableCanvas: FC<EditablePageProps> = () => {
       handleHideToolbarOnEvent();
     });
 
+    canvas.on('mouse:down', () => {
+      setActivePage(pageId);
+    });
+
+    setActivePage(pageId);
     setPageCanvas(canvas);
 
     return () => {
@@ -141,7 +143,8 @@ const EditableCanvas: FC<EditablePageProps> = () => {
       pageCanvas?.off();
       pageCanvas?.dispose();
       canvas.dispose();
-      setPageCanvas(null);
+      setActiveObject(null);
+      setActivePage(null);
     };
   }, []);
 
@@ -162,33 +165,44 @@ const EditableCanvas: FC<EditablePageProps> = () => {
     };
   }, [pageCanvas]);
 
-  return (
-    <div
-      ref={canvasContainerEl}
-      className="w-full h-full relative bg-white aspect-video"
-    >
-      <CanvasKeyboardEventHandler />
-      <canvas ref={canvasEl}></canvas>
+  const { workingHeightPixels, workingWidthPixels } = usePageSize();
 
-      <ObjectToolbar
-        ref={toolbarEl}
-        className="absolute"
+  return (
+    <CuttingZoneReminder>
+      <div
         style={{
-          left: toolbarPosition.left,
-          top: toolbarPosition.top,
-          visibility: showToolbar ? 'initial' : 'hidden',
+          width: '100%',
+          aspectRatio: workingWidthPixels / workingHeightPixels,
         }}
-      />
-      <ObjectRotator
-        ref={rotatorEl}
-        className="absolute"
-        style={{
-          left: rotatorPosition.left,
-          top: rotatorPosition.top,
-          visibility: showToolbar ? 'initial' : 'hidden',
-        }}
-      />
-    </div>
+        ref={canvasContainerEl}
+        className={twMerge(` relative bg-white `, {
+          'shadow-[0_0_0_2px_#00dcf0]': pageId === activePage,
+        })}
+        id={pageId}
+      >
+        <CanvasKeyboardEventHandler />
+        <canvas ref={canvasEl}></canvas>
+
+        <ObjectToolbar
+          ref={toolbarEl}
+          className="absolute"
+          style={{
+            left: toolbarPosition.left,
+            top: toolbarPosition.top,
+            visibility: showToolbar ? 'initial' : 'hidden',
+          }}
+        />
+        <ObjectRotator
+          ref={rotatorEl}
+          className="absolute"
+          style={{
+            left: rotatorPosition.left,
+            top: rotatorPosition.top,
+            visibility: showToolbar ? 'initial' : 'hidden',
+          }}
+        />
+      </div>
+    </CuttingZoneReminder>
   );
 };
 

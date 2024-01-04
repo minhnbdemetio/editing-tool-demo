@@ -1,21 +1,19 @@
 'use client';
 
-import { HTMLAttributes, forwardRef, useState } from 'react';
+import { HTMLAttributes, forwardRef } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { IconButton } from '../../atoms/IconButton';
 import {
-  useCopyActiveObject,
-  useDeleteActiveObject,
-} from '@/app/hooks/useActiveObject';
+  useCopyActiveObjectCommand,
+  useDeleteActiveObjectCommand,
+} from '@/app/hooks/editor-commands/useActiveObjectCommand';
 
 interface ObjectToolbarProps extends HTMLAttributes<HTMLDivElement> {}
 
 export const ObjectToolbar = forwardRef<HTMLDivElement, ObjectToolbarProps>(
   (props, ref) => {
-    const handleCopyObject = useCopyActiveObject();
-
-    const handleDeleteObject = useDeleteActiveObject();
-    const [selectedOption, setSelectedOption] = useState(null);
+    const handleCopyObject = useCopyActiveObjectCommand();
+    const handleDeleteObject = useDeleteActiveObjectCommand();
 
     return (
       <div
