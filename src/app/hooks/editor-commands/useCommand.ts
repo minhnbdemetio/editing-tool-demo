@@ -82,16 +82,26 @@ export const useExecuteCommand = <T extends (...args: any) => any>(
     debounce(pushCommand, options?.debounceWait || DEFAULT_DEBOUNCE_WAIT),
   );
 
-  return useCallback((...params: Parameters<T>) => {
-    commandFunction(...params);
-    options?.debounce
-      ? debouncedPushCommand.current({
-          currentStateJSON,
-          pageId: pageId || activePage || undefined,
-        })
-      : pushCommand({
-          currentStateJSON,
-          pageId: pageId || activePage || undefined,
-        });
-  }, []);
+  return useCallback(
+    (...params: Parameters<T>) => {
+      commandFunction(...params);
+      options?.debounce
+        ? debouncedPushCommand.current({
+            currentStateJSON,
+            pageId: pageId || activePage || undefined,
+          })
+        : pushCommand({
+            currentStateJSON,
+            pageId: pageId || activePage || undefined,
+          });
+    },
+    [
+      activePage,
+      commandFunction,
+      currentStateJSON,
+      options?.debounce,
+      pageId,
+      pushCommand,
+    ],
+  );
 };

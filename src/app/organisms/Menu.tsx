@@ -77,7 +77,7 @@ export const Menu: FC = () => {
       </div>
 
       <TransparentModal
-        className={clsx('z-10 fixed bottom-0 max-h-[80%]', {
+        className={clsx('z-10 fixed bottom-0 max-h-[30%]', {
           hidden: !selectedProperty,
         })}
       >
