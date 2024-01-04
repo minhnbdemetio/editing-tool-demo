@@ -3,41 +3,31 @@ import { get } from 'lodash';
 
 export class CustomizableIText extends fabric.IText {
   customizable: boolean;
-  textHolderSpan: HTMLSpanElement;
+  originalText: string | undefined;
   textTransform: string;
 
   constructor(text: string, options?: fabric.ITextOptions | undefined) {
     super(text, options);
     this.customizable = true;
     this.textTransform = 'normal';
-    this.textHolderSpan = document.createElement('span');
-    this.textHolderSpan.innerHTML = this.text || '';
-    this.textHolderSpan.style.width = '0px';
-    this.textHolderSpan.style.height = '0px';
-    this.textHolderSpan.style.position = 'absolute';
-    this.textHolderSpan.style.opacity = '0';
-    this.textHolderSpan.style.zIndex = '-999';
-    document.body.appendChild(this.textHolderSpan);
+    this.originalText = this.text;
   }
 
   onInput(e: Event): void {
+    this.originalText = this.hiddenTextarea?.value;
     super.onInput(e);
-    this.textHolderSpan.innerHTML = get(e.target, 'value', '');
   }
 
   setTextTransform(form: 'normal' | 'uppercase') {
-    if (!this.textHolderSpan) return;
+    if (!this.text) return;
     switch (form) {
       case 'uppercase': {
-        this.textHolderSpan.style.textTransform = 'uppercase';
-        console.log(this.textHolderSpan.innerText);
-        this.text = this.textHolderSpan.innerText;
+        this.text = this.text.toUpperCase();
         this.textTransform = 'uppercase';
         return;
       }
       case 'normal': {
-        this.textHolderSpan.style.textTransform = 'none';
-        this.text = this.textHolderSpan.innerText;
+        this.text = this.originalText;
         this.textTransform = 'normal';
         return;
       }
