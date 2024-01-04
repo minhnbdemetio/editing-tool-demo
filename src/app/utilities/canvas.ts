@@ -7,6 +7,8 @@ import {
 // @ts-ignore
 import ColorThief from 'colorthief';
 import { rgbToHex } from './color';
+import { CustomizableIText } from '../factories/text-element';
+import { get } from 'lodash';
 
 export const getToolBarHorizontalCenterPosition = (
   targetObject: fabric.Object,
@@ -81,6 +83,15 @@ export function isIText(
   fabricObject: fabric.Object | null | undefined,
 ): fabricObject is fabric.IText {
   return fabricObject?.type === FABRIC_OBJECT_TYPE.ITEXT;
+}
+
+export function isCustomizableText(
+  fabricObject: fabric.Object | null | undefined,
+): fabricObject is CustomizableIText {
+  return (
+    fabricObject?.type === FABRIC_OBJECT_TYPE.ITEXT &&
+    Boolean(get(fabricObject, 'customizable'))
+  );
 }
 
 const MAX_PALETTE_COLORS = 15;

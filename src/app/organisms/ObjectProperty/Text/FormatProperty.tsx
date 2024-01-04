@@ -5,10 +5,6 @@ import {
   useToggleStrokeTextCommand,
   useToggleUnderlineTextCommand,
 } from '@/app/hooks/editor-commands/useActiveObjectCommand';
-import {
-  useActiveITextObject,
-  useToggleCapitalText,
-} from '@/app/hooks/useActiveObject';
 import { Bold } from '@/app/icons/Bold';
 import { BulletList } from '@/app/icons/BulletList';
 import { Italic } from '@/app/icons/Italic';
@@ -18,10 +14,10 @@ import { TextAlignBoth } from '@/app/icons/TextAlignBoth';
 import { TextAlignCenter } from '@/app/icons/TextAlignCenter';
 import { TextAlignLeft } from '@/app/icons/TextAlignLeft';
 import { TextAlignRight } from '@/app/icons/TextAlignRight';
-import { ToggleCapital } from '@/app/icons/ToggleCaptial';
+import { ToggleCapital } from '@/app/icons/ToggleCapital';
 import { Underline } from '@/app/icons/Underline';
 import { Button, ButtonGroup } from '@nextui-org/react';
-import { FC, useState } from 'react';
+import { FC } from 'react';
 
 interface FormatPropertyProps {}
 

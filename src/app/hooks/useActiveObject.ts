@@ -6,7 +6,7 @@ import {
 import { fabric } from 'fabric';
 import { useActivePageCanvas } from './useActivePage';
 import { useActiveObject } from '../store/active-object';
-import { isIText } from '../utilities/canvas';
+import { isCustomizableText, isIText } from '../utilities/canvas';
 import { GradientStop } from '../utilities/color.type';
 import { useCallback } from 'react';
 import { HeadingText } from '../factories/text-element';
@@ -181,9 +181,9 @@ export const useToggleStrokeText = () => {
 export const useToggleCapitalText = () => {
   const activePageCanvas = useActivePageCanvas();
 
-  const toggleStrokeText = (callback?: Function) => {
-    const activeObject = activePageCanvas?.getActiveObject() as HeadingText;
-    if (!isIText(activeObject)) return false;
+  const toggleCapitalText = (callback?: Function) => {
+    const activeObject = activePageCanvas?.getActiveObject();
+    if (!isCustomizableText(activeObject)) return false;
 
     const textTransform = activeObject?.textTransform;
     const isCapitalized = textTransform === 'uppercase';
@@ -198,7 +198,7 @@ export const useToggleCapitalText = () => {
     return true;
   };
 
-  return useCallback(toggleStrokeText, [activePageCanvas]);
+  return useCallback(toggleCapitalText, [activePageCanvas]);
 };
 
 export const useChangeTextColor = () => {

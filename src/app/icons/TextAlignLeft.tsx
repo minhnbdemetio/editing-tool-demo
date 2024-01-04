@@ -20,7 +20,7 @@ export const TextAlignLeft: React.FC<IconProps> = ({ className }) => {
       <use
         fill="currentColor"
         xlinkHref="#_310417673__a"
-        fill-rule="evenodd"
+        fillRule="evenodd"
       ></use>
     </svg>
   );

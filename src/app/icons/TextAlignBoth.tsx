@@ -20,7 +20,7 @@ export const TextAlignBoth: React.FC<IconProps> = ({ className }) => {
       <use
         fill="currentColor"
         xlinkHref="#_1025355287__a"
-        fill-rule="evenodd"
+        fillRule="evenodd"
       ></use>
     </svg>
   );
