@@ -17,11 +17,10 @@ export class CustomizableIText extends fabric.IText {
 
   onInput(e: Event): void {
     this.originalText = this.hiddenTextarea?.value;
-    const target = e.target as HTMLTextAreaElement;
 
-    if (target.value) {
-      const value = target.value || '';
-      target.value = this.formatTextByListType(value);
+    if (this.hiddenTextarea?.value) {
+      const value = this.hiddenTextarea?.value || '';
+      this.hiddenTextarea.value = this.formatTextByListType(value);
     }
     super.onInput(e);
   }
