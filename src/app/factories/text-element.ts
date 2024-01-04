@@ -5,16 +5,23 @@ export class CustomizableIText extends fabric.IText {
   customizable: boolean;
   originalText: string | undefined;
   textTransform: string;
+  listType: string | undefined;
 
   constructor(text: string, options?: fabric.ITextOptions | undefined) {
     super(text, options);
     this.customizable = true;
     this.textTransform = 'normal';
     this.originalText = this.text;
+    this.listType = 'normal';
   }
 
   onInput(e: Event): void {
     this.originalText = this.hiddenTextarea?.value;
+
+    if (this.hiddenTextarea?.value) {
+      const value = this.hiddenTextarea?.value || '';
+      this.hiddenTextarea.value = this.formatTextByListType(value);
+    }
     super.onInput(e);
   }
 
@@ -30,6 +37,37 @@ export class CustomizableIText extends fabric.IText {
         this.text = this.originalText;
         this.textTransform = 'normal';
         return;
+      }
+    }
+  }
+
+  setOrderListText(listType: 'normal' | 'disc' | 'number'): void {
+    this.listType = listType;
+    this.text = this.formatTextByListType(this.text);
+  }
+
+  formatTextByListType(text?: string): string {
+    if (!text) return '';
+    const originalText = text
+      .replace(/• /g, '')
+      .replace(/\d+\. /g, '')
+      .replace(/\n•$/g, '')
+      .replace(/\n\d+.$/g, '');
+    switch (this.listType) {
+      case 'number': {
+        return originalText
+          .split('\n')
+          .map((text, index) => `${index + 1}. ${text}`)
+          .join('\n');
+      }
+      case 'disc': {
+        return originalText
+          .split('\n')
+          .map(text => `• ${text}`)
+          .join('\n');
+      }
+      default: {
+        return originalText;
       }
     }
   }

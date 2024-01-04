@@ -1,7 +1,10 @@
 import {
+  useChangeTextAlignCommand,
   useToggleBoldTextCommand,
   useToggleCapitalTextCommand,
   useToggleItalicTextCommand,
+  useToggleListTypeDiscTextCommand,
+  useToggleListTypeNumberTextCommand,
   useToggleStrokeTextCommand,
   useToggleUnderlineTextCommand,
 } from '@/app/hooks/editor-commands/useActiveObjectCommand';
@@ -27,6 +30,9 @@ export const FormatProperty: FC<FormatPropertyProps> = ({}) => {
   const toggleUnderlineTextCommand = useToggleUnderlineTextCommand();
   const toggleStrokeTextCommand = useToggleStrokeTextCommand();
   const toggleCapitalTextCommand = useToggleCapitalTextCommand();
+  const changeTextAlignCommand = useChangeTextAlignCommand();
+  const toggleListTypeDiscTextCommand = useToggleListTypeDiscTextCommand();
+  const toggleListTypeNumberTextCommand = useToggleListTypeNumberTextCommand();
 
   return (
     <div className="w-full h-full">
@@ -72,25 +78,49 @@ export const FormatProperty: FC<FormatPropertyProps> = ({}) => {
         </Button>
       </div>
       <ButtonGroup className="w-full my-3">
-        <Button className="w-full" isIconOnly>
+        <Button
+          className="w-full"
+          isIconOnly
+          onClick={() => changeTextAlignCommand('left')}
+        >
           <TextAlignLeft />
         </Button>
-        <Button className="w-full" isIconOnly>
+        <Button
+          className="w-full"
+          isIconOnly
+          onClick={() => changeTextAlignCommand('center')}
+        >
           <TextAlignCenter />
         </Button>
-        <Button className="w-full" isIconOnly>
+        <Button
+          className="w-full"
+          isIconOnly
+          onClick={() => changeTextAlignCommand('right')}
+        >
           <TextAlignRight />
         </Button>
-        <Button className="w-full" isIconOnly>
+        <Button
+          className="w-full"
+          isIconOnly
+          onClick={() => changeTextAlignCommand('justify')}
+        >
           <TextAlignBoth />
         </Button>
       </ButtonGroup>
 
       <div className="flex gap-1 w-full">
-        <Button className="w-full" isIconOnly>
+        <Button
+          className="w-full"
+          isIconOnly
+          onClick={() => toggleListTypeDiscTextCommand()}
+        >
           <BulletList />
         </Button>
-        <Button className="w-full" isIconOnly>
+        <Button
+          className="w-full"
+          isIconOnly
+          onClick={() => toggleListTypeNumberTextCommand()}
+        >
           <NumberedList />
         </Button>
       </div>
