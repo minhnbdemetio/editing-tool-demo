@@ -7,11 +7,11 @@ export const useActivePageCanvas = () => {
 
   const [pageCanvas] = usePageCanvasById(activePage);
 
-  return useMemo(() => pageCanvas, [pageCanvas]);
+  return pageCanvas;
 };
 
 export const useActivePageCanvasJSON = () => {
   const activePage = useActivePageCanvas();
 
-  return useMemo(() => activePage?.toJSON(), [activePage]);
+  return activePage?.toJSON();
 };

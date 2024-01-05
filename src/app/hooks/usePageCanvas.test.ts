@@ -50,7 +50,7 @@ describe('Test usePageCanvasById', () => {
     const pageCanvasMockValue = 'someCanvas';
     const setPageCanvasMockValue = jest.fn();
     const useEditablePagesMockValue = {
-      getPageCanvas: () => pageCanvasMockValue,
+      pages: { [randomPageId]: pageCanvasMockValue },
       setPageCanvas: setPageCanvasMockValue,
     };
     (useEditablePages as unknown as jest.Mock).mockReturnValueOnce(
@@ -68,7 +68,7 @@ describe('Test usePageCanvasById', () => {
     const pageCanvasMockValue = 'someCanvas';
     const setPageCanvasMockValue = jest.fn();
     const useEditablePagesMockValue = {
-      getPageCanvas: () => pageCanvasMockValue,
+      pages: {},
       setPageCanvas: setPageCanvasMockValue,
     };
     (useEditablePages as unknown as jest.Mock).mockReturnValueOnce(
