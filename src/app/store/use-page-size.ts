@@ -36,10 +36,10 @@ export const usePageSize = create<{
   cuttingHeightPixels: convertFrameSize(
     UNITS.MILLIMETER,
     UNITS.PIXEL,
-    98,
+    94,
     null,
   ),
-  cuttingWidthPixels: convertFrameSize(UNITS.MILLIMETER, UNITS.PIXEL, 98, null),
+  cuttingWidthPixels: convertFrameSize(UNITS.MILLIMETER, UNITS.PIXEL, 94, null),
   workingUnit: 'mm',
   cuttingUnit: 'mm',
   update: pageSize => set(prev => ({ ...prev, ...pageSize })),
