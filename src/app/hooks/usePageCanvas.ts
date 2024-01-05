@@ -6,15 +6,10 @@ import { useCallback, useMemo } from 'react';
 export const useCurrentPageCanvas = () => {
   const currentPage = useCurrentPage();
   const { setPageCanvas, pages } = useEditablePages();
-  return useMemo(
-    () =>
-      [
-        pages[currentPage.pageId],
-        (canvas: fabric.Canvas | null) =>
-          setPageCanvas(currentPage.pageId, canvas),
-      ] as const,
-    [currentPage.pageId, pages, setPageCanvas],
-  );
+  return [
+    pages[currentPage.pageId],
+    (canvas: fabric.Canvas | null) => setPageCanvas(currentPage.pageId, canvas),
+  ] as const;
 };
 
 export const usePageCanvasJSON = () => {
@@ -24,33 +19,29 @@ export const usePageCanvasJSON = () => {
 };
 
 export const usePageCanvasById = (pageId: string | null) => {
-  const { getPageCanvas, setPageCanvas } = useEditablePages();
-  return useMemo(() => {
-    if (!pageId) return [null, null];
+  const { pages, setPageCanvas } = useEditablePages();
 
-    return [
-      getPageCanvas(pageId),
-      (canvas: fabric.Canvas | null) => setPageCanvas(pageId, canvas),
-    ] as const;
-  }, [getPageCanvas, pageId, setPageCanvas]);
+  if (!pageId) return [null, null];
+
+  return [
+    pages[pageId],
+    (canvas: fabric.Canvas | null) => setPageCanvas(pageId, canvas),
+  ] as const;
 };
 
 export const usePageCanvasJSONById = (pageId: string) => {
   const [currentPageCanvas] = factory.usePageCanvasById(pageId);
 
-  return useMemo(() => currentPageCanvas?.toJSON(), [currentPageCanvas]);
+  return currentPageCanvas?.toJSON();
 };
 
 export const useLoadPageCanvasState = (pageId: string) => {
   const [currentPage] = factory.usePageCanvasById(pageId);
 
-  return useCallback(
-    (canvasState: CanvasData | undefined) =>
-      currentPage?.loadFromJSON(canvasState, () => {
-        currentPage.renderAll();
-      }),
-    [currentPage],
-  );
+  return (canvasState: CanvasData | undefined) =>
+    currentPage?.loadFromJSON(canvasState, () => {
+      currentPage.renderAll();
+    });
 };
 
 export const factory = {
