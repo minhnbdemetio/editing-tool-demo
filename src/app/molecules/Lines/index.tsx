@@ -25,6 +25,7 @@ import {
   withStartLine,
   withEndLine,
 } from '@/app/utilities/line';
+import { useExecuteCommand } from '@/app/hooks/editor-commands/useCommand';
 
 interface LinesProps {}
 
@@ -232,6 +233,8 @@ export const Lines: React.FC<LinesProps> = () => {
     [canvas],
   );
 
+  const handleClickCommand = useExecuteCommand(handleClick);
+
   return (
     <div>
       <p className="text-md font-normal text-[600] text-black-500">Lines</p>
@@ -239,7 +242,7 @@ export const Lines: React.FC<LinesProps> = () => {
       <div className="mt-1 grid grid-cols-5 gap-1">
         {Items.map(item => (
           <div
-            onClick={() => handleClick(item.type)}
+            onClick={() => handleClickCommand(item.type)}
             key={item.type}
             className="relative h-auto aspect-square cursor-pointer"
           >

@@ -137,6 +137,8 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
 
     canvas.on('mouse:down', event => {
       setActivePage(pageId);
+
+      if (event.target) updateActiveObjectOnEvent(event);
     });
 
     setActivePage(pageId);

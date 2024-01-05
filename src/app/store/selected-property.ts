@@ -14,6 +14,13 @@ export enum SelectedProperty {
   TextPosition,
   TextNudge,
   TextMore,
+  LineColor,
+  LineStyle,
+  LineStart,
+  LineEnd,
+  LineType,
+  LineFormat,
+  LineTransparency,
 }
 
 interface SelectedPropertyState {
