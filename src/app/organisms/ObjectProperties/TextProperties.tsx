@@ -32,7 +32,9 @@ export const TextProperties: FC = () => {
       <Button>Layers</Button>
       <Button>Position</Button>
       <Button>Nudge</Button>
-      <Button>More</Button>
+      <Button onClick={() => setSelectedProperty(SelectedProperty.TextMore)}>
+        More
+      </Button>
     </div>
   );
 };

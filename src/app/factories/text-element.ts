@@ -16,12 +16,13 @@ export class CustomizableIText extends fabric.IText {
   }
 
   onInput(e: Event): void {
-    this.originalText = this.hiddenTextarea?.value;
-
-    if (this.hiddenTextarea?.value) {
-      const value = this.hiddenTextarea?.value || '';
-      this.hiddenTextarea.value = this.formatTextByListType(value);
+    if (this.hiddenTextarea) {
+      const hiddenTextAreaValue = this.hiddenTextarea.value;
+      this.originalText = hiddenTextAreaValue;
+      this.hiddenTextarea.value =
+        this.formatTextByListType(hiddenTextAreaValue);
     }
+
     super.onInput(e);
   }
 
