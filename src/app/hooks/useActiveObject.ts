@@ -5,6 +5,17 @@ import {
 } from '@/app/constants/canvas-constants';
 import { fabric } from 'fabric';
 import { useActivePageCanvas } from './useActivePage';
+import { useActiveObject } from '../store/active-object';
+import { isCustomizableText, isIText } from '../utilities/canvas';
+import { GradientStop } from '../utilities/color.type';
+import { useCallback } from 'react';
+import { HeadingText } from '../factories/text-element';
+
+export const useActiveITextObject = () => {
+  const { activeObject } = useActiveObject();
+
+  return isIText(activeObject) ? activeObject : null;
+};
 
 export const useRotateActiveObject = (
   direction: 'clockwise' | 'counterclockwise',
@@ -29,7 +40,7 @@ export const useRotateActiveObject = (
     return rotateAngle;
   };
 
-  return handleRotateActiveObject;
+  return useCallback(handleRotateActiveObject, [currentCanvas, direction]);
 };
 
 export const useDeleteActiveObject = () => {
@@ -44,7 +55,7 @@ export const useDeleteActiveObject = () => {
     return false;
   };
 
-  return handleDeleteActiveObject;
+  return useCallback(handleDeleteActiveObject, [currentCanvas]);
 };
 
 export const useCopyActiveObject = () => {
@@ -68,7 +79,7 @@ export const useCopyActiveObject = () => {
     return true;
   };
 
-  return handleCopyObject;
+  return useCallback(handleCopyObject, [currentCanvas]);
 };
 
 export const useChangeActiveObjectFontSize = () => {
@@ -76,13 +87,14 @@ export const useChangeActiveObjectFontSize = () => {
 
   const handleChangeFontSize = (fontSize: number, callback: Function) => {
     const activeObject = activePageCanvas?.getActiveObject();
+    if (!isIText(activeObject)) return false;
     activeObject?.set('fontSize', fontSize);
     activePageCanvas?.renderAll();
     callback();
     return true;
   };
 
-  return handleChangeFontSize;
+  return useCallback(handleChangeFontSize, [activePageCanvas]);
 };
 
 export const useToggleBoldText = () => {
@@ -90,6 +102,7 @@ export const useToggleBoldText = () => {
 
   const toggleBoldText = (callback?: Function) => {
     const activeObject = activePageCanvas?.getActiveObject();
+    if (!isIText(activeObject)) return false;
     const isBold = activeObject?.get('fontWeight') === 'bold';
     if (isBold) {
       activeObject.set('fontWeight', 'normal');
@@ -101,7 +114,7 @@ export const useToggleBoldText = () => {
     return true;
   };
 
-  return toggleBoldText;
+  return useCallback(toggleBoldText, [activePageCanvas]);
 };
 
 export const useToggleItalicText = () => {
@@ -109,6 +122,7 @@ export const useToggleItalicText = () => {
 
   const toggleItalicText = (callback?: Function) => {
     const activeObject = activePageCanvas?.getActiveObject();
+    if (!isIText(activeObject)) return false;
     const isItalic = activeObject?.get('fontStyle') === 'italic';
     if (isItalic) {
       activeObject.set('fontStyle', 'normal');
@@ -120,7 +134,7 @@ export const useToggleItalicText = () => {
     return true;
   };
 
-  return toggleItalicText;
+  return useCallback(toggleItalicText, [activePageCanvas]);
 };
 
 export const useToggleUnderlineText = () => {
@@ -128,30 +142,160 @@ export const useToggleUnderlineText = () => {
 
   const toggleUnderlineText = (callback?: Function) => {
     const activeObject = activePageCanvas?.getActiveObject();
-    const isUnderlined = activeObject?.get('textDecoration') === 'underline';
+    if (!isIText(activeObject)) return false;
+    const isUnderlined = activeObject?.get('underline');
     if (isUnderlined) {
-      activeObject.set('textDecoration', '');
+      activeObject.set('underline', false);
     } else {
-      activeObject?.set('textDecoration', 'underline');
+      activeObject?.set('underline', true);
     }
     activePageCanvas?.renderAll();
     callback && callback();
     return true;
   };
 
-  return toggleUnderlineText;
+  return useCallback(toggleUnderlineText, [activePageCanvas]);
+};
+
+export const useToggleStrokeText = () => {
+  const activePageCanvas = useActivePageCanvas();
+
+  const toggleStrokeText = (callback?: Function) => {
+    const activeObject = activePageCanvas?.getActiveObject();
+    if (!isIText(activeObject)) return false;
+
+    const isStroke = activeObject?.get('linethrough');
+    if (isStroke) {
+      activeObject.set('linethrough', false);
+    } else {
+      activeObject?.set('linethrough', true);
+    }
+    activePageCanvas?.renderAll();
+    callback && callback();
+    return true;
+  };
+
+  return useCallback(toggleStrokeText, [activePageCanvas]);
+};
+
+export const useToggleCapitalText = () => {
+  const activePageCanvas = useActivePageCanvas();
+
+  const toggleCapitalText = (callback?: Function) => {
+    const activeObject = activePageCanvas?.getActiveObject();
+    if (!isCustomizableText(activeObject)) return false;
+
+    const textTransform = activeObject?.textTransform;
+    const isCapitalized = textTransform === 'uppercase';
+
+    if (isCapitalized) {
+      activeObject.setTextTransform('normal');
+    } else {
+      activeObject.setTextTransform('uppercase');
+    }
+    activePageCanvas?.renderAll();
+    callback && callback();
+    return true;
+  };
+
+  return useCallback(toggleCapitalText, [activePageCanvas]);
 };
 
 export const useChangeTextColor = () => {
   const activePageCanvas = useActivePageCanvas();
 
-  const changeTextColor = (color: string, callback: Function) => {
+  const changeTextColor = (color: string, callback?: Function) => {
     const activeObject = activePageCanvas?.getActiveObject();
     activeObject?.set({ fill: color });
     activePageCanvas?.renderAll();
-    callback();
+    callback && callback();
     return true;
   };
 
-  return changeTextColor;
+  return useCallback(changeTextColor, [activePageCanvas]);
+};
+
+export const useChangeTextColorGradient = () => {
+  const activePageCanvas = useActivePageCanvas();
+
+  const changeTextColorGradient = (
+    colorStops: GradientStop[],
+    callback?: Function,
+  ) => {
+    const activeObject = activePageCanvas?.getActiveObject();
+    const gradient = new fabric.Gradient({
+      type: 'linear',
+      coords: { x1: 0, y1: 0, x2: 0, y2: 1 },
+      gradientUnits: 'percentage',
+      colorStops,
+    });
+    activeObject?.set({ fill: gradient });
+    activePageCanvas?.renderAll();
+    callback && callback();
+    return true;
+  };
+
+  return useCallback(changeTextColorGradient, [activePageCanvas]);
+};
+
+export const useChangeTextAlige = () => {
+  const activePageCanvas = useActivePageCanvas();
+
+  const changeTextAlige = (textAlign: string, callback?: Function) => {
+    const activeObject = activePageCanvas?.getActiveObject();
+    if (!isIText(activeObject)) return false;
+    const width = activeObject.width;
+    activeObject?.set('textAlign', textAlign).set('width', width).setCoords();
+    activePageCanvas?.renderAll();
+    callback && callback();
+    return true;
+  };
+
+  return useCallback(changeTextAlige, [activePageCanvas]);
+};
+
+export const useToggleListTypeDiscText = () => {
+  const activePageCanvas = useActivePageCanvas();
+
+  const toggleListTypeDiscText = (callback?: Function) => {
+    const activeObject = activePageCanvas?.getActiveObject();
+    if (!isCustomizableText(activeObject)) return false;
+
+    const listTypeText = activeObject?.listType;
+    const isDiscType = listTypeText === 'disc';
+
+    if (isDiscType) {
+      activeObject.setOrderListText('normal');
+    } else {
+      activeObject.setOrderListText('disc');
+    }
+    activePageCanvas?.renderAll();
+    callback && callback();
+    return true;
+  };
+
+  return useCallback(toggleListTypeDiscText, [activePageCanvas]);
+};
+
+export const useToggleListTypeNumberText = () => {
+  const activePageCanvas = useActivePageCanvas();
+
+  const toggleListTypeText = (callback?: Function) => {
+    const activeObject = activePageCanvas?.getActiveObject();
+    if (!isCustomizableText(activeObject)) return false;
+
+    const listTypeText = activeObject?.listType;
+    const isNumberType = listTypeText === 'number';
+
+    if (isNumberType) {
+      activeObject.setOrderListText('normal');
+    } else {
+      activeObject.setOrderListText('number');
+    }
+    activePageCanvas?.renderAll();
+    callback && callback();
+    return true;
+  };
+
+  return useCallback(toggleListTypeText, [activePageCanvas]);
 };

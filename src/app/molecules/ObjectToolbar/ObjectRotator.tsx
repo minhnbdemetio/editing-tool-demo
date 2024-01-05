@@ -11,7 +11,7 @@ export const ObjectRotator = forwardRef<HTMLDivElement, ObjectRotatorProps>(
 
     return (
       <div ref={ref} className={twMerge('flex ', props.className)} {...props}>
-        <IconButton className="z-30" onClick={handleRotateObject}>
+        <IconButton className="" onClick={handleRotateObject}>
           Rotate
         </IconButton>
       </div>
