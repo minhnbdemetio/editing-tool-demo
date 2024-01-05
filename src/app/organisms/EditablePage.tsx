@@ -1,235 +1,81 @@
 'use client';
 
-import { FC, useEffect, useMemo, useRef, useState } from 'react';
-import { fabric } from 'fabric';
-import { ObjectToolbar } from '../molecules/ObjectToolbar';
-import { CanvasKeyboardEventHandler } from '../atoms/CanvasKeyboardEventHandler';
-import { ObjectRotator } from '../molecules/ObjectToolbar/ObjectRotator';
-import { calculateToolbarPosition, getEventTarget } from '../utilities/canvas';
+import { FC, useEffect, useRef, useState, createRef, RefObject } from 'react';
 import { withCurrentPage } from '../hocs/withCurrentPage';
-import { useActiveObject } from '../store/active-object';
-import { DEFAULT_TOOLBAR_POSITION } from '../constants/canvas-constants';
-import { twMerge } from '../utilities/tailwind';
-import { useActivePage } from '../store/active-page';
-import { CuttingZoneReminder } from '../molecules/CuttingZoneReminder';
-import { usePageSize } from '../store/use-page-size';
-import { useCurrentPageCanvas } from '../hooks/usePageCanvas';
-import { useLineEnabled } from '../store/line-preview';
+import { MoveableRectangle } from '../atoms/moveables/Rectangle';
+import { usePageMoveableObjects } from '../store/page-moveable-objects';
+import { Button } from '@nextui-org/react';
 
 export interface EditablePageProps {
   pageId: string;
 }
 
 const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
-  const [pageCanvas, setPageCanvas] = useCurrentPageCanvas();
-  const { setActiveObject } = useActiveObject();
-  const { activePage, setActivePage } = useActivePage();
+  const { pageObjects, setPageObjects } = usePageMoveableObjects();
+  const currentPageObjects = pageObjects[pageId] || [];
+  const [elRefs, setElRefs] = useState<RefObject<HTMLDivElement>[]>([]);
+  const arrLength = 1;
 
-  const canvasEl = useRef<HTMLCanvasElement>(null);
-  const canvasContainerEl = useRef<HTMLDivElement>(null);
-  const toolbarEl = useRef<HTMLDivElement>(null);
-  const rotatorEl = useRef<HTMLDivElement>(null);
-
-  const [showToolbar, setShowToolbar] = useState(false);
-  const [toolbarPosition, setToolbarPosition] = useState({
-    left: DEFAULT_TOOLBAR_POSITION,
-    top: DEFAULT_TOOLBAR_POSITION,
-  });
-  const [rotatorPosition, setRotatorPosition] = useState({
-    left: DEFAULT_TOOLBAR_POSITION,
-    top: DEFAULT_TOOLBAR_POSITION,
-  });
-
-  const updateActiveObjectOnEvent = (event: fabric.IEvent<MouseEvent>) => {
-    const target = getEventTarget(event);
-    setActiveObject(target);
-  };
-
-  const clearActiveObject = () => {
-    setActiveObject(null);
-  };
-
-  const handleShowToolBarOnEvent = (event: fabric.IEvent<MouseEvent>) => {
-    setShowToolbar(true);
-    const target = getEventTarget(event);
-    const { rotatorLeft, rotatorTop, toolbarLeft, toolbarTop } =
-      calculateToolbarPosition(target, toolbarEl, rotatorEl);
-
-    setToolbarPosition({
-      left: toolbarLeft,
-      top: toolbarTop,
-    });
-
-    setRotatorPosition({
-      left: rotatorLeft,
-      top: rotatorTop,
-    });
-  };
-
-  const handleHideToolbarOnEvent = () => {
-    setShowToolbar(false);
-  };
-
-  // init canvas
   useEffect(() => {
-    const canvas = new fabric.Canvas(canvasEl.current, {
-      width: canvasContainerEl.current?.clientWidth,
-      height: canvasContainerEl.current?.clientHeight,
+    // add or remove refs
+    setElRefs(elRefs =>
+      Array(arrLength)
+        .fill(0)
+        .map((_, i) => elRefs[i] || createRef<HTMLDivElement>()),
+    );
+  }, [arrLength]);
+
+  useEffect(() => {
+    // let index = 0;
+    // const generateKey = () => {
+    //   index++;
+    //   return pageId + index;
+    // };
+    setPageObjects(pageId, [...currentPageObjects, ...elRefs]);
+  }, [elRefs]);
+
+  const handleExport = () => {
+    const data = currentPageObjects.map(object => {
+      const width = object.current?.clientWidth;
+      const height = object.current?.clientHeight;
+      const transform = object.current?.style.transform;
+      const cloned = object.current?.cloneNode(true);
+      console.log(cloned);
+      if (cloned) {
+        pageRef.current?.appendChild(cloned);
+      }
+      return object.current;
     });
+    console.log({ data });
+  };
 
-    const rect = new fabric.Rect({
-      left: 50,
-      top: 50,
-      width: 100,
-      height: 100,
-      fill: 'blue',
-      borderColor: 'black',
-      cornerColor: 'black',
-      cornerSize: 10,
-      transparentCorners: false,
-      lockUniScaling: true,
-      hasRotatingPoint: false,
-    });
+  // const [containerWidth, setContainerWidth] = useState(0);
+  const [scale, setScale] = useState(1);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const pageRef = useRef<HTMLDivElement>(null);
 
-    canvas.add(rect);
-
-    canvas.on('object:modified', event => {
-      handleShowToolBarOnEvent(event);
-    });
-
-    canvas.on('selection:created', event => {
-      handleShowToolBarOnEvent(event);
-      updateActiveObjectOnEvent(event);
-    });
-
-    canvas.on('selection:updated', event => {
-      handleShowToolBarOnEvent(event);
-      updateActiveObjectOnEvent(event);
-    });
-
-    canvas.on('selection:cleared', event => {
-      handleHideToolbarOnEvent();
-      clearActiveObject();
-    });
-
-    canvas.on('object:moving', event => {
-      handleHideToolbarOnEvent();
-    });
-
-    canvas.on('object:scaling', event => {
-      handleHideToolbarOnEvent();
-    });
-
-    canvas.on('object:rotating', event => {
-      handleHideToolbarOnEvent();
-    });
-
-    canvas.on('object:skewing', event => {
-      handleHideToolbarOnEvent();
-    });
-
-    canvas.on('object:resizing', event => {
-      handleHideToolbarOnEvent();
-    });
-
-    canvas.on('mouse:down', () => {
-      setActivePage(pageId);
-    });
-
-    setActivePage(pageId);
-    setPageCanvas(canvas);
-
-    return () => {
-      canvas.off();
-      pageCanvas?.off();
-      pageCanvas?.dispose();
-      canvas.dispose();
-      setActiveObject(null);
-      setActivePage(null);
-    };
-  }, []);
-
-  // handle resize canvas
   useEffect(() => {
     window.addEventListener('resize', () => {
-      if (canvasContainerEl.current) {
-        pageCanvas?.setDimensions({
-          width: canvasContainerEl.current.clientWidth,
-          height: canvasContainerEl.current.clientHeight,
-        });
-        pageCanvas?.renderAll();
+      const containerWidth = containerRef.current?.clientWidth;
+      if (containerWidth) {
+        setScale(containerWidth / 1920);
       }
     });
-
-    return () => {
-      window.removeEventListener('resize', () => {});
-    };
-  }, [pageCanvas]);
-
-  const {
-    workingHeightPixels,
-    workingWidthPixels,
-    cuttingHeightPixels,
-    cuttingWidthPixels,
-  } = usePageSize();
-
-  const { lineEnabled } = useLineEnabled();
-
-  const { paddingX, paddingY } = useMemo(() => {
-    return {
-      paddingX: Math.round((workingWidthPixels - cuttingWidthPixels) / 2),
-      paddingY: Math.round((workingHeightPixels - cuttingHeightPixels) / 2),
-    };
-  }, [
-    cuttingHeightPixels,
-    cuttingWidthPixels,
-    workingHeightPixels,
-    workingWidthPixels,
-  ]);
+  });
 
   return (
-    <CuttingZoneReminder>
+    <div ref={containerRef} className="w-full aspect-video">
       <div
-        style={{
-          width: '100%',
-          aspectRatio: workingWidthPixels / workingHeightPixels,
-        }}
-        ref={canvasContainerEl}
-        className={twMerge(` relative bg-white `, {
-          'shadow-[0_0_0_2px_#00dcf0]': pageId === activePage,
-        })}
-        id={pageId}
+        style={{ transform: `scale(${scale})` }}
+        ref={pageRef}
+        className="w-[1920px] h-[1080px] bg-white relative"
       >
-        <CanvasKeyboardEventHandler />
-        <div className="overflow-hidden">
-          <canvas
-            style={{
-              margin: !lineEnabled ? `-${paddingX}px -${paddingY}px` : ``,
-            }}
-            ref={canvasEl}
-          ></canvas>
-        </div>
-
-        <ObjectToolbar
-          ref={toolbarEl}
-          className="absolute"
-          style={{
-            left: toolbarPosition.left,
-            top: toolbarPosition.top,
-            visibility: showToolbar ? 'initial' : 'hidden',
-          }}
-        />
-        <ObjectRotator
-          ref={rotatorEl}
-          className="absolute"
-          style={{
-            left: rotatorPosition.left,
-            top: rotatorPosition.top,
-            visibility: showToolbar ? 'initial' : 'hidden',
-          }}
-        />
+        <Button onClick={handleExport}>export</Button>
+        {currentPageObjects?.map((ref, index) => (
+          <MoveableRectangle key={index} ref={ref} />
+        ))}
       </div>
-    </CuttingZoneReminder>
+    </div>
   );
 };
 
