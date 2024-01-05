@@ -5,15 +5,15 @@ import { useCallback, useMemo } from 'react';
 
 export const useCurrentPageCanvas = () => {
   const currentPage = useCurrentPage();
-  const { getPageCanvas, setPageCanvas } = useEditablePages();
+  const { setPageCanvas, pages } = useEditablePages();
   return useMemo(
     () =>
       [
-        getPageCanvas(currentPage.pageId),
+        pages[currentPage.pageId],
         (canvas: fabric.Canvas | null) =>
           setPageCanvas(currentPage.pageId, canvas),
       ] as const,
-    [currentPage.pageId, getPageCanvas, setPageCanvas],
+    [currentPage.pageId, pages, setPageCanvas],
   );
 };
 
