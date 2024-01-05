@@ -7,6 +7,7 @@ import { FontProperty } from './Text/FontProperty';
 import { FontSizeProperty } from './Text/FontSizeProperty';
 import { ColorProperty } from './Text/ColorProperty';
 import { FormatProperty } from './Text/FormatProperty';
+import { TextMoreProperty } from './Text/More';
 
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
@@ -24,6 +25,9 @@ export const SelectedObjectProperty: FC = () => {
       }
       case SelectedProperty.TextFormat: {
         return <FormatProperty />;
+      }
+      case SelectedProperty.TextMore: {
+        return <TextMoreProperty />;
       }
       default: {
         return null;
