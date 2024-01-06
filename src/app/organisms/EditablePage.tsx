@@ -15,6 +15,7 @@ import { CuttingZoneReminder } from '../molecules/CuttingZoneReminder';
 import { usePageSize } from '../store/use-page-size';
 import { useCurrentPageCanvas } from '../hooks/usePageCanvas';
 import { LineEventHandler } from '../utilities/lineEventHandler';
+import { SvgLine } from '../utilities/svg-line';
 
 export interface EditablePageProps {
   pageId: string;

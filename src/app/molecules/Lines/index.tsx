@@ -8,6 +8,8 @@ import {
   createSolidLine,
   widthEndArrow,
 } from '@/app/utilities/line';
+import { SvgLine, SvgLineAdornnment } from '@/app/utilities/svg-line';
+import { fabric } from 'fabric';
 
 interface LinesProps {}
 
@@ -18,12 +20,28 @@ export const Lines: React.FC<LinesProps> = () => {
     (type: LineType) => {
       switch (type) {
         case 'solid': {
-          const line = createSolidLine([20, 20, 100, 20], {
+          const svgLine = new SvgLine({
+            strokeWidth: 5,
             stroke: 'red',
+            length: 100,
+            startAdornment: SvgLineAdornnment.Arrow,
           });
 
-          canvas?.add(line);
-          canvas?.renderAll();
+          fabric.loadSVGFromString(svgLine.toSvg(), function (objects) {
+            const group = fabric.util.groupSVGElements(objects);
+            const line = new fabric.Group([group], {
+              left: 100,
+              top: 100,
+              data: svgLine.toObject(),
+              name: 'line',
+              hasBorders: false,
+              hasControls: false,
+              selectable: false,
+            });
+            canvas?.add(line);
+            canvas?.renderAll();
+          });
+
           return;
         }
         case 'dashed': {

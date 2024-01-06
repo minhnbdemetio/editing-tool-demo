@@ -92,10 +92,12 @@ export class LineEventHandler {
 
   createScalers() {
     if (this.selectedLine) {
-      const x1 = this.selectedLine.get('x1' as any);
-      const y1 = this.selectedLine.get('y1' as any);
-      const x2 = this.selectedLine.get('x2' as any);
-      const y2 = this.selectedLine.get('y2' as any);
+      const x1 = this.selectedLine.oCoords?.ml.x || 0;
+      const y1 = this.selectedLine.oCoords?.ml.y || 0;
+      const x2 = this.selectedLine.oCoords?.mr.x || 0;
+      const y2 = this.selectedLine.oCoords?.mr.y || 0;
+
+      console.debug(x1, y1);
 
       this.canvas.add(this.makeScaler(x1, y1, 'left'));
       this.canvas.add(this.makeScaler(x2, y2, 'right'));
@@ -110,6 +112,10 @@ export class LineEventHandler {
   handleScaling(pointer: Point) {
     if (this.selectedScaler && this.selectedLine) {
       this.clearScaler();
+
+      const line = this.selectedLine as fabric.Group;
+      const lineChild = line.getObjects().shift();
+      line.remove(lineChild as any);
 
       const centerLine = this.getVerticalCenterLine();
 
