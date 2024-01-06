@@ -202,3 +202,50 @@ export const useToggleMoveableListTypeNumberText = () => {
 
   return toggleListTypeText;
 };
+
+export const useChangeMoveableTextSpacing = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+
+  const handleChangeLetterSpacing = (fontSize: number, callback: Function) => {
+    if (!isTextObject(activeMoveableObject)) return false;
+    const element = activeMoveableObject.getElement();
+    if (!element) return false;
+    element.style.letterSpacing = `${fontSize}px`;
+    callback();
+    return true;
+  };
+
+  return handleChangeLetterSpacing;
+};
+
+export const useChangeMoveableTextLineHeight = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+
+  const handleChangeLineHeight = (lineHeight: number, callback: Function) => {
+    if (!isTextObject(activeMoveableObject)) return false;
+    const element = activeMoveableObject.getElement();
+    if (!element) return false;
+    element.style.lineHeight = `${lineHeight}px`;
+    callback();
+    return true;
+  };
+
+  return handleChangeLineHeight;
+};
+
+export const useChangeMoveableTextTransformOrigin = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+
+  const handleChangeTransformOrigin = (
+    transformOrigin: CSSStyleDeclaration['transformOrigin'],
+    callback?: Function,
+  ) => {
+    if (!isTextObject(activeMoveableObject)) return false;
+    console.log(transformOrigin);
+    activeMoveableObject.changeTransformOrigin(transformOrigin);
+    callback && callback();
+    return true;
+  };
+
+  return handleChangeTransformOrigin;
+};

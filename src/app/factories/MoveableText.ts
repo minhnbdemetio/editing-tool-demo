@@ -13,9 +13,11 @@ export class MoveableTextObject extends MoveableObject {
   } = {}) {
     super(id, htmlString);
     this.type = type ?? 'text';
+    this.transformOrigin = 'bottom';
   }
   createMoveable(container: HTMLElement): void {
     const element = this.getElement();
+    if (!element) return;
     const moveable = new Moveable(container, {
       target: element,
       draggable: true,
@@ -25,6 +27,8 @@ export class MoveableTextObject extends MoveableObject {
       resizable: true,
       checkInput: true,
       edgeDraggable: true,
+      useResizeObserver: true,
+      transformOrigin: this.transformOrigin,
     });
     moveable.on('drag', e => (e.target.style.transform = e.transform));
     moveable.on('rotate', e => (e.target.style.transform = e.transform));
@@ -34,6 +38,8 @@ export class MoveableTextObject extends MoveableObject {
       e.target.style.transform = e.drag.transform;
     });
     moveable.on('scale', e => (e.target.style.transform = e.drag.transform));
+    this.moveable = moveable;
+    element.style.transformOrigin = this.transformOrigin ?? 'bottom';
   }
   clone(): MoveableTextObject {
     const clonedData = this.cloneData();
