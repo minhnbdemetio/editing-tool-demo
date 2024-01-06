@@ -79,7 +79,6 @@ export const useToggleMoveableUnderlineText = () => {
     if (!element) return false;
     const textDecoration = element.style.textDecoration;
     const isUnderlined = textDecoration.includes('underline');
-    debugger;
     if (isUnderlined) {
       element.style.textDecoration =
         textDecoration === 'underline'

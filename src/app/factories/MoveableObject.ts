@@ -3,7 +3,7 @@ import { findIdFromString } from '../utilities/dom';
 import Moveable from 'moveable';
 
 const MAX_FIND_ELEMENT_ATTEMPTS = 100;
-export type ObjectType = 'rectangle' | 'text';
+export type ObjectType = 'rectangle' | 'text' | 'heading';
 export abstract class MoveableObject {
   id: string;
   type?: ObjectType;

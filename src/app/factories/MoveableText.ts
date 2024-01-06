@@ -1,10 +1,18 @@
 import Moveable from 'moveable';
-import { MoveableObject } from './MoveableObject';
+import { MoveableObject, ObjectType } from './MoveableObject';
 
 export class MoveableTextObject extends MoveableObject {
-  constructor(id?: string, htmlString?: string) {
+  constructor({
+    id,
+    htmlString,
+    type,
+  }: {
+    id?: string;
+    htmlString?: string;
+    type?: ObjectType;
+  } = {}) {
     super(id, htmlString);
-    this.type = 'text';
+    this.type = type ?? 'text';
   }
   createMoveable(container: HTMLElement): void {
     const element = this.getElement();
@@ -29,26 +37,10 @@ export class MoveableTextObject extends MoveableObject {
   }
   clone(): MoveableTextObject {
     const clonedData = this.cloneData();
-    return new MoveableTextObject(
-      clonedData.cloneObjectId,
-      clonedData.clonedObjectHtml,
-    );
-  }
-}
-
-export class MoveableHeadingText extends MoveableTextObject {
-  constructor(id?: string, content?: string, options?: any) {
-    const defaultOptions = {
-      width: options?.width || 200,
-      height: options?.height || 50,
-      className: options?.className || '',
-    };
-    const htmlString = `<div class="w-[${defaultOptions.width}px] w-[${defaultOptions.height}px] ${defaultOptions.className}" 
-        style="writing-mode: horizontal-tb;" contenteditable="true" id="${id}">
-          <ul><li>${content}</li>
-          </ul>
-      </div>`;
-    super(id, htmlString);
-    this.type = 'text';
+    return new MoveableTextObject({
+      id: clonedData.cloneObjectId,
+      htmlString: clonedData.clonedObjectHtml,
+      type: this.type,
+    });
   }
 }

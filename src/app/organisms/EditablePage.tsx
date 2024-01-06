@@ -6,19 +6,14 @@ import { withCurrentPage } from '../hocs/withCurrentPage';
 import { Button } from '@nextui-org/react';
 import { MoveableRectangleObject } from '../factories/MoveableRectangle';
 import { MoveableObjectElement } from '../atoms/moveables/MoveableObjectElement';
-import {
-  MoveableTextObject,
-  MoveableHeadingText,
-} from '../factories/MoveableText';
+import { MoveableTextObject } from '../factories/MoveableText';
 import { useCurrentPageObjects } from '../hooks/usePageObjects';
 import { useActivePage } from '../store/active-page';
 import {
   useCloneActiveMoveableObject,
   useDeleteActiveMoveableObject,
 } from '../hooks/useActiveMoveableObject';
-import { v4 as uuidV4 } from 'uuid';
-import { useActiveObject } from '../store/active-object';
-import { useActiveMoveableObject } from '../store/active-moveable-object';
+import { ObjectType } from '../factories/MoveableObject';
 
 export interface EditablePageProps {
   pageId: string;
@@ -26,7 +21,6 @@ export interface EditablePageProps {
 
 const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   const [objects, setObjects] = useCurrentPageObjects();
-  const { setActiveMoveableObject } = useActiveMoveableObject();
 
   const handleCreateRec = () => {
     const rec = new MoveableRectangleObject();
@@ -60,19 +54,19 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
           htmlString:
             '<div id="fdsafdsaf" style="width: 132px; height: 132px; background-color: blue; position: absolute; transform: translate(738.262px, 22.035px);"></div>',
           id: 'fdsafdsaf',
-          type: 'rectangle',
+          type: 'rectangle' as ObjectType,
         },
         {
           htmlString:
             '<div id="ertrewerwt" style="width: 98px; position: absolute; transform: translate(396.805px, 233.617px); height: 30px;"><span>heheheloloo</span></div>',
           id: 'ertrewerwt',
-          type: 'text',
+          type: 'text' as ObjectType,
         },
         {
           htmlString:
             '<div id="vcxvcxzv" style="width: 99px; position: absolute; transform: translate(341.344px, 90.4805px); height: 30px;"><span>heheheloloo</span></div>',
           id: 'vcxvcxzv',
-          type: 'text',
+          type: 'text' as ObjectType,
         },
       ],
     };
@@ -81,7 +75,7 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
       if (object.type === 'rectangle') {
         rec = new MoveableRectangleObject(object.id, object.htmlString);
       } else {
-        rec = new MoveableTextObject(object.id, object.htmlString);
+        rec = new MoveableTextObject(object);
       }
       return rec;
     });
@@ -95,9 +89,8 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   }, [pageId, setActivePage]);
 
   const handleAddTitle = () => {
-    const text = new MoveableHeadingText(uuidV4(), 'Header title');
+    const text = new MoveableTextObject({ type: 'heading' });
     setObjects([...objects, text]);
-    setActiveMoveableObject(text);
   };
 
   const [scale, setScale] = useState(1);
