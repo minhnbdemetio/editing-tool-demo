@@ -7,14 +7,19 @@ import { Button } from '@nextui-org/react';
 import { MoveableRectangleObject } from '../factories/MoveableRectangle';
 import { MoveableObjectElement } from '../atoms/moveables/MoveableObjectElement';
 import { MoveableTextObject } from '../factories/MoveableText';
-import { useCurrentPageObject } from '../hooks/usePageObjects';
+import { useCurrentPageObjects } from '../hooks/usePageObjects';
+import { useActivePage } from '../store/active-page';
+import {
+  useCloneActiveMoveableObject,
+  useDeleteActiveMoveableObject,
+} from '../hooks/useActiveMoveableObject';
 
 export interface EditablePageProps {
   pageId: string;
 }
 
 const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
-  const [objects, setObjects] = useCurrentPageObject();
+  const [objects, setObjects] = useCurrentPageObjects();
 
   const handleCreateRec = () => {
     const rec = new MoveableRectangleObject();
@@ -38,8 +43,11 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   };
 
   const handleImport = () => {
+    // for (const object of objects) {
+    //   object.destroy();
+    // }
     setObjects([]);
-    const objects = {
+    const dataObjects = {
       data: [
         {
           htmlString:
@@ -61,7 +69,7 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
         },
       ],
     };
-    const res = objects.data.map(object => {
+    const res = dataObjects.data.map(object => {
       let rec;
       if (object.type === 'rectangle') {
         rec = new MoveableRectangleObject(object.id, object.htmlString);
@@ -72,6 +80,12 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
     });
     setTimeout(() => setObjects(res));
   };
+
+  const { setActivePage } = useActivePage();
+
+  useEffect(() => {
+    setActivePage(pageId);
+  }, [pageId, setActivePage]);
 
   const [scale, setScale] = useState(1);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -97,6 +111,9 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
     });
   }, []);
 
+  const handleDeleteObject = useDeleteActiveMoveableObject();
+  const handleCloneObject = useCloneActiveMoveableObject();
+
   return (
     <div ref={containerRef} className="w-full ">
       <div className="relative" ref={layerRef}>
@@ -109,6 +126,8 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
           <Button onClick={handleImport}>import from template</Button>
           <Button onClick={() => handleCreateRec()}>create rec</Button>
           <Button onClick={() => handleCreateSpan()}>create span</Button>
+          <Button onClick={handleDeleteObject}>delete active object</Button>
+          <Button onClick={handleCloneObject}>clone active object</Button>
           {objects.map(el => (
             <MoveableObjectElement
               containerRef={pageRef}

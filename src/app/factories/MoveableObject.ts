@@ -8,6 +8,7 @@ export abstract class MoveableObject {
   id: string;
   type?: ObjectType;
   htmlString?: string;
+  moveable?: Moveable;
   constructor(id?: string, htmlString?: string) {
     this.id = id || uuidv4();
     this.htmlString = htmlString;
@@ -19,15 +20,23 @@ export abstract class MoveableObject {
   setHtmlString(htmlString: string) {
     this.htmlString = htmlString;
   }
+  setType(type: ObjectType) {
+    this.type = type;
+  }
   copy() {}
-  clone() {}
+  abstract clone(): MoveableObject;
+  cloneData() {
+    const outerHtml = this.exportHtmlString();
+    const cloneObjectId = uuidv4();
+    const clonedObjectHtml = outerHtml.replaceAll(this.id, cloneObjectId);
+    return { cloneObjectId, clonedObjectHtml };
+  }
   delete() {}
   getElement() {
     let attempt = 0;
     let element = null;
     while (attempt < MAX_FIND_ELEMENT_ATTEMPTS) {
       const elementById = document.getElementById(this.id);
-      console.log({ elementById });
       if (elementById) {
         element = elementById;
         break;
@@ -76,5 +85,11 @@ export abstract class MoveableObject {
       e.target.style.transform = e.drag.transform;
     });
     moveable.on('scale', e => (e.target.style.transform = e.drag.transform));
+    this.moveable = moveable;
+  }
+  destroy() {
+    if (!this.moveable) return false;
+    this.moveable.destroy();
+    return true;
   }
 }

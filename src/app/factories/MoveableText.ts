@@ -26,4 +26,11 @@ export class MoveableTextObject extends MoveableObject {
     });
     moveable.on('scale', e => (e.target.style.transform = e.drag.transform));
   }
+  clone(): MoveableTextObject {
+    const clonedData = this.cloneData();
+    return new MoveableTextObject(
+      clonedData.cloneObjectId,
+      clonedData.clonedObjectHtml,
+    );
+  }
 }
