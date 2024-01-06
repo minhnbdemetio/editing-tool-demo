@@ -8,10 +8,13 @@ import { MoveableRectangleObject } from '../factories/MoveableRectangle';
 import { MoveableObjectElement } from '../atoms/moveables/MoveableObjectElement';
 import { MoveableTextObject } from '../factories/MoveableText';
 import { useCurrentPageObject } from '../hooks/usePageObjects';
+import { MoveableLineObject } from '../factories/MoveableLine';
 
 export interface EditablePageProps {
   pageId: string;
 }
+
+let selectedElement: fabric.Object | null = null;
 
 const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   const [objects, setObjects] = useCurrentPageObject();
@@ -23,6 +26,11 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
 
   const handleCreateSpan = () => {
     const text = new MoveableTextObject();
+    setObjects([...objects, text]);
+  };
+
+  const handleCreateLine = () => {
+    const text = new MoveableLineObject();
     setObjects([...objects, text]);
   };
 
@@ -109,6 +117,7 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
           <Button onClick={handleImport}>import from template</Button>
           <Button onClick={() => handleCreateRec()}>create rec</Button>
           <Button onClick={() => handleCreateSpan()}>create span</Button>
+          <Button onClick={() => handleCreateLine()}>create line</Button>
           {objects.map(el => (
             <MoveableObjectElement
               containerRef={pageRef}
