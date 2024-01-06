@@ -25,7 +25,11 @@ import {
   withStartLine,
   withEndLine,
 } from '@/app/utilities/line';
-import { SvgLine, SvgLineAdornnment } from '@/app/utilities/svg-line';
+import {
+  SvgLine,
+  SvgLineAdornment,
+  SvgLineType,
+} from '@/app/utilities/svg-line';
 import { fabric } from 'fabric';
 import { useExecuteCommand } from '@/app/hooks/editor-commands/useCommand';
 
@@ -41,12 +45,17 @@ export const Lines: React.FC<LinesProps> = () => {
           const svgLine = new SvgLine({
             strokeWidth: 5,
             stroke: 'red',
+
             length: 100,
-            startAdornment: SvgLineAdornnment.Arrow,
+            startAdornment: SvgLineAdornment.Triangle,
           });
+          svgLine.setType(SvgLineType.Elbowed);
 
           fabric.loadSVGFromString(svgLine.toSvg(), function (objects) {
             const group = fabric.util.groupSVGElements(objects);
+            group.originX = 'center';
+            group.originY = 'center';
+            group.fill = 'red';
             const line = new fabric.Group([group], {
               left: 100,
               top: 100,
@@ -55,6 +64,8 @@ export const Lines: React.FC<LinesProps> = () => {
               hasBorders: false,
               hasControls: false,
               selectable: false,
+              originX: 'left',
+              originY: 'center',
             });
             canvas?.add(line);
             canvas?.renderAll();
