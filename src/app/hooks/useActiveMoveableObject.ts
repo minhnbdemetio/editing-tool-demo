@@ -12,9 +12,8 @@ export const useDeleteActiveMoveableObject = () => {
     const filteredObjects = pageObjects.filter(
       object => object.id !== activeMoveableObject.id,
     );
-
-    setPageObjects(filteredObjects);
     activeMoveableObject?.destroy();
+    setPageObjects(filteredObjects);
 
     return true;
   };
