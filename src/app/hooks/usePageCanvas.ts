@@ -1,12 +1,13 @@
 import { useEditablePages } from '@/app/store/editable-pages';
 import { CanvasData } from '../types';
 import { useCurrentPage } from './useCurrentPage';
+import { useCallback, useMemo } from 'react';
 
 export const useCurrentPageCanvas = () => {
   const currentPage = useCurrentPage();
-  const { getPageCanvas, setPageCanvas } = useEditablePages();
+  const { setPageCanvas, pages } = useEditablePages();
   return [
-    getPageCanvas(currentPage.pageId),
+    pages[currentPage.pageId],
     (canvas: fabric.Canvas | null) => setPageCanvas(currentPage.pageId, canvas),
   ] as const;
 };
@@ -14,14 +15,16 @@ export const useCurrentPageCanvas = () => {
 export const usePageCanvasJSON = () => {
   const [currentPage] = factory.useCurrentPageCanvas();
 
-  return currentPage?.toJSON();
+  return useMemo(() => currentPage?.toJSON(), [currentPage]);
 };
 
 export const usePageCanvasById = (pageId: string | null) => {
-  const { getPageCanvas, setPageCanvas } = useEditablePages();
+  const { pages, setPageCanvas } = useEditablePages();
+
   if (!pageId) return [null, null];
+
   return [
-    getPageCanvas(pageId),
+    pages[pageId],
     (canvas: fabric.Canvas | null) => setPageCanvas(pageId, canvas),
   ] as const;
 };

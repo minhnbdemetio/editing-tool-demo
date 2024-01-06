@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { fabric } from 'fabric';
 import { ObjectToolbar } from '../molecules/ObjectToolbar';
 import { CanvasKeyboardEventHandler } from '../atoms/CanvasKeyboardEventHandler';
@@ -16,6 +16,7 @@ import { usePageSize } from '../store/use-page-size';
 import { useCurrentPageCanvas } from '../hooks/usePageCanvas';
 import { LineEventHandler } from '../utilities/lineEventHandler';
 import { SvgLine } from '../utilities/svg-line';
+import { useLineEnabled } from '../store/line-preview';
 
 export interface EditablePageProps {
   pageId: string;
@@ -171,7 +172,26 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
     };
   }, [pageCanvas]);
 
-  const { workingHeightPixels, workingWidthPixels } = usePageSize();
+  const {
+    workingHeightPixels,
+    workingWidthPixels,
+    cuttingHeightPixels,
+    cuttingWidthPixels,
+  } = usePageSize();
+
+  const { lineEnabled } = useLineEnabled();
+
+  const { paddingX, paddingY } = useMemo(() => {
+    return {
+      paddingX: Math.round((workingWidthPixels - cuttingWidthPixels) / 2),
+      paddingY: Math.round((workingHeightPixels - cuttingHeightPixels) / 2),
+    };
+  }, [
+    cuttingHeightPixels,
+    cuttingWidthPixels,
+    workingHeightPixels,
+    workingWidthPixels,
+  ]);
 
   return (
     <CuttingZoneReminder>
@@ -187,7 +207,14 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
         id={pageId}
       >
         <CanvasKeyboardEventHandler />
-        <canvas ref={canvasEl}></canvas>
+        <div className="overflow-hidden">
+          <canvas
+            style={{
+              margin: !lineEnabled ? `-${paddingX}px -${paddingY}px` : ``,
+            }}
+            ref={canvasEl}
+          ></canvas>
+        </div>
 
         <ObjectToolbar
           ref={toolbarEl}

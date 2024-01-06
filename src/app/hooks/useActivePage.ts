@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useActivePage } from '../store/active-page';
 import { usePageCanvasById } from './usePageCanvas';
 
