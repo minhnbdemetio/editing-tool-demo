@@ -1,5 +1,12 @@
-import { Canvas, Point } from 'fabric/fabric-impl';
+import { Canvas, Group, Point } from 'fabric/fabric-impl';
 import { fabric } from 'fabric';
+import {
+  getAngle,
+  getAngleByPoint,
+  getEndPosition,
+  getStartPosition,
+} from './line';
+import { SvgLine, SvgLineType } from './svg-line';
 
 export class LineEventHandler {
   canvas: Canvas;
@@ -69,10 +76,9 @@ export class LineEventHandler {
   }
 
   makeScaler(left: number, top: number, position: 'left' | 'right') {
-    const centerLine = this.getVerticalCenterLine();
     const c = new fabric.Circle({
-      left: left - 5 + centerLine,
-      top: top - 5 + centerLine,
+      left: left,
+      top: top,
       strokeWidth: 1,
       radius: 5,
       fill: '#fff',
@@ -85,19 +91,23 @@ export class LineEventHandler {
       selectable: false,
       hasBorders: false,
       hasControls: true,
+      originX: 'center',
+      originY: 'center',
     });
 
     return c;
   }
 
   createScalers() {
-    if (this.selectedLine) {
+    console.debug(this.selectedLine);
+    if (
+      this.selectedLine &&
+      this.selectedLine.data.type === SvgLineType.Straight
+    ) {
       const x1 = this.selectedLine.oCoords?.ml.x || 0;
       const y1 = this.selectedLine.oCoords?.ml.y || 0;
       const x2 = this.selectedLine.oCoords?.mr.x || 0;
       const y2 = this.selectedLine.oCoords?.mr.y || 0;
-
-      console.debug(x1, y1);
 
       this.canvas.add(this.makeScaler(x1, y1, 'left'));
       this.canvas.add(this.makeScaler(x2, y2, 'right'));
@@ -109,36 +119,187 @@ export class LineEventHandler {
     return strokeWidth / 2;
   }
 
+  reloadLineSvg(lineWidth: number) {
+    if (this.selectedLine) {
+      const self = this;
+
+      const newSvg = new SvgLine(this.selectedLine.data);
+      newSvg.setLength(lineWidth);
+      this.selectedLine.data = {
+        ...this.selectedLine.data,
+        ...newSvg.toObject(),
+      };
+
+      (this.selectedLine as Group).remove(
+        ...(this.selectedLine as Group).getObjects(),
+      );
+
+      fabric.loadSVGFromString(newSvg.toSvg(), function (objects) {
+        const group = fabric.util.groupSVGElements(objects);
+        group.originX = 'center';
+        group.originY = 'center';
+        (self.selectedLine as Group).add(group);
+
+        self.canvas.renderAll();
+      });
+    }
+  }
+
   handleScaling(pointer: Point) {
     if (this.selectedScaler && this.selectedLine) {
-      this.clearScaler();
-
-      const line = this.selectedLine as fabric.Group;
-      const lineChild = line.getObjects().shift();
-      line.remove(lineChild as any);
-
-      const centerLine = this.getVerticalCenterLine();
-
-      this.selectedScaler.left = pointer.x - 5 + centerLine;
-      this.selectedScaler.top = pointer.y - 5 + centerLine;
-      this.selectedScaler.setCoords(true);
-
+      console.debug(pointer);
       const position = this.selectedScaler.data.position as 'left' | 'right';
 
       if (position === 'right') {
         const x2 = pointer.x;
         const y2 = pointer.y;
-        this.selectedLine.set({ x2, y2 } as any);
-        this.selectedLine.setCoords(true);
+        const x1 = this.selectedLine.oCoords?.ml.x || 0;
+        const y1 = this.selectedLine.oCoords?.ml.y || 0;
+        const vertical = x2 - x1;
+        const horizontal = y2 - y1;
+        let lineWidth = Math.sqrt(
+          Math.pow(vertical, 2) + Math.pow(horizontal, 2),
+        );
+
+        (this.selectedLine as Group).remove(
+          ...(this.selectedLine as Group).getObjects(),
+        );
+        const angle = getAngleByPoint(x2, y2, x1, y1, 'end');
+        this.selectedLine.set({
+          x2: x1 + lineWidth,
+        } as any);
+        this.selectedLine.centeredRotation = false;
+        this.selectedLine.rotate(angle + 90);
+        this.selectedLine.width = lineWidth;
+        this.selectedLine.setCoords(false);
+
+        this.reloadLineSvg(lineWidth);
       }
+
       if (position === 'left') {
         const x1 = pointer.x;
         const y1 = pointer.y;
-        this.selectedLine.set({ x1, y1 } as any);
+        const x2 = this.selectedLine.oCoords?.mr.x || 0;
+        const y2 = this.selectedLine.oCoords?.mr.y || 0;
+        const angle = getAngleByPoint(x1, y1, x2, y2, 'end');
+        const vertical = x2 - x1;
+        const horizontal = y2 - y1;
+        const lineWidth = Math.sqrt(
+          Math.pow(vertical, 2) + Math.pow(horizontal, 2),
+        );
+        this.selectedLine.set({ x1, y1, y2: y1, x2: x1 + lineWidth } as any);
+        this.selectedLine.centeredRotation = false;
+        this.selectedLine.rotate(angle - 90);
+        this.selectedLine.width = lineWidth;
+        this.selectedLine.left = x1;
+        this.selectedLine.top = y1;
         this.selectedLine.setCoords(false);
+
+        this.reloadLineSvg(lineWidth);
+      }
+    }
+
+    // if (this.selectedScaler && this.selectedLine) {
+    //   this.clearScaler();
+    //   const line = this.selectedLine as fabric.Group;
+    //   const lineChild = line.getObjects().shift();
+    //   line.remove(lineChild as any);
+    //   const centerLine = this.getVerticalCenterLine();
+    //   this.selectedScaler.left = pointer.x - 5 + centerLine;
+    //   this.selectedScaler.top = pointer.y - 5 + centerLine;
+    //   this.selectedScaler.setCoords(true);
+    //   const position = this.selectedScaler.data.position as 'left' | 'right';
+    //   if (position === 'right') {
+    //     const x1 = (this.selectedLine as fabric.Line).data.x1;
+    //     const y1 = (this.selectedLine as fabric.Line).data.y1;
+    //     let x2 = pointer.x;
+    //     let y2 = pointer.y;
+    //     const angle = getAngleByPoint(x1, y1, x2, y2, 'end');
+    //     const vertical = x2 - x1;
+    //     const horizontal = y2 - y1;
+    //     let lineWidth = Math.sqrt(
+    //       Math.pow(vertical, 2) + Math.pow(horizontal, 2),
+    //     );
+    //     const newSvgLine = new SvgLine(line.data);
+    //     line.data = newSvgLine.toObject();
+    //     const self = this;
+    //     fabric.loadSVGFromString(newSvgLine.toSvg(), function (objects) {
+    //       const group = fabric.util.groupSVGElements(objects);
+    //       line?.add(group);
+    //       self.canvas?.renderAll();
+    //     });
+    //     // this.selectedLine.set({ x2: x1 + lineWidth } as any);
+    //     // this.selectedLine.centeredRotation = false;
+    //     // this.selectedLine.rotate(angle - 90);
+    //     // this.selectedLine.data.x2 = x2;
+    //     // this.selectedLine.data.y2 = y2;
+    //     // this.selectedLine.setCoords(false);
+    //   }
+    //   if (position === 'left') {
+    //     const x1 = pointer.x;
+    //     const y1 = pointer.y;
+    //     const x2 = (this.selectedLine as fabric.Line).data.x2;
+    //     const y2 = (this.selectedLine as fabric.Line).data.y2;
+    //     const angle = getAngleByPoint(x1, y1, x2, y2, 'end');
+    //     const vertical = x2 - x1;
+    //     const horizontal = y2 - y1;
+    //     const lineWidth = Math.sqrt(
+    //       Math.pow(vertical, 2) + Math.pow(horizontal, 2),
+    //     );
+    //     // this.selectedLine.set({ x1, y1, y2: y1, x2: x1 + lineWidth } as any);
+    //     // this.selectedLine.centeredRotation = false;
+    //     // this.selectedLine.rotate(angle - 90);
+    //     // this.selectedLine.data.x1 = x1;
+    //     // this.selectedLine.data.y1 = y1;
+    //     // this.selectedLine.setCoords(false);
+    //   }
+    //   // this.moveAdornments();
+    //   this.canvas.renderAll();
+    // }
+  }
+
+  moveAdornments() {
+    if (this.selectedLine) {
+      const end = this.selectedLine.data?.end as fabric.Triangle | undefined;
+      const start = this.selectedLine.data?.start as
+        | fabric.Triangle
+        | undefined;
+      if (end && this.selectedLine) {
+        const endPosition = getEndPosition(this.selectedLine as fabric.Line);
+        end.left = endPosition.left;
+        end.top = endPosition.top;
+        end.angle = getAngle(this.selectedLine as fabric.Line, 'end');
+
+        if (
+          end.name === 'circle' ||
+          end.name === 'square' ||
+          end.name === 'rhombus' ||
+          end.name === 'line'
+        ) {
+          end.angle -= 90;
+        }
+
+        end.setCoords();
       }
 
-      this.canvas.renderAll();
+      if (start && this.selectedLine) {
+        const startPosition = getStartPosition(
+          this.selectedLine as fabric.Line,
+        );
+        start.left = startPosition.left;
+        start.top = startPosition.top;
+        start.angle = getAngle(this.selectedLine as fabric.Line, 'start');
+        if (
+          start.name === 'circle' ||
+          start.name === 'square' ||
+          start.name === 'rhombus' ||
+          start.name === 'line'
+        ) {
+          start.angle += 90;
+        }
+
+        start.setCoords();
+      }
     }
   }
 
@@ -157,7 +318,16 @@ export class LineEventHandler {
       const y2 = this.selectedLine.get('y2' as any) + yChanged;
 
       this.selectedLine.set({ x2, y2, x1, y1 } as any);
+
+      this.selectedLine.data.x1 += +xChanged;
+      this.selectedLine.data.x2 += +xChanged;
+      this.selectedLine.data.y2 += yChanged;
+      this.selectedLine.data.y1 += yChanged;
+
       this.selectedLine.setCoords(true);
+
+      this.moveAdornments();
+
       this.canvas.renderAll();
     }
   }

@@ -6,10 +6,32 @@ import {
   createDashedLine,
   createDotsLine,
   createSolidLine,
-  widthEndArrow,
+  withEndArrow,
+  withEndCircle,
+  widthEndTriangle,
+  withStartArrow,
+  widthStartTriangle,
+  withStartCircle,
+  withEndOutlineCircle,
+  withStartOutlineCircle,
+  withStartOutlineSquare,
+  withEndOutlineSquare,
+  withStartSquare,
+  withEndSquare,
+  withEndRhombus,
+  withStartRhombus,
+  withEndOutlineRhombus,
+  withStartOutlineRhombus,
+  withStartLine,
+  withEndLine,
 } from '@/app/utilities/line';
-import { SvgLine, SvgLineAdornnment } from '@/app/utilities/svg-line';
+import {
+  SvgLine,
+  SvgLineAdornment,
+  SvgLineType,
+} from '@/app/utilities/svg-line';
 import { fabric } from 'fabric';
+import { useExecuteCommand } from '@/app/hooks/editor-commands/useCommand';
 
 interface LinesProps {}
 
@@ -23,12 +45,17 @@ export const Lines: React.FC<LinesProps> = () => {
           const svgLine = new SvgLine({
             strokeWidth: 5,
             stroke: 'red',
+
             length: 100,
-            startAdornment: SvgLineAdornnment.Arrow,
+            startAdornment: SvgLineAdornment.Triangle,
           });
+          svgLine.setType(SvgLineType.Elbowed);
 
           fabric.loadSVGFromString(svgLine.toSvg(), function (objects) {
             const group = fabric.util.groupSVGElements(objects);
+            group.originX = 'center';
+            group.originY = 'center';
+            group.fill = 'red';
             const line = new fabric.Group([group], {
               left: 100,
               top: 100,
@@ -37,6 +64,8 @@ export const Lines: React.FC<LinesProps> = () => {
               hasBorders: false,
               hasControls: false,
               selectable: false,
+              originX: 'left',
+              originY: 'center',
             });
             canvas?.add(line);
             canvas?.renderAll();
@@ -61,22 +90,179 @@ export const Lines: React.FC<LinesProps> = () => {
           canvas?.renderAll();
           return;
         }
-        case 'arrow-closed': {
-          console.debug('????');
-          const line = widthEndArrow(
-            createDotsLine([20, 20, 100, 20], {
-              stroke: 'red',
-            }),
-          );
+        case 'end-triangle': {
+          if (canvas) {
+            const line = widthEndTriangle(
+              createSolidLine([100, 100, 150, 100], {
+                stroke: 'red',
+              }),
+              canvas,
+            );
 
-          canvas?.add(line);
-          canvas?.renderAll();
+            canvas?.add(line);
+            canvas?.renderAll();
+          }
+          return;
+        }
+        case 'dots-end-arrow': {
+          if (canvas) {
+            const line = createDotsLine([20, 20, 100, 20], {
+              stroke: 'red',
+            });
+            canvas?.add(line);
+            withEndArrow(line, canvas);
+
+            canvas?.renderAll();
+
+            canvas.renderAll();
+          }
+          return;
+        }
+        case 'dots-closed-triangle': {
+          if (canvas) {
+            const line = createDotsLine([20, 20, 100, 20], {
+              stroke: 'red',
+            });
+            canvas?.add(line);
+
+            widthEndTriangle(line, canvas);
+            widthStartTriangle(line, canvas);
+
+            canvas?.renderAll();
+          }
+          return;
+        }
+        case 'arrow-closed': {
+          if (canvas) {
+            const line = createSolidLine([20, 20, 100, 20], {
+              stroke: 'red',
+            });
+
+            withEndArrow(line, canvas);
+            withStartArrow(line, canvas);
+
+            canvas?.add(line);
+            canvas?.renderAll();
+          }
+          return;
+        }
+        case 'end-arrow': {
+          if (canvas) {
+            const line = createSolidLine([20, 20, 100, 20], {
+              stroke: 'red',
+            });
+
+            withEndArrow(line, canvas);
+
+            canvas?.add(line);
+            canvas?.renderAll();
+          }
+          return;
+        }
+        case 'line-closed-circle': {
+          if (canvas) {
+            const line = createSolidLine([20, 20, 100, 20], {
+              stroke: 'red',
+            });
+
+            withEndCircle(line, canvas);
+            withStartCircle(line, canvas);
+
+            canvas?.add(line);
+            canvas?.renderAll();
+          }
+          return;
+        }
+        case 'line-closed-outline-circle': {
+          if (canvas) {
+            const line = createSolidLine([20, 20, 100, 20], {
+              stroke: 'red',
+            });
+
+            withEndOutlineCircle(line, canvas);
+            withStartOutlineCircle(line, canvas);
+
+            canvas?.add(line);
+            canvas?.renderAll();
+          }
+          return;
+        }
+        case 'line-closed-outline-square': {
+          if (canvas) {
+            const line = createSolidLine([20, 20, 100, 20], {
+              stroke: 'red',
+            });
+
+            withStartOutlineSquare(line, canvas);
+            withEndOutlineSquare(line, canvas);
+
+            canvas?.add(line);
+            canvas?.renderAll();
+          }
+          return;
+        }
+        case 'line-closed-square': {
+          if (canvas) {
+            const line = createSolidLine([20, 20, 100, 20], {
+              stroke: 'red',
+            });
+
+            withStartSquare(line, canvas);
+            withEndSquare(line, canvas);
+
+            canvas?.add(line);
+            canvas?.renderAll();
+          }
+          return;
+        }
+        case 'line-closed-rhombus': {
+          if (canvas) {
+            const line = createSolidLine([20, 20, 100, 20], {
+              stroke: 'red',
+            });
+
+            withEndRhombus(line, canvas);
+            withStartRhombus(line, canvas);
+
+            canvas?.add(line);
+            canvas?.renderAll();
+          }
+          return;
+        }
+        case 'line-closed-outline-rhombus': {
+          if (canvas) {
+            const line = createSolidLine([20, 20, 100, 20], {
+              stroke: 'red',
+            });
+
+            withEndOutlineRhombus(line, canvas);
+            withStartOutlineRhombus(line, canvas);
+
+            canvas?.add(line);
+            canvas?.renderAll();
+          }
+          return;
+        }
+        case 'closed': {
+          if (canvas) {
+            const line = createSolidLine([20, 20, 100, 20], {
+              stroke: 'red',
+            });
+
+            withStartLine(line, canvas);
+            withEndLine(line, canvas);
+
+            canvas?.add(line);
+            canvas?.renderAll();
+          }
           return;
         }
       }
     },
     [canvas],
   );
+
+  const handleClickCommand = useExecuteCommand(handleClick);
 
   return (
     <div>
@@ -85,7 +271,7 @@ export const Lines: React.FC<LinesProps> = () => {
       <div className="mt-1 grid grid-cols-5 gap-1">
         {Items.map(item => (
           <div
-            onClick={() => handleClick(item.type)}
+            onClick={() => handleClickCommand(item.type)}
             key={item.type}
             className="relative h-auto aspect-square cursor-pointer"
           >

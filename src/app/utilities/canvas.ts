@@ -85,6 +85,12 @@ export function isIText(
   return fabricObject?.type === FABRIC_OBJECT_TYPE.ITEXT;
 }
 
+export function isILine(
+  fabricObject: fabric.Object | null | undefined,
+): fabricObject is fabric.IText {
+  return fabricObject?.name === 'line';
+}
+
 export function isCustomizableText(
   fabricObject: fabric.Object | null | undefined,
 ): fabricObject is CustomizableIText {

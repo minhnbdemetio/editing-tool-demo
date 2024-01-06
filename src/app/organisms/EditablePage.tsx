@@ -9,6 +9,15 @@ import { MoveableObjectElement } from '../atoms/moveables/MoveableObjectElement'
 import { MoveableTextObject } from '../factories/MoveableText';
 import { useCurrentPageObject } from '../hooks/usePageObjects';
 import { MoveableLineObject } from '../factories/MoveableLine';
+import { useActiveObject } from '../store/active-object';
+import { DEFAULT_TOOLBAR_POSITION } from '../constants/canvas-constants';
+import { twMerge } from '../utilities/tailwind';
+import { useActivePage } from '../store/active-page';
+import { CuttingZoneReminder } from '../molecules/CuttingZoneReminder';
+import { usePageSize } from '../store/use-page-size';
+import { useCurrentPageCanvas } from '../hooks/usePageCanvas';
+import { LineEventHandler } from '../utilities/lineEventHandler';
+import { useLineEnabled } from '../store/line-preview';
 
 export interface EditablePageProps {
   pageId: string;

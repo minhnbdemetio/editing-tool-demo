@@ -16,7 +16,7 @@ export default function DesignDetail() {
     <DndProvider backend={HTML5Backend}>
       <div className="h-full flex desktop:flex-row">
         <Menu />
-        <div className=" flex-auto overflow-auto">
+        <div className=" flex-auto overflow-auto relative z-0">
           <Editor />
         </div>
       </div>
