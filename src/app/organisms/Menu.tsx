@@ -7,11 +7,11 @@ import clsx from 'clsx';
 import { twMerge } from '../utilities/tailwind';
 import { Add } from '../icons/Add';
 import { SideMenuItem } from './SideMenu/items';
-import { useActiveObject } from '../store/active-object';
 import { ObjectProperties } from './ObjectProperties';
 import { TransparentModal } from '../atoms/TransparentModal';
 import { SelectedObjectProperty } from './ObjectProperty/SelectedObjectProperty';
 import { useSelectedProperty } from '../store/selected-property';
+import { useActiveMoveableObject } from '../store/active-moveable-object';
 
 export const Menu: FC = () => {
   const [selectedSection, setSelectedSection] =
@@ -19,7 +19,7 @@ export const Menu: FC = () => {
 
   const [menuExpand, setMenuExpand] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
-  const { activeObject } = useActiveObject();
+  const { activeMoveableObject } = useActiveMoveableObject();
   const { selectedProperty } = useSelectedProperty();
 
   return (
@@ -73,7 +73,7 @@ export const Menu: FC = () => {
         >
           <Add className="text-primaryContrast w-[24px] h-[24px]" />
         </button>
-        {activeObject && <ObjectProperties />}
+        {activeMoveableObject && <ObjectProperties />}
       </div>
 
       <TransparentModal

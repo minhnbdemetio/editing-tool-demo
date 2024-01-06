@@ -1,15 +1,15 @@
 import { FC } from 'react';
 import { PhotoMenuProperty } from './PhotoMenuProperty';
-import { useActiveObject } from '@/app/store/active-object';
 import { TextProperties } from './TextProperties';
-import { isIText } from '@/app/utilities/canvas';
+import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
+import { isTextObject } from '@/app/utilities/moveable';
 
 interface ObjectPropertiesProps {}
 
 export const ObjectProperties: FC<ObjectPropertiesProps> = ({}) => {
-  const { activeObject } = useActiveObject();
+  const { activeMoveableObject } = useActiveMoveableObject();
 
-  if (isIText(activeObject)) return <TextProperties />;
+  if (isTextObject(activeMoveableObject)) return <TextProperties />;
 
   return <PhotoMenuProperty />;
 };

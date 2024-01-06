@@ -24,11 +24,11 @@ export const Editor: FC = () => {
   }));
 
   return (
-    <div ref={drop} id="editor-container" className="bg-gray-200 p-10 min-h-0">
+    <div ref={drop} id="editor-container" className="bg-gray-200 p-10">
       <div className="text-right mb-3">
         <LinePreviewToggle />
       </div>
-      <div className="flex flex-col gap-10 h-full min-h-0">
+      <div className="flex flex-col gap-10 h-full">
         {Object.entries(pages).map(([pageId]) => (
           <div key={pageId}>
             <EditablePage pageId={pageId} />

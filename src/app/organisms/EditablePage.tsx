@@ -4,34 +4,32 @@ import { FC, useEffect, useRef, useState } from 'react';
 import { withCurrentPage } from '../hocs/withCurrentPage';
 
 import { Button } from '@nextui-org/react';
-import { MoveableObject } from '../factories/MoveableObject';
 import { MoveableRectangleObject } from '../factories/MoveableRectangle';
 import { MoveableObjectElement } from '../atoms/moveables/MoveableObjectElement';
 import { MoveableTextObject } from '../factories/MoveableText';
+import { useCurrentPageObject } from '../hooks/usePageObjects';
 
 export interface EditablePageProps {
   pageId: string;
 }
 
 const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
-  const [elements, setElements] = useState<MoveableObject[]>([]);
+  const [objects, setObjects] = useCurrentPageObject();
 
   const handleCreateRec = () => {
     const rec = new MoveableRectangleObject();
-    pageRef.current?.appendChild(rec.createElement());
-    setElements([...elements, rec]);
+    setObjects([...objects, rec]);
   };
 
   const handleCreateSpan = () => {
-    const rec = new MoveableTextObject();
-    pageRef.current?.appendChild(rec.createElement('heheheloloo'));
-    setElements([...elements, rec]);
+    const text = new MoveableTextObject();
+    setObjects([...objects, text]);
   };
 
   const handleExport = () => {
-    const data = elements.map(object => {
+    const data = objects.map(object => {
       return {
-        htmlString: object.exportString(),
+        htmlString: object.exportHtmlString(),
         id: object.id,
         type: object.type,
       };
@@ -40,24 +38,25 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   };
 
   const handleImport = () => {
+    setObjects([]);
     const objects = {
       data: [
         {
           htmlString:
-            '<div id="0b304ab2-9cd0-4586-9f08-6e49805b3a81" style="width: 132px; height: 132px; background-color: blue; position: absolute; transform: translate(738.262px, 22.035px);"></div>',
-          id: '0b304ab2-9cd0-4586-9f08-6e49805b3a81',
+            '<div id="fdsafdsaf" style="width: 132px; height: 132px; background-color: blue; position: absolute; transform: translate(738.262px, 22.035px);"></div>',
+          id: 'fdsafdsaf',
           type: 'rectangle',
         },
         {
           htmlString:
-            '<div id="12caa999-24ee-4b4d-8535-d5da163fa7a6" style="width: 98px; position: absolute; transform: translate(396.805px, 233.617px); height: 30px;"><span>heheheloloo</span></div>',
-          id: '12caa999-24ee-4b4d-8535-d5da163fa7a6',
+            '<div id="ertrewerwt" style="width: 98px; position: absolute; transform: translate(396.805px, 233.617px); height: 30px;"><span>heheheloloo</span></div>',
+          id: 'ertrewerwt',
           type: 'text',
         },
         {
           htmlString:
-            '<div id="8ab1bbac-31b9-41a4-b369-8448aecb127b" style="width: 99px; position: absolute; transform: translate(341.344px, 90.4805px); height: 30px;"><span>heheheloloo</span></div>',
-          id: '8ab1bbac-31b9-41a4-b369-8448aecb127b',
+            '<div id="vcxvcxzv" style="width: 99px; position: absolute; transform: translate(341.344px, 90.4805px); height: 30px;"><span>heheheloloo</span></div>',
+          id: 'vcxvcxzv',
           type: 'text',
         },
       ],
@@ -65,51 +64,59 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
     const res = objects.data.map(object => {
       let rec;
       if (object.type === 'rectangle') {
-        rec = new MoveableRectangleObject();
+        rec = new MoveableRectangleObject(object.id, object.htmlString);
       } else {
-        rec = new MoveableTextObject();
-      }
-      rec.setId(object.id);
-      rec.setHtmlString(object.htmlString);
-      const el = rec.createElementFromString();
-      if (el) {
-        pageRef.current?.appendChild(el);
+        rec = new MoveableTextObject(object.id, object.htmlString);
       }
       return rec;
     });
-    setElements(res);
+    setTimeout(() => setObjects(res));
   };
 
   const [scale, setScale] = useState(1);
   const containerRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef<HTMLDivElement>(null);
+  const layerRef = useRef<HTMLDivElement>(null);
+
+  const handleResize = () => {
+    const containerWidth = containerRef.current?.clientWidth;
+    const containerHeight = containerRef.current?.clientHeight;
+    if (containerWidth && containerHeight) {
+      setScale(containerWidth / 1920);
+      if (layerRef.current) {
+        layerRef.current.style.width = `${containerWidth}px`;
+        layerRef.current.style.height = `${(containerWidth * 9) / 16}px`;
+      }
+    }
+  };
 
   useEffect(() => {
+    handleResize();
     window.addEventListener('resize', () => {
-      const containerWidth = containerRef.current?.clientWidth;
-      if (containerWidth) {
-        setScale(containerWidth / 1920);
-      }
+      handleResize();
     });
-  });
+  }, []);
 
   return (
-    <div ref={containerRef} className="w-full aspect-video">
-      <div
-        style={{ transform: `scale(${scale})` }}
-        ref={pageRef}
-        className="w-[1920px] h-[1080px] bg-white relative"
-      >
-        <Button onClick={() => handleExport()}>export</Button>
-        <Button onClick={() => handleImport()}>import</Button>
-        <Button onClick={() => handleCreateRec()}>create</Button>
-        <Button onClick={() => handleCreateSpan()}>create span</Button>
-        {elements.map(el => (
-          <MoveableObjectElement
-            object={el}
-            key={el.id}
-          ></MoveableObjectElement>
-        ))}
+    <div ref={containerRef} className="w-full ">
+      <div className="relative" ref={layerRef}>
+        <div
+          style={{ transform: `scale(${scale})`, transformOrigin: '0 0' }}
+          ref={pageRef}
+          className="w-[1920px] h-[1080px] bg-white relative"
+        >
+          <Button onClick={() => handleExport()}>export to console</Button>
+          <Button onClick={handleImport}>import from template</Button>
+          <Button onClick={() => handleCreateRec()}>create rec</Button>
+          <Button onClick={() => handleCreateSpan()}>create span</Button>
+          {objects.map(el => (
+            <MoveableObjectElement
+              containerRef={pageRef}
+              object={el}
+              key={el.id}
+            ></MoveableObjectElement>
+          ))}
+        </div>
       </div>
     </div>
   );
