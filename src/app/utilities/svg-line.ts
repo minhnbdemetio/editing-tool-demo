@@ -133,8 +133,6 @@ export class SvgLine {
 
     let point: SvgLinePoint | null = this.points;
     while (point) {
-      console.debug(point);
-
       const nextPoint = point.getNext();
 
       if (nextPoint) {
@@ -144,8 +142,6 @@ export class SvgLine {
         const isHorizontal = currentPosition.y === nextPosition.y;
 
         const isCurve = point.hasNextCurve();
-
-        console.debug(isVerticalLine, isHorizontal);
 
         if (!isCurve) {
           lines.push(
@@ -302,7 +298,7 @@ export class SvgLine {
     const { length, height } = this.getDimensions();
 
     return `
-        <svg height="500" width="500">
+        <svg height="${height}" width="${length}">
             <g fill="${this.stroke}" stroke="${this.stroke}" stroke-width="${
               this.strokeWidth
             }" >

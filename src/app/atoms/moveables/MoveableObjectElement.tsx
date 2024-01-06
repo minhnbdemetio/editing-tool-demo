@@ -3,6 +3,8 @@ import { FC, RefObject } from 'react';
 import { MoveableObject } from '@/app/factories/MoveableObject';
 import { MoveableRectangleElement } from './MoveableRectangleElement';
 import { MoveableTextElement } from './MoveableTextElement';
+import { MoveableLineElement } from './MoveableLineElement';
+import { MovableLineController } from '@/app/molecules/MovableLineController';
 
 interface MoveableObjectProps {
   object: MoveableObject;
@@ -18,8 +20,19 @@ export const MoveableObjectElement: FC<MoveableObjectProps> = props => {
       case 'text': {
         return <MoveableTextElement {...props} />;
       }
+      case 'line': {
+        return <MoveableLineElement {...props} />;
+      }
     }
   };
 
-  return renderElement();
+  return (
+    <>
+      <div className="relative">
+        {renderElement()}
+
+        <MovableLineController />
+      </div>
+    </>
+  );
 };

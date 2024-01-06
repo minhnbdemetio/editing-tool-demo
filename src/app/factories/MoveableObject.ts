@@ -3,14 +3,16 @@ import { findIdFromString } from '../utilities/dom';
 import Moveable from 'moveable';
 
 const MAX_FIND_ELEMENT_ATTEMPTS = 100;
-export type ObjectType = 'rectangle' | 'text';
+export type ObjectType = 'rectangle' | 'text' | 'line';
 export abstract class MoveableObject {
   id: string;
   type?: ObjectType;
   htmlString?: string;
+  skipClickoutEvent?: boolean;
   constructor(id?: string, htmlString?: string) {
     this.id = id || uuidv4();
     this.htmlString = htmlString;
+    this.skipClickoutEvent = false;
   }
 
   setId(id: string) {
@@ -68,7 +70,11 @@ export abstract class MoveableObject {
       rotatable: true,
       resizable: true,
     });
-    moveable.on('drag', e => (e.target.style.transform = e.transform));
+    moveable.on('drag', e => {
+      if (this.draggable) {
+        e.target.style.transform = e.transform;
+      }
+    });
     moveable.on('rotate', e => (e.target.style.transform = e.transform));
     moveable.on('resize', e => {
       e.target.style.width = `${e.width}px`;
