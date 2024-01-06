@@ -1,5 +1,6 @@
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { useActivePage } from '../store/active-page';
+import { isTextObject } from '../utilities/moveable';
 import { usePageObjectsById } from './usePageObjects';
 
 export const useDeleteActiveMoveableObject = () => {
@@ -32,4 +33,173 @@ export const useCloneActiveMoveableObject = () => {
 
     return true;
   };
+};
+
+export const useToggleMoveableBoldText = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+  return (callback?: Function) => {
+    if (!isTextObject(activeMoveableObject)) return false;
+    const element = activeMoveableObject.getElement();
+    if (!element) return false;
+    const isBold = element?.style?.fontWeight === 'bold';
+    if (isBold) {
+      element.style.fontWeight = 'normal';
+    } else {
+      element.style.fontWeight = 'bold';
+    }
+    callback && callback();
+    return true;
+  };
+};
+
+export const useToggleMoveableItalicText = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+
+  return (callback?: Function) => {
+    if (!isTextObject(activeMoveableObject)) return false;
+    const element = activeMoveableObject.getElement();
+    if (!element) return false;
+    const isItalic = element.style.fontStyle === 'italic';
+    if (isItalic) {
+      element.style.fontStyle = 'normal';
+    } else {
+      element.style.fontStyle = 'italic';
+    }
+    callback && callback();
+    return true;
+  };
+};
+
+export const useToggleMoveableUnderlineText = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+
+  const toggleUnderlineText = (callback?: Function) => {
+    if (!isTextObject(activeMoveableObject)) return false;
+    const element = activeMoveableObject.getElement();
+    if (!element) return false;
+    const textDecoration = element.style.textDecoration;
+    const isUnderlined = textDecoration.includes('underline');
+    debugger;
+    if (isUnderlined) {
+      element.style.textDecoration =
+        textDecoration === 'underline'
+          ? 'none'
+          : textDecoration.replace(/underline/g, '');
+    } else if (textDecoration.includes('none')) {
+      element.style.textDecoration = 'underline';
+    } else {
+      element.style.textDecoration += ' underline';
+    }
+    callback && callback();
+    return true;
+  };
+
+  return toggleUnderlineText;
+};
+
+export const useToggleMoveableStrokeText = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+
+  const toggleStrokeText = (callback?: Function) => {
+    if (!isTextObject(activeMoveableObject)) return false;
+    const element = activeMoveableObject.getElement();
+    if (!element) return false;
+    const textDecoration = element.style.textDecoration;
+    const isStroke = textDecoration.includes('line-through');
+    if (isStroke) {
+      element.style.textDecoration =
+        textDecoration === 'line-through'
+          ? 'none'
+          : textDecoration.replace(/line-through/g, '');
+    } else if (textDecoration.includes('none')) {
+      element.style.textDecoration = 'line-through';
+    } else {
+      element.style.textDecoration += ' line-through';
+    }
+    callback && callback();
+    return true;
+  };
+
+  return toggleStrokeText;
+};
+
+export const useToggleMoveableCapitalText = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+
+  const toggleCapitalText = (callback?: Function) => {
+    if (!isTextObject(activeMoveableObject)) return false;
+    const element = activeMoveableObject.getElement();
+    if (!element) return false;
+    const isCapitalized = element.style.textTransform === 'uppercase';
+
+    if (isCapitalized) {
+      element.style.textTransform = 'none';
+    } else {
+      element.style.textTransform = 'uppercase';
+    }
+    callback && callback();
+    return true;
+  };
+
+  return toggleCapitalText;
+};
+
+export const useChangeMoveableTextAlige = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+
+  const changeTextAlige = (textAlign: string, callback?: Function) => {
+    if (!isTextObject(activeMoveableObject)) return false;
+    const element = activeMoveableObject.getElement();
+    if (!element) return false;
+    element.style.textAlign = textAlign;
+    callback && callback();
+    return true;
+  };
+
+  return changeTextAlige;
+};
+
+export const useToggleMoveableListTypeDiscText = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+
+  const toggleListTypeDiscText = (callback?: Function) => {
+    if (!isTextObject(activeMoveableObject)) return false;
+    const listElement = activeMoveableObject.getElement()?.querySelector('ul');
+    if (!listElement) return false;
+    const isListTypeDisc = listElement.style.listStyleType === 'disc';
+    if (isListTypeDisc) {
+      listElement.style.paddingLeft = '0';
+      listElement.style.listStyleType = 'none';
+    } else {
+      listElement.style.paddingLeft = '20px';
+      listElement.style.listStyleType = 'disc';
+    }
+    callback && callback();
+    return true;
+  };
+
+  return toggleListTypeDiscText;
+};
+
+export const useToggleMoveableListTypeNumberText = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+
+  const toggleListTypeText = (callback?: Function) => {
+    if (!isTextObject(activeMoveableObject)) return false;
+    const listElement = activeMoveableObject.getElement()?.querySelector('ul');
+    if (!listElement) return false;
+    const isNumberType = listElement.style.listStyleType === 'number';
+
+    if (isNumberType) {
+      listElement.style.paddingLeft = '0';
+      listElement.style.listStyleType = 'none';
+    } else {
+      listElement.style.paddingLeft = '20px';
+      listElement.style.listStyleType = 'number';
+    }
+    callback && callback();
+    return true;
+  };
+
+  return toggleListTypeText;
 };

@@ -6,13 +6,19 @@ import { withCurrentPage } from '../hocs/withCurrentPage';
 import { Button } from '@nextui-org/react';
 import { MoveableRectangleObject } from '../factories/MoveableRectangle';
 import { MoveableObjectElement } from '../atoms/moveables/MoveableObjectElement';
-import { MoveableTextObject } from '../factories/MoveableText';
+import {
+  MoveableTextObject,
+  MoveableHeadingText,
+} from '../factories/MoveableText';
 import { useCurrentPageObjects } from '../hooks/usePageObjects';
 import { useActivePage } from '../store/active-page';
 import {
   useCloneActiveMoveableObject,
   useDeleteActiveMoveableObject,
 } from '../hooks/useActiveMoveableObject';
+import { v4 as uuidV4 } from 'uuid';
+import { useActiveObject } from '../store/active-object';
+import { useActiveMoveableObject } from '../store/active-moveable-object';
 
 export interface EditablePageProps {
   pageId: string;
@@ -20,6 +26,7 @@ export interface EditablePageProps {
 
 const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   const [objects, setObjects] = useCurrentPageObjects();
+  const { setActiveMoveableObject } = useActiveMoveableObject();
 
   const handleCreateRec = () => {
     const rec = new MoveableRectangleObject();
@@ -87,6 +94,12 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
     setActivePage(pageId);
   }, [pageId, setActivePage]);
 
+  const handleAddTitle = () => {
+    const text = new MoveableHeadingText(uuidV4(), 'Header title');
+    setObjects([...objects, text]);
+    setActiveMoveableObject(text);
+  };
+
   const [scale, setScale] = useState(1);
   const containerRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef<HTMLDivElement>(null);
@@ -128,6 +141,7 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
           <Button onClick={() => handleCreateSpan()}>create span</Button>
           <Button onClick={handleDeleteObject}>delete active object</Button>
           <Button onClick={handleCloneObject}>clone active object</Button>
+          <Button onClick={() => handleAddTitle()}>Add title</Button>
           {objects.map(el => (
             <MoveableObjectElement
               containerRef={pageRef}

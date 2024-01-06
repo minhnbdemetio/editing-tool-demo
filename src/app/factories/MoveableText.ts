@@ -16,6 +16,7 @@ export class MoveableTextObject extends MoveableObject {
       rotatable: true,
       resizable: true,
       checkInput: true,
+      edgeDraggable: true,
     });
     moveable.on('drag', e => (e.target.style.transform = e.transform));
     moveable.on('rotate', e => (e.target.style.transform = e.transform));
@@ -32,5 +33,22 @@ export class MoveableTextObject extends MoveableObject {
       clonedData.cloneObjectId,
       clonedData.clonedObjectHtml,
     );
+  }
+}
+
+export class MoveableHeadingText extends MoveableTextObject {
+  constructor(id?: string, content?: string, options?: any) {
+    const defaultOptions = {
+      width: options?.width || 200,
+      height: options?.height || 50,
+      className: options?.className || '',
+    };
+    const htmlString = `<div class="w-[${defaultOptions.width}px] w-[${defaultOptions.height}px] ${defaultOptions.className}" 
+        style="writing-mode: horizontal-tb;" contenteditable="true" id="${id}">
+          <ul><li>${content}</li>
+          </ul>
+      </div>`;
+    super(id, htmlString);
+    this.type = 'text';
   }
 }
