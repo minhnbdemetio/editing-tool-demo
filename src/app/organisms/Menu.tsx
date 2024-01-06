@@ -8,7 +8,10 @@ import { twMerge } from '../utilities/tailwind';
 import { Add } from '../icons/Add';
 import { SideMenuItem } from './SideMenu/items';
 import { useActiveObject } from '../store/active-object';
-import { MenuProperty } from './MenuProperty';
+import { ObjectProperties } from './ObjectProperties';
+import { TransparentModal } from '../atoms/TransparentModal';
+import { SelectedObjectProperty } from './ObjectProperty/SelectedObjectProperty';
+import { useSelectedProperty } from '../store/selected-property';
 
 export const Menu: FC = () => {
   const [selectedSection, setSelectedSection] =
@@ -17,14 +20,16 @@ export const Menu: FC = () => {
   const [menuExpand, setMenuExpand] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
   const { activeObject } = useActiveObject();
+  const { selectedProperty } = useSelectedProperty();
 
   return (
     <>
       <div
         className={twMerge(
-          'absolute duration-300 w-full max-h-[80%] left-0 z-30 flex flex-col-reverse h-full -bottom-full',
+          'absolute duration-300 w-full max-h-[80%] left-0 z-50 flex flex-col-reverse h-full',
           {
             'bottom-0': open,
+            hidden: !open,
           },
           'desktop:relative desktop:top-0 desktop:left-0 desktop:max-h-none  desktop:h-full desktop:w-fit desktop:flex-row',
         )}
@@ -36,13 +41,8 @@ export const Menu: FC = () => {
           selectedSection={selectedSection}
         />
 
-        <MenuContent
-          section={selectedSection}
-          menuExpand={menuExpand || Boolean(activeObject)}
-        />
-        <MenuProperty menuExpand={menuExpand || !Boolean(activeObject)} />
+        <MenuContent section={selectedSection} menuExpand={menuExpand} />
       </div>
-      {/* backdrop */}
 
       <div
         onClick={() => {
@@ -57,17 +57,32 @@ export const Menu: FC = () => {
         )}
       ></div>
 
-      <button
-        onClick={() => {
-          setOpen(o => !o);
-        }}
-        className={twMerge(
-          'bg-green-500 p-3 rounded-[50%] z-10 shadow-lg fixed right-[10px] bottom-[10px]',
-          'desktop:hidden',
-        )}
+      <div
+        className={clsx('py-1 flex items-center fixed bottom-0 z-40 w-full', {
+          hidden: Boolean(selectedProperty),
+        })}
       >
-        <Add className="text-primaryContrast w-[24px] h-[24px]" />
-      </button>
+        <button
+          onClick={() => {
+            setOpen(o => !o);
+          }}
+          className={twMerge(
+            'bg-green-500 p-3 rounded-[50%] shadow-lg mx-2',
+            'desktop:hidden',
+          )}
+        >
+          <Add className="text-primaryContrast w-[24px] h-[24px]" />
+        </button>
+        {activeObject && <ObjectProperties />}
+      </div>
+
+      <TransparentModal
+        className={clsx('z-10 fixed bottom-0 max-h-[30%]', {
+          hidden: !selectedProperty,
+        })}
+      >
+        <SelectedObjectProperty />
+      </TransparentModal>
     </>
   );
 };

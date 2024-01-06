@@ -6,17 +6,20 @@ import { useCurrentPageCanvas, usePageCanvasById } from './usePageCanvas';
 jest.mock('./useCurrentPage');
 jest.mock('../store/editable-pages');
 
+jest.mock('react', () => ({
+  ...jest.requireActual('react'),
+  useCallback: jest.fn().mockImplementation((callback: any) => callback),
+  useMemo: jest.fn().mockImplementation((callback, deps) => callback()),
+}));
+
 describe('Test useCurrentPageCanvas', () => {
-  afterAll(() => {
-    jest.resetAllMocks();
-  });
   test('Should return value', () => {
     const randomPageId = 'someId';
     (useCurrentPage as jest.Mock).mockReturnValueOnce({ pageId: randomPageId });
     const pageCanvasMockValue = 'someCanvas';
     const setPageCanvasMockValue = jest.fn();
     const useEditablePagesMockValue = {
-      getPageCanvas: () => pageCanvasMockValue,
+      pages: { [randomPageId]: pageCanvasMockValue },
       setPageCanvas: setPageCanvasMockValue,
     };
     (useEditablePages as unknown as jest.Mock).mockReturnValueOnce(
@@ -29,9 +32,6 @@ describe('Test useCurrentPageCanvas', () => {
 });
 
 describe('Test usePageCanvasJSON', () => {
-  afterAll(() => {
-    jest.resetAllMocks();
-  });
   test('Should return value', async () => {
     const mockJSON = { version: '5.3.0', objects: [] };
 
@@ -44,9 +44,6 @@ describe('Test usePageCanvasJSON', () => {
 });
 
 describe('Test usePageCanvasById', () => {
-  afterAll(() => {
-    jest.resetAllMocks();
-  });
   test('Should return value', () => {
     const randomPageId = 'someId';
     (useCurrentPage as jest.Mock).mockReturnValueOnce({ pageId: randomPageId });
@@ -60,6 +57,7 @@ describe('Test usePageCanvasById', () => {
       useEditablePagesMockValue,
     );
     const { result } = renderHook(() => usePageCanvasById(randomPageId));
+    console.log({ result });
     expect(result.current[0]).toBe(pageCanvasMockValue);
     expect(typeof result.current[1]).toBe('function');
   });
@@ -83,9 +81,6 @@ describe('Test usePageCanvasById', () => {
 });
 
 describe('Test usePageCanvasJSONById', () => {
-  afterAll(() => {
-    jest.resetAllMocks();
-  });
   test('Should return value', async () => {
     const mockJSON = { version: '5.3.0', objects: [] };
 

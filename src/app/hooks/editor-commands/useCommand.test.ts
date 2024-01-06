@@ -20,6 +20,7 @@ jest.mock('../../store/active-page');
 jest.mock('react', () => ({
   ...jest.requireActual('react'),
   useCallback: jest.fn().mockImplementation((callback: any) => callback),
+  useRef: jest.fn().mockImplementation((value: any) => value),
 }));
 
 describe('Test useUndoCommand', () => {

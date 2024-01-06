@@ -4,9 +4,10 @@ import {
   usePageCanvasJSONById,
 } from '../usePageCanvas';
 import { useCurrentPage } from '../useCurrentPage';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { useActivePageCanvasJSON } from '../useActivePage';
 import { useActivePage } from '@/app/store/active-page';
+import { debounce } from 'lodash';
 
 export const useUndoCommand = () => {
   const { popCommand, commandHistory, pushUndoCommand } = useCommandHistory();
@@ -64,19 +65,43 @@ export const useRedoCommand = () => {
   ]);
 };
 
+const DEFAULT_DEBOUNCE_WAIT = 300; //ms
+
 export const useExecuteCommand = <T extends (...args: any) => any>(
   commandFunction: T,
+  options?: {
+    debounce?: boolean;
+    debounceWait?: number;
+  },
 ) => {
   const currentStateJSON = useActivePageCanvasJSON();
   const { pageId } = useCurrentPage();
   const { activePage } = useActivePage();
   const { pushCommand } = useCommandHistory();
+  const debouncedPushCommand = useRef(
+    debounce(pushCommand, options?.debounceWait || DEFAULT_DEBOUNCE_WAIT),
+  );
 
-  return (...params: Parameters<T>) => {
-    commandFunction(...params);
-    pushCommand({
+  return useCallback(
+    (...params: Parameters<T>) => {
+      commandFunction(...params);
+      options?.debounce
+        ? debouncedPushCommand.current({
+            currentStateJSON,
+            pageId: pageId || activePage || undefined,
+          })
+        : pushCommand({
+            currentStateJSON,
+            pageId: pageId || activePage || undefined,
+          });
+    },
+    [
+      activePage,
+      commandFunction,
       currentStateJSON,
-      pageId: pageId || activePage || undefined,
-    });
-  };
+      options?.debounce,
+      pageId,
+      pushCommand,
+    ],
+  );
 };
