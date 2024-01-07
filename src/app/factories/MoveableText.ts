@@ -1,13 +1,23 @@
 import Moveable from 'moveable';
-import { MoveableObject } from './MoveableObject';
+import { MoveableObject, ObjectType } from './MoveableObject';
 
 export class MoveableTextObject extends MoveableObject {
-  constructor(id?: string, htmlString?: string) {
+  constructor({
+    id,
+    htmlString,
+    type,
+  }: {
+    id?: string;
+    htmlString?: string;
+    type?: ObjectType;
+  } = {}) {
     super(id, htmlString);
-    this.type = 'text';
+    this.type = type ?? 'text';
+    this.transformOrigin = 'bottom';
   }
   createMoveable(container: HTMLElement): void {
     const element = this.getElement();
+    if (!element) return;
     const moveable = new Moveable(container, {
       target: element,
       draggable: true,
@@ -16,6 +26,9 @@ export class MoveableTextObject extends MoveableObject {
       rotatable: true,
       resizable: true,
       checkInput: true,
+      edgeDraggable: true,
+      useResizeObserver: true,
+      transformOrigin: this.transformOrigin,
     });
     moveable.on('drag', e => (e.target.style.transform = e.transform));
     moveable.on('rotate', e => (e.target.style.transform = e.transform));
@@ -25,12 +38,15 @@ export class MoveableTextObject extends MoveableObject {
       e.target.style.transform = e.drag.transform;
     });
     moveable.on('scale', e => (e.target.style.transform = e.drag.transform));
+    this.moveable = moveable;
+    element.style.transformOrigin = this.transformOrigin ?? 'bottom';
   }
   clone(): MoveableTextObject {
     const clonedData = this.cloneData();
-    return new MoveableTextObject(
-      clonedData.cloneObjectId,
-      clonedData.clonedObjectHtml,
-    );
+    return new MoveableTextObject({
+      id: clonedData.cloneObjectId,
+      htmlString: clonedData.clonedObjectHtml,
+      type: this.type,
+    });
   }
 }

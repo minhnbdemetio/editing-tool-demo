@@ -3,12 +3,13 @@ import { findIdFromString } from '../utilities/dom';
 import Moveable from 'moveable';
 
 const MAX_FIND_ELEMENT_ATTEMPTS = 100;
-export type ObjectType = 'rectangle' | 'text';
+export type ObjectType = 'rectangle' | 'text' | 'heading';
 export abstract class MoveableObject {
   id: string;
   type?: ObjectType;
   htmlString?: string;
   moveable?: Moveable;
+  transformOrigin?: CSSStyleDeclaration['transformOrigin'];
   constructor(id?: string, htmlString?: string) {
     this.id = id || uuidv4();
     this.htmlString = htmlString;
@@ -91,5 +92,15 @@ export abstract class MoveableObject {
     if (!this.moveable) return false;
     this.moveable.destroy();
     return true;
+  }
+  changeTransformOrigin(
+    transformOrigin?: CSSStyleDeclaration['transformOrigin'],
+  ) {
+    this.transformOrigin = transformOrigin;
+    const element = this.getElement();
+    if (!element || !this.moveable) return;
+    element.style.transformOrigin = transformOrigin ?? 'bottom';
+    this.moveable.transformOrigin = transformOrigin ?? 'bottom';
+    this.moveable.updateRect();
   }
 }

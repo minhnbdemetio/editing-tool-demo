@@ -5,10 +5,12 @@ import { MoveableRectangleElement } from './MoveableRectangleElement';
 import { MoveableTextElement } from './MoveableTextElement';
 import { useLoadMoveableObject } from '@/app/hooks/useLoadObject';
 import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
+import { MoveableHeadingTextElement } from './MoveableHeadingTextElement';
 
 export interface MoveableObjectProps {
   object: MoveableObject;
   containerRef: RefObject<HTMLDivElement>;
+  className?: string;
 }
 
 export const MoveableObjectElement: FC<MoveableObjectProps> = props => {
@@ -30,6 +32,9 @@ export const MoveableObjectElement: FC<MoveableObjectProps> = props => {
       }
       case 'text': {
         return <MoveableTextElement {...props} />;
+      }
+      case 'heading': {
+        return <MoveableHeadingTextElement {...props} />;
       }
     }
   };

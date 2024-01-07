@@ -13,6 +13,7 @@ import {
   useCloneActiveMoveableObject,
   useDeleteActiveMoveableObject,
 } from '../hooks/useActiveMoveableObject';
+import { ObjectType } from '../factories/MoveableObject';
 
 export interface EditablePageProps {
   pageId: string;
@@ -53,19 +54,19 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
           htmlString:
             '<div id="fdsafdsaf" style="width: 132px; height: 132px; background-color: blue; position: absolute; transform: translate(738.262px, 22.035px);"></div>',
           id: 'fdsafdsaf',
-          type: 'rectangle',
+          type: 'rectangle' as ObjectType,
         },
         {
           htmlString:
             '<div id="ertrewerwt" style="width: 98px; position: absolute; transform: translate(396.805px, 233.617px); height: 30px;"><span>heheheloloo</span></div>',
           id: 'ertrewerwt',
-          type: 'text',
+          type: 'text' as ObjectType,
         },
         {
           htmlString:
             '<div id="vcxvcxzv" style="width: 99px; position: absolute; transform: translate(341.344px, 90.4805px); height: 30px;"><span>heheheloloo</span></div>',
           id: 'vcxvcxzv',
-          type: 'text',
+          type: 'text' as ObjectType,
         },
       ],
     };
@@ -74,7 +75,7 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
       if (object.type === 'rectangle') {
         rec = new MoveableRectangleObject(object.id, object.htmlString);
       } else {
-        rec = new MoveableTextObject(object.id, object.htmlString);
+        rec = new MoveableTextObject(object);
       }
       return rec;
     });
@@ -86,6 +87,11 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   useEffect(() => {
     setActivePage(pageId);
   }, [pageId, setActivePage]);
+
+  const handleAddTitle = () => {
+    const text = new MoveableTextObject({ type: 'heading' });
+    setObjects([...objects, text]);
+  };
 
   const [scale, setScale] = useState(1);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -128,6 +134,7 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
           <Button onClick={() => handleCreateSpan()}>create span</Button>
           <Button onClick={handleDeleteObject}>delete active object</Button>
           <Button onClick={handleCloneObject}>clone active object</Button>
+          <Button onClick={() => handleAddTitle()}>Add title</Button>
           {objects.map(el => (
             <MoveableObjectElement
               containerRef={pageRef}

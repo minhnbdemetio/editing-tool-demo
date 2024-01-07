@@ -1,13 +1,13 @@
 import {
-  useChangeTextAlignCommand,
-  useToggleBoldTextCommand,
-  useToggleCapitalTextCommand,
-  useToggleItalicTextCommand,
-  useToggleListTypeDiscTextCommand,
-  useToggleListTypeNumberTextCommand,
-  useToggleStrokeTextCommand,
-  useToggleUnderlineTextCommand,
-} from '@/app/hooks/editor-commands/useActiveObjectCommand';
+  useChangeMoveableTextAligeCommand,
+  useToggleMoveableBoldTextCommand,
+  useToggleMoveableCapitalTextCommand,
+  useToggleMoveableItalicTextCommand,
+  useToggleMoveableListTypeDiscTextCommand,
+  useToggleMoveableListTypeNumberTextCommand,
+  useToggleMoveableStrokeTextCommand,
+  useToggleMoveableUnderlineTextCommand,
+} from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
 import { Bold } from '@/app/icons/Bold';
 import { BulletList } from '@/app/icons/BulletList';
 import { Italic } from '@/app/icons/Italic';
@@ -25,14 +25,14 @@ import { FC } from 'react';
 interface FormatPropertyProps {}
 
 export const FormatProperty: FC<FormatPropertyProps> = ({}) => {
-  const toggleBoldTextCommand = useToggleBoldTextCommand();
-  const toggleItalicTextCommand = useToggleItalicTextCommand();
-  const toggleUnderlineTextCommand = useToggleUnderlineTextCommand();
-  const toggleStrokeTextCommand = useToggleStrokeTextCommand();
-  const toggleCapitalTextCommand = useToggleCapitalTextCommand();
-  const changeTextAlignCommand = useChangeTextAlignCommand();
-  const toggleListTypeDiscTextCommand = useToggleListTypeDiscTextCommand();
-  const toggleListTypeNumberTextCommand = useToggleListTypeNumberTextCommand();
+  const toggleBoldTextCommand = useToggleMoveableBoldTextCommand();
+  const toggleItalicTextCommand = useToggleMoveableItalicTextCommand();
+  const toggleUnderlineTextCommand = useToggleMoveableUnderlineTextCommand();
+  const toggleStrokeTextCommand = useToggleMoveableStrokeTextCommand();
+  const toggleCapitalTextCommand = useToggleMoveableCapitalTextCommand();
+  const changeTextAlignCommand = useChangeMoveableTextAligeCommand();
+  const toggleListTypeDiscTextCommand = useToggleMoveableListTypeDiscTextCommand();
+  const toggleListTypeNumberTextCommand = useToggleMoveableListTypeNumberTextCommand();
 
   return (
     <div className="w-full h-full">
