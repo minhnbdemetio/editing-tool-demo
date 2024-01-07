@@ -4,6 +4,7 @@ import { MoveableLineObject } from '../factories/MoveableLine';
 import { Draggable } from '../atoms/Draggable';
 import { getAngleByPoint } from '../utilities/line';
 import { SvgLineType } from '../utilities/svg-line';
+import { twMerge } from '../utilities/tailwind';
 
 interface MovableLineControllerProps {}
 
@@ -34,35 +35,6 @@ const StraightLineController: React.FC<{ forceReload: () => void }> = ({
   const points =
     (activeMoveableObject as MoveableLineObject)?.line?.getPoints() || [];
 
-  const handleMoveLeftCursor = (point: { x: number; y: number }) => {
-    const lineObject = activeMoveableObject as MoveableLineObject;
-
-    const leftX = point.x;
-    const leftY = point.y;
-    const rightX = lineObject.x2;
-    const rightY = lineObject.y2;
-
-    lineObject.set({ x1: leftX as number, y1: leftY as number });
-
-    const vertical = rightX - leftX;
-    const horizontal = rightY - leftY;
-    let lineWidth = Math.sqrt(Math.pow(vertical, 2) + Math.pow(horizontal, 2));
-
-    const svgLine = lineObject.line;
-    svgLine?.setLength(lineWidth);
-
-    const svg = svgLine?.toSvg();
-
-    if (anchorRef) {
-      const angle = getAngleByPoint(leftX, leftY, rightX, rightY, 'end');
-      anchorRef.innerHTML = svg || '';
-      anchorRef.style.transform = `translate(${leftX}px, ${leftY}px) rotate(${
-        angle - 90
-      }deg)`;
-      anchorRef.style.transformOrigin = 'left center';
-    }
-  };
-
   const handleMove = (pointId: string, point: { x: number; y: number }) => {
     const lineObject = activeMoveableObject as MoveableLineObject;
 
@@ -80,37 +52,6 @@ const StraightLineController: React.FC<{ forceReload: () => void }> = ({
       }
     }
   };
-
-  const handleMoveRightCursor = (point: { x: number; y: number }) => {
-    const lineObject = activeMoveableObject as MoveableLineObject;
-
-    const leftX = lineObject.x1;
-    const leftY = lineObject.y1;
-    const rightX = point.x;
-    const rightY = point.y;
-
-    lineObject.set({ x2: rightX as number, y2: rightY as number });
-
-    const vertical = rightX - leftX;
-    const horizontal = rightY - leftY;
-    let lineWidth = Math.sqrt(Math.pow(vertical, 2) + Math.pow(horizontal, 2));
-
-    const svgLine = lineObject.line;
-    svgLine?.setLength(lineWidth);
-
-    const svg = svgLine?.toSvg();
-
-    if (anchorRef) {
-      const angle = getAngleByPoint(leftX, leftY, rightX, rightY, 'end');
-      anchorRef.innerHTML = svg || '';
-      anchorRef.style.transform = `translate(${leftX}px, ${leftY}px) rotate(${
-        angle - 90
-      }deg)`;
-      anchorRef.style.transformOrigin = 'left center';
-    }
-  };
-
-  console.debug(points);
 
   return (
     <>
@@ -157,6 +98,144 @@ const StraightLineController: React.FC<{ forceReload: () => void }> = ({
   );
 };
 
+const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
+  forceReload,
+}) => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+
+  const [anchorRef, setAnchorRef] = useState<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const isLine = activeMoveableObject?.type === 'line';
+
+    if (isLine) {
+      const activeLineMovable = activeMoveableObject as MoveableLineObject;
+
+      setAnchorRef(
+        (document.getElementById(activeLineMovable.id) as HTMLDivElement) ||
+          null,
+      );
+    } else {
+      setAnchorRef(null);
+    }
+  }, [activeMoveableObject]);
+
+  if (!anchorRef) return null;
+
+  const lineObject = activeMoveableObject as MoveableLineObject;
+
+  const startPoint = lineObject.line?.points;
+  const endPoint = lineObject.line?.endPoint;
+
+  const linePositions = lineObject?.line?.getElbowedLinePositions();
+
+  const updateLineControllerPosition = () => {
+    const positions = lineObject?.line?.getElbowedLinePositions();
+
+    positions?.forEach(position => {
+      const id = position.startId + position.endId;
+      const element = document.getElementById(id);
+      if (element) {
+        element.style.transform = `translate(${
+          (position.x1 + position.x2) / 2
+        }px, ${(position.y1 + position.y2) / 2}px)`;
+      }
+    });
+  };
+
+  return (
+    <>
+      {startPoint && (
+        <Draggable
+          onDrag={e => {
+            const next = startPoint.getNext();
+
+            if (next && lineObject && lineObject.line) {
+              const isVertical = startPoint.x === next.x;
+              const isHorizontal = startPoint.y === next.y;
+
+              if (isVertical) {
+                lineObject.line?.updatePoint(startPoint.id, next.x, e.y);
+
+                if (Math.abs(e.x - next.x) >= 20) {
+                  console.debug(startPoint.id);
+                  lineObject.line?.createPrevFor(startPoint.id, e.x, e.y);
+                  // forceReload();
+                }
+              }
+
+              console.debug('points', lineObject.line.getPoints());
+
+              const { x, y } = lineObject.line.getDisplayPosition();
+              anchorRef.innerHTML = lineObject.line.toSvg() || '';
+              anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(0deg)`;
+              anchorRef.style.transformOrigin = 'left center';
+
+              updateLineControllerPosition();
+            }
+          }}
+          style={{
+            transform: ` translate(${startPoint?.x}px, ${startPoint?.y}px)`,
+            width: 'fit-content',
+          }}
+        >
+          <div className="w-[15px] h-[15px] bg-[red] rounded-[50%]"></div>
+        </Draggable>
+      )}
+      {linePositions?.map(pos => (
+        <Draggable
+          id={pos.startId + pos.endId}
+          style={{
+            transform: ` translate(${(pos.x1 + pos.x2) / 2}px, ${
+              (pos.y1 + pos.y2) / 2
+            }px)`,
+          }}
+          key={pos.startId + pos.endId}
+          onDrag={point => {
+            if (lineObject?.line) {
+              if (pos.y2 === pos.y1) {
+                lineObject?.line?.updateElbowedPoints(pos.startId, pos.endId, {
+                  y: point.y,
+                });
+              }
+              if (pos.x2 === pos.x1) {
+                lineObject?.line?.updateElbowedPoints(pos.startId, pos.endId, {
+                  x: point.x,
+                });
+              }
+
+              const { x, y } = lineObject.line.getDisplayPosition();
+              // const angle = getAngleByPoint(leftX, leftY, rightX, rightY, 'end');
+              anchorRef.innerHTML = lineObject.line.toSvg() || '';
+              anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(0deg)`;
+              anchorRef.style.transformOrigin = 'left center';
+
+              updateLineControllerPosition();
+            }
+          }}
+          dragStyle={pos.y2 === pos.y1 ? 'yOnly' : 'xOnly'}
+        >
+          <div
+            style={{ background: 'red' }}
+            className={twMerge('bg-red absolute rounded-md', {
+              'w-[30px] h-[10px] ': pos.y2 === pos.y1,
+              'h-[30px] w-[10px] -translate-y-1/2': pos.x2 === pos.x1,
+            })}
+          ></div>
+        </Draggable>
+      ))}
+      <Draggable
+        onDrag={() => {}}
+        style={{
+          transform: ` translate(${endPoint?.x}px, ${endPoint?.y}px)`,
+        }}
+      >
+        <div className="w-[15px] h-[15px] bg-[red] rounded-[50%]"></div>
+      </Draggable>
+    </>
+  );
+};
+
 export const MovableLineController: React.FC<
   MovableLineControllerProps
 > = () => {
@@ -169,6 +248,14 @@ export const MovableLineController: React.FC<
   )
     return (
       <StraightLineController forceReload={() => setForceReload(v => v + 1)} />
+    );
+
+  if (
+    (activeMoveableObject as MoveableLineObject)?.line?.getType() ===
+    SvgLineType.Elbowed
+  )
+    return (
+      <ElbowedLineController forceReload={() => setForceReload(v => v + 1)} />
     );
 
   return <></>;

@@ -28,10 +28,11 @@ export class SvgLine {
   private stroke: string;
   private startAdornment: SvgLineAdornment;
   private endAdornment: SvgLineAdornment;
-  private padding: number = 5;
+  private padding: number = 6;
   private type: SvgLineType;
   private cornerRounding: number;
-  private points: LinePoint;
+  points: LinePoint;
+  endPoint: LinePoint;
 
   constructor(
     options: {
@@ -58,6 +59,7 @@ export class SvgLine {
     end.setPrev(start);
 
     this.points = start;
+    this.endPoint = end;
   }
 
   private addPath(d: string, options: { fill?: string } = {}): string {
@@ -121,41 +123,61 @@ export class SvgLine {
             const dy = point.getDY();
             const nextDx = point.getNext()?.getDX();
 
-            const roundingX =
-              nextDx && nextDx >= 0
-                ? this.cornerRounding
-                : -this.cornerRounding;
-            const roundingY =
-              dy >= 0 ? this.cornerRounding : -this.cornerRounding;
-
             if (point.hasPrevCurve()) {
               lines.push(`m 0,${this.cornerRounding}`);
             }
 
-            lines.push(
-              ` v ${dy - roundingY}`,
-              ` q 0,${-roundingX} ${roundingX},${roundingY}`,
-            );
+            if (dy >= 0) {
+              if (nextDx && nextDx > 0) {
+                lines.push(
+                  ` v ${dy - this.cornerRounding}`,
+                  ` q 0,${this.cornerRounding} ${this.cornerRounding},${this.cornerRounding}`,
+                );
+              } else {
+                lines.push(
+                  ` v ${dy - this.cornerRounding}`,
+                  ` q 0,${this.cornerRounding} ${-this.cornerRounding},${
+                    this.cornerRounding
+                  }`,
+                );
+              }
+            } else {
+              if (nextDx && nextDx > 0) {
+                lines.push(
+                  ` v ${dy + this.cornerRounding}`,
+                  ` q 0,${-this.cornerRounding} ${this.cornerRounding},${-this
+                    .cornerRounding}`,
+                );
+              } else {
+                lines.push(
+                  ` v ${dy + this.cornerRounding}`,
+                  ` q 0,${-this.cornerRounding} ${-this.cornerRounding},${-this
+                    .cornerRounding}`,
+                );
+              }
+            }
           }
           if (isHorizontal) {
             const dx = point.getDX();
-            const nextDy = point.getNext()?.getDY();
 
-            const roundingX =
-              dx && dx >= 0 ? this.cornerRounding : -this.cornerRounding;
-            const roundingY =
-              nextDy && nextDy >= 0
-                ? this.cornerRounding
-                : -this.cornerRounding;
-
-            let rounding = dx >= 0 ? this.cornerRounding : -this.cornerRounding;
             if (point.hasPrevCurve()) {
-              lines.push(`m ${rounding},0`);
+              lines.push(`m ${this.cornerRounding},0`);
             }
-            lines.push(
-              ` h ${dx - rounding}`,
-              ` q ${rounding},0 ${rounding},${rounding}`,
-            );
+
+            if (dx >= 0) {
+              lines.push(
+                ` v ${dx - this.cornerRounding}`,
+                ` q 0,${this.cornerRounding} ${this.cornerRounding},${-this
+                  .cornerRounding}`,
+              );
+            } else {
+              lines.push(
+                ` v ${dx + this.cornerRounding}`,
+                ` q 0,${this.cornerRounding} ${-this.cornerRounding},${
+                  this.cornerRounding
+                }`,
+              );
+            }
           }
         }
       }
@@ -170,7 +192,9 @@ export class SvgLine {
     const startY = startPointPosition.y - bounding.y1;
 
     return this.addPath(
-      `M ${left + this.padding + startX} ${startY} ${lines.join(' ')}`,
+      `M ${left + this.padding + startX} ${startY + this.padding} ${lines.join(
+        ' ',
+      )}`,
       { fill: 'none' },
     );
   }
@@ -178,6 +202,8 @@ export class SvgLine {
     position: SvgLineAdornmentPosition.Start | SvgLineAdornmentPosition.End,
   ): string {
     const start = this.points;
+
+    const bouding = this.getBoundingPosition();
 
     const adornment =
       position === SvgLineAdornmentPosition.Start
@@ -187,8 +213,8 @@ export class SvgLine {
       case SvgLineAdornment.Arrow:
         return this.getArrowAdornment(
           this.getAdornmentDirection(start),
-          start.x,
-          start.y,
+          start.x - bouding.x1 + this.padding,
+          start.y - bouding.y1 + this.padding,
         );
       case SvgLineAdornment.Triangle:
         return this.getTriangleAdornment(position);
@@ -221,24 +247,38 @@ export class SvgLine {
     x: number,
     y: number,
   ): string {
-    const start = this.points;
-    const dy = start.getDY();
-    const dx = start.getDX();
-
     const arrowLength = this.strokeWidth * 3;
 
     switch (direction) {
-      case 'up': {
-        const startDrawArrowX = dx - arrowLength;
-        const startDrawArrowY = dx + arrowLength;
+      case 'down': {
         return this.addPath(
-          `M ${startDrawArrowX} ${startDrawArrowY} l ${arrowLength} ${-arrowLength}  ${arrowLength} ${-arrowLength}`,
+          `M ${x - arrowLength} ${
+            y + arrowLength
+          }  l ${arrowLength} ${-arrowLength}  ${arrowLength} ${arrowLength}`,
+          { fill: 'none' },
+        );
+      }
+      case 'right': {
+        return this.addPath(
+          `M ${x} ${y} l ${arrowLength} ${-arrowLength}  ${arrowLength} ${arrowLength}`,
+          { fill: 'none' },
+        );
+      }
+      case 'left': {
+        return this.addPath(
+          `M ${x} ${y} l ${arrowLength} ${arrowLength}  ${-arrowLength} ${arrowLength}`,
+          { fill: 'none' },
+        );
+      }
+      case 'up': {
+        return this.addPath(
+          `M ${x - arrowLength} ${
+            y - arrowLength
+          } l ${arrowLength} ${arrowLength}  ${arrowLength} ${-arrowLength}`,
           { fill: 'none' },
         );
       }
     }
-
-    return '';
   }
 
   private getAdornmentLength(): number {
@@ -316,8 +356,8 @@ export class SvgLine {
     const height = Math.abs(bounding.y3 - bounding.y1);
 
     return {
-      length: width + this.padding,
-      height: height + this.padding,
+      length: width + this.padding * 2,
+      height: height + this.padding * 2,
     };
   };
 
@@ -552,5 +592,72 @@ export class SvgLine {
     }
 
     return bounding;
+  }
+
+  public getElbowedLinePositions() {
+    if (this.type !== SvgLineType.Elbowed) return [];
+
+    const positions: {
+      x1: number;
+      y1: number;
+      startId: string;
+      endId: string;
+      y2: number;
+      x2: number;
+    }[] = [];
+
+    let point: null | LinePoint = this.points;
+
+    while (point) {
+      const next = point.getNext();
+
+      if (next) {
+        positions.push({
+          startId: point.id,
+          x1: point.x,
+          y1: point.y,
+          endId: next.id,
+          x2: next.x,
+          y2: next.y,
+        });
+      }
+
+      point = point.getNext();
+    }
+
+    return positions;
+  }
+
+  public updateElbowedPoints(
+    startId: string,
+    endId: string,
+    point: { x?: number; y?: number },
+  ) {
+    if (this.getType() === SvgLineType.Elbowed && startId && endId) {
+      const start = this.getPointById(startId);
+
+      console.debug('start', start);
+      const end = start?.getNext();
+      if (start && end) {
+        if (point.y) {
+          start.y = point.y;
+          end.y = point.y;
+        }
+        if (point.x) {
+          start.x = point.x;
+          end.x = point.x;
+        }
+      }
+    }
+  }
+
+  public createPrevFor(id: string, x: number, y: number) {
+    const point = this.getPointById(id);
+
+    if (point && !point.getPrev()) {
+      const newHead = new LinePoint(x, y, null, this.points);
+      this.points.setPrev(newHead);
+      this.points = newHead;
+    }
   }
 }

@@ -71,9 +71,7 @@ export abstract class MoveableObject {
       resizable: true,
     });
     moveable.on('drag', e => {
-      if (this.draggable) {
-        e.target.style.transform = e.transform;
-      }
+      e.target.style.transform = e.transform;
     });
     moveable.on('rotate', e => (e.target.style.transform = e.transform));
     moveable.on('resize', e => {
