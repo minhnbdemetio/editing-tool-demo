@@ -7,7 +7,11 @@ import {
   useChangeMoveableTextAlige,
   useToggleMoveableListTypeDiscText,
   useToggleMoveableListTypeNumberText,
+  useChangeMoveableTextSpacing,
+  useChangeMoveableTextLineHeight,
+  useChangeMoveableTextTransformOrigin,
 } from '../useActiveMoveableObject';
+import { debounce } from 'lodash';
 
 // TODO: Add logic excute command
 export const useToggleMoveableBoldTextCommand = () => {
@@ -48,4 +52,20 @@ export const useToggleMoveableListTypeDiscTextCommand = () => {
 export const useToggleMoveableListTypeNumberTextCommand = () => {
   const toggleListTypeNumberText = useToggleMoveableListTypeNumberText();
   return toggleListTypeNumberText;
+};
+
+export const useChangeMoveableTextSpacingCommand = () => {
+  const changeLetterSpacing = useChangeMoveableTextSpacing();
+  // TODO: Using excute command
+  return debounce(changeLetterSpacing, 100);
+};
+
+export const useChangeMoveableTextLineHeightCommand = () => {
+  const changeLineHeight = useChangeMoveableTextLineHeight();
+  return debounce(changeLineHeight, 100);
+};
+
+export const useChangeMoveableTextTransformOriginCommand = () => {
+  const changeTextTransformOrigin = useChangeMoveableTextTransformOrigin();
+  return changeTextTransformOrigin;
 };
