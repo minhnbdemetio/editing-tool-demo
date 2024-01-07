@@ -10,6 +10,7 @@ import {
   useChangeMoveableTextSpacing,
   useChangeMoveableTextLineHeight,
   useChangeMoveableTextTransformOrigin,
+  useChangeMoveableTextStyles,
 } from '../useActiveMoveableObject';
 import { debounce } from 'lodash';
 
@@ -68,4 +69,9 @@ export const useChangeMoveableTextLineHeightCommand = () => {
 export const useChangeMoveableTextTransformOriginCommand = () => {
   const changeTextTransformOrigin = useChangeMoveableTextTransformOrigin();
   return changeTextTransformOrigin;
+};
+
+export const useChangeMoveableTextStylesCommand = () => {
+  const changeStyles = useChangeMoveableTextStyles();
+  return changeStyles;
 };

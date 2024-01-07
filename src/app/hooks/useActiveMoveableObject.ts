@@ -2,6 +2,7 @@ import { MoveableTextObject } from '../factories/MoveableText';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { useActivePage } from '../store/active-page';
 import { isTextObject } from '../utilities/moveable';
+import { CSSObject } from '../utilities/utils';
 import { usePageObjectsById } from './usePageObjects';
 
 export const useActiveMoveableTextObject = () => {
@@ -280,4 +281,26 @@ export const useChangeMoveableTextTransformOrigin = () => {
   };
 
   return handleChangeTransformOrigin;
+};
+
+export const useChangeMoveableTextStyles = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+
+  const handleChangeStyles = (
+    styles: CSSObject,
+    idStyles: string,
+    callback: Function,
+  ) => {
+    if (!isTextObject(activeMoveableObject)) return false;
+    const element = activeMoveableObject.getElement();
+    if (!element) return false;
+    for (const [key, value] of Object.entries(styles)) {
+      (element.style as { [key: string]: any })[key] = `${value}`;
+    }
+    element.setAttribute('stylesId', idStyles);
+    callback();
+    return true;
+  };
+
+  return handleChangeStyles;
 };
