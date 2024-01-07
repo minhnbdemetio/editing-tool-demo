@@ -1,7 +1,7 @@
 import { useEditablePages } from '@/app/store/editable-pages';
 import { CanvasData } from '../types';
 import { useCurrentPage } from './useCurrentPage';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 
 export const useCurrentPageCanvas = () => {
   const currentPage = useCurrentPage();

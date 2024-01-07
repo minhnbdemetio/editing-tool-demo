@@ -57,7 +57,6 @@ describe('Test usePageCanvasById', () => {
       useEditablePagesMockValue,
     );
     const { result } = renderHook(() => usePageCanvasById(randomPageId));
-    console.log({ result });
     expect(result.current[0]).toBe(pageCanvasMockValue);
     expect(typeof result.current[1]).toBe('function');
   });

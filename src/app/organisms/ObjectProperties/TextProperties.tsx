@@ -25,7 +25,9 @@ export const TextProperties: FC = () => {
       <Button onClick={() => setSelectedProperty(SelectedProperty.TextFormat)}>
         Format
       </Button>
-      <Button>Spacing</Button>
+      <Button onClick={() => setSelectedProperty(SelectedProperty.TextSpacing)}>
+        Spacing
+      </Button>
       <Button>Effects</Button>
       <Button>Animate</Button>
       <Button>Transparency</Button>
