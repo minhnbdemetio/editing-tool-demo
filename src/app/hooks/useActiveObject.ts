@@ -9,9 +9,6 @@ import { useActiveObject } from '../store/active-object';
 import { isCustomizableText, isIText } from '../utilities/canvas';
 import { GradientStop } from '../utilities/color.type';
 import { useCallback } from 'react';
-import { useActiveMoveableObject } from '../store/active-moveable-object';
-import { isTextObject } from '../utilities/moveable';
-import { MoveableTextObject } from '../factories/MoveableText';
 
 export const useActiveITextObject = () => {
   const { activeObject } = useActiveObject();

@@ -122,7 +122,7 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   const handleCloneObject = useCloneActiveMoveableObject();
 
   return (
-    <div ref={containerRef} className="w-full ">
+    <div id={pageId} ref={containerRef} className="w-full">
       <div className="relative" ref={layerRef}>
         <div
           style={{ transform: `scale(${scale})`, transformOrigin: '0 0' }}

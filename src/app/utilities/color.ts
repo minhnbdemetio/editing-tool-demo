@@ -1,4 +1,7 @@
 import { GradientStop } from './color.type';
+// @ts-ignore
+import ColorThief from 'colorthief';
+import domtoimage from 'dom-to-image';
 
 function getRandomHexColor() {
   const randomColor = Math.floor(Math.random() * 16777215).toString(16);
@@ -30,5 +33,36 @@ export function createLinearGradientString(stops: GradientStop[]): string {
     .map(stop => `${stop.color} ${stop.offset * 100}%`)
     .join(', ');
 
-  return `linear-gradient(${gradientString}) border-box border-box`;
+  return `linear-gradient(${gradientString})`;
 }
+
+const MAX_PALETTE_COLORS = 15;
+
+export const getElementPalette = async (
+  elementId: string | null,
+): Promise<string[]> => {
+  if (!elementId) return [];
+
+  const element = document.getElementById(elementId);
+  if (!element) return [];
+  const elementImageSrc = await domtoimage.toPng(element);
+  const colorThief = new ColorThief();
+  let palette: number[][] = [];
+  const imageElement = document.createElement('img');
+  imageElement.src = elementImageSrc;
+  if (imageElement?.complete) {
+    palette = await colorThief.getPalette(imageElement, MAX_PALETTE_COLORS);
+  } else {
+    palette = await new Promise(res => {
+      imageElement?.addEventListener('load', function () {
+        res(colorThief.getPalette(imageElement, MAX_PALETTE_COLORS));
+      });
+    });
+  }
+
+  return Array.from(
+    new Set(
+      palette.map((color: number[]) => rgbToHex(color[0], color[1], color[2])),
+    ),
+  );
+};

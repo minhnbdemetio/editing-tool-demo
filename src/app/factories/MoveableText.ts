@@ -1,11 +1,11 @@
 import Moveable from 'moveable';
-import { MoveableObject, ObjectType } from './MoveableObject';
+import { MoveableObject } from './MoveableObject';
+
+export type MoveableTextVariant = 'normal' | 'heading';
 
 export class MoveableTextObject extends MoveableObject {
-  constructor(
-    id?: string,
-    htmlString?: string,
- ) {
+  variant?: MoveableTextVariant;
+  constructor(id?: string, htmlString?: string) {
     super(id, htmlString);
     this.type = 'text';
     this.transformOrigin = 'bottom';
@@ -44,18 +44,29 @@ export class MoveableTextObject extends MoveableObject {
     );
   }
   getFontSize() {
-    const fontSizeString = this.getCssProperty('fontSize')
+    const fontSizeString = this.getCssProperty('fontSize');
     const matches = fontSizeString?.match(/^(\d+(\.\d+)?)px/);
 
     if (matches && matches[1]) {
       return parseFloat(matches[1]);
-    } 
-    return undefined
+    }
+    return undefined;
   }
   setFontSize(fontSize: number | null) {
-    const element = this.getElement()
-    if(!element) return false
-    element.style.fontSize = fontSize + 'px'
+    const element = this.getElement();
+    if (!element) return false;
+    element.style.fontSize = fontSize + 'px';
   }
-  set
+  setTextColor(color: string) {
+    const element = this.getElement();
+    if (!element) return false;
+    element.style.color = color;
+  }
+  setTextGradient(gradient: string) {
+    const element = this.getElement();
+    if (!element) return false;
+    element.style.backgroundImage = gradient;
+    element.style.color = 'transparent';
+    element.style.backgroundClip = 'text';
+  }
 }

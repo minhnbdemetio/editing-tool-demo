@@ -4,20 +4,37 @@ import { useActivePage } from '../store/active-page';
 import { isTextObject } from '../utilities/moveable';
 import { usePageObjectsById } from './usePageObjects';
 
-
 export const useActiveMoveableTextObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
-  return isTextObject(activeMoveableObject) ? activeMoveableObject as MoveableTextObject : null;
+  return isTextObject(activeMoveableObject)
+    ? (activeMoveableObject as MoveableTextObject)
+    : null;
 };
 
 export const useUpdateActiveMoveableObjectFontSize = () => {
-  const activeText = useActiveMoveableTextObject()
+  const activeText = useActiveMoveableTextObject();
 
   return (fontSize: number) => {
-    activeText?.setFontSize(fontSize)
-  }
-}
+    activeText?.setFontSize(fontSize);
+  };
+};
+
+export const useUpdateTextColor = () => {
+  const activeText = useActiveMoveableTextObject();
+
+  return (color: string) => {
+    activeText?.setTextColor(color);
+  };
+};
+
+export const useUpdateTextGradientColor = () => {
+  const activeText = useActiveMoveableTextObject();
+
+  return (gradientBackground: string) => {
+    activeText?.setTextGradient(gradientBackground);
+  };
+};
 
 export const useDeleteActiveMoveableObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
@@ -139,13 +156,13 @@ export const useToggleMoveableLineThroughText = () => {
 };
 
 export const useToggleMoveableCapitalText = () => {
-  const  activeMoveableObject  =  useActiveMoveableTextObject();
+  const activeMoveableObject = useActiveMoveableTextObject();
 
   const toggleCapitalText = (callback?: Function) => {
-
     const element = activeMoveableObject?.getElement();
     if (!element) return false;
-    const isCapitalized = activeMoveableObject?.getCssProperty('textTransform') === 'uppercase';
+    const isCapitalized =
+      activeMoveableObject?.getCssProperty('textTransform') === 'uppercase';
 
     if (isCapitalized) {
       element.style.textTransform = 'none';

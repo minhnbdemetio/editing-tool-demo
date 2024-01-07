@@ -6,6 +6,6 @@ export class MoveableHeadingTextObject extends MoveableTextObject {
         htmlString?: string
      ) {
         super(id, htmlString);
-        this.type = 'heading'
+        this.variant = 'heading'
       }
 }
