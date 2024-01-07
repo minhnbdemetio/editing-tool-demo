@@ -3,5 +3,7 @@ import { MoveableTextObject } from '../factories/MoveableText';
 
 export const isTextObject = (
   object: MoveableObject | null,
-): object is MoveableTextObject =>
-  ['text', 'heading'].includes(object?.type || '');
+): object is MoveableTextObject => {
+  if(!object || !object.type) return false
+  return ['text', 'heading'].includes(object.type)
+};

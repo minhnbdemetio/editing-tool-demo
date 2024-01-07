@@ -2,17 +2,12 @@ import Moveable from 'moveable';
 import { MoveableObject, ObjectType } from './MoveableObject';
 
 export class MoveableTextObject extends MoveableObject {
-  constructor({
-    id,
-    htmlString,
-    type,
-  }: {
-    id?: string;
-    htmlString?: string;
-    type?: ObjectType;
-  } = {}) {
+  constructor(
+    id?: string,
+    htmlString?: string,
+ ) {
     super(id, htmlString);
-    this.type = type ?? 'text';
+    this.type = 'text';
     this.transformOrigin = 'bottom';
   }
   createMoveable(container: HTMLElement): void {
@@ -43,10 +38,24 @@ export class MoveableTextObject extends MoveableObject {
   }
   clone(): MoveableTextObject {
     const clonedData = this.cloneData();
-    return new MoveableTextObject({
-      id: clonedData.cloneObjectId,
-      htmlString: clonedData.clonedObjectHtml,
-      type: this.type,
-    });
+    return new MoveableTextObject(
+      clonedData.cloneObjectId,
+      clonedData.clonedObjectHtml,
+    );
   }
+  getFontSize() {
+    const fontSizeString = this.getCssProperty('fontSize')
+    const matches = fontSizeString?.match(/^(\d+(\.\d+)?)px/);
+
+    if (matches && matches[1]) {
+      return parseFloat(matches[1]);
+    } 
+    return undefined
+  }
+  setFontSize(fontSize: number | null) {
+    const element = this.getElement()
+    if(!element) return false
+    element.style.fontSize = fontSize + 'px'
+  }
+  set
 }

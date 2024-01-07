@@ -1,10 +1,10 @@
 import {
   useToggleMoveableBoldText,
-  useToggleMoveableStrokeText,
+  useToggleMoveableLineThroughText,
   useToggleMoveableCapitalText,
   useToggleMoveableUnderlineText,
   useToggleMoveableItalicText,
-  useChangeMoveableTextAlige,
+  useChangeMoveableTextAlign,
   useToggleMoveableListTypeDiscText,
   useToggleMoveableListTypeNumberText,
   useChangeMoveableTextSpacing,
@@ -30,7 +30,7 @@ export const useToggleMoveableUnderlineTextCommand = () => {
 };
 
 export const useToggleMoveableStrokeTextCommand = () => {
-  const toggleStrokeText = useToggleMoveableStrokeText();
+  const toggleStrokeText = useToggleMoveableLineThroughText();
   return toggleStrokeText;
 };
 
@@ -40,7 +40,7 @@ export const useToggleMoveableCapitalTextCommand = () => {
 };
 
 export const useChangeMoveableTextAligeCommand = () => {
-  const changeTextAlige = useChangeMoveableTextAlige();
+  const changeTextAlige = useChangeMoveableTextAlign();
   return changeTextAlige;
 };
 

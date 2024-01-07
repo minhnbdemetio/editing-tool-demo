@@ -93,6 +93,12 @@ export abstract class MoveableObject {
     this.moveable.destroy();
     return true;
   }
+  getCssProperty<T extends keyof CSSStyleDeclaration>(property: T) {
+    const element = this.getElement()
+    if(!element) return null
+    const cssProperties = window.getComputedStyle(element)
+    return cssProperties[property]
+  }
   changeTransformOrigin(
     transformOrigin?: CSSStyleDeclaration['transformOrigin'],
   ) {

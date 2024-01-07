@@ -1,7 +1,23 @@
+import { MoveableTextObject } from '../factories/MoveableText';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { useActivePage } from '../store/active-page';
 import { isTextObject } from '../utilities/moveable';
 import { usePageObjectsById } from './usePageObjects';
+
+
+export const useActiveMoveableTextObject = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+
+  return isTextObject(activeMoveableObject) ? activeMoveableObject as MoveableTextObject : null;
+};
+
+export const useUpdateActiveMoveableObjectFontSize = () => {
+  const activeText = useActiveMoveableTextObject()
+
+  return (fontSize: number) => {
+    activeText?.setFontSize(fontSize)
+  }
+}
 
 export const useDeleteActiveMoveableObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
@@ -96,7 +112,7 @@ export const useToggleMoveableUnderlineText = () => {
   return toggleUnderlineText;
 };
 
-export const useToggleMoveableStrokeText = () => {
+export const useToggleMoveableLineThroughText = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
   const toggleStrokeText = (callback?: Function) => {
@@ -123,13 +139,13 @@ export const useToggleMoveableStrokeText = () => {
 };
 
 export const useToggleMoveableCapitalText = () => {
-  const { activeMoveableObject } = useActiveMoveableObject();
+  const  activeMoveableObject  =  useActiveMoveableTextObject();
 
   const toggleCapitalText = (callback?: Function) => {
-    if (!isTextObject(activeMoveableObject)) return false;
-    const element = activeMoveableObject.getElement();
+
+    const element = activeMoveableObject?.getElement();
     if (!element) return false;
-    const isCapitalized = element.style.textTransform === 'uppercase';
+    const isCapitalized = activeMoveableObject?.getCssProperty('textTransform') === 'uppercase';
 
     if (isCapitalized) {
       element.style.textTransform = 'none';
@@ -143,10 +159,10 @@ export const useToggleMoveableCapitalText = () => {
   return toggleCapitalText;
 };
 
-export const useChangeMoveableTextAlige = () => {
+export const useChangeMoveableTextAlign = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
-  const changeTextAlige = (textAlign: string, callback?: Function) => {
+  const changeTextAlign = (textAlign: string, callback?: Function) => {
     if (!isTextObject(activeMoveableObject)) return false;
     const element = activeMoveableObject.getElement();
     if (!element) return false;
@@ -155,7 +171,7 @@ export const useChangeMoveableTextAlige = () => {
     return true;
   };
 
-  return changeTextAlige;
+  return changeTextAlign;
 };
 
 export const useToggleMoveableListTypeDiscText = () => {
@@ -241,7 +257,6 @@ export const useChangeMoveableTextTransformOrigin = () => {
     callback?: Function,
   ) => {
     if (!isTextObject(activeMoveableObject)) return false;
-    console.log(transformOrigin);
     activeMoveableObject.changeTransformOrigin(transformOrigin);
     callback && callback();
     return true;
