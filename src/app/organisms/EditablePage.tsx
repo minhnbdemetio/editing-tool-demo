@@ -115,7 +115,7 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   }, []);
 
   return (
-    <div ref={containerRef} className="w-full ">
+    <div ref={containerRef} id="page" className="w-full ">
       <div className="relative" ref={layerRef}>
         <div
           style={{ transform: `scale(${scale})`, transformOrigin: '0 0' }}

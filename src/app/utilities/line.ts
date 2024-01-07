@@ -90,6 +90,9 @@ export const getAngleByPoint = (
 ) => {
   const verticalHeight = Math.abs(y2 - y1);
   const horizontalWidth = Math.abs(x2 - x1);
+
+  console.debug(verticalHeight, horizontalWidth);
+
   const tanRatio = verticalHeight / horizontalWidth;
 
   const basicAngle = Math.atan(tanRatio) * (180 / Math.PI) - 90;

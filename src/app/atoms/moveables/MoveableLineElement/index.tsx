@@ -19,7 +19,7 @@ export const MoveableLineElement: FC<MoveableLineElementProps> = ({
     useActiveMoveableObject();
   const defaultElementRef = useOutsideClick(() => {
     if (!activeMoveableObject?.skipClickoutEvent) {
-      setActiveMoveableObject(null);
+      // setActiveMoveableObject(null);
     }
   });
 
