@@ -1,235 +1,150 @@
 'use client';
 
-import { FC, useEffect, useMemo, useRef, useState } from 'react';
-import { fabric } from 'fabric';
-import { ObjectToolbar } from '../molecules/ObjectToolbar';
-import { CanvasKeyboardEventHandler } from '../atoms/CanvasKeyboardEventHandler';
-import { ObjectRotator } from '../molecules/ObjectToolbar/ObjectRotator';
-import { calculateToolbarPosition, getEventTarget } from '../utilities/canvas';
+import { FC, useEffect, useRef, useState } from 'react';
 import { withCurrentPage } from '../hocs/withCurrentPage';
-import { useActiveObject } from '../store/active-object';
-import { DEFAULT_TOOLBAR_POSITION } from '../constants/canvas-constants';
-import { twMerge } from '../utilities/tailwind';
+
+import { Button } from '@nextui-org/react';
+import { MoveableRectangleObject } from '../factories/MoveableRectangle';
+import { MoveableObjectElement } from '../atoms/moveables/MoveableObjectElement';
+import { MoveableTextObject } from '../factories/MoveableText';
+import { useCurrentPageObjects } from '../hooks/usePageObjects';
 import { useActivePage } from '../store/active-page';
-import { CuttingZoneReminder } from '../molecules/CuttingZoneReminder';
-import { usePageSize } from '../store/use-page-size';
-import { useCurrentPageCanvas } from '../hooks/usePageCanvas';
-import { useLineEnabled } from '../store/line-preview';
+import {
+  useCloneActiveMoveableObject,
+  useDeleteActiveMoveableObject,
+} from '../hooks/useActiveMoveableObject';
+import { ObjectType } from '../factories/MoveableObject';
 
 export interface EditablePageProps {
   pageId: string;
 }
 
 const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
-  const [pageCanvas, setPageCanvas] = useCurrentPageCanvas();
-  const { setActiveObject } = useActiveObject();
-  const { activePage, setActivePage } = useActivePage();
+  const [objects, setObjects] = useCurrentPageObjects();
 
-  const canvasEl = useRef<HTMLCanvasElement>(null);
-  const canvasContainerEl = useRef<HTMLDivElement>(null);
-  const toolbarEl = useRef<HTMLDivElement>(null);
-  const rotatorEl = useRef<HTMLDivElement>(null);
-
-  const [showToolbar, setShowToolbar] = useState(false);
-  const [toolbarPosition, setToolbarPosition] = useState({
-    left: DEFAULT_TOOLBAR_POSITION,
-    top: DEFAULT_TOOLBAR_POSITION,
-  });
-  const [rotatorPosition, setRotatorPosition] = useState({
-    left: DEFAULT_TOOLBAR_POSITION,
-    top: DEFAULT_TOOLBAR_POSITION,
-  });
-
-  const updateActiveObjectOnEvent = (event: fabric.IEvent<MouseEvent>) => {
-    const target = getEventTarget(event);
-    setActiveObject(target);
+  const handleCreateRec = () => {
+    const rec = new MoveableRectangleObject();
+    setObjects([...objects, rec]);
   };
 
-  const clearActiveObject = () => {
-    setActiveObject(null);
+  const handleCreateSpan = () => {
+    const text = new MoveableTextObject();
+    setObjects([...objects, text]);
   };
 
-  const handleShowToolBarOnEvent = (event: fabric.IEvent<MouseEvent>) => {
-    setShowToolbar(true);
-    const target = getEventTarget(event);
-    const { rotatorLeft, rotatorTop, toolbarLeft, toolbarTop } =
-      calculateToolbarPosition(target, toolbarEl, rotatorEl);
-
-    setToolbarPosition({
-      left: toolbarLeft,
-      top: toolbarTop,
+  const handleExport = () => {
+    const data = objects.map(object => {
+      return {
+        htmlString: object.exportHtmlString(),
+        id: object.id,
+        type: object.type,
+      };
     });
-
-    setRotatorPosition({
-      left: rotatorLeft,
-      top: rotatorTop,
-    });
+    console.log({ data });
   };
 
-  const handleHideToolbarOnEvent = () => {
-    setShowToolbar(false);
-  };
-
-  // init canvas
-  useEffect(() => {
-    const canvas = new fabric.Canvas(canvasEl.current, {
-      width: canvasContainerEl.current?.clientWidth,
-      height: canvasContainerEl.current?.clientHeight,
-    });
-
-    const rect = new fabric.Rect({
-      left: 50,
-      top: 50,
-      width: 100,
-      height: 100,
-      fill: 'blue',
-      borderColor: 'black',
-      cornerColor: 'black',
-      cornerSize: 10,
-      transparentCorners: false,
-      lockUniScaling: true,
-      hasRotatingPoint: false,
-    });
-
-    canvas.add(rect);
-
-    canvas.on('object:modified', event => {
-      handleShowToolBarOnEvent(event);
-    });
-
-    canvas.on('selection:created', event => {
-      handleShowToolBarOnEvent(event);
-      updateActiveObjectOnEvent(event);
-    });
-
-    canvas.on('selection:updated', event => {
-      handleShowToolBarOnEvent(event);
-      updateActiveObjectOnEvent(event);
-    });
-
-    canvas.on('selection:cleared', event => {
-      handleHideToolbarOnEvent();
-      clearActiveObject();
-    });
-
-    canvas.on('object:moving', event => {
-      handleHideToolbarOnEvent();
-    });
-
-    canvas.on('object:scaling', event => {
-      handleHideToolbarOnEvent();
-    });
-
-    canvas.on('object:rotating', event => {
-      handleHideToolbarOnEvent();
-    });
-
-    canvas.on('object:skewing', event => {
-      handleHideToolbarOnEvent();
-    });
-
-    canvas.on('object:resizing', event => {
-      handleHideToolbarOnEvent();
-    });
-
-    canvas.on('mouse:down', () => {
-      setActivePage(pageId);
-    });
-
-    setActivePage(pageId);
-    setPageCanvas(canvas);
-
-    return () => {
-      canvas.off();
-      pageCanvas?.off();
-      pageCanvas?.dispose();
-      canvas.dispose();
-      setActiveObject(null);
-      setActivePage(null);
+  const handleImport = () => {
+    // for (const object of objects) {
+    //   object.destroy();
+    // }
+    setObjects([]);
+    const dataObjects = {
+      data: [
+        {
+          htmlString:
+            '<div id="fdsafdsaf" style="width: 132px; height: 132px; background-color: blue; position: absolute; transform: translate(738.262px, 22.035px);"></div>',
+          id: 'fdsafdsaf',
+          type: 'rectangle' as ObjectType,
+        },
+        {
+          htmlString:
+            '<div id="ertrewerwt" style="width: 98px; position: absolute; transform: translate(396.805px, 233.617px); height: 30px;"><span>heheheloloo</span></div>',
+          id: 'ertrewerwt',
+          type: 'text' as ObjectType,
+        },
+        {
+          htmlString:
+            '<div id="vcxvcxzv" style="width: 99px; position: absolute; transform: translate(341.344px, 90.4805px); height: 30px;"><span>heheheloloo</span></div>',
+          id: 'vcxvcxzv',
+          type: 'text' as ObjectType,
+        },
+      ],
     };
+    const res = dataObjects.data.map(object => {
+      let rec;
+      if (object.type === 'rectangle') {
+        rec = new MoveableRectangleObject(object.id, object.htmlString);
+      } else {
+        rec = new MoveableTextObject(object);
+      }
+      return rec;
+    });
+    setTimeout(() => setObjects(res));
+  };
+
+  const { setActivePage } = useActivePage();
+
+  useEffect(() => {
+    setActivePage(pageId);
+  }, [pageId, setActivePage]);
+
+  const handleAddTitle = () => {
+    const text = new MoveableTextObject({ type: 'heading' });
+    setObjects([...objects, text]);
+  };
+
+  const [scale, setScale] = useState(1);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const pageRef = useRef<HTMLDivElement>(null);
+  const layerRef = useRef<HTMLDivElement>(null);
+
+  const handleResize = () => {
+    const containerWidth = containerRef.current?.clientWidth;
+    const containerHeight = containerRef.current?.clientHeight;
+    if (containerWidth && containerHeight) {
+      setScale(containerWidth / 1920);
+      if (layerRef.current) {
+        layerRef.current.style.width = `${containerWidth}px`;
+        layerRef.current.style.height = `${(containerWidth * 9) / 16}px`;
+      }
+    }
+  };
+
+  useEffect(() => {
+    handleResize();
+    window.addEventListener('resize', () => {
+      handleResize();
+    });
   }, []);
 
-  // handle resize canvas
-  useEffect(() => {
-    window.addEventListener('resize', () => {
-      if (canvasContainerEl.current) {
-        pageCanvas?.setDimensions({
-          width: canvasContainerEl.current.clientWidth,
-          height: canvasContainerEl.current.clientHeight,
-        });
-        pageCanvas?.renderAll();
-      }
-    });
-
-    return () => {
-      window.removeEventListener('resize', () => {});
-    };
-  }, [pageCanvas]);
-
-  const {
-    workingHeightPixels,
-    workingWidthPixels,
-    cuttingHeightPixels,
-    cuttingWidthPixels,
-  } = usePageSize();
-
-  const { lineEnabled } = useLineEnabled();
-
-  const { paddingX, paddingY } = useMemo(() => {
-    return {
-      paddingX: Math.round((workingWidthPixels - cuttingWidthPixels) / 2),
-      paddingY: Math.round((workingHeightPixels - cuttingHeightPixels) / 2),
-    };
-  }, [
-    cuttingHeightPixels,
-    cuttingWidthPixels,
-    workingHeightPixels,
-    workingWidthPixels,
-  ]);
+  const handleDeleteObject = useDeleteActiveMoveableObject();
+  const handleCloneObject = useCloneActiveMoveableObject();
 
   return (
-    <CuttingZoneReminder>
-      <div
-        style={{
-          width: '100%',
-          aspectRatio: workingWidthPixels / workingHeightPixels,
-        }}
-        ref={canvasContainerEl}
-        className={twMerge(` relative bg-white `, {
-          'shadow-[0_0_0_2px_#00dcf0]': pageId === activePage,
-        })}
-        id={pageId}
-      >
-        <CanvasKeyboardEventHandler />
-        <div className="overflow-hidden">
-          <canvas
-            style={{
-              margin: !lineEnabled ? `-${paddingX}px -${paddingY}px` : ``,
-            }}
-            ref={canvasEl}
-          ></canvas>
+    <div ref={containerRef} className="w-full ">
+      <div className="relative" ref={layerRef}>
+        <div
+          style={{ transform: `scale(${scale})`, transformOrigin: '0 0' }}
+          ref={pageRef}
+          className="w-[1920px] h-[1080px] bg-white relative"
+        >
+          <Button onClick={() => handleExport()}>export to console</Button>
+          <Button onClick={handleImport}>import from template</Button>
+          <Button onClick={() => handleCreateRec()}>create rec</Button>
+          <Button onClick={() => handleCreateSpan()}>create span</Button>
+          <Button onClick={handleDeleteObject}>delete active object</Button>
+          <Button onClick={handleCloneObject}>clone active object</Button>
+          <Button onClick={() => handleAddTitle()}>Add title</Button>
+          {objects.map(el => (
+            <MoveableObjectElement
+              containerRef={pageRef}
+              object={el}
+              key={el.id}
+            ></MoveableObjectElement>
+          ))}
         </div>
-
-        <ObjectToolbar
-          ref={toolbarEl}
-          className="absolute"
-          style={{
-            left: toolbarPosition.left,
-            top: toolbarPosition.top,
-            visibility: showToolbar ? 'initial' : 'hidden',
-          }}
-        />
-        <ObjectRotator
-          ref={rotatorEl}
-          className="absolute"
-          style={{
-            left: rotatorPosition.left,
-            top: rotatorPosition.top,
-            visibility: showToolbar ? 'initial' : 'hidden',
-          }}
-        />
       </div>
-    </CuttingZoneReminder>
+    </div>
   );
 };
 
