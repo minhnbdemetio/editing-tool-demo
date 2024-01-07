@@ -1,14 +1,17 @@
-import { useChangeTextColorCommand } from '@/app/hooks/editor-commands/useActiveObjectCommand';
 import { TextColorPicker } from '@/app/molecules/TextColorPicker';
 import { Button } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import SearchInput from '@/app/molecules/SearchInput';
-
-import { useActivePageCanvas } from '@/app/hooks/useActivePage';
-import { getCanvasPalette } from '@/app/utilities/canvas';
-import { createLinearGradientString } from '@/app/utilities/color';
-import { useChangeTextColorGradient } from '@/app/hooks/useActiveObject';
+import {
+  createLinearGradientString,
+  getElementPalette,
+} from '@/app/utilities/color';
+import { useActivePage } from '@/app/store/active-page';
+import {
+  useUpdateTextColor,
+  useUpdateTextGradientColor,
+} from '@/app/hooks/useActiveMoveableObject';
 
 const DEFAULT_COLORS = [
   '#000000',
@@ -226,21 +229,21 @@ const GRADIENT_OPTIONS = [
 
 export const ColorProperty: FC = () => {
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
-  const changeColorCommand = useChangeTextColorCommand();
+  const changeColorCommand = useUpdateTextColor();
+  const changeColorGradient = useUpdateTextGradientColor();
 
-  const activePageCanvas = useActivePageCanvas();
+  const { activePage } = useActivePage();
   const [palette, setPalette] = useState<Array<string>>([]);
 
   const getActiveCanvasPalette = async () => {
-    const canvasPalette = await getCanvasPalette(activePageCanvas);
+    const canvasPalette = await getElementPalette(activePage);
+
     setPalette(canvasPalette);
   };
 
-  const changeColorGradient = useChangeTextColorGradient();
-
   useEffect(() => {
     getActiveCanvasPalette();
-  }, [activePageCanvas]);
+  }, []);
 
   const handleCustomizeColor = () => {
     setColorPickerOpen(false);
@@ -310,8 +313,14 @@ export const ColorProperty: FC = () => {
                   size="lg"
                   className="border-gray-200 border-1"
                   isIconOnly
-                  onClick={() => changeColorGradient(gradient)}
-                  style={{ background: createLinearGradientString(gradient) }}
+                  onClick={() =>
+                    changeColorGradient(createLinearGradientString(gradient))
+                  }
+                  style={{
+                    background: `${createLinearGradientString(
+                      gradient,
+                    )} border-box border-box`,
+                  }}
                   key={createLinearGradientString(gradient)}
                 ></Button>
               ))}

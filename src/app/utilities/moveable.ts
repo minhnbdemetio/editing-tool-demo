@@ -3,5 +3,4 @@ import { MoveableTextObject } from '../factories/MoveableText';
 
 export const isTextObject = (
   object: MoveableObject | null,
-): object is MoveableTextObject =>
-  ['text', 'heading'].includes(object?.type || '');
+): object is MoveableTextObject => object?.type === 'text';

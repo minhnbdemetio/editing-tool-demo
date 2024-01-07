@@ -9,7 +9,6 @@ import { useActiveObject } from '../store/active-object';
 import { isCustomizableText, isIText } from '../utilities/canvas';
 import { GradientStop } from '../utilities/color.type';
 import { useCallback } from 'react';
-import { HeadingText } from '../factories/text-element';
 
 export const useActiveITextObject = () => {
   const { activeObject } = useActiveObject();

@@ -14,6 +14,7 @@ import {
   useDeleteActiveMoveableObject,
 } from '../hooks/useActiveMoveableObject';
 import { ObjectType } from '../factories/MoveableObject';
+import { MoveableHeadingTextObject } from '../factories/MoveableHeadingText';
 
 export interface EditablePageProps {
   pageId: string;
@@ -75,7 +76,7 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
       if (object.type === 'rectangle') {
         rec = new MoveableRectangleObject(object.id, object.htmlString);
       } else {
-        rec = new MoveableTextObject(object);
+        rec = new MoveableTextObject(object.id, object.htmlString);
       }
       return rec;
     });
@@ -89,7 +90,7 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   }, [pageId, setActivePage]);
 
   const handleAddTitle = () => {
-    const text = new MoveableTextObject({ type: 'heading' });
+    const text = new MoveableHeadingTextObject();
     setObjects([...objects, text]);
   };
 
@@ -121,7 +122,7 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   const handleCloneObject = useCloneActiveMoveableObject();
 
   return (
-    <div ref={containerRef} className="w-full ">
+    <div id={pageId} ref={containerRef} className="w-full">
       <div className="relative" ref={layerRef}>
         <div
           style={{ transform: `scale(${scale})`, transformOrigin: '0 0' }}
