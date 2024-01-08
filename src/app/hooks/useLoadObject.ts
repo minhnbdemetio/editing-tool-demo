@@ -1,22 +1,26 @@
-import { RefObject, useEffect } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 import { MoveableObject } from '../factories/MoveableObject';
 
 export const useLoadMoveableObject = (
   containerRef: RefObject<HTMLDivElement>,
-  defaultElementRef: RefObject<HTMLElement>,
   object: MoveableObject,
 ) => {
+  const [objectLoaded, setObjectLoaded] = useState(false);
   useEffect(() => {
-    if (!containerRef.current || !defaultElementRef.current) return;
+    if (!containerRef.current || objectLoaded) return;
+    const defaultElement = object.getElement();
     if (object.htmlString) {
       const loadedElement = object.createElementFromHtmlString();
       if (loadedElement) {
         containerRef.current.appendChild(loadedElement);
       }
-      defaultElementRef.current.remove();
+      defaultElement?.remove();
     } else {
-      defaultElementRef.current.classList.remove('hidden');
+      defaultElement?.classList.remove('hidden');
     }
     object.createMoveable(containerRef.current);
-  }, [containerRef, defaultElementRef, object]);
+    setObjectLoaded(true);
+  }, [containerRef, object, objectLoaded]);
+
+  return { objectLoaded };
 };

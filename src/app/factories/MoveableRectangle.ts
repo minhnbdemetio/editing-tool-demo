@@ -5,4 +5,11 @@ export class MoveableRectangleObject extends MoveableObject {
     super(id, htmlString);
     this.type = 'rectangle';
   }
+  clone(): MoveableRectangleObject {
+    const clonedData = this.cloneData();
+    return new MoveableRectangleObject(
+      clonedData.cloneObjectId,
+      clonedData.clonedObjectHtml,
+    );
+  }
 }

@@ -1,5 +1,4 @@
-import { useChangeActiveObjectFontSizeCommand } from '@/app/hooks/editor-commands/useActiveObjectCommand';
-import { useActiveITextObject } from '@/app/hooks/useActiveObject';
+import { useActiveMoveableTextObject, useUpdateActiveMoveableObjectFontSize } from '@/app/hooks/useActiveMoveableObject';
 import { Slider, Tooltip } from '@nextui-org/react';
 import { FC, useState } from 'react';
 
@@ -10,11 +9,11 @@ const FONT_SIZE_STEP = 1;
 const MAX_FONT_SIZE = 144;
 
 export const FontSizeProperty: FC<FontPropertyProps> = ({}) => {
-  const activeText = useActiveITextObject();
+  const activeText = useActiveMoveableTextObject();
 
-  const [fontSize, setFontSize] = useState(activeText?.get('fontSize'));
+  const [fontSize, setFontSize] = useState(activeText?.getFontSize());
 
-  const handleChangeFontSize = useChangeActiveObjectFontSizeCommand();
+  const handleChangeFontSize = useUpdateActiveMoveableObjectFontSize();
 
   return (
     <div className="w-full h-full">
@@ -46,7 +45,8 @@ export const FontSizeProperty: FC<FontPropertyProps> = ({}) => {
                 value={fontSize}
                 onChange={e => {
                   const v = +e.target.value;
-                  handleChangeFontSize(v, () => setFontSize(v));
+                  handleChangeFontSize(v);
+                  setFontSize(v)
                 }}
               />
             </Tooltip>
@@ -55,7 +55,8 @@ export const FontSizeProperty: FC<FontPropertyProps> = ({}) => {
         value={fontSize}
         onChange={value => {
           if (typeof value === 'number') {
-            handleChangeFontSize(value, () => setFontSize(value));
+            handleChangeFontSize(value);
+            setFontSize(value)
           }
         }}
       />

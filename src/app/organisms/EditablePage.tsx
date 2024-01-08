@@ -18,6 +18,14 @@ import { usePageSize } from '../store/use-page-size';
 import { useCurrentPageCanvas } from '../hooks/usePageCanvas';
 import { LineEventHandler } from '../utilities/lineEventHandler';
 import { useLineEnabled } from '../store/line-preview';
+import { useCurrentPageObjects } from '../hooks/usePageObjects';
+import { useActivePage } from '../store/active-page';
+import {
+  useCloneActiveMoveableObject,
+  useDeleteActiveMoveableObject,
+} from '../hooks/useActiveMoveableObject';
+import { ObjectType } from '../factories/MoveableObject';
+import { MoveableHeadingTextObject } from '../factories/MoveableHeadingText';
 
 export interface EditablePageProps {
   pageId: string;
@@ -26,7 +34,7 @@ export interface EditablePageProps {
 let selectedElement: fabric.Object | null = null;
 
 const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
-  const [objects, setObjects] = useCurrentPageObject();
+  const [objects, setObjects] = useCurrentPageObjects();
 
   const handleCreateRec = () => {
     const rec = new MoveableRectangleObject();
@@ -55,30 +63,33 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   };
 
   const handleImport = () => {
+    // for (const object of objects) {
+    //   object.destroy();
+    // }
     setObjects([]);
-    const objects = {
+    const dataObjects = {
       data: [
         {
           htmlString:
             '<div id="fdsafdsaf" style="width: 132px; height: 132px; background-color: blue; position: absolute; transform: translate(738.262px, 22.035px);"></div>',
           id: 'fdsafdsaf',
-          type: 'rectangle',
+          type: 'rectangle' as ObjectType,
         },
         {
           htmlString:
             '<div id="ertrewerwt" style="width: 98px; position: absolute; transform: translate(396.805px, 233.617px); height: 30px;"><span>heheheloloo</span></div>',
           id: 'ertrewerwt',
-          type: 'text',
+          type: 'text' as ObjectType,
         },
         {
           htmlString:
             '<div id="vcxvcxzv" style="width: 99px; position: absolute; transform: translate(341.344px, 90.4805px); height: 30px;"><span>heheheloloo</span></div>',
           id: 'vcxvcxzv',
-          type: 'text',
+          type: 'text' as ObjectType,
         },
       ],
     };
-    const res = objects.data.map(object => {
+    const res = dataObjects.data.map(object => {
       let rec;
       if (object.type === 'rectangle') {
         rec = new MoveableRectangleObject(object.id, object.htmlString);
@@ -88,6 +99,17 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
       return rec;
     });
     setTimeout(() => setObjects(res));
+  };
+
+  const { setActivePage } = useActivePage();
+
+  useEffect(() => {
+    setActivePage(pageId);
+  }, [pageId, setActivePage]);
+
+  const handleAddTitle = () => {
+    const text = new MoveableHeadingTextObject();
+    setObjects([...objects, text]);
   };
 
   const [scale, setScale] = useState(1);
@@ -114,8 +136,11 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
     });
   }, []);
 
+  const handleDeleteObject = useDeleteActiveMoveableObject();
+  const handleCloneObject = useCloneActiveMoveableObject();
+
   return (
-    <div ref={containerRef} id="page" className="w-full ">
+    <div id={pageId} ref={containerRef} className="w-full">
       <div className="relative" ref={layerRef}>
         <div
           style={{ transform: `scale(${scale})`, transformOrigin: '0 0' }}
@@ -126,6 +151,9 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
           <Button onClick={handleImport}>import from template</Button>
           <Button onClick={() => handleCreateRec()}>create rec</Button>
           <Button onClick={() => handleCreateSpan()}>create span</Button>
+          <Button onClick={handleDeleteObject}>delete active object</Button>
+          <Button onClick={handleCloneObject}>clone active object</Button>
+          <Button onClick={() => handleAddTitle()}>Add title</Button>
           <Button onClick={() => handleCreateLine()}>create line</Button>
           {objects.map(el => (
             <MoveableObjectElement
