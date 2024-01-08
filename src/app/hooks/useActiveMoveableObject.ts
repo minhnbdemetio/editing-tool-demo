@@ -1,4 +1,8 @@
 import { CSSProperties, useCallback } from 'react';
+import {
+  MoveableTextObject,
+  MoveableTextStyleEffect,
+} from '../factories/MoveableText';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { useActivePage } from '../store/active-page';
 import { GradientStop } from '../utilities/color.type';
@@ -321,9 +325,7 @@ export const useChangeTextLineHeight = () => {
   const activeText = useActiveTextObject();
 
   const handleChangeLineHeight = (lineHeight: number, callback: Function) => {
-    const element = activeText?.getElement();
-    if (!element) return false;
-    element.style.lineHeight = `${lineHeight}px`;
+    activeText?.setLineHeight(lineHeight);
     callback();
     return true;
   };
@@ -469,4 +471,26 @@ export const useToggleLock = () => {
     activeMoveableObject?.toggleLock();
   };
   return toggleLock;
+};
+
+export const useUpdateActiveMoveableObjectTextStyleEffect = () => {
+  const activeText = useActiveTextObject();
+  const handleChangeTextEffect = (
+    effect: MoveableTextStyleEffect,
+    callback: Function,
+  ) => {
+    // Reset effect before apply new effect
+    const el = activeText?.getElement();
+    if (!el) return false;
+    el.style.textShadow = 'none';
+    el.style.webkitTextFillColor = 'currentcolor';
+
+    // Set style effect id
+    activeText?.setStyleEffect(effect);
+
+    // Update style effect
+    callback();
+    return true;
+  };
+  return handleChangeTextEffect;
 };

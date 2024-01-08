@@ -16,6 +16,7 @@ import {
   useChangeTextTransform,
   useDeleteObject,
   useUndoDeleteObject,
+  useUpdateActiveMoveableObjectTextStyleEffect,
 } from '../useActiveMoveableObject';
 import { debounce } from 'lodash';
 import { DeleteCommand } from '@/app/factories/command/DeleteCommand';
@@ -66,7 +67,7 @@ export const useToggleMoveableListTypeNumberTextCommand = () => {
 export const useChangeMoveableTextSpacingCommand = () => {
   const changeLetterSpacing = useChangeTextSpacing();
   // TODO: Using excute command
-  return debounce(changeLetterSpacing, 100);
+  return changeLetterSpacing;
 };
 
 export const useChangeMoveableTextLineHeightCommand = () => {
@@ -92,6 +93,12 @@ export const useChangeMoveableTextFontStyleCommand = () => {
 export const useChangeMoveableTextTransformCommand = () => {
   const changeTransform = useChangeTextTransform();
   return debounce(changeTransform, 100);
+};
+
+export const useUpdateActiveMoveableObjectTextStyleEffectCommand = () => {
+  const updateActiveMoveableObjectTextStyleEffect =
+    useUpdateActiveMoveableObjectTextStyleEffect();
+  return updateActiveMoveableObjectTextStyleEffect;
 };
 
 export const useDeleteObjetCommand = () => {

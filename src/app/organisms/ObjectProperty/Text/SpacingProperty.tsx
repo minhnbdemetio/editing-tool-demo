@@ -4,6 +4,12 @@ import {
   useChangeTextSpacing,
   useChangeTextTransformOrigin,
 } from '@/app/hooks/useActiveMoveableObject';
+import {
+  useChangeMoveableTextLineHeightCommand,
+  useChangeMoveableTextSpacingCommand,
+  useChangeMoveableTextTransformOriginCommand,
+} from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
+import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
 import { AnchorBottom } from '@/app/icons/AnchorBottom';
 import { AnchorCenter } from '@/app/icons/AnchorCenter';
 import { AnchorTop } from '@/app/icons/AnchorTop';
@@ -13,26 +19,26 @@ import { FC, useState } from 'react';
 
 interface SpacingPropertyProps {}
 
-const SPACING_DEFAULT = 0;
 const SPACING_STEP = 1;
 const MAX_SPACING = 12;
 const MIN_SPACING = -2;
-const LINE_HEIGHT_DEFAULT = 24;
 const LINE_HEIGHT_STEP = 2;
 const MIN_LINE_HEIGHT = 22;
 const MAX_LINE_HEIGHT = 120;
 
 export const SpacingProperty: FC<SpacingPropertyProps> = ({}) => {
-  const [spacing, setSpacing] = useState<number | undefined>(SPACING_DEFAULT);
+  const activeText = useActiveTextObject();
+  const [spacing, setSpacing] = useState<number | undefined>(
+    activeText?.getLetterSpacing() || 0,
+  );
   const [lineHeight, setLineHeight] = useState<number | undefined>(
-    LINE_HEIGHT_DEFAULT,
+    activeText?.getLineHeight(),
   );
   const { moveable } = useDesign();
 
   const handleChangeLetterSpacing = useChangeTextSpacing();
   const handleChangeLineHeight = useChangeTextLineHeight();
-  const handleChangeMoveableTextTransformOrigin =
-    useChangeTextTransformOrigin();
+  const handleChangeMoveableTextTransformOrigin = useChangeTextTransformOrigin();
   return (
     <div className="w-full h-full">
       <div className="text-center mb-3">
