@@ -1,8 +1,8 @@
+import { CSSProperties } from 'react';
 import { MoveableTextObject } from '../factories/MoveableText';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { useActivePage } from '../store/active-page';
 import { isTextObject } from '../utilities/moveable';
-import { CSSObject } from '../utilities/utils';
 import { usePageObjectsById } from './usePageObjects';
 
 export const useActiveMoveableTextObject = () => {
@@ -282,12 +282,18 @@ export const useChangeMoveableTextTransformOrigin = () => {
 
   return handleChangeTransformOrigin;
 };
-
+type EditableCSSProperty = keyof Omit<
+  CSSStyleDeclaration,
+  | 'length'
+  | 'parentRule'
+  | keyof { [Symbol.iterator]: () => IterableIterator<string> }
+  | keyof { [property: string]: () => string }
+>;
 export const useChangeMoveableTextStyles = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
   const handleChangeStyles = (
-    styles: CSSObject,
+    styles: CSSStyleDeclaration,
     idStyles: string,
     callback: Function,
   ) => {
@@ -295,7 +301,7 @@ export const useChangeMoveableTextStyles = () => {
     const element = activeMoveableObject.getElement();
     if (!element) return false;
     for (const [key, value] of Object.entries(styles)) {
-      (element.style as { [key: string]: any })[key] = `${value}`;
+      element.style[key as EditableCSSProperty] = `${value}`;
     }
     element.setAttribute('stylesId', idStyles);
     callback();
@@ -303,4 +309,26 @@ export const useChangeMoveableTextStyles = () => {
   };
 
   return handleChangeStyles;
+};
+
+export const useChangeMoveableTextFontStyle = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+
+  const handleChangeFont = (
+    fontFamily: string,
+    fontStyle: Partial<CSSProperties>,
+    callback: Function,
+  ) => {
+    if (!isTextObject(activeMoveableObject)) return false;
+    const element = activeMoveableObject.getElement();
+    if (!element) return false;
+    element.style.fontFamily = fontFamily;
+    for (const [key, value] of Object.entries(fontStyle)) {
+      (element.style as { [key: string]: any })[key] = `${value}`;
+    }
+    callback();
+    return true;
+  };
+
+  return handleChangeFont;
 };

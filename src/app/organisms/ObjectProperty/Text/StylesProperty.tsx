@@ -2,29 +2,43 @@ import { useChangeMoveableTextStylesCommand } from '@/app/hooks/editor-commands/
 import { Check } from '@/app/icons';
 import { Document } from '@/app/icons/Document';
 import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
-import { cssStringToObject } from '@/app/utilities/utils';
 import { FC, useEffect, useState } from 'react';
 
 interface FontPropertyProps {}
-
 const stylesArray = [
   {
     title: 'Tiêu đề',
     id: 'heading',
-    style:
-      'font-weight: 700; font-style: normal; color: rgb(0, 0, 0); text-decoration: none; font-size: 30px;',
+    style: {
+      fontWeight: '700',
+      fontStyle: 'normal',
+      color: 'rgb(0, 0, 0)',
+      textDecoration: 'none',
+      fontSize: '30px',
+    },
   },
   {
     title: 'Tiêu đề phụ',
     id: 'heading2',
-    style:
-      'font-weight: 700; font-style: normal; color: rgb(0, 0, 0); text-decoration: none; font-size: 18px',
+    style: {
+      fontWeight: '700',
+      fontStyle: 'normal',
+      color: 'rgb(0, 0, 0)',
+      textDecoration: 'none',
+      fontSize: '18px',
+    },
   },
   {
     title: 'Nội dung',
     id: 'content',
-    style:
-      'font-weight: 400; font-style: normal; color: rgb(0, 0, 0); text-decoration: none; font-size: 12px; font-family: "YAFdJllHsUM 0"',
+    style: {
+      fontWeight: '400',
+      fontStyle: 'normal',
+      color: 'rgb(0, 0, 0)',
+      textDecoration: 'none',
+      fontSize: '12px',
+      fontFamily: '"YAFdJllHsUM 0"',
+    },
   },
 ];
 
@@ -40,8 +54,8 @@ export const StylesProperty: FC<FontPropertyProps> = ({}) => {
     }
   }, [activeElement]);
 
-  const handleChangeStyle = (style: string, id: string) => {
-    handleChangeStyles(cssStringToObject(style), id, () => {
+  const handleChangeStyle = (style: CSSStyleDeclaration, id: string) => {
+    handleChangeStyles(style, id, () => {
       setActiveStyles(id);
     });
   };
@@ -60,9 +74,11 @@ export const StylesProperty: FC<FontPropertyProps> = ({}) => {
           <li
             key={item.id}
             className="my-2 cursor-pointer flex justify-between items-center hover:bg-[#e4e4e4]"
-            onClick={() => handleChangeStyle(item.style, item.id)}
+            onClick={() =>
+              handleChangeStyle(item.style as CSSStyleDeclaration, item.id)
+            }
           >
-            <span style={cssStringToObject(item.style)}>{item.title}</span>
+            <span style={item.style}>{item.title}</span>
             <div>{activeStyle === item.id && <Check className="mr-3" />}</div>
           </li>
         ))}
