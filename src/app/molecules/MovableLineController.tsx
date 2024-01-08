@@ -121,16 +121,41 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
     }
   }, [activeMoveableObject]);
 
-  if (!anchorRef) return null;
-
   const lineObject = activeMoveableObject as MoveableLineObject;
 
-  const startPoint = lineObject.line?.points;
-  const endPoint = lineObject.line?.endPoint;
+  const startPoint = lineObject?.line?.points;
+  const endPoint = lineObject?.line?.endPoint;
 
   const linePositions = lineObject?.line?.getElbowedLinePositions();
 
-  const updateLineControllerPosition = () => {
+  const updateHeadControllerPosition = (hide?: boolean) => {
+    const start = lineObject?.line?.points;
+    const end = lineObject?.line?.endPoint;
+
+    if (start && end) {
+      const startElement = document.getElementById('head-' + start.id);
+      const endElement = document.getElementById('head-' + end.id);
+
+      if (hide) {
+        if (startElement) startElement.style.display = `none`;
+
+        if (endElement) endElement.style.display = `none`;
+        return;
+      }
+
+      if (startElement) {
+        startElement.style.display = `block`;
+        startElement.style.transform = ` translate(${start?.x}px, ${start?.y}px)`;
+      }
+
+      if (endElement) {
+        endElement.style.display = `block`;
+        endElement.style.transform = ` translate(${end?.x}px, ${end?.y}px)`;
+      }
+    }
+  };
+
+  const updateLineControllerPosition = (hide?: boolean) => {
     let point: LinePoint | undefined | null = lineObject?.line?.points;
 
     while (point) {
@@ -139,6 +164,12 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
       if (next) {
         const id = point.id + next.id;
         const element = document.getElementById(id);
+
+        if (hide && element) {
+          element.style.display = 'none';
+          point = point.getNext();
+          continue;
+        }
 
         if (point.hasNextCurve() || point.hasPrevCurve()) {
           if (element) {
@@ -157,6 +188,22 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
       point = point.getNext();
     }
   };
+
+  useEffect(() => {
+    if (activeMoveableObject) {
+      console.debug('register event', activeMoveableObject.moveable);
+      activeMoveableObject.moveable?.on('dragStart', () => {
+        updateLineControllerPosition(true);
+        updateHeadControllerPosition(true);
+      });
+      activeMoveableObject.moveable?.on('dragEnd', () => {
+        updateLineControllerPosition();
+        updateHeadControllerPosition();
+      });
+    }
+  }, [activeMoveableObject]);
+
+  if (!anchorRef) return null;
 
   const onDragFreePoint = (
     id: string,
@@ -215,13 +262,16 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
     <>
       {startPoint && (
         <Draggable
+          id={`head-` + startPoint.id}
           onDragEnd={target => {
             lineObject.line?.mergeStraightLine();
 
             const newHead = target.getAttribute('data-new-head') || '';
             if (newHead) {
               target.setAttribute('data-target', newHead);
+              target.setAttribute('id', newHead);
               target.setAttribute('data-new-head', '');
+              forceReload();
             }
           }}
           data-target={startPoint.id}
@@ -288,6 +338,7 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
               anchorRef.style.transformOrigin = 'left center';
 
               updateLineControllerPosition();
+              updateHeadControllerPosition();
             }
           }}
           dragStyle={pos.y2 === pos.y1 ? 'yOnly' : 'xOnly'}
@@ -303,12 +354,15 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
       ))}
       {endPoint && (
         <Draggable
+          id={`head-` + endPoint.id}
           onDragEnd={target => {
             lineObject.line?.mergeStraightLine();
             const newHead = target.getAttribute('data-new-end') || '';
             if (newHead) {
               target.setAttribute('data-target', newHead);
+              target.setAttribute('id', newHead);
               target.setAttribute('data-new-end', '');
+              forceReload();
             }
           }}
           data-target={endPoint.id}

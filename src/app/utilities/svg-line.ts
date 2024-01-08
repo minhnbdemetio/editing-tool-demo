@@ -47,15 +47,17 @@ export class SvgLine {
     } = {},
   ) {
     this.stroke = options.stroke || '#000';
-    this.strokeWidth = options.strokeWidth || 2;
+    this.strokeWidth = options.strokeWidth || 10;
     this.startAdornment = options.startAdornment || SvgLineAdornment.None;
     this.endAdornment = options.endAdornment || SvgLineAdornment.None;
     this.length = options.length || 50;
     this.type = options.type || SvgLineType.Straight;
     this.cornerRounding = options.cornerRounding || 10;
 
-    const end = new LinePoint(100, 50, null, null);
-    const start = new LinePoint(20, 20, null, end);
+    this.padding = this.getAdornmentLength() + 10;
+
+    const end = new LinePoint(100, 0, null, null);
+    const start = new LinePoint(0, 0, null, end);
 
     end.setPrev(start);
 
@@ -77,14 +79,26 @@ export class SvgLine {
   private getStraightLine() {
     const start = this.points;
     const end = start.getNext();
-    const { left } = this.getLineAdornmentPadding();
+    const {
+      startLeft,
+      startRight,
+      endBottom,
+      endLeft,
+      endRight,
+      endTop,
+      startBottom,
+      startTop,
+    } = this.getLineAdornmentPadding();
+
     const centerPoint = this.getCenterPoint();
 
     if (end) {
       let lineWidth = this.getStraightLineWidth();
 
       return this.addPath(
-        `M ${left + this.padding} ${centerPoint} l ${lineWidth},0`,
+        `M ${startLeft + startRight + this.padding} ${centerPoint} l ${
+          lineWidth - endLeft - startLeft - startRight - endRight
+        },0`,
       );
     }
 
@@ -92,15 +106,30 @@ export class SvgLine {
   }
 
   private getLine(): string {
-    const { left } = this.getLineAdornmentPadding();
-
     if (this.getType() === SvgLineType.Straight) return this.getStraightLine();
 
     const lines: string[] = [];
 
+    const {
+      startBottom,
+      startLeft,
+      startRight,
+      startTop,
+      endBottom,
+      endLeft,
+      endRight,
+      endTop,
+    } = this.getLineAdornmentPadding();
+
     let point: LinePoint | null = this.points;
     while (point) {
       const nextPoint = point.getNext();
+
+      const isFirst = point.id === this.points.id;
+      const isEnd = point.id === this.endPoint?.getPrev()?.id;
+
+      const hasStartAdornment = this.startAdornment !== SvgLineAdornment.None;
+      const hasEndAdornment = this.endAdornment !== SvgLineAdornment.None;
 
       if (nextPoint) {
         const nextPosition = nextPoint.getPosition();
@@ -115,6 +144,8 @@ export class SvgLine {
           if (dy >= this.toleranceNumber) {
             if (point.hasNextCurve()) dy -= this.cornerRounding;
             if (point.hasPrevCurve()) dy -= this.cornerRounding;
+            if (isFirst) dy -= startTop + startBottom;
+            if (isEnd) dy -= endTop + endBottom;
 
             if (nextDx && nextDx > this.toleranceNumber) {
               lines.push(` v ${dy}`);
@@ -138,6 +169,9 @@ export class SvgLine {
           } else {
             if (point.hasNextCurve()) dy += this.cornerRounding;
             if (point.hasPrevCurve()) dy += this.cornerRounding;
+            if (isFirst) dy -= startTop - startBottom;
+            if (isEnd) dy += endTop + endBottom;
+
             if (nextDx && nextDx > this.toleranceNumber) {
               lines.push(` v ${dy}`);
 
@@ -166,10 +200,11 @@ export class SvgLine {
 
           if (dx >= 0) {
             if (point.hasNextCurve()) dx -= this.cornerRounding;
-
             if (point.hasPrevCurve()) {
               dx -= this.cornerRounding;
             }
+            if (isFirst) dx -= startLeft - startRight;
+            if (isEnd) dx += endLeft - endRight;
 
             if (nextDy && nextDy >= 0) {
               lines.push(` h ${dx}`);
@@ -194,6 +229,8 @@ export class SvgLine {
             if (point.hasPrevCurve()) {
               dx += this.cornerRounding;
             }
+            if (isFirst) dx -= startLeft - startRight;
+            if (isEnd) dx += endLeft - endRight;
 
             if (nextDy && nextDy >= 0) {
               lines.push(` h ${dx}`);
@@ -229,42 +266,82 @@ export class SvgLine {
     const startY = startPointPosition.y - bounding.y1;
 
     return this.addPath(
-      `M ${left + this.padding + startX} ${startY + this.padding} ${lines.join(
-        ' ',
-      )}`,
+      `M ${+this.padding + startX + startLeft - startRight},${
+        +startY + this.padding + startTop - startBottom
+      } ${lines.join(' ')}`,
       { fill: 'none' },
     );
   }
   private getAdornment(
     position: SvgLineAdornmentPosition.Start | SvgLineAdornmentPosition.End,
   ): string {
-    const start = this.points;
-
+    let start = this.points;
     const bouding = this.getBoundingPosition();
+
+    if (position === SvgLineAdornmentPosition.End) {
+      start = this.endPoint as LinePoint;
+    }
+
+    let x = start.x - bouding.x1 + this.padding;
+    let y = start.y - bouding.y1 + this.padding;
+
+    let direction: 'right' | 'left' | 'up' | 'down' =
+      position === SvgLineAdornmentPosition.End
+        ? this.getEndAdornmentDirection(start)
+        : this.getStartAdornmentDirection(start);
+
+    const isStraightLine = this.getType() === SvgLineType.Straight;
+    if (isStraightLine) {
+      const centerPoint = this.getCenterPoint();
+      x = this.padding;
+      y = centerPoint;
+
+      if (position === SvgLineAdornmentPosition.End) {
+        x = this.padding + this.getStraightLineWidth();
+      }
+    }
 
     const adornment =
       position === SvgLineAdornmentPosition.Start
         ? this.startAdornment
         : this.endAdornment;
+
     switch (adornment) {
       case SvgLineAdornment.Arrow:
-        return this.getArrowAdornment(
-          this.getAdornmentDirection(start),
-          start.x - bouding.x1 + this.padding,
-          start.y - bouding.y1 + this.padding,
-        );
+        return this.getArrowAdornment(direction, x, y);
       case SvgLineAdornment.Triangle:
-        return this.getTriangleAdornment(position);
+        return this.getTriangleAdornment(direction, x, y);
       case SvgLineAdornment.OutlinedTriangle:
-        return this.getTriangleAdornment(position, true);
+        return this.getTriangleAdornment(direction, x, y, true);
       default:
         return '';
     }
   }
 
-  private getAdornmentDirection(startPoint: LinePoint) {
+  private getStartAdornmentDirection(startPoint: LinePoint) {
+    if (this.type === SvgLineType.Straight) return 'left';
+
     const dy = startPoint.getDY();
     const dx = startPoint.getDX();
+
+    let direction: 'up' | 'left' | 'down' | 'right' = 'up';
+
+    if (dy !== 0) {
+      if (dy > 0) direction = 'up';
+      else direction = 'down';
+    } else {
+      if (dx > 0) direction = 'left';
+      else direction = 'right';
+    }
+
+    return direction;
+  }
+
+  private getEndAdornmentDirection(startPoint: LinePoint) {
+    if (this.type === SvgLineType.Straight) return 'right';
+
+    const dy = startPoint.getPrev()?.getDY() || 0;
+    const dx = startPoint.getPrev()?.getDX() || 0;
 
     let direction: 'up' | 'left' | 'down' | 'right' = 'up';
 
@@ -284,10 +361,10 @@ export class SvgLine {
     x: number,
     y: number,
   ): string {
-    const arrowLength = this.strokeWidth * 3;
+    const arrowLength = this.getAdornmentLength();
 
     switch (direction) {
-      case 'down': {
+      case 'up': {
         return this.addPath(
           `M ${x - arrowLength} ${
             y + arrowLength
@@ -295,7 +372,7 @@ export class SvgLine {
           { fill: 'none' },
         );
       }
-      case 'right': {
+      case 'left': {
         return this.addPath(
           `M ${x + arrowLength} ${
             y - arrowLength
@@ -303,7 +380,7 @@ export class SvgLine {
           { fill: 'none' },
         );
       }
-      case 'left': {
+      case 'right': {
         return this.addPath(
           `M ${x - arrowLength} ${
             y - arrowLength
@@ -311,7 +388,7 @@ export class SvgLine {
           { fill: 'none' },
         );
       }
-      case 'up': {
+      case 'down': {
         return this.addPath(
           `M ${x - arrowLength} ${
             y - arrowLength
@@ -327,37 +404,113 @@ export class SvgLine {
   }
 
   private getTriangleAdornment(
-    position: SvgLineAdornmentPosition,
+    direction: 'up' | 'left' | 'down' | 'right',
+    x: number,
+    y: number,
     outlined?: boolean,
   ): string {
-    const centerPoint = this.getCenterPoint();
-    const arrowLength =
-      this.getAdornmentLength() *
-      (position === SvgLineAdornmentPosition.End ? 1 : -1);
-    const startDrawArrowY = centerPoint - arrowLength;
-    const startDrawArrowX =
-      position === SvgLineAdornmentPosition.End
-        ? this.length - arrowLength
-        : this.padding - arrowLength;
-    return this.addPath(
-      `M ${startDrawArrowX} ${startDrawArrowY} l ${arrowLength} ${arrowLength}  ${-arrowLength} ${arrowLength} z`,
-      { fill: outlined ? 'none' : '' },
-    );
+    const option = { fill: outlined ? 'none' : this.stroke };
+    const arrowLength = this.getAdornmentLength();
+
+    switch (direction) {
+      case 'up': {
+        return this.addPath(
+          `M ${x - arrowLength} ${
+            y + arrowLength
+          }  l ${arrowLength} ${-arrowLength}  ${arrowLength} ${arrowLength} z`,
+          option,
+        );
+      }
+      case 'left': {
+        return this.addPath(
+          `M ${x + arrowLength} ${
+            y - arrowLength
+          } l ${-arrowLength} ${arrowLength}  ${arrowLength} ${arrowLength} z`,
+          option,
+        );
+      }
+      case 'right': {
+        return this.addPath(
+          `M ${x - arrowLength} ${
+            y - arrowLength
+          } l ${arrowLength} ${arrowLength}  ${-arrowLength} ${arrowLength} z`,
+          option,
+        );
+      }
+      case 'down': {
+        return this.addPath(
+          `M ${x - arrowLength} ${
+            y - arrowLength
+          } l ${arrowLength} ${arrowLength}  ${arrowLength} ${-arrowLength} z`,
+          option,
+        );
+      }
+    }
   }
 
-  private getLineAdornmentPadding(): { left: number; right: number } {
-    const adornmentPadding: { left: number; right: number } = {
-      left: 0,
-      right: 0,
+  private getLineAdornmentPadding(): {
+    startLeft: number;
+    startRight: number;
+    startTop: number;
+    startBottom: number;
+    endLeft: number;
+    endRight: number;
+    endTop: number;
+    endBottom: number;
+  } {
+    const adornmentPadding: {
+      startLeft: number;
+      startRight: number;
+      startTop: number;
+      startBottom: number;
+      endLeft: number;
+      endRight: number;
+      endTop: number;
+      endBottom: number;
+    } = {
+      startLeft: 0,
+      startRight: 0,
+      startTop: 0,
+      startBottom: 0,
+      endLeft: 0,
+      endRight: 0,
+      endTop: 0,
+      endBottom: 0,
     };
+
+    const startAdornmentPos = this.getStartAdornmentDirection(this.points);
+    const endAdornmentPos = this.getEndAdornmentDirection(this.endPoint);
+
     switch (this.startAdornment) {
       case SvgLineAdornment.OutlinedTriangle:
-        adornmentPadding.left = this.getAdornmentLength();
+        adornmentPadding.startLeft = Math.max(
+          adornmentPadding.startLeft,
+          startAdornmentPos === 'left' ? this.getAdornmentLength() : 0,
+        );
+        adornmentPadding.startTop = Math.max(
+          adornmentPadding.startTop,
+          startAdornmentPos === 'up' ? this.getAdornmentLength() : 0,
+        );
+        adornmentPadding.startBottom = Math.max(
+          adornmentPadding.startBottom,
+          startAdornmentPos === 'down' ? this.getAdornmentLength() : 0,
+        );
+        adornmentPadding.startRight = Math.max(
+          adornmentPadding.startRight,
+          startAdornmentPos === 'right' ? this.getAdornmentLength() : 0,
+        );
         break;
     }
     switch (this.endAdornment) {
       case SvgLineAdornment.OutlinedTriangle:
-        adornmentPadding.right = -this.getAdornmentLength();
+        adornmentPadding.endLeft =
+          endAdornmentPos === 'left' ? this.getAdornmentLength() : 0;
+        adornmentPadding.endTop =
+          endAdornmentPos === 'up' ? this.getAdornmentLength() : 0;
+        adornmentPadding.endBottom =
+          endAdornmentPos === 'down' ? this.getAdornmentLength() : 0;
+        adornmentPadding.endRight =
+          endAdornmentPos === 'right' ? this.getAdornmentLength() : 0;
         break;
     }
     return adornmentPadding;
@@ -385,8 +538,8 @@ export class SvgLine {
   private getDimensions: () => { length: number; height: number } = () => {
     if (this.getType() === SvgLineType.Straight) {
       return {
-        length: this.getStraightLineWidth() + this.padding,
-        height: this.strokeWidth * 6 + this.padding,
+        length: this.getStraightLineWidth() + this.padding * 2,
+        height: this.strokeWidth * 6 + this.padding * 2,
       };
     }
 
@@ -397,8 +550,8 @@ export class SvgLine {
     const height = Math.abs(bounding.y3 - bounding.y1);
 
     return {
-      length: width + this.padding * 2,
-      height: height + this.padding * 2,
+      length: width + this.padding * 2 + this.strokeWidth * 6,
+      height: height + this.padding * 2 + this.strokeWidth * 6,
     };
   };
 
@@ -733,7 +886,6 @@ export class SvgLine {
   public mergeStraightLine() {
     if (this.getType() === SvgLineType.Elbowed) {
       let point: null | LinePoint = this.points;
-      console.debug(this.getPoints());
 
       while (point) {
         const next = point.getNext();
@@ -746,15 +898,12 @@ export class SvgLine {
             (Math.abs(next.y - point.y) <= this.toleranceNumber &&
               Math.abs(prev.y - point.y) <= this.toleranceNumber)
           ) {
-            console.debug('remove point id', point.id);
             this.removePoint(point.id);
           }
         }
 
         point = next;
       }
-
-      console.debug(this.getPoints());
     }
   }
 }

@@ -6,6 +6,7 @@ import React, {
   useRef,
 } from 'react';
 import './style.scss';
+import { useActivePage } from '@/app/store/active-page';
 
 declare type DraggableProps = Omit<
   HtmlHTMLAttributes<HTMLDivElement>,
@@ -28,12 +29,11 @@ export function Draggable({
   ...rest
 }: DraggableProps) {
   const ref = useRef<HTMLDivElement | null>(null);
+  const activePage = useActivePage();
 
   useEffect(() => {
-    const container = document.getElementById('page');
+    const container = document.getElementById(activePage?.activePage || '');
     if (container && ref.current) {
-      const originMatrix = new WebKitCSSMatrix(ref.current.style.transform);
-
       const moveable = new Moveable(container, {
         target: ref.current,
         draggable: true,

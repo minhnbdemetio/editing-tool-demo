@@ -12,7 +12,8 @@ export class MoveableLineObject extends MoveableObject {
   constructor(id?: string, htmlString?: string) {
     super(id, htmlString);
     this.line = new SvgLine();
-    this.line?.setStartAdornment(SvgLineAdornment.Arrow);
+    this.line?.setStartAdornment(SvgLineAdornment.OutlinedTriangle);
+    this.line?.setEndAdornment(SvgLineAdornment.Triangle);
     this.type = 'line';
   }
   createMoveable(container: HTMLElement): void {
@@ -50,6 +51,7 @@ export class MoveableLineObject extends MoveableObject {
       e.target.style.transform = e.drag.transform;
     });
     moveable.on('scale', e => (e.target.style.transform = e.drag.transform));
+    this.moveable = moveable;
   }
 
   toElbowedLine() {}

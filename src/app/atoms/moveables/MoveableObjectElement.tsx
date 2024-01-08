@@ -46,11 +46,7 @@ export const MoveableObjectElement: FC<MoveableObjectProps> = props => {
 
   return (
     <>
-      <div className="relative">
-        {renderElement()}
-
-        <MovableLineController />
-      </div>
+      <div className="relative">{renderElement()}</div>
     </>
   );
 };

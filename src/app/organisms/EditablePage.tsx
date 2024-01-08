@@ -7,12 +7,10 @@ import { Button } from '@nextui-org/react';
 import { MoveableRectangleObject } from '../factories/MoveableRectangle';
 import { MoveableObjectElement } from '../atoms/moveables/MoveableObjectElement';
 import { MoveableTextObject } from '../factories/MoveableText';
-import { useCurrentPageObject } from '../hooks/usePageObjects';
 import { MoveableLineObject } from '../factories/MoveableLine';
 import { useActiveObject } from '../store/active-object';
 import { DEFAULT_TOOLBAR_POSITION } from '../constants/canvas-constants';
 import { twMerge } from '../utilities/tailwind';
-import { useActivePage } from '../store/active-page';
 import { CuttingZoneReminder } from '../molecules/CuttingZoneReminder';
 import { usePageSize } from '../store/use-page-size';
 import { useCurrentPageCanvas } from '../hooks/usePageCanvas';
@@ -26,6 +24,7 @@ import {
 } from '../hooks/useActiveMoveableObject';
 import { ObjectType } from '../factories/MoveableObject';
 import { MoveableHeadingTextObject } from '../factories/MoveableHeadingText';
+import { MovableLineController } from '../molecules/MovableLineController';
 
 export interface EditablePageProps {
   pageId: string;
@@ -162,6 +161,8 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
               key={el.id}
             ></MoveableObjectElement>
           ))}
+
+          <MovableLineController />
         </div>
       </div>
     </div>
