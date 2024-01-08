@@ -33,6 +33,7 @@ export class SvgLine {
   private cornerRounding: number;
   points: LinePoint;
   endPoint: LinePoint;
+  private toleranceNumber = 0.5;
 
   constructor(
     options: {
@@ -53,8 +54,8 @@ export class SvgLine {
     this.type = options.type || SvgLineType.Straight;
     this.cornerRounding = options.cornerRounding || 10;
 
-    const end = new LinePoint(this.length, 0, null, null);
-    const start = new LinePoint(0, 0, null, end);
+    const end = new LinePoint(100, 50, null, null);
+    const start = new LinePoint(20, 20, null, end);
 
     end.setPrev(start);
 
@@ -91,8 +92,7 @@ export class SvgLine {
   }
 
   private getLine(): string {
-    const centerPoint = this.getCenterPoint();
-    const { left, right } = this.getLineAdornmentPadding();
+    const { left } = this.getLineAdornmentPadding();
 
     if (this.getType() === SvgLineType.Straight) return this.getStraightLine();
 
@@ -105,78 +105,115 @@ export class SvgLine {
       if (nextPoint) {
         const nextPosition = nextPoint.getPosition();
         const currentPosition = point.getPosition();
-        const isVerticalLine = currentPosition.x === nextPosition.x;
-        const isHorizontal = currentPosition.y === nextPosition.y;
+        const isVerticalLine = point.isEqual(currentPosition.x, nextPosition.x);
+        const isHorizontal = point.isEqual(currentPosition.y, nextPosition.y);
 
-        const isCurve = point.hasNextCurve();
+        if (isVerticalLine) {
+          let dy = point.getDY();
+          const nextDx = point.getNext()?.getDX();
 
-        if (!isCurve) {
-          console.debug(nextPosition, currentPosition);
+          if (dy >= this.toleranceNumber) {
+            if (point.hasNextCurve()) dy -= this.cornerRounding;
+            if (point.hasPrevCurve()) dy -= this.cornerRounding;
 
-          lines.push(
-            ` l ${nextPosition.x - currentPosition.x},${
-              nextPosition.y - currentPosition.y
-            }`,
-          );
-        } else {
-          if (isVerticalLine) {
-            const dy = point.getDY();
-            const nextDx = point.getNext()?.getDX();
+            if (nextDx && nextDx > this.toleranceNumber) {
+              lines.push(` v ${dy}`);
 
-            if (point.hasPrevCurve()) {
-              lines.push(`m 0,${this.cornerRounding}`);
-            }
-
-            if (dy >= 0) {
-              if (nextDx && nextDx > 0) {
+              if (!!point.hasNextCurve()) {
                 lines.push(
-                  ` v ${dy - this.cornerRounding}`,
                   ` q 0,${this.cornerRounding} ${this.cornerRounding},${this.cornerRounding}`,
                 );
-              } else {
+              }
+            } else {
+              lines.push(` v ${dy}`);
+
+              if (!!point.hasNextCurve()) {
                 lines.push(
-                  ` v ${dy - this.cornerRounding}`,
                   ` q 0,${this.cornerRounding} ${-this.cornerRounding},${
                     this.cornerRounding
                   }`,
                 );
               }
-            } else {
-              if (nextDx && nextDx > 0) {
+            }
+          } else {
+            if (point.hasNextCurve()) dy += this.cornerRounding;
+            if (point.hasPrevCurve()) dy += this.cornerRounding;
+            if (nextDx && nextDx > this.toleranceNumber) {
+              lines.push(` v ${dy}`);
+
+              if (!!point.hasNextCurve()) {
                 lines.push(
-                  ` v ${dy + this.cornerRounding}`,
                   ` q 0,${-this.cornerRounding} ${this.cornerRounding},${-this
                     .cornerRounding}`,
                 );
-              } else {
+              }
+            } else {
+              lines.push(` v ${dy}`);
+
+              if (!!point.hasNextCurve()) {
                 lines.push(
-                  ` v ${dy + this.cornerRounding}`,
                   ` q 0,${-this.cornerRounding} ${-this.cornerRounding},${-this
                     .cornerRounding}`,
                 );
               }
             }
           }
-          if (isHorizontal) {
-            const dx = point.getDX();
+        }
+        if (isHorizontal) {
+          let dx = point.getDX();
+
+          const nextDy = point.getNext()?.getDY();
+
+          if (dx >= 0) {
+            if (point.hasNextCurve()) dx -= this.cornerRounding;
 
             if (point.hasPrevCurve()) {
-              lines.push(`m ${this.cornerRounding},0`);
+              dx -= this.cornerRounding;
             }
 
-            if (dx >= 0) {
-              lines.push(
-                ` v ${dx - this.cornerRounding}`,
-                ` q 0,${this.cornerRounding} ${this.cornerRounding},${-this
-                  .cornerRounding}`,
-              );
+            if (nextDy && nextDy >= 0) {
+              lines.push(` h ${dx}`);
+
+              if (!!point.hasNextCurve()) {
+                lines.push(
+                  ` q ${this.cornerRounding},0 ${this.cornerRounding},${this.cornerRounding}`,
+                );
+              }
             } else {
-              lines.push(
-                ` v ${dx + this.cornerRounding}`,
-                ` q 0,${this.cornerRounding} ${-this.cornerRounding},${
-                  this.cornerRounding
-                }`,
-              );
+              lines.push(` h ${dx}`);
+
+              if (!!point.hasNextCurve()) {
+                lines.push(
+                  ` q ${this.cornerRounding},0 ${this.cornerRounding},${-this
+                    .cornerRounding}`,
+                );
+              }
+            }
+          } else {
+            if (point.hasNextCurve()) dx += this.cornerRounding;
+            if (point.hasPrevCurve()) {
+              dx += this.cornerRounding;
+            }
+
+            if (nextDy && nextDy >= 0) {
+              lines.push(` h ${dx}`);
+
+              if (!!point.hasNextCurve()) {
+                lines.push(
+                  ` q ${-this.cornerRounding},0 ${-this.cornerRounding},${
+                    this.cornerRounding
+                  }`,
+                );
+              }
+            } else {
+              lines.push(` h ${dx}`);
+
+              if (!!point.hasNextCurve()) {
+                lines.push(
+                  ` q ${-this.cornerRounding},0 ${-this.cornerRounding},${-this
+                    .cornerRounding}`,
+                );
+              }
             }
           }
         }
@@ -260,13 +297,17 @@ export class SvgLine {
       }
       case 'right': {
         return this.addPath(
-          `M ${x} ${y} l ${arrowLength} ${-arrowLength}  ${arrowLength} ${arrowLength}`,
+          `M ${x + arrowLength} ${
+            y - arrowLength
+          } l ${-arrowLength} ${arrowLength}  ${arrowLength} ${arrowLength}`,
           { fill: 'none' },
         );
       }
       case 'left': {
         return this.addPath(
-          `M ${x} ${y} l ${arrowLength} ${arrowLength}  ${-arrowLength} ${arrowLength}`,
+          `M ${x - arrowLength} ${
+            y - arrowLength
+          } l ${arrowLength} ${arrowLength}  ${-arrowLength} ${arrowLength}`,
           { fill: 'none' },
         );
       }
@@ -424,9 +465,6 @@ export class SvgLine {
 
       point = point.getNext();
     }
-
-    console.debug(this.getPoints());
-    console.debug(this.toSvg());
   }
 
   public getType(): SvgLineType {
@@ -449,6 +487,7 @@ export class SvgLine {
         </svg>
     `;
   }
+
   public toObject(): {
     strokeWidth: number;
     length: number;
@@ -495,7 +534,6 @@ export class SvgLine {
     let point: LinePoint | null = this.points;
 
     while (targetPoint == null && point) {
-      console.debug('target point', targetPoint);
       if (id === point.id) {
         targetPoint = point;
       }
@@ -635,8 +673,6 @@ export class SvgLine {
   ) {
     if (this.getType() === SvgLineType.Elbowed && startId && endId) {
       const start = this.getPointById(startId);
-
-      console.debug('start', start);
       const end = start?.getNext();
       if (start && end) {
         if (point.y) {
@@ -658,6 +694,67 @@ export class SvgLine {
       const newHead = new LinePoint(x, y, null, this.points);
       this.points.setPrev(newHead);
       this.points = newHead;
+    }
+  }
+
+  public createNewEnd(id: string, x: number, y: number) {
+    const point = this.getPointById(id);
+
+    if (point && !point.getNext()) {
+      const newPoint = new LinePoint(x, y, point, point.getNext());
+      point.setNext(newPoint);
+
+      if (!newPoint.getNext()) this.endPoint = newPoint;
+    }
+  }
+
+  public removePoint(id: string) {
+    const point = this.getPointById(id);
+
+    if (point) {
+      if (point.getPrev()) {
+        if (point.getNext()) {
+          const prev = point.getPrev();
+          const next = point.getNext();
+          prev?.setNext(next);
+          next?.setPrev(prev);
+        } else {
+          const prev = point.getPrev();
+          prev?.setNext(null);
+          this.endPoint = prev as LinePoint;
+        }
+      } else {
+        this.points = this.points.getNext() as LinePoint;
+        this.points.setPrev(null);
+      }
+    }
+  }
+
+  public mergeStraightLine() {
+    if (this.getType() === SvgLineType.Elbowed) {
+      let point: null | LinePoint = this.points;
+      console.debug(this.getPoints());
+
+      while (point) {
+        const next = point.getNext();
+        const prev = point.getPrev();
+
+        if (next && prev) {
+          if (
+            (Math.abs(next.x - point.x) <= this.toleranceNumber &&
+              Math.abs(prev.x - point.x) <= this.toleranceNumber) ||
+            (Math.abs(next.y - point.y) <= this.toleranceNumber &&
+              Math.abs(prev.y - point.y) <= this.toleranceNumber)
+          ) {
+            console.debug('remove point id', point.id);
+            this.removePoint(point.id);
+          }
+        }
+
+        point = next;
+      }
+
+      console.debug(this.getPoints());
     }
   }
 }

@@ -6,6 +6,7 @@ export class LinePoint {
   y: number;
   private next: LinePoint | null;
   private prev: LinePoint | null;
+  private toleranceNumber = 0.5;
 
   constructor(
     x: number,
@@ -51,10 +52,53 @@ export class LinePoint {
     return next.y - this.y;
   }
 
+  isEqual(p1: number, p2: number) {
+    return Math.abs(p1 - p2) <= this.toleranceNumber;
+  }
+  isNotEqual(p1: number, p2: number) {
+    return Math.abs(p1 - p2) > this.toleranceNumber;
+  }
+
   hasPrevCurve() {
-    return !!this.getPrev()?.getPrev();
+    const point = this.getPrev();
+    const secondPoint = point?.getNext();
+    const thirdPoint = secondPoint?.getNext();
+
+    if (!point || !secondPoint || !thirdPoint) return false;
+
+    const isYCurve =
+      this.isEqual(point.x, secondPoint.x) &&
+      this.isNotEqual(secondPoint.x, thirdPoint.x) &&
+      this.isNotEqual(point.y, secondPoint.y) &&
+      this.isEqual(secondPoint.y, thirdPoint.y);
+
+    const isXCurve =
+      this.isEqual(point.y, secondPoint.y) &&
+      this.isNotEqual(secondPoint.y, thirdPoint.y) &&
+      this.isNotEqual(point.x, secondPoint.x) &&
+      this.isEqual(secondPoint.x, thirdPoint.x);
+
+    return isXCurve || isYCurve;
   }
   hasNextCurve() {
-    return !!this.getNext()?.getNext();
+    const point = this;
+    const secondPoint = point?.getNext();
+    const thirdPoint = secondPoint?.getNext();
+
+    if (!point || !secondPoint || !thirdPoint) return false;
+
+    const isYCurve =
+      this.isEqual(point.x, secondPoint.x) &&
+      this.isNotEqual(secondPoint.x, thirdPoint.x) &&
+      this.isNotEqual(point.y, secondPoint.y) &&
+      this.isEqual(secondPoint.y, thirdPoint.y);
+
+    const isXCurve =
+      this.isEqual(point.y, secondPoint.y) &&
+      this.isNotEqual(secondPoint.y, thirdPoint.y) &&
+      this.isNotEqual(point.x, secondPoint.x) &&
+      this.isEqual(secondPoint.x, thirdPoint.x);
+
+    return isXCurve || isYCurve;
   }
 }

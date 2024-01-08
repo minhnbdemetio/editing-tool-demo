@@ -1,4 +1,4 @@
-import { FC, RefObject, useRef } from 'react';
+import { FC, RefObject, useEffect, useRef } from 'react';
 import { MoveableRectangleObject } from '@/app/factories/MoveableRectangle';
 import { useLoadMoveableObject } from '@/app/hooks/useLoadObject';
 import { useOutsideClick } from '@/app/hooks/useClickOutside';

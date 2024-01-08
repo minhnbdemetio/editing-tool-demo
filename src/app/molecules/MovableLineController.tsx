@@ -5,6 +5,7 @@ import { Draggable } from '../atoms/Draggable';
 import { getAngleByPoint } from '../utilities/line';
 import { SvgLineType } from '../utilities/svg-line';
 import { twMerge } from '../utilities/tailwind';
+import { LinePoint } from '../utilities/line-point';
 
 interface MovableLineControllerProps {}
 
@@ -130,49 +131,122 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
   const linePositions = lineObject?.line?.getElbowedLinePositions();
 
   const updateLineControllerPosition = () => {
-    const positions = lineObject?.line?.getElbowedLinePositions();
+    let point: LinePoint | undefined | null = lineObject?.line?.points;
 
-    positions?.forEach(position => {
-      const id = position.startId + position.endId;
-      const element = document.getElementById(id);
-      if (element) {
-        element.style.transform = `translate(${
-          (position.x1 + position.x2) / 2
-        }px, ${(position.y1 + position.y2) / 2}px)`;
+    while (point) {
+      const next = point.getNext();
+
+      if (next) {
+        const id = point.id + next.id;
+        const element = document.getElementById(id);
+
+        if (point.hasNextCurve() || point.hasPrevCurve()) {
+          if (element) {
+            element.style.transform = `translate(${(point.x + next.x) / 2}px, ${
+              (point.y + next.y) / 2
+            }px)`;
+            element.style.display = 'block';
+          }
+        } else {
+          if (element) {
+            element.style.display = 'none';
+          }
+        }
       }
-    });
+
+      point = point.getNext();
+    }
+  };
+
+  const onDragFreePoint = (
+    id: string,
+    newHeadId: string,
+    e: { x: number; y: number },
+    referencePoint: LinePoint,
+    onCreateHead: (id: string, x: number, y: number) => void,
+    onRemoveNewHead: () => void,
+  ) => {
+    const point = lineObject.line?.getPointById(id);
+
+    if (point && referencePoint && lineObject && lineObject.line) {
+      const isVertical = point.isEqual(point.x, referencePoint.x);
+      const isHorizontal = point.isEqual(point.y, referencePoint.y);
+
+      if (isVertical) {
+        lineObject.line?.updatePoint(id, referencePoint.x, e.y);
+
+        if (Math.abs(e.x - referencePoint.x) >= 20) {
+          if (!newHeadId) {
+            onCreateHead(id, e.x, e.y);
+          } else {
+            lineObject.line.updatePoint(newHeadId, e.x, e.y);
+          }
+        } else {
+          if (newHeadId) {
+            onRemoveNewHead();
+          }
+        }
+      } else if (isHorizontal) {
+        lineObject.line?.updatePoint(id, e.x, referencePoint.y);
+
+        if (Math.abs(e.y - referencePoint.y) >= 20) {
+          if (!newHeadId) {
+            onCreateHead(id, e.x, e.y);
+          } else {
+            lineObject.line.updatePoint(newHeadId, e.x, e.y);
+          }
+        } else {
+          if (newHeadId) {
+            onRemoveNewHead();
+          }
+        }
+      }
+
+      const { x, y } = lineObject.line.getDisplayPosition();
+      anchorRef.innerHTML = lineObject.line.toSvg() || '';
+      anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(0deg)`;
+      anchorRef.style.transformOrigin = 'left center';
+
+      updateLineControllerPosition();
+    }
   };
 
   return (
     <>
       {startPoint && (
         <Draggable
-          onDrag={e => {
-            const next = startPoint.getNext();
+          onDragEnd={target => {
+            lineObject.line?.mergeStraightLine();
 
-            if (next && lineObject && lineObject.line) {
-              const isVertical = startPoint.x === next.x;
-              const isHorizontal = startPoint.y === next.y;
-
-              if (isVertical) {
-                lineObject.line?.updatePoint(startPoint.id, next.x, e.y);
-
-                if (Math.abs(e.x - next.x) >= 20) {
-                  console.debug(startPoint.id);
-                  lineObject.line?.createPrevFor(startPoint.id, e.x, e.y);
-                  // forceReload();
-                }
-              }
-
-              console.debug('points', lineObject.line.getPoints());
-
-              const { x, y } = lineObject.line.getDisplayPosition();
-              anchorRef.innerHTML = lineObject.line.toSvg() || '';
-              anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(0deg)`;
-              anchorRef.style.transformOrigin = 'left center';
-
-              updateLineControllerPosition();
+            const newHead = target.getAttribute('data-new-head') || '';
+            if (newHead) {
+              target.setAttribute('data-target', newHead);
+              target.setAttribute('data-new-head', '');
             }
+          }}
+          data-target={startPoint.id}
+          onDrag={(e, target) => {
+            const id = target.getAttribute('data-target') || '';
+            const newHeadId = target.getAttribute('data-new-head') || '';
+            onDragFreePoint(
+              id,
+              newHeadId,
+              e,
+              lineObject.line?.getPointById(id)?.getNext() as LinePoint,
+              (_, x, y) => {
+                lineObject.line?.createPrevFor(id, x, y);
+                target.setAttribute(
+                  'data-new-head',
+                  lineObject.line?.points?.id || '',
+                );
+              },
+              () => {
+                if (lineObject.line) {
+                  lineObject.line.removePoint(newHeadId);
+                  target.setAttribute('data-new-head', '');
+                }
+              },
+            );
           }}
           style={{
             transform: ` translate(${startPoint?.x}px, ${startPoint?.y}px)`,
@@ -184,6 +258,10 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
       )}
       {linePositions?.map(pos => (
         <Draggable
+          onDragEnd={() => {
+            lineObject.line?.mergeStraightLine();
+            updateLineControllerPosition();
+          }}
           id={pos.startId + pos.endId}
           style={{
             transform: ` translate(${(pos.x1 + pos.x2) / 2}px, ${
@@ -205,7 +283,6 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
               }
 
               const { x, y } = lineObject.line.getDisplayPosition();
-              // const angle = getAngleByPoint(leftX, leftY, rightX, rightY, 'end');
               anchorRef.innerHTML = lineObject.line.toSvg() || '';
               anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(0deg)`;
               anchorRef.style.transformOrigin = 'left center';
@@ -224,14 +301,48 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
           ></div>
         </Draggable>
       ))}
-      <Draggable
-        onDrag={() => {}}
-        style={{
-          transform: ` translate(${endPoint?.x}px, ${endPoint?.y}px)`,
-        }}
-      >
-        <div className="w-[15px] h-[15px] bg-[red] rounded-[50%]"></div>
-      </Draggable>
+      {endPoint && (
+        <Draggable
+          onDragEnd={target => {
+            lineObject.line?.mergeStraightLine();
+            const newHead = target.getAttribute('data-new-end') || '';
+            if (newHead) {
+              target.setAttribute('data-target', newHead);
+              target.setAttribute('data-new-end', '');
+            }
+          }}
+          data-target={endPoint.id}
+          onDrag={(e, target) => {
+            const id = target.getAttribute('data-target') || '';
+            const newHeadId = target.getAttribute('data-new-end') || '';
+            onDragFreePoint(
+              id,
+              newHeadId,
+              e,
+              lineObject.line?.getPointById(id)?.getPrev() as LinePoint,
+              (_, x, y) => {
+                lineObject.line?.createNewEnd(id, x, y);
+                console.debug(lineObject.line?.getPoints());
+                target.setAttribute(
+                  'data-new-end',
+                  lineObject.line?.endPoint?.id || '',
+                );
+              },
+              () => {
+                if (lineObject.line) {
+                  lineObject.line.removePoint(newHeadId);
+                  target.setAttribute('data-new-end', '');
+                }
+              },
+            );
+          }}
+          style={{
+            transform: ` translate(${endPoint?.x}px, ${endPoint?.y}px)`,
+          }}
+        >
+          <div className="w-[15px] h-[15px] bg-[red] rounded-[50%]"></div>
+        </Draggable>
+      )}
     </>
   );
 };

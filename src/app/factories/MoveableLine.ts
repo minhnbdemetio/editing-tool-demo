@@ -1,7 +1,6 @@
 import Moveable from 'moveable';
 import { MoveableObject } from './MoveableObject';
 import { SvgLine, SvgLineAdornment } from '../utilities/svg-line';
-import { LinePoint } from '../utilities/line-point';
 
 export class MoveableLineObject extends MoveableObject {
   line?: SvgLine;
@@ -51,23 +50,6 @@ export class MoveableLineObject extends MoveableObject {
       e.target.style.transform = e.drag.transform;
     });
     moveable.on('scale', e => (e.target.style.transform = e.drag.transform));
-  }
-
-  set({
-    x1,
-    y1,
-    x2,
-    y2,
-  }: {
-    x1?: number;
-    y1?: number;
-    x2?: number;
-    y2?: number;
-  }) {
-    // if (typeof x1 !== 'undefined') this.x1 = x1;
-    // if (typeof y1 !== 'undefined') this.y1 = y1;
-    // if (typeof x2 !== 'undefined') this.x2 = x2;
-    // if (typeof y2 !== 'undefined') this.y2 = y2;
   }
 
   toElbowedLine() {}
