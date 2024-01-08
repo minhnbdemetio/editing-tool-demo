@@ -41,12 +41,10 @@ const StraightLineController: React.FC<{ forceReload: () => void }> = ({
 
     if (lineObject && lineObject.line) {
       lineObject.line.updatePoint(pointId, point.x, point.y);
-      console.debug(lineObject.line.toSvg());
 
       if (anchorRef) {
         const { x, y } = lineObject.line.getDisplayPosition();
         // const angle = getAngleByPoint(leftX, leftY, rightX, rightY, 'end');
-        console.debug('rotate', lineObject.line.getRotateAngle());
         anchorRef.innerHTML = lineObject.line.toSvg() || '';
         anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(${lineObject.line.getRotateAngle()}deg)`;
         anchorRef.style.transformOrigin = 'left center';
@@ -191,7 +189,6 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
 
   useEffect(() => {
     if (activeMoveableObject) {
-      console.debug('register event', activeMoveableObject.moveable);
       activeMoveableObject.moveable?.on('dragStart', () => {
         updateLineControllerPosition(true);
         updateHeadControllerPosition(true);
@@ -376,7 +373,6 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
               lineObject.line?.getPointById(id)?.getPrev() as LinePoint,
               (_, x, y) => {
                 lineObject.line?.createNewEnd(id, x, y);
-                console.debug(lineObject.line?.getPoints());
                 target.setAttribute(
                   'data-new-end',
                   lineObject.line?.endPoint?.id || '',

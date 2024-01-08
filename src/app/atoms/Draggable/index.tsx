@@ -46,7 +46,6 @@ export function Draggable({
       moveable.on('drag', function (e) {
         var matrix = new WebKitCSSMatrix(e.target.style.transform);
         var newMatrix = new WebKitCSSMatrix(e.transform);
-        console.debug(matrix.m42);
 
         if (!dragStyle || dragStyle === 'free') {
           onDrag({ x: matrix.m41, y: matrix.m42 }, e.target as HTMLElement);

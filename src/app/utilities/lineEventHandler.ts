@@ -99,7 +99,6 @@ export class LineEventHandler {
   }
 
   createScalers() {
-    console.debug(this.selectedLine);
     if (
       this.selectedLine &&
       this.selectedLine.data.type === SvgLineType.Straight
@@ -147,7 +146,6 @@ export class LineEventHandler {
 
   handleScaling(pointer: Point) {
     if (this.selectedScaler && this.selectedLine) {
-      console.debug(pointer);
       const position = this.selectedScaler.data.position as 'left' | 'right';
 
       if (position === 'right') {
