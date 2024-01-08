@@ -34,3 +34,29 @@ body {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background-color: #fafafb;
+  @media screen and (max-width: 414px) {
+    width: 4px;
+    height: 4px;
+  }
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: 'none';
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #d8d8d8;
+  border-radius: 4px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #a5a5a5;
+}
