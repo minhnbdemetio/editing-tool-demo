@@ -1,6 +1,7 @@
 import { MoveableTextObject } from '../factories/MoveableText';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { useActivePage } from '../store/active-page';
+import { GradientStop } from '../utilities/color.type';
 import { isTextObject } from '../utilities/moveable';
 import { usePageObjectsById } from './usePageObjects';
 
@@ -31,8 +32,8 @@ export const useUpdateTextColor = () => {
 export const useUpdateTextGradientColor = () => {
   const activeText = useActiveMoveableTextObject();
 
-  return (gradientBackground: string) => {
-    activeText?.setTextGradient(gradientBackground);
+  return (gradientStops: GradientStop[]) => {
+    activeText?.setTextGradient(gradientStops);
   };
 };
 

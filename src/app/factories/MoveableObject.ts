@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { findIdFromString } from '../utilities/dom';
 import Moveable from 'moveable';
 
-const MAX_FIND_ELEMENT_ATTEMPTS = 100;
+export const MAX_FIND_ELEMENT_ATTEMPTS = 100;
 export type ObjectType = 'rectangle' | 'text' | 'heading';
 export abstract class MoveableObject {
   id: string;
@@ -94,10 +94,10 @@ export abstract class MoveableObject {
     return true;
   }
   getCssProperty<T extends keyof CSSStyleDeclaration>(property: T) {
-    const element = this.getElement()
-    if(!element) return null
-    const cssProperties = window.getComputedStyle(element)
-    return cssProperties[property]
+    const element = this.getElement();
+    if (!element) return null;
+    const cssProperties = window.getComputedStyle(element);
+    return cssProperties[property];
   }
   changeTransformOrigin(
     transformOrigin?: CSSStyleDeclaration['transformOrigin'],
