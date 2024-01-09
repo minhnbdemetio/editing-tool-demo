@@ -1,7 +1,7 @@
 import {
   useToggleMoveableBoldText,
   useToggleMoveableLineThroughText,
-  useToggleMoveableCapitalText,
+  useToggleMoveableUppercaseText,
   useToggleMoveableUnderlineText,
   useToggleMoveableItalicText,
   useChangeMoveableTextAlign,
@@ -10,6 +10,9 @@ import {
   useChangeMoveableTextSpacing,
   useChangeMoveableTextLineHeight,
   useChangeMoveableTextTransformOrigin,
+  useChangeMoveableTextStyles,
+  useChangeMoveableTextFontStyle,
+  useChangeMoveableTextTransform,
 } from '../useActiveMoveableObject';
 import { debounce } from 'lodash';
 
@@ -35,7 +38,7 @@ export const useToggleMoveableStrokeTextCommand = () => {
 };
 
 export const useToggleMoveableCapitalTextCommand = () => {
-  const toggleCapitalText = useToggleMoveableCapitalText();
+  const toggleCapitalText = useToggleMoveableUppercaseText();
   return toggleCapitalText;
 };
 
@@ -68,4 +71,19 @@ export const useChangeMoveableTextLineHeightCommand = () => {
 export const useChangeMoveableTextTransformOriginCommand = () => {
   const changeTextTransformOrigin = useChangeMoveableTextTransformOrigin();
   return changeTextTransformOrigin;
+};
+
+export const useChangeMoveableTextStylesCommand = () => {
+  const changeStyles = useChangeMoveableTextStyles();
+  return changeStyles;
+};
+
+export const useChangeMoveableTextFontStyleCommand = () => {
+  const changeFontStyle = useChangeMoveableTextFontStyle();
+  return changeFontStyle;
+};
+
+export const useChangeMoveableTextTransformCommand = () => {
+  const changeTransform = useChangeMoveableTextTransform();
+  return debounce(changeTransform, 100);
 };

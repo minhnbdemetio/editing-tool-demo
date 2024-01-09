@@ -2,11 +2,11 @@ import SearchInput from '@/app/molecules/SearchInput';
 import { FC, useCallback, useState } from 'react';
 import { Button } from '@nextui-org/react';
 import { useActivePageCanvas } from '@/app/hooks/useActivePage';
-import {
-  BodyText,
-  HeadingText,
-  SubheadingText,
-} from '@/app/factories/text-element';
+import { useAddObjectToActivePage } from '@/app/hooks/usePageObjects';
+import { MoveableHeadingTextObject } from '@/app/factories/MoveableHeadingText';
+import { MoveableSubheadingTextObject } from '@/app/factories/MoveableSubheadingText';
+import { MoveableBodyTextObject } from '@/app/factories/MoveableBodyText';
+import { MoveableTextObject } from '@/app/factories/MoveableText';
 
 const recommendedKeywords = [
   'Xuân',
@@ -30,18 +30,18 @@ export const TextMenuContent: FC = () => {
   );
 
   const activePageCanvas = useActivePageCanvas();
-
+  const addObjectToActivePage = useAddObjectToActivePage();
+  const handleAddTextBox = () => {
+    addObjectToActivePage(new MoveableTextObject());
+  };
   const handleAddTitle = () => {
-    const text = new HeadingText();
-    activePageCanvas?.add(text);
+    addObjectToActivePage(new MoveableHeadingTextObject());
   };
   const handleAddSubtitle = () => {
-    const text = new SubheadingText();
-    activePageCanvas?.add(text);
+    addObjectToActivePage(new MoveableSubheadingTextObject());
   };
   const handleAddBodyText = () => {
-    const text = new BodyText();
-    activePageCanvas?.add(text);
+    addObjectToActivePage(new MoveableBodyTextObject());
   };
 
   return (
@@ -52,7 +52,12 @@ export const TextMenuContent: FC = () => {
         hasSetting
         onClickSetting={onSettingClick}
       />
-      <Button className="bg-green-500 text-white my-3">Add a text box</Button>
+      <Button
+        onClick={handleAddTextBox}
+        className="bg-green-500 text-white my-3"
+      >
+        Add a text box
+      </Button>
       <span className="mb-1">Tap text to add to page</span>
       <Button className="mb-3">Add your brand fonts</Button>
       <span className="mb-1">Default text styles</span>

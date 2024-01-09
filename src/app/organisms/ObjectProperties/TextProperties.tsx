@@ -13,7 +13,9 @@ export const TextProperties: FC = () => {
       <Button onClick={() => setSelectedProperty(SelectedProperty.TextFont)}>
         Font
       </Button>
-      <Button>Text styles</Button>
+      <Button onClick={() => setSelectedProperty(SelectedProperty.TextStyles)}>
+        Text styles
+      </Button>
       <Button
         onClick={() => setSelectedProperty(SelectedProperty.TextFontSize)}
       >
@@ -35,7 +37,9 @@ export const TextProperties: FC = () => {
       <Button>Transparency</Button>
       <Button>Layers</Button>
       <Button>Position</Button>
-      <Button>Nudge</Button>
+      <Button onClick={() => setSelectedProperty(SelectedProperty.TextNudge)}>
+        Nudge
+      </Button>
       <Button onClick={() => setSelectedProperty(SelectedProperty.TextMore)}>
         More
       </Button>

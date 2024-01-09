@@ -1,11 +1,10 @@
-import { FC, RefObject } from 'react';
+import { FC } from 'react';
 
 import { MoveableTextObject } from '@/app/factories/MoveableText';
 import clsx from 'clsx';
 
 interface MoveableTextProps {
   object: MoveableTextObject;
-  containerRef: RefObject<HTMLDivElement>;
   className?: string;
 }
 
@@ -16,7 +15,7 @@ export const MoveableHeadingTextElement: FC<MoveableTextProps> = ({
   return (
     <div
       id={object.id}
-      className={clsx('w-fit hidden', className)}
+      className={clsx('w-fit hidden text-lg', className)}
       style={{ writingMode: 'horizontal-tb' }}
       contentEditable
       suppressContentEditableWarning

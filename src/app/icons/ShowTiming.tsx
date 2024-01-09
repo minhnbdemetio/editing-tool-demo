@@ -17,7 +17,7 @@ export const ShowTiming: React.FC<IconProps> = ({ className }) => {
       </defs>
       <use
         fill="currentColor"
-        fill-rule="nonzero"
+        fillRule="nonzero"
         xlinkHref="#_4061079222__a"
       ></use>
     </svg>
