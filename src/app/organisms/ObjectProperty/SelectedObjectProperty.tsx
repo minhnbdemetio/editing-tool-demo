@@ -10,6 +10,7 @@ import { FormatProperty } from './Text/FormatProperty';
 import { TextMoreProperty } from './Text/More';
 import { SpacingProperty } from './Text/SpacingProperty';
 import { EffectProperty } from './Text/EffectProperty';
+import { StylesProperty } from './Text/StylesProperty';
 
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
@@ -36,6 +37,9 @@ export const SelectedObjectProperty: FC = () => {
       }
       case SelectedProperty.TextEffect: {
         return <EffectProperty />;
+      }
+      case SelectedProperty.TextStyles: {
+        return <StylesProperty />;
       }
       default: {
         return null;

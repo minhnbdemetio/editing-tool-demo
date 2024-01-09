@@ -1,3 +1,4 @@
+import { CSSProperties } from 'react';
 import { MoveableTextObject } from '../factories/MoveableText';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { useActivePage } from '../store/active-page';
@@ -280,4 +281,54 @@ export const useChangeMoveableTextTransformOrigin = () => {
   };
 
   return handleChangeTransformOrigin;
+};
+type EditableCSSProperty = keyof Omit<
+  CSSStyleDeclaration,
+  | 'length'
+  | 'parentRule'
+  | keyof { [Symbol.iterator]: () => IterableIterator<string> }
+  | keyof { [property: string]: () => string }
+>;
+export const useChangeMoveableTextStyles = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+
+  const handleChangeStyles = (
+    styles: CSSStyleDeclaration,
+    idStyles: string,
+    callback: Function,
+  ) => {
+    if (!isTextObject(activeMoveableObject)) return false;
+    const element = activeMoveableObject.getElement();
+    if (!element) return false;
+    for (const [key, value] of Object.entries(styles)) {
+      element.style[key as EditableCSSProperty] = `${value}`;
+    }
+    element.setAttribute('stylesId', idStyles);
+    callback();
+    return true;
+  };
+
+  return handleChangeStyles;
+};
+
+export const useChangeMoveableTextFontStyle = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+
+  const handleChangeFont = (
+    fontFamily: string,
+    fontStyle: Partial<CSSProperties>,
+    callback: Function,
+  ) => {
+    if (!isTextObject(activeMoveableObject)) return false;
+    const element = activeMoveableObject.getElement();
+    if (!element) return false;
+    element.style.fontFamily = fontFamily;
+    for (const [key, value] of Object.entries(fontStyle)) {
+      (element.style as { [key: string]: any })[key] = `${value}`;
+    }
+    callback();
+    return true;
+  };
+
+  return handleChangeFont;
 };
