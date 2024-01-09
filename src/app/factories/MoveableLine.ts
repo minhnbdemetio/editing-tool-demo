@@ -11,7 +11,7 @@ export class MoveableLineObject extends MoveableObject {
 
   constructor(id?: string, htmlString?: string) {
     super(id, htmlString);
-    this.line = new SvgLine();
+    this.line = new SvgLine({ strokeDashArray: [10, 10] });
     this.line?.setStartAdornment(SvgLineAdornment.OutlinedTriangle);
     this.line?.setEndAdornment(SvgLineAdornment.Triangle);
     this.type = 'line';

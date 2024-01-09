@@ -34,6 +34,7 @@ export class SvgLine {
   points: LinePoint;
   endPoint: LinePoint;
   private toleranceNumber = 0.5;
+  private strokeDashArray: [number, number] | undefined = undefined;
 
   constructor(
     options: {
@@ -44,6 +45,7 @@ export class SvgLine {
       endAdornment?: SvgLineAdornment;
       type?: SvgLineType.Elbowed | SvgLineType.Straight;
       cornerRounding?: number;
+      strokeDashArray?: [number, number];
     } = {},
   ) {
     this.stroke = options.stroke || '#000';
@@ -55,6 +57,7 @@ export class SvgLine {
     this.cornerRounding = options.cornerRounding || 10;
 
     this.padding = this.getAdornmentLength() + 10;
+    this.strokeDashArray = options.strokeDashArray;
 
     const end = new LinePoint(100, 0, null, null);
     const start = new LinePoint(0, 0, null, end);
@@ -65,9 +68,16 @@ export class SvgLine {
     this.endPoint = end;
   }
 
-  private addPath(d: string, options: { fill?: string } = {}): string {
+  private addPath(
+    d: string,
+    options: { fill?: string; strokeDashArray?: [number, number] } = {},
+  ): string {
     let pathOptions: string[] = [];
     if (!!options.fill) pathOptions.push(`fill="${options.fill}"`);
+    if (!!options.strokeDashArray)
+      pathOptions.push(
+        `stroke-dasharray="${options.strokeDashArray[0]},${options.strokeDashArray[1]}"`,
+      );
     return `<path d="${d}" ${pathOptions.join(' ')} />`;
   }
 
@@ -79,16 +89,8 @@ export class SvgLine {
   private getStraightLine() {
     const start = this.points;
     const end = start.getNext();
-    const {
-      startLeft,
-      startRight,
-      endBottom,
-      endLeft,
-      endRight,
-      endTop,
-      startBottom,
-      startTop,
-    } = this.getLineAdornmentPadding();
+    const { startLeft, startRight, endLeft, endRight } =
+      this.getLineAdornmentPadding();
 
     const centerPoint = this.getCenterPoint();
 
@@ -99,6 +101,7 @@ export class SvgLine {
         `M ${startLeft + startRight + this.padding} ${centerPoint} l ${
           lineWidth - endLeft - startLeft - startRight - endRight
         },0`,
+        { strokeDashArray: this.strokeDashArray },
       );
     }
 
@@ -127,9 +130,6 @@ export class SvgLine {
 
       const isFirst = point.id === this.points.id;
       const isEnd = point.id === this.endPoint?.getPrev()?.id;
-
-      const hasStartAdornment = this.startAdornment !== SvgLineAdornment.None;
-      const hasEndAdornment = this.endAdornment !== SvgLineAdornment.None;
 
       if (nextPoint) {
         const nextPosition = nextPoint.getPosition();
@@ -269,7 +269,7 @@ export class SvgLine {
       `M ${+this.padding + startX + startLeft - startRight},${
         +startY + this.padding + startTop - startBottom
       } ${lines.join(' ')}`,
-      { fill: 'none' },
+      { fill: 'none', strokeDashArray: this.strokeDashArray },
     );
   }
   private getAdornment(
@@ -629,7 +629,7 @@ export class SvgLine {
 
     return `
         <svg height="${height}" width="${length}">
-            <g fill="${this.stroke}" stroke="${this.stroke}" stroke-width="${
+            <g fill="${this.stroke}" stroke="${this.stroke}"  stroke-width="${
               this.strokeWidth
             }" >
                 ${this.getAdornment(SvgLineAdornmentPosition.Start)}

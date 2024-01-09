@@ -2,7 +2,6 @@ import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { MoveableLineObject } from '../factories/MoveableLine';
 import { Draggable } from '../atoms/Draggable';
-import { getAngleByPoint } from '../utilities/line';
 import { SvgLineType } from '../utilities/svg-line';
 import { twMerge } from '../utilities/tailwind';
 import { LinePoint } from '../utilities/line-point';
@@ -31,6 +30,46 @@ const StraightLineController: React.FC<{ forceReload: () => void }> = ({
     }
   }, [activeMoveableObject]);
 
+  const lineObject = activeMoveableObject as MoveableLineObject;
+
+  const updateHeadControllerPosition = (hide?: boolean) => {
+    const start = lineObject?.line?.points;
+    const end = lineObject?.line?.endPoint;
+
+    if (start && end) {
+      const startElement = document.getElementById('head-' + start.id);
+      const endElement = document.getElementById('head-' + end.id);
+
+      if (hide) {
+        if (startElement) startElement.style.display = `none`;
+
+        if (endElement) endElement.style.display = `none`;
+        return;
+      }
+
+      if (startElement) {
+        startElement.style.display = `block`;
+        startElement.style.transform = ` translate(${start?.x}px, ${start?.y}px)`;
+      }
+
+      if (endElement) {
+        endElement.style.display = `block`;
+        endElement.style.transform = ` translate(${end?.x}px, ${end?.y}px)`;
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (activeMoveableObject) {
+      activeMoveableObject.moveable?.on('dragStart', () => {
+        updateHeadControllerPosition(true);
+      });
+      activeMoveableObject.moveable?.on('dragEnd', () => {
+        updateHeadControllerPosition();
+      });
+    }
+  }, [activeMoveableObject]);
+
   if (!anchorRef) return null;
 
   const points =
@@ -44,7 +83,6 @@ const StraightLineController: React.FC<{ forceReload: () => void }> = ({
 
       if (anchorRef) {
         const { x, y } = lineObject.line.getDisplayPosition();
-        // const angle = getAngleByPoint(leftX, leftY, rightX, rightY, 'end');
         anchorRef.innerHTML = lineObject.line.toSvg() || '';
         anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(${lineObject.line.getRotateAngle()}deg)`;
         anchorRef.style.transformOrigin = 'left center';
@@ -77,8 +115,10 @@ const StraightLineController: React.FC<{ forceReload: () => void }> = ({
 
       {points.map(point => (
         <Draggable
+          id={`head-` + point.id}
           key={point.id}
           style={{
+            background: 'red',
             transform: `translate(${point.x}px, ${point.y}px)`,
           }}
           onDrag={e => handleMove(point.id, e)}
@@ -86,7 +126,7 @@ const StraightLineController: React.FC<{ forceReload: () => void }> = ({
           <div
             className="absolute w-[15px] h-[15px] rounded-[50%] border-[1px] border-gray-50 border-solid"
             style={{
-              background: 'white',
+              background: 'red',
               border: '1px solid #e8e8e8',
               transform: 'translate(-50%, -50%)',
             }}

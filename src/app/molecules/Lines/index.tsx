@@ -25,51 +25,23 @@ import {
   withStartLine,
   withEndLine,
 } from '@/app/utilities/line';
-import {
-  SvgLine,
-  SvgLineAdornment,
-  SvgLineType,
-} from '@/app/utilities/svg-line';
-import { fabric } from 'fabric';
+
 import { useExecuteCommand } from '@/app/hooks/editor-commands/useCommand';
+import { useCurrentPageObjects } from '@/app/hooks/usePageObjects';
+import { MoveableLineObject } from '@/app/factories/MoveableLine';
 
 interface LinesProps {}
 
 export const Lines: React.FC<LinesProps> = () => {
   const canvas = useActivePageCanvas();
+  const [objects, setObjects] = useCurrentPageObjects();
 
   const handleClick = useCallback(
     (type: LineType) => {
       switch (type) {
         case 'solid': {
-          const svgLine = new SvgLine({
-            strokeWidth: 5,
-            stroke: 'red',
-
-            length: 100,
-            startAdornment: SvgLineAdornment.Triangle,
-          });
-          svgLine.setType(SvgLineType.Elbowed);
-
-          fabric.loadSVGFromString(svgLine.toSvg(), function (objects) {
-            const group = fabric.util.groupSVGElements(objects);
-            group.originX = 'center';
-            group.originY = 'center';
-            group.fill = 'red';
-            const line = new fabric.Group([group], {
-              left: 100,
-              top: 100,
-              data: svgLine.toObject(),
-              name: 'line',
-              hasBorders: false,
-              hasControls: false,
-              selectable: false,
-              originX: 'left',
-              originY: 'center',
-            });
-            canvas?.add(line);
-            canvas?.renderAll();
-          });
+          const line = new MoveableLineObject();
+          setObjects([...objects, line]);
 
           return;
         }

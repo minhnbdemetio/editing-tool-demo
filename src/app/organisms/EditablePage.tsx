@@ -30,8 +30,6 @@ export interface EditablePageProps {
   pageId: string;
 }
 
-let selectedElement: fabric.Object | null = null;
-
 const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   const [objects, setObjects] = useCurrentPageObjects();
 
@@ -139,33 +137,35 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   const handleCloneObject = useCloneActiveMoveableObject();
 
   return (
-    <div id={pageId} ref={containerRef} className="w-full">
-      <div className="relative" ref={layerRef}>
-        <div
-          style={{ transform: `scale(${scale})`, transformOrigin: '0 0' }}
-          ref={pageRef}
-          className="w-[1920px] h-[1080px] bg-white relative"
-        >
-          <Button onClick={() => handleExport()}>export to console</Button>
-          <Button onClick={handleImport}>import from template</Button>
-          <Button onClick={() => handleCreateRec()}>create rec</Button>
-          <Button onClick={() => handleCreateSpan()}>create span</Button>
-          <Button onClick={handleDeleteObject}>delete active object</Button>
-          <Button onClick={handleCloneObject}>clone active object</Button>
-          <Button onClick={() => handleAddTitle()}>Add title</Button>
-          <Button onClick={() => handleCreateLine()}>create line</Button>
-          {objects.map(el => (
-            <MoveableObjectElement
-              containerRef={pageRef}
-              object={el}
-              key={el.id}
-            ></MoveableObjectElement>
-          ))}
+    <CuttingZoneReminder>
+      <div id={pageId} ref={containerRef} className="w-full">
+        <div className="relative" ref={layerRef}>
+          <div
+            style={{ transform: `scale(${scale})`, transformOrigin: '0 0' }}
+            ref={pageRef}
+            className="w-[1920px] h-[1080px] bg-white relative"
+          >
+            <Button onClick={() => handleExport()}>export to console</Button>
+            <Button onClick={handleImport}>import from template</Button>
+            <Button onClick={() => handleCreateRec()}>create rec</Button>
+            <Button onClick={() => handleCreateSpan()}>create span</Button>
+            <Button onClick={handleDeleteObject}>delete active object</Button>
+            <Button onClick={handleCloneObject}>clone active object</Button>
+            <Button onClick={() => handleAddTitle()}>Add title</Button>
+            <Button onClick={() => handleCreateLine()}>create line</Button>
+            {objects.map(el => (
+              <MoveableObjectElement
+                containerRef={pageRef}
+                object={el}
+                key={el.id}
+              ></MoveableObjectElement>
+            ))}
 
-          <MovableLineController />
+            <MovableLineController />
+          </div>
         </div>
       </div>
-    </div>
+    </CuttingZoneReminder>
   );
 };
 
