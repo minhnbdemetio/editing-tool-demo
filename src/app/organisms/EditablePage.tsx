@@ -7,6 +7,15 @@ import { Button } from '@nextui-org/react';
 import { MoveableRectangleObject } from '../factories/MoveableRectangle';
 import { MoveableObjectElement } from '../atoms/moveables/MoveableObjectElement';
 import { MoveableTextObject } from '../factories/MoveableText';
+import { MoveableLineObject } from '../factories/MoveableLine';
+import { useActiveObject } from '../store/active-object';
+import { DEFAULT_TOOLBAR_POSITION } from '../constants/canvas-constants';
+import { twMerge } from '../utilities/tailwind';
+import { CuttingZoneReminder } from '../molecules/CuttingZoneReminder';
+import { usePageSize } from '../store/use-page-size';
+import { useCurrentPageCanvas } from '../hooks/usePageCanvas';
+import { LineEventHandler } from '../utilities/lineEventHandler';
+import { useLineEnabled } from '../store/line-preview';
 import { useCurrentPageObjects } from '../hooks/usePageObjects';
 import { useActivePage } from '../store/active-page';
 import {
@@ -15,6 +24,7 @@ import {
 } from '../hooks/useActiveMoveableObject';
 import { ObjectType } from '../factories/MoveableObject';
 import { MoveableHeadingTextObject } from '../factories/MoveableHeadingText';
+import { MovableLineController } from '../molecules/MovableLineController';
 
 export interface EditablePageProps {
   pageId: string;
@@ -30,6 +40,11 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
 
   const handleCreateSpan = () => {
     const text = new MoveableTextObject();
+    setObjects([...objects, text]);
+  };
+
+  const handleCreateLine = () => {
+    const text = new MoveableLineObject();
     setObjects([...objects, text]);
   };
 
@@ -122,30 +137,35 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   const handleCloneObject = useCloneActiveMoveableObject();
 
   return (
-    <div id={pageId} ref={containerRef} className="w-full">
-      <div className="relative" ref={layerRef}>
-        <div
-          style={{ transform: `scale(${scale})`, transformOrigin: '0 0' }}
-          ref={pageRef}
-          className="w-[1920px] h-[1080px] bg-white relative"
-        >
-          <Button onClick={() => handleExport()}>export to console</Button>
-          <Button onClick={handleImport}>import from template</Button>
-          <Button onClick={() => handleCreateRec()}>create rec</Button>
-          <Button onClick={() => handleCreateSpan()}>create span</Button>
-          <Button onClick={handleDeleteObject}>delete active object</Button>
-          <Button onClick={handleCloneObject}>clone active object</Button>
-          <Button onClick={() => handleAddTitle()}>Add title</Button>
-          {objects.map(el => (
-            <MoveableObjectElement
-              containerRef={pageRef}
-              object={el}
-              key={el.id}
-            ></MoveableObjectElement>
-          ))}
+    <CuttingZoneReminder>
+      <div id={pageId} ref={containerRef} className="w-full">
+        <div className="relative" ref={layerRef}>
+          <div
+            style={{ transform: `scale(${scale})`, transformOrigin: '0 0' }}
+            ref={pageRef}
+            className="w-[1920px] h-[1080px] bg-white relative"
+          >
+            <Button onClick={() => handleExport()}>export to console</Button>
+            <Button onClick={handleImport}>import from template</Button>
+            <Button onClick={() => handleCreateRec()}>create rec</Button>
+            <Button onClick={() => handleCreateSpan()}>create span</Button>
+            <Button onClick={handleDeleteObject}>delete active object</Button>
+            <Button onClick={handleCloneObject}>clone active object</Button>
+            <Button onClick={() => handleAddTitle()}>Add title</Button>
+            <Button onClick={() => handleCreateLine()}>create line</Button>
+            {objects.map(el => (
+              <MoveableObjectElement
+                containerRef={pageRef}
+                object={el}
+                key={el.id}
+              ></MoveableObjectElement>
+            ))}
+
+            <MovableLineController />
+          </div>
         </div>
       </div>
-    </div>
+    </CuttingZoneReminder>
   );
 };
 
