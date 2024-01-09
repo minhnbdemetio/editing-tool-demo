@@ -13,7 +13,9 @@ export const TextProperties: FC = () => {
       <Button onClick={() => setSelectedProperty(SelectedProperty.TextFont)}>
         Font
       </Button>
-      <Button>Text styles</Button>
+      <Button onClick={() => setSelectedProperty(SelectedProperty.TextStyles)}>
+        Text styles
+      </Button>
       <Button
         onClick={() => setSelectedProperty(SelectedProperty.TextFontSize)}
       >
