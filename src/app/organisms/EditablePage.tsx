@@ -45,6 +45,12 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
 
   const handleCreateLine = () => {
     const text = new MoveableLineObject();
+    text.line?.setShadow({
+      shadowBlur: 1,
+      shadowDirection: 0,
+      shadowDistance: 10,
+      shadowOpacity: 10,
+    });
     setObjects([...objects, text]);
   };
 

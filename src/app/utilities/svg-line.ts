@@ -1,5 +1,6 @@
 import { getAngleByPoint } from './line';
 import { LinePoint } from './line-point';
+import { v4 as uuidV4 } from 'uuid';
 
 export enum SvgLineAdornment {
   Arrow = 'arrow',
@@ -28,13 +29,19 @@ export class SvgLine {
   private stroke: string;
   private startAdornment: SvgLineAdornment;
   private endAdornment: SvgLineAdornment;
-  private padding: number = 6;
+  public padding: number = 6;
   private type: SvgLineType;
   private cornerRounding: number;
   points: LinePoint;
   endPoint: LinePoint;
   private toleranceNumber = 0.5;
   private strokeDashArray: [number, number] | undefined = undefined;
+
+  private shadowDirection: number = 0;
+  private shadowOpacity: number = 0;
+  private shadowDistance: number = 0;
+  private shadowBlur: number = 0;
+  private shadowSvgId = uuidV4();
 
   constructor(
     options: {
@@ -46,6 +53,10 @@ export class SvgLine {
       type?: SvgLineType.Elbowed | SvgLineType.Straight;
       cornerRounding?: number;
       strokeDashArray?: [number, number];
+      shadowDirection?: number;
+      shadowOpacity?: number;
+      shadowDistance?: number;
+      shadowBlur?: number;
     } = {},
   ) {
     this.stroke = options.stroke || '#000';
@@ -56,8 +67,10 @@ export class SvgLine {
     this.type = options.type || SvgLineType.Straight;
     this.cornerRounding = options.cornerRounding || 10;
 
-    this.padding = this.getAdornmentLength() + 10;
+    this.padding = this.getAdornmentLength() + 100;
     this.strokeDashArray = options.strokeDashArray;
+
+    this.setShadow(options);
 
     const end = new LinePoint(100, 0, null, null);
     const start = new LinePoint(0, 0, null, end);
@@ -268,7 +281,7 @@ export class SvgLine {
     return this.addPath(
       `M ${+this.padding + startX + startLeft - startRight},${
         +startY + this.padding + startTop - startBottom
-      } ${lines.join(' ')}`,
+      }  ${lines.join(' ')}`,
       { fill: 'none', strokeDashArray: this.strokeDashArray },
     );
   }
@@ -629,9 +642,10 @@ export class SvgLine {
 
     return `
         <svg height="${height}" width="${length}">
-            <g fill="${this.stroke}" stroke="${this.stroke}"  stroke-width="${
-              this.strokeWidth
-            }" >
+           ${this.getSvgShadow()}
+            <g filter="url(#${this.shadowSvgId})" fill="${
+              this.stroke
+            }" stroke="${this.stroke}"  stroke-width="${this.strokeWidth}" >
                 ${this.getAdornment(SvgLineAdornmentPosition.Start)}
                 ${this.getLine()}
                 ${this.getAdornment(SvgLineAdornmentPosition.End)}
@@ -905,5 +919,68 @@ export class SvgLine {
         point = next;
       }
     }
+  }
+
+  public setShadow(options: {
+    shadowDirection?: number;
+    shadowOpacity?: number;
+    shadowDistance?: number;
+    shadowBlur?: number;
+  }) {
+    if (options.shadowBlur) this.shadowBlur = options.shadowBlur || 0;
+    if (options.shadowOpacity) this.shadowOpacity = options.shadowOpacity || 0;
+    if (options.shadowDistance)
+      this.shadowDistance = options.shadowDistance || 0;
+    if (options.shadowDirection)
+      this.shadowDirection = options.shadowDirection || 0;
+  }
+  public getShadowPosition(): { dx: number; dy: number } {
+    const distance = this.shadowDistance;
+    let angle = this.shadowDirection;
+
+    const isLeft = angle >= 45 && angle < 135;
+    const isTop = angle >= 135 && angle < 225;
+    const isRight = angle >= 225 && angle < 315;
+
+    const getPosition = (_angle: number) => {
+      console.debug('getPosition', _angle, (_angle * Math.PI) / 180);
+      let result: number;
+      angle -= 45;
+
+      result = Math.sin((_angle * Math.PI) / 180) * distance;
+
+      return result;
+    };
+
+    if (isLeft) {
+      return { dx: -distance, dy: -getPosition(angle - 90) };
+    }
+    if (isTop) {
+      console.debug('is Top');
+      return { dy: -distance, dx: getPosition(angle - 180) };
+    }
+    if (isRight) {
+      return { dx: distance, dy: getPosition(angle - 270) };
+    }
+
+    // if (angle >= 315) angle -= 315;
+
+    return { dy: distance, dx: -getPosition(angle) };
+  }
+
+  public getSvgShadow() {
+    const { dx, dy } = this.getShadowPosition();
+
+    if (this.shadowDistance === 0) return ``;
+
+    return `
+    <defs>
+      <filter id="${this.shadowSvgId}" x="-40%" y="-40%" width="200%" height="200%">
+        <feOffset result="offOut" in="SourceGraphic" dx="${dx}" dy="${dy}" />
+        <feGaussianBlur result="blurOut" in="offOut" stdDeviation="2" />
+        <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+      </filter>
+    </defs>
+    `;
   }
 }

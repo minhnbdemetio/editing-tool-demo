@@ -85,7 +85,6 @@ const StraightLineController: React.FC<{ forceReload: () => void }> = ({
         const { x, y } = lineObject.line.getDisplayPosition();
         anchorRef.innerHTML = lineObject.line.toSvg() || '';
         anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(${lineObject.line.getRotateAngle()}deg)`;
-        anchorRef.style.transformOrigin = 'left center';
       }
     }
   };
@@ -99,7 +98,6 @@ const StraightLineController: React.FC<{ forceReload: () => void }> = ({
             lineObject.line?.toElbowed();
             const { x, y } = lineObject.line?.getDisplayPosition();
             anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(${lineObject.line.getRotateAngle()}deg)`;
-            anchorRef.style.transformOrigin = 'left center';
             forceReload();
           }
         }}
@@ -128,7 +126,7 @@ const StraightLineController: React.FC<{ forceReload: () => void }> = ({
             style={{
               background: 'red',
               border: '1px solid #e8e8e8',
-              transform: 'translate(-50%, -50%)',
+              transform: `translate(${lineObject.line?.padding}px, ${lineObject.line?.padding}px)`,
             }}
           ></div>
         </Draggable>
@@ -289,7 +287,6 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
       const { x, y } = lineObject.line.getDisplayPosition();
       anchorRef.innerHTML = lineObject.line.toSvg() || '';
       anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(0deg)`;
-      anchorRef.style.transformOrigin = 'left center';
 
       updateLineControllerPosition();
     }
@@ -340,7 +337,12 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
             width: 'fit-content',
           }}
         >
-          <div className="w-[15px] h-[15px] bg-[red] rounded-[50%]"></div>
+          <div
+            style={{
+              transform: `translate(${lineObject.line?.padding}px, ${lineObject.line?.padding}px)`,
+            }}
+            className="w-[15px] h-[15px] bg-[red] rounded-[50%]"
+          ></div>
         </Draggable>
       )}
       {linePositions?.map(pos => (
@@ -372,7 +374,6 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
               const { x, y } = lineObject.line.getDisplayPosition();
               anchorRef.innerHTML = lineObject.line.toSvg() || '';
               anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(0deg)`;
-              anchorRef.style.transformOrigin = 'left center';
 
               updateLineControllerPosition();
               updateHeadControllerPosition();
@@ -381,7 +382,10 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
           dragStyle={pos.y2 === pos.y1 ? 'yOnly' : 'xOnly'}
         >
           <div
-            style={{ background: 'red' }}
+            style={{
+              background: 'red',
+              transform: `translate(${lineObject.line?.padding}px, ${lineObject.line?.padding}px)`,
+            }}
             className={twMerge('bg-red absolute rounded-md', {
               'w-[30px] h-[10px] ': pos.y2 === pos.y1,
               'h-[30px] w-[10px] -translate-y-1/2': pos.x2 === pos.x1,
@@ -430,7 +434,12 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
             transform: ` translate(${endPoint?.x}px, ${endPoint?.y}px)`,
           }}
         >
-          <div className="w-[15px] h-[15px] bg-[red] rounded-[50%]"></div>
+          <div
+            style={{
+              transform: `translate(${lineObject.line?.padding}px, ${lineObject.line?.padding}px)`,
+            }}
+            className="w-[15px] h-[15px] bg-[red] rounded-[50%]"
+          ></div>
         </Draggable>
       )}
     </>
