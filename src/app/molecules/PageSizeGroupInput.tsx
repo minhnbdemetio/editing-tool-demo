@@ -64,7 +64,6 @@ export const PageSizeGroupInput: React.FC<PageSizeGroupInputProps> = ({
   const handleChangeWidth = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const newWidth = (+e.target.value as number) || 0;
-      console.debug(newWidth);
 
       const newPixelsWidth = convertFrameSize(
         unit,

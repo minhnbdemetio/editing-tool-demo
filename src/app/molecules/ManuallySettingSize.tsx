@@ -102,7 +102,6 @@ export const ManuallySettingSize: React.FC<ManuallySettingSizeProps> = () => {
             }
           });
 
-          console.debug(tempErrors);
           setErrors(tempErrors);
         }
       }
@@ -145,15 +144,12 @@ export const ManuallySettingSize: React.FC<ManuallySettingSizeProps> = () => {
           <PageSizeGroupInput
             label="Printing Line"
             changeHeight={workingHeightPixels => {
-              console.debug(workingHeightPixels);
-              // pageSize.update({ workingHeightPixels });
               setPageSizeForm(s => ({
                 ...s,
                 workingHeight: workingHeightPixels,
               }));
             }}
             changeWidth={workingWidthPixels => {
-              // pageSize.update({ workingWidthPixels });
               setPageSizeForm(s => ({
                 ...s,
                 workingWidth: workingWidthPixels,

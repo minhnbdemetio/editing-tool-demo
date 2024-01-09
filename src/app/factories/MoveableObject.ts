@@ -3,7 +3,7 @@ import { findIdFromString } from '../utilities/dom';
 import Moveable from 'moveable';
 
 const MAX_FIND_ELEMENT_ATTEMPTS = 100;
-export type ObjectType = 'rectangle' | 'text' | 'heading';
+export type ObjectType = 'rectangle' | 'text' | 'heading' | 'line';
 export abstract class MoveableObject {
   id: string;
   type?: ObjectType;
@@ -78,7 +78,9 @@ export abstract class MoveableObject {
       rotatable: true,
       resizable: true,
     });
-    moveable.on('drag', e => (e.target.style.transform = e.transform));
+    moveable.on('drag', e => {
+      e.target.style.transform = e.transform;
+    });
     moveable.on('rotate', e => (e.target.style.transform = e.transform));
     moveable.on('resize', e => {
       e.target.style.width = `${e.width}px`;
@@ -94,10 +96,10 @@ export abstract class MoveableObject {
     return true;
   }
   getCssProperty<T extends keyof CSSStyleDeclaration>(property: T) {
-    const element = this.getElement()
-    if(!element) return null
-    const cssProperties = window.getComputedStyle(element)
-    return cssProperties[property]
+    const element = this.getElement();
+    if (!element) return null;
+    const cssProperties = window.getComputedStyle(element);
+    return cssProperties[property];
   }
   changeTransformOrigin(
     transformOrigin?: CSSStyleDeclaration['transformOrigin'],

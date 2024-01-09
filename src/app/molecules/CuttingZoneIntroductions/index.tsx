@@ -33,14 +33,18 @@ export const CuttingZoneIntroduction: React.FC<
 
   return (
     <>
-      <div
-        className="absolute top-0 left-0 w-full cutting-zone"
-        style={{ height: padding }}
-      ></div>
-      <div
-        className="absolute  left-0 w-full safe-zone"
-        style={{ height: safeZonePadding, top: padding }}
-      ></div>
+      {open && (
+        <>
+          <div
+            className="absolute top-0 left-0 w-full cutting-zone"
+            style={{ height: padding }}
+          ></div>
+          <div
+            className="absolute  left-0 w-full safe-zone"
+            style={{ height: safeZonePadding, top: padding }}
+          ></div>
+        </>
+      )}
       <Tour
         highlightedMaskClassName="cutting-zone-intro-highlight"
         steps={steps}

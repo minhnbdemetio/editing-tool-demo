@@ -26,7 +26,7 @@ export const Menu: FC = () => {
     <>
       <div
         className={twMerge(
-          'absolute duration-300 w-full max-h-[80%] left-0 z-30 flex flex-col-reverse h-full',
+          'absolute duration-300 w-full max-h-[80%] left-0 z-50 flex flex-col-reverse h-full',
           {
             'bottom-0': open,
             hidden: !open,
@@ -58,7 +58,7 @@ export const Menu: FC = () => {
       ></div>
 
       <div
-        className={clsx('py-1 flex items-center fixed bottom-0 z-10 w-full', {
+        className={clsx('py-1 flex items-center fixed bottom-0 z-40 w-full', {
           hidden: Boolean(selectedProperty),
         })}
       >

@@ -7,6 +7,7 @@ import {
   SettingFilterProps,
   SettingTypeEnum,
 } from '@/app/molecules/SearchInput/searchInput';
+import { Lines } from '@/app/molecules/Lines';
 
 const recommendedKeywords = [
   'Xuân',
@@ -90,6 +91,8 @@ export const ElementsMenuContent: FC = () => {
           }}
           onResetFilter={onResetFilter}
         />
+
+        <Lines />
       </div>
     </div>
   );
