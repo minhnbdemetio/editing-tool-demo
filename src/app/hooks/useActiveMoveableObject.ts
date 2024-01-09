@@ -1,16 +1,13 @@
-import { MoveableTextObject } from '../factories/MoveableText';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { useActivePage } from '../store/active-page';
 import { GradientStop } from '../utilities/color.type';
-import { isTextObject } from '../utilities/moveable';
+import { isText } from '../utilities/moveable';
 import { usePageObjectsById } from './usePageObjects';
 
 export const useActiveMoveableTextObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
-  return isTextObject(activeMoveableObject)
-    ? (activeMoveableObject as MoveableTextObject)
-    : null;
+  return isText(activeMoveableObject) ? activeMoveableObject : null;
 };
 
 export const useUpdateActiveMoveableObjectFontSize = () => {
@@ -72,7 +69,7 @@ export const useCloneActiveMoveableObject = () => {
 export const useToggleMoveableBoldText = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
   return (callback?: Function) => {
-    if (!isTextObject(activeMoveableObject)) return false;
+    if (!isText(activeMoveableObject)) return false;
     const element = activeMoveableObject.getElement();
     if (!element) return false;
     const isBold = element?.style?.fontWeight === 'bold';
@@ -90,7 +87,7 @@ export const useToggleMoveableItalicText = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
   return (callback?: Function) => {
-    if (!isTextObject(activeMoveableObject)) return false;
+    if (!isText(activeMoveableObject)) return false;
     const element = activeMoveableObject.getElement();
     if (!element) return false;
     const isItalic = element.style.fontStyle === 'italic';
@@ -108,7 +105,7 @@ export const useToggleMoveableUnderlineText = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
   const toggleUnderlineText = (callback?: Function) => {
-    if (!isTextObject(activeMoveableObject)) return false;
+    if (!isText(activeMoveableObject)) return false;
     const element = activeMoveableObject.getElement();
     if (!element) return false;
     const textDecoration = element.style.textDecoration;
@@ -134,7 +131,7 @@ export const useToggleMoveableLineThroughText = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
   const toggleStrokeText = (callback?: Function) => {
-    if (!isTextObject(activeMoveableObject)) return false;
+    if (!isText(activeMoveableObject)) return false;
     const element = activeMoveableObject.getElement();
     if (!element) return false;
     const textDecoration = element.style.textDecoration;
@@ -181,7 +178,7 @@ export const useChangeMoveableTextAlign = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
   const changeTextAlign = (textAlign: string, callback?: Function) => {
-    if (!isTextObject(activeMoveableObject)) return false;
+    if (!isText(activeMoveableObject)) return false;
     const element = activeMoveableObject.getElement();
     if (!element) return false;
     element.style.textAlign = textAlign;
@@ -196,7 +193,7 @@ export const useToggleMoveableListTypeDiscText = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
   const toggleListTypeDiscText = (callback?: Function) => {
-    if (!isTextObject(activeMoveableObject)) return false;
+    if (!isText(activeMoveableObject)) return false;
     const listElement = activeMoveableObject.getElement()?.querySelector('ul');
     if (!listElement) return false;
     const isListTypeDisc = listElement.style.listStyleType === 'disc';
@@ -218,7 +215,7 @@ export const useToggleMoveableListTypeNumberText = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
   const toggleListTypeText = (callback?: Function) => {
-    if (!isTextObject(activeMoveableObject)) return false;
+    if (!isText(activeMoveableObject)) return false;
     const listElement = activeMoveableObject.getElement()?.querySelector('ul');
     if (!listElement) return false;
     const isNumberType = listElement.style.listStyleType === 'number';
@@ -241,7 +238,7 @@ export const useChangeMoveableTextSpacing = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
   const handleChangeLetterSpacing = (fontSize: number, callback: Function) => {
-    if (!isTextObject(activeMoveableObject)) return false;
+    if (!isText(activeMoveableObject)) return false;
     const element = activeMoveableObject.getElement();
     if (!element) return false;
     element.style.letterSpacing = `${fontSize}px`;
@@ -256,7 +253,7 @@ export const useChangeMoveableTextLineHeight = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
   const handleChangeLineHeight = (lineHeight: number, callback: Function) => {
-    if (!isTextObject(activeMoveableObject)) return false;
+    if (!isText(activeMoveableObject)) return false;
     const element = activeMoveableObject.getElement();
     if (!element) return false;
     element.style.lineHeight = `${lineHeight}px`;
@@ -274,7 +271,7 @@ export const useChangeMoveableTextTransformOrigin = () => {
     transformOrigin: CSSStyleDeclaration['transformOrigin'],
     callback?: Function,
   ) => {
-    if (!isTextObject(activeMoveableObject)) return false;
+    if (!isText(activeMoveableObject)) return false;
     activeMoveableObject.changeTransformOrigin(transformOrigin);
     callback && callback();
     return true;

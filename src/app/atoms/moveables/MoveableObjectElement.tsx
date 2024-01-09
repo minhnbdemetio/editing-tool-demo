@@ -1,24 +1,31 @@
-import { FC, RefObject, useEffect } from 'react';
+import { FC, useEffect } from 'react';
 
 import { MoveableObject } from '@/app/factories/MoveableObject';
-import { MoveableRectangleElement } from './MoveableRectangleElement';
-import { MoveableTextElement } from './MoveableTextElement';
+import { MoveableNormalTextElement } from './text/MoveableNormalTextElement';
 import { MoveableLineElement } from './MoveableLineElement';
-import { MovableLineController } from '@/app/molecules/MovableLineController';
 import { useLoadMoveableObject } from '@/app/hooks/useLoadObject';
 import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
-import { MoveableHeadingTextElement } from './MoveableHeadingTextElement';
+import { MoveableHeadingTextElement } from './text/MoveableHeadingTextElement';
+import {
+  isBodyText,
+  isHeading,
+  isLine,
+  isNormalText,
+  isSubheading,
+  isText,
+} from '@/app/utilities/moveable';
+import { MoveableSubheadingTextElement } from './text/MoveableSubheadingTextElement';
+import { MoveableBodyTextElement } from './text/MoveableBodyTextElement';
 
 export interface MoveableObjectProps {
   object: MoveableObject;
-  containerRef: RefObject<HTMLDivElement>;
   className?: string;
 }
 
 export const MoveableObjectElement: FC<MoveableObjectProps> = props => {
-  const { containerRef, object } = props;
+  const { object } = props;
   const { setActiveMoveableObject } = useActiveMoveableObject();
-  const { objectLoaded } = useLoadMoveableObject(containerRef, object);
+  const { objectLoaded } = useLoadMoveableObject(object);
 
   useEffect(() => {
     if (!objectLoaded) return;
@@ -28,20 +35,27 @@ export const MoveableObjectElement: FC<MoveableObjectProps> = props => {
   }, [object, objectLoaded, setActiveMoveableObject]);
 
   const renderElement = () => {
-    switch (props.object.type) {
-      case 'rectangle': {
-        return <MoveableRectangleElement {...props} />;
-      }
-      case 'text': {
-        return <MoveableTextElement {...props} />;
-      }
-      case 'line': {
-        return <MoveableLineElement {...props} />;
-      }
-      case 'heading': {
-        return <MoveableHeadingTextElement {...props} />;
-      }
+    if (isNormalText(object)) {
+      return <MoveableNormalTextElement object={object} />;
     }
+
+    if (isLine(object)) {
+      return <MoveableLineElement object={object} />;
+    }
+
+    if (isHeading(object)) {
+      return <MoveableHeadingTextElement object={object} />;
+    }
+
+    if (isSubheading(object)) {
+      return <MoveableSubheadingTextElement object={object} />;
+    }
+
+    if (isBodyText(object)) {
+      return <MoveableBodyTextElement object={object} />;
+    }
+
+    return <></>;
   };
 
   return (

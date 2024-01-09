@@ -1,26 +1,26 @@
 import { RefObject, useEffect, useState } from 'react';
 import { MoveableObject } from '../factories/MoveableObject';
+import { useCurrentPage } from './useCurrentPage';
 
-export const useLoadMoveableObject = (
-  containerRef: RefObject<HTMLDivElement>,
-  object: MoveableObject,
-) => {
+export const useLoadMoveableObject = (object: MoveableObject) => {
   const [objectLoaded, setObjectLoaded] = useState(false);
+  const { pageId } = useCurrentPage();
   useEffect(() => {
-    if (!containerRef.current || objectLoaded) return;
+    const container = document.getElementById(pageId);
+    if (!container || objectLoaded) return;
     const defaultElement = object.getElement();
     if (object.htmlString) {
       const loadedElement = object.createElementFromHtmlString();
       if (loadedElement) {
-        containerRef.current.appendChild(loadedElement);
+        container.appendChild(loadedElement);
       }
       defaultElement?.remove();
     } else {
       defaultElement?.classList.remove('hidden');
     }
-    object.createMoveable(containerRef.current);
+    object.createMoveable(container);
     setObjectLoaded(true);
-  }, [containerRef, object, objectLoaded]);
+  }, [object, objectLoaded, pageId]);
 
   return { objectLoaded };
 };

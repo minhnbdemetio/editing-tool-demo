@@ -2,7 +2,7 @@ import Moveable from 'moveable';
 import { MAX_FIND_ELEMENT_ATTEMPTS, MoveableObject } from './MoveableObject';
 import { GradientStop } from '../utilities/color.type';
 
-export type MoveableTextVariant = 'normal' | 'heading';
+export type MoveableTextVariant = 'normal' | 'heading' | 'subheading' | 'body';
 
 export class MoveableTextObject extends MoveableObject {
   variant?: MoveableTextVariant;
@@ -10,6 +10,7 @@ export class MoveableTextObject extends MoveableObject {
     super(id, htmlString);
     this.type = 'text';
     this.transformOrigin = 'bottom';
+    this.variant = 'normal';
   }
   createMoveable(container: HTMLElement): void {
     const element = this.getElement();

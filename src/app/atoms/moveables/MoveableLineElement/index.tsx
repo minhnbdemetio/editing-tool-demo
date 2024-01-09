@@ -4,12 +4,10 @@ import './style.scss';
 
 interface MoveableLineElementProps {
   object: MoveableLineObject;
-  containerRef: RefObject<HTMLDivElement>;
 }
 
 export const MoveableLineElement: FC<MoveableLineElementProps> = ({
   object,
-  containerRef,
 }) => {
   return (
     <div

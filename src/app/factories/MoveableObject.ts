@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { findIdFromString } from '../utilities/dom';
 import Moveable from 'moveable';
 
-const MAX_FIND_ELEMENT_ATTEMPTS = 100;
+export const MAX_FIND_ELEMENT_ATTEMPTS = 100;
 export type ObjectType = 'rectangle' | 'text' | 'line';
 export abstract class MoveableObject {
   id: string;
