@@ -22,3 +22,25 @@ export function cssStringToObject(cssString: string): CSSObject {
 
   return cssObject;
 }
+
+export interface TranslateValues {
+  translateX: number;
+  translateY: number;
+}
+
+export const parseTranslateString = (
+  translateString: string,
+): TranslateValues => {
+  const match = translateString.match(
+    /translate\((-?\d+(\.\d+)?)px, (-?\d+(\.\d+)?)px\)/,
+  );
+
+  if (match) {
+    const translateX: number = parseFloat(match[1]);
+    const translateY: number = parseFloat(match[3]);
+
+    return { translateX, translateY };
+  } else {
+    return { translateX: 0, translateY: 0 };
+  }
+};

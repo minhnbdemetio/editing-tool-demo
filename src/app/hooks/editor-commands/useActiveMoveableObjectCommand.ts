@@ -12,6 +12,7 @@ import {
   useChangeMoveableTextTransformOrigin,
   useChangeMoveableTextStyles,
   useChangeMoveableTextFontStyle,
+  useChangeMoveableTextTransform,
 } from '../useActiveMoveableObject';
 import { debounce } from 'lodash';
 
@@ -80,4 +81,9 @@ export const useChangeMoveableTextStylesCommand = () => {
 export const useChangeMoveableTextFontStyleCommand = () => {
   const changeFontStyle = useChangeMoveableTextFontStyle();
   return changeFontStyle;
+};
+
+export const useChangeMoveableTextTransformCommand = () => {
+  const changeTransform = useChangeMoveableTextTransform();
+  return debounce(changeTransform, 100);
 };

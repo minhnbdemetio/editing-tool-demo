@@ -2,7 +2,7 @@ import { CSSProperties } from 'react';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { useActivePage } from '../store/active-page';
 import { GradientStop } from '../utilities/color.type';
-import { isText } from '../utilities/moveable';
+import { parseTranslateString } from '../utilities/utils';
 import { usePageObjectsById } from './usePageObjects';
 
 export const useActiveMoveableTextObject = () => {
@@ -230,11 +230,10 @@ export const useToggleMoveableListTypeNumberText = () => {
 };
 
 export const useChangeMoveableTextSpacing = () => {
-  const { activeMoveableObject } = useActiveMoveableObject();
+  const activeText = useActiveMoveableTextObject();
 
   const handleChangeLetterSpacing = (fontSize: number, callback: Function) => {
-    if (!isText(activeMoveableObject)) return false;
-    const element = activeMoveableObject.getElement();
+    const element = activeText?.getElement();
     if (!element) return false;
     element.style.letterSpacing = `${fontSize}px`;
     callback();
@@ -319,4 +318,25 @@ export const useChangeMoveableTextFontStyle = () => {
   };
 
   return handleChangeFont;
+};
+
+export const useChangeMoveableTextTransform = () => {
+  const activeText = useActiveMoveableTextObject();
+
+  const handleChangeTransform = (
+    transformX: number,
+    transformY: number,
+    callback: Function,
+  ) => {
+    const element = activeText?.getElement();
+    if (!element) return false;
+    const beforeTransForm = parseTranslateString(element.style.transform);
+    element.style.transform = `translate(${
+      beforeTransForm.translateX + transformX
+    }px, ${beforeTransForm.translateY + transformY}px)`;
+    callback();
+    return true;
+  };
+
+  return handleChangeTransform;
 };
