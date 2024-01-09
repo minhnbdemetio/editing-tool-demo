@@ -1,9 +1,8 @@
-import { FC, RefObject } from 'react';
+import { FC } from 'react';
 import { MoveableRectangleObject } from '@/app/factories/MoveableRectangle';
 
 interface MoveableRectangleProps {
   object: MoveableRectangleObject;
-  containerRef: RefObject<HTMLDivElement>;
 }
 
 export const MoveableRectangleElement: FC<MoveableRectangleProps> = ({

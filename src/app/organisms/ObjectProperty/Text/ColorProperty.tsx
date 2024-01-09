@@ -313,9 +313,7 @@ export const ColorProperty: FC = () => {
                   size="lg"
                   className="border-gray-200 border-1"
                   isIconOnly
-                  onClick={() =>
-                    changeColorGradient(createLinearGradientString(gradient))
-                  }
+                  onClick={() => changeColorGradient(gradient)}
                   style={{
                     background: `${createLinearGradientString(
                       gradient,

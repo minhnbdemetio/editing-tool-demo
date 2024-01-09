@@ -1,7 +1,7 @@
 import {
   useToggleMoveableBoldText,
   useToggleMoveableLineThroughText,
-  useToggleMoveableCapitalText,
+  useToggleMoveableUppercaseText,
   useToggleMoveableUnderlineText,
   useToggleMoveableItalicText,
   useChangeMoveableTextAlign,
@@ -38,7 +38,7 @@ export const useToggleMoveableStrokeTextCommand = () => {
 };
 
 export const useToggleMoveableCapitalTextCommand = () => {
-  const toggleCapitalText = useToggleMoveableCapitalText();
+  const toggleCapitalText = useToggleMoveableUppercaseText();
   return toggleCapitalText;
 };
 
