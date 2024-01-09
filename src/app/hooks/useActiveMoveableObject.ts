@@ -68,12 +68,12 @@ export const useCloneActiveMoveableObject = () => {
 };
 
 export const useToggleMoveableBoldText = () => {
-  const { activeMoveableObject } = useActiveMoveableObject();
+  const activeText = useActiveMoveableTextObject();
   return (callback?: Function) => {
-    if (!isText(activeMoveableObject)) return false;
-    const element = activeMoveableObject.getElement();
+    const element = activeText?.getElement();
     if (!element) return false;
-    const isBold = element?.style?.fontWeight === 'bold';
+    const fontWeight = activeText?.getCssProperty('fontWeight');
+    const isBold = fontWeight === 'bold' || fontWeight === '700';
     if (isBold) {
       element.style.fontWeight = 'normal';
     } else {
@@ -85,13 +85,12 @@ export const useToggleMoveableBoldText = () => {
 };
 
 export const useToggleMoveableItalicText = () => {
-  const { activeMoveableObject } = useActiveMoveableObject();
+  const activeText = useActiveMoveableTextObject();
 
   return (callback?: Function) => {
-    if (!isText(activeMoveableObject)) return false;
-    const element = activeMoveableObject.getElement();
+    const element = activeText?.getElement();
     if (!element) return false;
-    const isItalic = element.style.fontStyle === 'italic';
+    const isItalic = activeText?.getCssProperty('fontStyle') === 'italic';
     if (isItalic) {
       element.style.fontStyle = 'normal';
     } else {
@@ -103,13 +102,12 @@ export const useToggleMoveableItalicText = () => {
 };
 
 export const useToggleMoveableUnderlineText = () => {
-  const { activeMoveableObject } = useActiveMoveableObject();
+  const activeText = useActiveMoveableTextObject();
 
   const toggleUnderlineText = (callback?: Function) => {
-    if (!isText(activeMoveableObject)) return false;
-    const element = activeMoveableObject.getElement();
+    const element = activeText?.getElement();
     if (!element) return false;
-    const textDecoration = element.style.textDecoration;
+    const textDecoration = activeText?.getCssProperty('textDecoration') || '';
     const isUnderlined = textDecoration.includes('underline');
     if (isUnderlined) {
       element.style.textDecoration =
@@ -129,15 +127,14 @@ export const useToggleMoveableUnderlineText = () => {
 };
 
 export const useToggleMoveableLineThroughText = () => {
-  const { activeMoveableObject } = useActiveMoveableObject();
+  const activeText = useActiveMoveableTextObject();
 
-  const toggleStrokeText = (callback?: Function) => {
-    if (!isText(activeMoveableObject)) return false;
-    const element = activeMoveableObject.getElement();
+  const toggleLineThroughText = (callback?: Function) => {
+    const element = activeText?.getElement();
     if (!element) return false;
-    const textDecoration = element.style.textDecoration;
-    const isStroke = textDecoration.includes('line-through');
-    if (isStroke) {
+    const textDecoration = activeText?.getCssProperty('textDecoration') || '';
+    const hasLineThrough = textDecoration.includes('line-through');
+    if (hasLineThrough) {
       element.style.textDecoration =
         textDecoration === 'line-through'
           ? 'none'
@@ -151,19 +148,19 @@ export const useToggleMoveableLineThroughText = () => {
     return true;
   };
 
-  return toggleStrokeText;
+  return toggleLineThroughText;
 };
 
-export const useToggleMoveableCapitalText = () => {
-  const activeMoveableObject = useActiveMoveableTextObject();
+export const useToggleMoveableUppercaseText = () => {
+  const activeText = useActiveMoveableTextObject();
 
-  const toggleCapitalText = (callback?: Function) => {
-    const element = activeMoveableObject?.getElement();
+  const toggleUppercaseText = (callback?: Function) => {
+    const element = activeText?.getElement();
     if (!element) return false;
-    const isCapitalized =
-      activeMoveableObject?.getCssProperty('textTransform') === 'uppercase';
+    const isUppercase =
+      activeText?.getCssProperty('textTransform') === 'uppercase';
 
-    if (isCapitalized) {
+    if (isUppercase) {
       element.style.textTransform = 'none';
     } else {
       element.style.textTransform = 'uppercase';
@@ -172,15 +169,14 @@ export const useToggleMoveableCapitalText = () => {
     return true;
   };
 
-  return toggleCapitalText;
+  return toggleUppercaseText;
 };
 
 export const useChangeMoveableTextAlign = () => {
-  const { activeMoveableObject } = useActiveMoveableObject();
+  const activeText = useActiveMoveableTextObject();
 
   const changeTextAlign = (textAlign: string, callback?: Function) => {
-    if (!isText(activeMoveableObject)) return false;
-    const element = activeMoveableObject.getElement();
+    const element = activeText?.getElement();
     if (!element) return false;
     element.style.textAlign = textAlign;
     callback && callback();
@@ -191,11 +187,10 @@ export const useChangeMoveableTextAlign = () => {
 };
 
 export const useToggleMoveableListTypeDiscText = () => {
-  const { activeMoveableObject } = useActiveMoveableObject();
+  const activeText = useActiveMoveableTextObject();
 
   const toggleListTypeDiscText = (callback?: Function) => {
-    if (!isText(activeMoveableObject)) return false;
-    const listElement = activeMoveableObject.getElement()?.querySelector('ul');
+    const listElement = activeText?.getElement()?.querySelector('ul');
     if (!listElement) return false;
     const isListTypeDisc = listElement.style.listStyleType === 'disc';
     if (isListTypeDisc) {
@@ -213,11 +208,10 @@ export const useToggleMoveableListTypeDiscText = () => {
 };
 
 export const useToggleMoveableListTypeNumberText = () => {
-  const { activeMoveableObject } = useActiveMoveableObject();
+  const activeText = useActiveMoveableTextObject();
 
   const toggleListTypeText = (callback?: Function) => {
-    if (!isText(activeMoveableObject)) return false;
-    const listElement = activeMoveableObject.getElement()?.querySelector('ul');
+    const listElement = activeText?.getElement()?.querySelector('ul');
     if (!listElement) return false;
     const isNumberType = listElement.style.listStyleType === 'number';
 
@@ -251,11 +245,10 @@ export const useChangeMoveableTextSpacing = () => {
 };
 
 export const useChangeMoveableTextLineHeight = () => {
-  const { activeMoveableObject } = useActiveMoveableObject();
+  const activeText = useActiveMoveableTextObject();
 
   const handleChangeLineHeight = (lineHeight: number, callback: Function) => {
-    if (!isText(activeMoveableObject)) return false;
-    const element = activeMoveableObject.getElement();
+    const element = activeText?.getElement();
     if (!element) return false;
     element.style.lineHeight = `${lineHeight}px`;
     callback();
@@ -266,14 +259,13 @@ export const useChangeMoveableTextLineHeight = () => {
 };
 
 export const useChangeMoveableTextTransformOrigin = () => {
-  const { activeMoveableObject } = useActiveMoveableObject();
+  const activeText = useActiveMoveableTextObject();
 
   const handleChangeTransformOrigin = (
     transformOrigin: CSSStyleDeclaration['transformOrigin'],
     callback?: Function,
   ) => {
-    if (!isText(activeMoveableObject)) return false;
-    activeMoveableObject.changeTransformOrigin(transformOrigin);
+    activeText?.changeTransformOrigin(transformOrigin);
     callback && callback();
     return true;
   };
@@ -288,15 +280,14 @@ type EditableCSSProperty = keyof Omit<
   | keyof { [property: string]: () => string }
 >;
 export const useChangeMoveableTextStyles = () => {
-  const { activeMoveableObject } = useActiveMoveableObject();
+  const activeText = useActiveMoveableTextObject();
 
   const handleChangeStyles = (
     styles: CSSStyleDeclaration,
     idStyles: string,
     callback: Function,
   ) => {
-    if (!isText(activeMoveableObject)) return false;
-    const element = activeMoveableObject.getElement();
+    const element = activeText?.getElement();
     if (!element) return false;
     for (const [key, value] of Object.entries(styles)) {
       element.style[key as EditableCSSProperty] = `${value}`;
@@ -310,15 +301,14 @@ export const useChangeMoveableTextStyles = () => {
 };
 
 export const useChangeMoveableTextFontStyle = () => {
-  const { activeMoveableObject } = useActiveMoveableObject();
+  const activeText = useActiveMoveableTextObject();
 
   const handleChangeFont = (
     fontFamily: string,
     fontStyle: Partial<CSSProperties>,
     callback: Function,
   ) => {
-    if (!isText(activeMoveableObject)) return false;
-    const element = activeMoveableObject.getElement();
+    const element = activeText?.getElement();
     if (!element) return false;
     element.style.fontFamily = fontFamily;
     for (const [key, value] of Object.entries(fontStyle)) {
