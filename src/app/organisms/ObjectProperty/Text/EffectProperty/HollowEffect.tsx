@@ -2,27 +2,25 @@ import { useActiveMoveableTextObject } from '@/app/hooks/useActiveMoveableObject
 import { Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 
-interface LiftPropertyProps {
-  insensity?: number;
-}
+interface HollowEffectProps {}
 
-export const LiftEffectOptions: FC<LiftPropertyProps> = props => {
+const THICKNESS_DEFAULT = 50;
+
+export const HollowEffect: FC<HollowEffectProps> = () => {
   const activeText = useActiveMoveableTextObject();
-  const [insensity, setInsensity] = useState<number | undefined>(
-    props.insensity,
+  const [thickness, setThickness] = useState<number | undefined>(
+    activeText?.thicknessHollowEffect || THICKNESS_DEFAULT,
   );
   useEffect(() => {
-    if (insensity) {
-      activeText?.setEffectLift(insensity);
-    }
-  }, [insensity]);
+    activeText?.setThicknessHollowEffect(THICKNESS_DEFAULT);
+  }, []);
   return (
     <Slider
-      label="Intensity"
+      label="Thickness"
       size="sm"
       step={1}
       maxValue={100}
-      minValue={0}
+      minValue={1}
       color="foreground"
       classNames={{
         label: 'mt-[12px]',
@@ -38,20 +36,22 @@ export const LiftEffectOptions: FC<LiftPropertyProps> = props => {
               className="px-1 py-0.5 w-12 text-right text-small text-default-700 font-medium bg-default-100 outline-none transition-colors rounded-small border-medium border-transparent hover:border-primary focus:border-primary"
               type="text"
               aria-label="Temperature value"
-              value={insensity}
+              value={thickness}
               onChange={e => {
                 const v = +e.target.value;
                 if (isNaN(v)) return;
-                setInsensity(v);
+                setThickness(v);
+                activeText?.setThicknessHollowEffect(v);
               }}
             />
           </Tooltip>
         </output>
       )}
-      value={insensity}
+      value={thickness}
       onChange={value => {
         if (typeof value === 'number') {
-          setInsensity(value);
+          setThickness(value);
+          activeText?.setThicknessHollowEffect(value);
         }
       }}
     />

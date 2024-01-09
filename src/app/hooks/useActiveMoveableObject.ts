@@ -477,19 +477,24 @@ export const useUpdateActiveMoveableObjectTextStyleEffect = () => {
   const activeText = useActiveTextObject();
   const handleChangeTextEffect = (
     effect: MoveableTextStyleEffect,
-    callback: Function,
+    cb: Function,
   ) => {
     // Reset effect before apply new effect
     const el = activeText?.getElement();
     if (!el) return false;
     el.style.textShadow = 'none';
     el.style.webkitTextFillColor = 'currentcolor';
+    el.style.caretColor = 'unset';
+    el.style.webkitTextStroke = 'unset';
+    el.style.webkitTextFillColor = 'unset';
+    const outlineElement = document.getElementById(`outline-${activeText?.id}`);
+    if (outlineElement) {
+      el.removeChild(outlineElement);
+    }
 
     // Set style effect id
     activeText?.setStyleEffect(effect);
-
-    // Update style effect
-    callback();
+    cb();
     return true;
   };
   return handleChangeTextEffect;

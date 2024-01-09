@@ -13,6 +13,18 @@ export type MoveableTextShadow = {
   transparency?: number;
 };
 
+export type TextSpliceEffectOption = {
+  thickness?: number;
+  offset?: number;
+  direction?: number;
+  color?: string;
+};
+
+export type TextOutlineEffectOption = {
+  thickness: number;
+  color: string;
+};
+
 export type MoveableTextStyleEffect =
   | 'none'
   | 'shadow'
@@ -30,6 +42,10 @@ export class MoveableTextObject extends MoveableObject {
   styleEffect?: MoveableTextStyleEffect;
   textShadow?: MoveableTextShadow;
   textIntensity?: number;
+  thicknessHollowEffect?: number;
+  spliceEffect?: TextSpliceEffectOption;
+  outlineEffect?: TextOutlineEffectOption;
+  echoEffect?: MoveableTextShadow;
   constructor(id?: string, htmlString?: string) {
     super(id, htmlString);
     this.type = 'text';
@@ -198,12 +214,19 @@ export class MoveableTextObject extends MoveableObject {
     if (!element) return false;
     element.style.lineHeight = lineHeight + 'px';
   }
-  setTextShadow(textShadow: MoveableTextShadow) {
-    const MAX_VALUE = 16;
+  setTextShadow(textShadow?: MoveableTextShadow) {
+    if (!textShadow) {
+      this.textShadow = undefined;
+      return true;
+    }
     const element = this.getElement();
     if (!element) return false;
+    const styles = window.getComputedStyle(element);
+    const matches = styles.fontSize?.match(/^(\d+(\.\d+)?)px/);
+    const MAX_VALUE = parseFloat(matches?.[1] ?? '0') * 0.166;
+
     const {
-      color = this.getCssProperty('color') || '#000',
+      color = styles.color,
       offset = 50,
       direction = 45,
       blur = 0,
@@ -224,7 +247,11 @@ export class MoveableTextObject extends MoveableObject {
   setStyleEffect(styleEffect: MoveableTextStyleEffect) {
     this.styleEffect = styleEffect;
   }
-  setEffectLift(intensity: number, color: string = '#000') {
+  setEffectLift(intensity?: number, color: string = '#000') {
+    if (!intensity) {
+      this.textIntensity = undefined;
+      return true;
+    }
     const element = this.getElement();
     if (!element) return false;
     this.textIntensity = intensity;
@@ -234,6 +261,107 @@ export class MoveableTextObject extends MoveableObject {
       color,
       transparency / 100,
     )} 0px 4.6px ${blur}px `;
+    element.style.textShadow = shadow;
+  }
+
+  setThicknessHollowEffect(thickness: number) {
+    const element = this.getElement();
+    if (!element) return false;
+    this.thicknessHollowEffect = thickness;
+    this.setTextStrokeEffect(thickness);
+  }
+
+  setTextStrokeEffect(
+    thickness: number,
+    radius: number = 0.0916,
+    color?: string,
+    el?: HTMLElement,
+  ) {
+    const element = el ?? this.getElement();
+    if (!element) return false;
+    const styles = window.getComputedStyle(element);
+    const matches = styles.fontSize?.match(/^(\d+(\.\d+)?)px/);
+    const MAX_THICKNESS = parseFloat(matches?.[1] ?? '0') * radius;
+    element.style.caretColor = color ?? styles.color;
+    element.style.webkitTextStrokeWidth = `${
+      (thickness - 1) * (MAX_THICKNESS / 99)
+    }px`;
+    element.style.webkitTextStrokeColor = color ?? styles.color;
+    element.style.webkitTextFillColor = 'transparent';
+  }
+
+  setSpliceEffect(option: TextSpliceEffectOption) {
+    const element = this.getElement();
+    if (!element) return false;
+    this.spliceEffect = option;
+    const styles = window.getComputedStyle(element);
+    const matches = styles.fontSize?.match(/^(\d+(\.\d+)?)px/);
+    const MAX_SHADOW = parseFloat(matches?.[1] ?? '0') * 0.166;
+
+    const {
+      thickness = 50,
+      offset = 50,
+      direction = -45,
+      color = styles.color,
+    } = option;
+
+    const offsetVal = (offset / 100) * MAX_SHADOW;
+    const hShadow = (
+      -offsetVal * Math.sin((direction * Math.PI) / 180)
+    ).toFixed(4);
+    const vShadow = (offsetVal * Math.cos((direction * Math.PI) / 180)).toFixed(
+      4,
+    );
+    const shadow = `${color} ${hShadow}px ${vShadow}px 0px`;
+    element.style.textShadow = shadow;
+    this.setTextStrokeEffect(thickness);
+  }
+
+  setOutlineEffect(option: TextOutlineEffectOption) {
+    const element = this.getElement();
+    if (!element) return false;
+    this.outlineEffect = option;
+    const { thickness, color } = option;
+    const clonedElementId = `outline-${this.id}`;
+    let clonedElement = document.getElementById(clonedElementId);
+
+    if (!clonedElement) {
+      clonedElement = element.cloneNode(true) as HTMLElement;
+      element.style.position = 'relative';
+      clonedElement.id = `outline-${this.id}`;
+      clonedElement.style.webkitTextFillColor = 'unset';
+      clonedElement.style.position = 'absolute';
+      clonedElement.style.top = '0';
+      clonedElement.style.left = '0';
+      clonedElement.style.zIndex = '-1';
+      element.appendChild(clonedElement);
+    }
+
+    // Append the cloned element to the parent element
+    this.setTextStrokeEffect(thickness, 0.0916, color, clonedElement);
+  }
+
+  setEchoEffect(option: MoveableTextShadow) {
+    const element = this.getElement();
+    if (!element) return false;
+    const styles = window.getComputedStyle(element);
+    const matches = styles.fontSize?.match(/^(\d+(\.\d+)?)px/);
+    const MAX_SHADOW = parseFloat(matches?.[1] ?? '0') * 0.166;
+    const { offset = 50, direction = -45, color = styles.color } = option;
+
+    const offsetVal = (offset / 100) * MAX_SHADOW;
+    const hShadow = (
+      -offsetVal * Math.sin((direction * Math.PI) / 180)
+    ).toFixed(4);
+    const vShadow = (offsetVal * Math.cos((direction * Math.PI) / 180)).toFixed(
+      4,
+    );
+    const shadow = `${hexToRgba(
+      color,
+      0.5,
+    )} ${hShadow}px ${vShadow}px 0px, ${hexToRgba(color, 0.3)} ${
+      +hShadow * 2
+    }px ${+vShadow * 2}px 0px`;
     element.style.textShadow = shadow;
   }
 }

@@ -1,18 +1,20 @@
-import { MoveableTextShadow } from '@/app/factories/MoveableText';
+import { TextSpliceEffectOption } from '@/app/factories/MoveableText';
 import { useActiveMoveableTextObject } from '@/app/hooks/useActiveMoveableObject';
 import { Button, Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 
-interface ShadowPropertyProps {
-  shadow?: MoveableTextShadow;
-}
-type TextShadowOptions =
-  | 'offset'
-  | 'direction'
-  | 'blur'
-  | 'transparency'
-  | 'color';
+interface SpliceEffectPropertyProps {}
+type TextShadowOptions = 'offset' | 'direction' | 'thickness' | 'color';
 const SHADOW_OPTIONS = [
+  {
+    target: 'thickness',
+    name: 'Thickness',
+    type: 'number',
+    step: 1,
+    default: 50,
+    minValue: 1,
+    maxValue: 100,
+  },
   {
     target: 'offset',
     name: 'Offset',
@@ -32,40 +34,27 @@ const SHADOW_OPTIONS = [
     maxValue: 180,
   },
   {
-    target: 'blur',
-    name: 'Shadow blur',
-    type: 'number',
-    step: 1,
-    default: 0,
-    minValue: 0,
-    maxValue: 100,
-  },
-  {
-    target: 'transparency',
-    name: 'Transparency',
-    type: 'number',
-    default: 40,
-    step: 1,
-    minValue: 0,
-    maxValue: 100,
-  },
-  {
     target: 'color',
     name: 'Shadow color',
     type: 'color',
     value: '#000000',
   },
 ];
-export const ShadowEffectOptions: FC<ShadowPropertyProps> = ({ shadow }) => {
+
+const DEFAULT_VALUE = {
+  color: '#808080',
+  offset: 50,
+  direction: -45,
+  thickness: 50,
+};
+export const SpliceEffect: FC<SpliceEffectPropertyProps> = () => {
   const activeText = useActiveMoveableTextObject();
-  const [textShadow, setTextShadow] = useState<MoveableTextShadow | undefined>(
-    shadow,
-  );
+  const [spliceEffect, setSpliceEffect] = useState<
+    TextSpliceEffectOption | undefined
+  >(activeText?.spliceEffect || DEFAULT_VALUE);
   useEffect(() => {
-    if (textShadow) {
-      activeText?.setTextShadow(textShadow);
-    }
-  }, [textShadow]);
+    activeText?.setSpliceEffect(activeText?.spliceEffect || DEFAULT_VALUE);
+  }, []);
   return (
     <>
       {SHADOW_OPTIONS.map(option => {
@@ -79,7 +68,7 @@ export const ShadowEffectOptions: FC<ShadowPropertyProps> = ({ shadow }) => {
                 <p>Color</p>
                 <Button
                   className={`w-[32px] h-[32px] min-w-[32px] rounded-[4px]`}
-                  style={{ backgroundColor: textShadow?.color as string }}
+                  style={{ backgroundColor: spliceEffect?.color as string }}
                 ></Button>
               </div>
             );
@@ -109,31 +98,35 @@ export const ShadowEffectOptions: FC<ShadowPropertyProps> = ({ shadow }) => {
                         type="text"
                         aria-label="Temperature value"
                         value={
-                          textShadow &&
-                          textShadow[option.target as TextShadowOptions]
+                          spliceEffect &&
+                          spliceEffect[option.target as TextShadowOptions]
                         }
                         onChange={e => {
                           const v = +e.target.value;
                           if (isNaN(v)) return;
-                          setTextShadow({
-                            ...textShadow,
+                          const value = {
+                            ...spliceEffect,
                             [option.target]: v,
-                          });
+                          };
+                          setSpliceEffect(value);
+                          activeText?.setSpliceEffect(value);
                         }}
                       />
                     </Tooltip>
                   </output>
                 )}
                 value={
-                  textShadow &&
-                  (textShadow[option.target as TextShadowOptions] as number)
+                  spliceEffect &&
+                  (spliceEffect[option.target as TextShadowOptions] as number)
                 }
                 onChange={value => {
                   if (typeof value === 'number') {
-                    setTextShadow({
-                      ...textShadow,
+                    const val = {
+                      ...spliceEffect,
                       [option.target]: value,
-                    });
+                    };
+                    setSpliceEffect(val);
+                    activeText?.setSpliceEffect(val);
                   }
                 }}
               />

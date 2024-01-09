@@ -1,23 +1,22 @@
 import { Button } from '@/app/atoms/Button';
-import {
-  MoveableTextObject,
-  MoveableTextShadow,
-  MoveableTextStyleEffect,
-} from '@/app/factories/MoveableText';
+import { MoveableTextStyleEffect } from '@/app/factories/MoveableText';
 import { useUpdateActiveMoveableObjectTextStyleEffectCommand } from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
 import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
 import { Image } from '@nextui-org/react';
 import clsx from 'clsx';
-import { FC, useEffect, useState } from 'react';
-import { ShadowEffectOptions } from './ShadowEffectOption';
-import { LiftEffectOptions } from './LiftEffectOption';
+import { FC, useState } from 'react';
+import { ShadowEffect } from './ShadowEffect';
+import { LiftEffect } from './LiftEffect';
+import { HollowEffect } from './HollowEffect';
+import { SpliceEffect } from './SpliceEffect';
+import { OutlineEffect } from './OutlineEffect';
+import { EchoEffect } from './EchoEffect';
 
 const TEXT_EFFECTS_STYLES: {
   id: MoveableTextStyleEffect;
   name: string;
   imgUrl: string;
-  options?: FC;
-  effectFn?: Function;
+  effectComponent?: FC;
 }[] = [
   {
     id: 'none',
@@ -28,64 +27,37 @@ const TEXT_EFFECTS_STYLES: {
     id: 'shadow',
     name: 'Shadow',
     imgUrl: '/text-effects/styles/shadow.webp',
-    options: ShadowEffectOptions,
-    effectFn: (
-      activeText: MoveableTextObject,
-      {
-        textShadow,
-        setTextShadow,
-      }: { textShadow?: MoveableTextShadow; setTextShadow: Function },
-    ) => {
-      const el = activeText?.getElement();
-      if (!el) return;
-      const val = textShadow
-        ? textShadow
-        : {
-            color: '#000',
-            offset: 50,
-            direction: 45,
-            blur: 0,
-            transparency: 40,
-          };
-      setTextShadow(val);
-      activeText?.setTextShadow(val);
-    },
+    effectComponent: ShadowEffect,
   },
   {
     id: 'lift',
     name: 'Lift',
     imgUrl: '/text-effects/styles/lift.webp',
-    options: LiftEffectOptions,
-    effectFn: (
-      activeText: MoveableTextObject,
-      {
-        textIntensity,
-        setTextIntensity,
-      }: { textIntensity?: number; setTextIntensity: Function },
-    ) => {
-      const intensity = textIntensity ?? 50;
-      setTextIntensity(intensity);
-    },
+    effectComponent: LiftEffect,
   },
   {
     id: 'hollow',
     name: 'Hollow',
     imgUrl: '/text-effects/styles/hollow.webp',
+    effectComponent: HollowEffect,
   },
   {
     id: 'emboss',
     name: 'Splice',
     imgUrl: '/text-effects/styles/splice.webp',
+    effectComponent: SpliceEffect,
   },
   {
     id: 'outline',
     name: 'Outline',
     imgUrl: '/text-effects/styles/outline.webp',
+    effectComponent: OutlineEffect,
   },
   {
     id: 'echo',
     name: 'Echo',
     imgUrl: '/text-effects/styles/echo.webp',
+    effectComponent: EchoEffect,
   },
   {
     id: 'glitch',
@@ -111,16 +83,16 @@ export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
   const [effectStyle, setEffectStyle] = useState<MoveableTextStyleEffect>(
     activeText?.getTextStyleEffect() || 'none',
   );
-  const [textShadow, setTextShadow] = useState<MoveableTextShadow | undefined>(
-    activeText?.getTextShadow(),
-  );
-  const [textIntensity, setTextIntensity] = useState();
+
+  const renderEffectComponent = () => {
+    const EffectOptions = TEXT_EFFECTS_STYLES.find(
+      style => style.id === effectStyle,
+    )?.effectComponent;
+    if (!EffectOptions) return <></>;
+    return <EffectOptions />;
+  };
+
   const updateActiveMoveableObjectTextStyleEffect = useUpdateActiveMoveableObjectTextStyleEffectCommand();
-  useEffect(() => {
-    if (textIntensity) {
-      activeText?.setEffectLift(textIntensity);
-    }
-  }, [textIntensity]);
   return (
     <div className="w-full h-full overflow-auto">
       <div className="text-center mb-3">
@@ -133,17 +105,9 @@ export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
             <div
               className="group flex flex-col flex-1 gap-1 items-center w-[60px] cursor-pointer"
               onClick={() => {
-                updateActiveMoveableObjectTextStyleEffect(style.id, () => {
-                  setEffectStyle(style.id);
-                  if (style.effectFn) {
-                    style.effectFn(activeText, {
-                      textShadow,
-                      setTextShadow,
-                      textIntensity,
-                      setTextIntensity,
-                    });
-                  }
-                });
+                updateActiveMoveableObjectTextStyleEffect(style.id, () =>
+                  setEffectStyle(style.id),
+                );
               }}
             >
               <Image
@@ -164,14 +128,9 @@ export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
           </div>
         ))}
       </div>
-      {TEXT_EFFECTS_STYLES.map(style => {
-        if (style.id !== effectStyle || !style.options) return null;
-        return (
-          <div key={style.id} className="effect-options font-light text-[14px]">
-            <style.options shadow={textShadow} insensity={textIntensity} />
-          </div>
-        );
-      })}
+      <div className="effect-options font-light text-[14px]">
+        {renderEffectComponent()}
+      </div>
     </div>
   );
 };
