@@ -4,6 +4,7 @@ import { useActivePage } from '../store/active-page';
 import { GradientStop } from '../utilities/color.type';
 import { parseTranslateString } from '../utilities/utils';
 import { usePageObjectsById } from './usePageObjects';
+import { isText } from '../utilities/moveable';
 
 export const useActiveMoveableTextObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();

@@ -67,10 +67,7 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
             className="bg-white relative"
           >
             {pageObjects.map(pageObject => (
-              <MoveableObjectElement
-                object={pageObject}
-                key={pageObject.id}
-              ></MoveableObjectElement>
+              <MoveableObjectElement object={pageObject} key={pageObject.id} />
             ))}
 
             <MovableLineController />

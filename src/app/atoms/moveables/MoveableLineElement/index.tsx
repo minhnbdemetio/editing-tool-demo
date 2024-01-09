@@ -1,4 +1,4 @@
-import { FC, RefObject } from 'react';
+import { FC } from 'react';
 import { MoveableLineObject } from '@/app/factories/MoveableLine';
 import './style.scss';
 

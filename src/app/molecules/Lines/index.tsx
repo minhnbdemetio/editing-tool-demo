@@ -27,21 +27,20 @@ import {
 } from '@/app/utilities/line';
 
 import { useExecuteCommand } from '@/app/hooks/editor-commands/useCommand';
-import { useCurrentPageObjects } from '@/app/hooks/usePageObjects';
+import { useAddObjectToActivePage } from '@/app/hooks/usePageObjects';
 import { MoveableLineObject } from '@/app/factories/MoveableLine';
 
 interface LinesProps {}
 
 export const Lines: React.FC<LinesProps> = () => {
   const canvas = useActivePageCanvas();
-  const [objects, setObjects] = useCurrentPageObjects();
+  const addObjectToActivePage = useAddObjectToActivePage();
 
   const handleClick = useCallback(
     (type: LineType) => {
       switch (type) {
         case 'solid': {
-          const line = new MoveableLineObject();
-          setObjects([...objects, line]);
+          addObjectToActivePage(new MoveableLineObject());
 
           return;
         }
@@ -231,7 +230,7 @@ export const Lines: React.FC<LinesProps> = () => {
         }
       }
     },
-    [canvas],
+    [canvas, addObjectToActivePage],
   );
 
   const handleClickCommand = useExecuteCommand(handleClick);

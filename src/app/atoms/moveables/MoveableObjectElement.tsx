@@ -12,7 +12,6 @@ import {
   isLine,
   isNormalText,
   isSubheading,
-  isText,
 } from '@/app/utilities/moveable';
 import { MoveableSubheadingTextElement } from './text/MoveableSubheadingTextElement';
 import { MoveableBodyTextElement } from './text/MoveableBodyTextElement';

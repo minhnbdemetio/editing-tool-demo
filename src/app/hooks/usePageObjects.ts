@@ -1,12 +1,12 @@
 import { useCallback, useMemo } from 'react';
-import { useDesignObjects } from '../store/design-objects';
+import { useDesign } from '../store/design-objects';
 import { MoveableObject } from '../factories/MoveableObject';
 import { useCurrentPage } from './useCurrentPage';
 import { useActivePage } from '../store/active-page';
 
 export const useCurrentPageObjects = () => {
   const { pageId } = useCurrentPage();
-  const { designObjects, setDesignObjects } = useDesignObjects();
+  const { designObjects, setDesignObjects } = useDesign();
 
   return useMemo(
     () =>
@@ -27,7 +27,7 @@ export const useAddObjectToCurrentPage = (object: MoveableObject) => {
 };
 
 export const usePageObjectsById = (pageId: string | null) => {
-  const { designObjects, setDesignObjects } = useDesignObjects();
+  const { designObjects, setDesignObjects } = useDesign();
 
   return useMemo(() => {
     if (!pageId) {

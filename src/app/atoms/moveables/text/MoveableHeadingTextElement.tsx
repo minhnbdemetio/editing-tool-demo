@@ -15,7 +15,7 @@ export const MoveableHeadingTextElement: FC<MoveableTextProps> = ({
   return (
     <div
       id={object.id}
-      className={clsx('w-fit hidden text-lg', className)}
+      className={clsx('absolute w-fit hidden text-lg', className)}
       style={{ writingMode: 'horizontal-tb' }}
       contentEditable
       suppressContentEditableWarning

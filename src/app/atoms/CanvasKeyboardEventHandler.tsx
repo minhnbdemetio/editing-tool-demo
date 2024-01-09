@@ -3,6 +3,7 @@ import {
   useDeleteActiveObject,
   useRotateActiveObject,
 } from '../hooks/useActiveObject';
+import { EDITOR_CONTAINER_ID } from '../organisms/Editor';
 
 export const CanvasKeyboardEventHandler = () => {
   const deleteEventHandler = useDeleteActiveObject();
@@ -11,7 +12,7 @@ export const CanvasKeyboardEventHandler = () => {
     useRotateActiveObject('counterclockwise');
 
   useEffect(() => {
-    const editorContainer = document.getElementById('editor-container');
+    const editorContainer = document.getElementById(EDITOR_CONTAINER_ID);
 
     if (editorContainer) {
       editorContainer.addEventListener('keydown', function (event) {
