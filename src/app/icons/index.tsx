@@ -49,6 +49,7 @@ import { FullLock } from './FullLock';
 import { Information } from './Information';
 import { Link } from './Link';
 import { Document } from './Document';
+import { ArrowToLeft } from './ArrowToLeft';
 
 export {
   Home,
@@ -102,4 +103,5 @@ export {
   Information,
   Link,
   Document,
+  ArrowToLeft,
 };

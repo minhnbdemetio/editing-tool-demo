@@ -37,7 +37,9 @@ export const TextProperties: FC = () => {
       <Button>Transparency</Button>
       <Button>Layers</Button>
       <Button>Position</Button>
-      <Button>Nudge</Button>
+      <Button onClick={() => setSelectedProperty(SelectedProperty.TextNudge)}>
+        Nudge
+      </Button>
       <Button onClick={() => setSelectedProperty(SelectedProperty.TextMore)}>
         More
       </Button>
