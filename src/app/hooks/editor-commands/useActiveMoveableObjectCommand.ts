@@ -15,10 +15,12 @@ import {
   useChangeTextFontStyle,
   useChangeTextTransform,
   useDeleteObject,
+  useUndoDeleteObject,
 } from '../useActiveMoveableObject';
 import { debounce } from 'lodash';
 import { DeleteCommand } from '@/app/factories/command/DeleteCommand';
 import { useExecuteCommand } from './useCommand';
+import { useMemo } from 'react';
 
 // TODO: Add logic excute command
 export const useToggleMoveableBoldTextCommand = () => {
@@ -95,11 +97,15 @@ export const useChangeMoveableTextTransformCommand = () => {
 export const useDeleteObjetCommand = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
   const deleteFunction = useDeleteObject();
+  const undoDeleteFunction = useUndoDeleteObject(activeMoveableObject);
 
   const deleteCommand = new DeleteCommand({
-    moveableObject: activeMoveableObject,
     actionFunction: deleteFunction,
-    undoFunction: () => {},
+    undoFunction: undoDeleteFunction,
   });
-  return useExecuteCommand(deleteCommand);
+  const executeCommand = useExecuteCommand(deleteCommand);
+  return useMemo(
+    () => (activeMoveableObject ? executeCommand : undefined),
+    [activeMoveableObject, executeCommand],
+  );
 };

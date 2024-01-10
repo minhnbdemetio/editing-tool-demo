@@ -6,6 +6,7 @@ import { parseTranslateString } from '../utilities/utils';
 import { useAddObjectToPage, usePageObjectsById } from './usePageObjects';
 import { isLine, isText } from '../utilities/moveable';
 import { MoveableObject } from '../factories/MoveableObject';
+import { useDesign } from '../store/design-objects';
 
 export const useActiveTextObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
@@ -46,6 +47,7 @@ export const useUpdateTextGradientColor = () => {
 export const useDeleteObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
   const { activePage } = useActivePage();
+  const { moveableTargets, setMoveableTargets } = useDesign();
   const [pageObjects, setPageObjects] = usePageObjectsById(activePage);
 
   return useCallback(() => {
@@ -54,19 +56,29 @@ export const useDeleteObject = () => {
     const filteredObjects = pageObjects.filter(
       object => object.id !== activeMoveableObject.id,
     );
+    const filteredTargets = moveableTargets.filter(
+      element => element.id !== activeMoveableObject.id,
+    );
+    setMoveableTargets(filteredTargets);
     activeMoveableObject?.destroy();
     setPageObjects(filteredObjects);
-
     return true;
-  }, [activeMoveableObject, pageObjects, setPageObjects]);
+  }, [
+    activeMoveableObject,
+    moveableTargets,
+    pageObjects,
+    setMoveableTargets,
+    setPageObjects,
+  ]);
 };
 
-export const useUndoDeleteObject = (deletedObject: MoveableObject) => {
-  const addObjectToPage = useAddObjectToPage(deletedObject.pageId || null);
+export const useUndoDeleteObject = (deletedObject: MoveableObject | null) => {
+  const addObjectToPage = useAddObjectToPage(deletedObject?.pageId || null);
 
   return useCallback(() => {
+    if (!deletedObject) return false;
     const recreatedObject = deletedObject.clone();
-    if (recreatedObject) addObjectToPage(recreatedObject);
+    addObjectToPage(recreatedObject);
 
     return true;
   }, [addObjectToPage, deletedObject]);

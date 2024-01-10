@@ -9,10 +9,11 @@ export abstract class MoveableObject {
   id: string;
   type?: ObjectType;
   htmlString?: string;
-  pageId?: string;
+  pageId: string | null;
   constructor(id?: string, htmlString?: string) {
     this.id = id || uuidv4();
     this.htmlString = htmlString;
+    this.pageId = null;
   }
 
   setId(id: string) {
@@ -23,6 +24,9 @@ export abstract class MoveableObject {
   }
   setType(type: ObjectType) {
     this.type = type;
+  }
+  setPageId(pageId: string | null) {
+    this.pageId = pageId;
   }
   copy() {}
   abstract clone(): MoveableObject;
@@ -69,8 +73,6 @@ export abstract class MoveableObject {
     return '';
   }
   destroy() {
-    // if (!this.moveable) return false;
-    // this.moveable.destroy();
     return true;
   }
   setupMoveable() {

@@ -8,7 +8,6 @@ export class MoveableTextObject extends MoveableObject {
   constructor(id?: string, htmlString?: string) {
     super(id, htmlString);
     this.type = 'text';
-    // this.transformOrigin = 'bottom';
     this.variant = 'normal';
   }
 
