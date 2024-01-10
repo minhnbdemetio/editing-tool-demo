@@ -487,6 +487,7 @@ export const useUpdateActiveMoveableObjectTextStyleEffect = () => {
     el.style.caretColor = 'unset';
     el.style.webkitTextStroke = 'unset';
     el.style.webkitTextFillColor = 'unset';
+    el.style.filter = 'unset';
     const outlineElement = document.getElementById(`outline-${activeText?.id}`);
     if (outlineElement) {
       el.removeChild(outlineElement);

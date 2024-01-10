@@ -11,6 +11,7 @@ export type MoveableTextShadow = {
   direction?: number;
   blur?: number;
   transparency?: number;
+  thickness?: number;
 };
 
 export type TextSpliceEffectOption = {
@@ -46,6 +47,9 @@ export class MoveableTextObject extends MoveableObject {
   spliceEffect?: TextSpliceEffectOption;
   outlineEffect?: TextOutlineEffectOption;
   echoEffect?: MoveableTextShadow;
+  glitchEffect?: MoveableTextShadow;
+  neonEffect?: MoveableTextShadow;
+  backgroundEffect?: MoveableTextShadow;
   constructor(id?: string, htmlString?: string) {
     super(id, htmlString);
     this.type = 'text';
@@ -204,6 +208,7 @@ export class MoveableTextObject extends MoveableObject {
     );
     textContainer?.setAttribute('contenteditable', !this.toggleLock + '');
   }
+
   setLetterSpacing(letterSpacing: number | null) {
     const element = this.getElement();
     if (!element) return false;
@@ -363,5 +368,77 @@ export class MoveableTextObject extends MoveableObject {
       +hShadow * 2
     }px ${+vShadow * 2}px 0px`;
     element.style.textShadow = shadow;
+  }
+
+  setGlitchEffect(option: MoveableTextShadow) {
+    const element = this.getElement();
+    if (!element) return false;
+    const styles = window.getComputedStyle(element);
+    const isBlueRedColor = option.color === 'blue-red';
+    const firstColor = 'rgb(0, 255, 255)';
+    const secondColor = isBlueRedColor ? 'rgb(255, 0, 255)' : 'rgb(255, 0, 0)';
+    const matches = styles.fontSize?.match(/^(\d+(\.\d+)?)px/);
+    const MAX_SHADOW = parseFloat(matches?.[1] ?? '0') * 0.0833;
+    const { offset = 50, direction = -45 } = option;
+    const offsetVal = (offset / 100) * MAX_SHADOW;
+    const hShadow = (
+      -offsetVal * Math.sin((direction * Math.PI) / 180)
+    ).toFixed(4);
+    const vShadow = (offsetVal * Math.cos((direction * Math.PI) / 180)).toFixed(
+      4,
+    );
+    const shadow = `${firstColor} ${hShadow}px ${vShadow}px 0px, ${secondColor} ${
+      +hShadow * -1
+    }px ${+vShadow * -1}px 0px`;
+
+    element.style.textShadow = shadow;
+    this.glitchEffect = option;
+  }
+
+  setNeonEffect(option: MoveableTextShadow) {
+    const element = this.getElement();
+    if (!element) return false;
+    const styles = window.getComputedStyle(element);
+    const color = styles.color;
+    const matches = styles.fontSize?.match(/^(\d+(\.\d+)?)px/);
+    const MAX_THICKNESS = parseFloat(matches?.[1] ?? '0') * 0.0166;
+    const { thickness = 1 } = option;
+    const baseVal = (0.061 * thickness + 1.6) * MAX_THICKNESS;
+    const filter = `drop-shadow(0px 0px ${baseVal}px ${hexToRgba(
+      color,
+      0.95,
+    )}) drop-shadow(0px 0px ${baseVal * 5}px ${hexToRgba(
+      color,
+      0.75,
+    )}) drop-shadow(0px 0px ${baseVal * 5 * 3}px ${hexToRgba(color, 0.44)})`;
+    element.style.filter = filter;
+    element.style.color = hexToRgba(color, (thickness * 0.55 + 34.45) / 100);
+  }
+
+  setBackgroundEffect(option: MoveableTextShadow) {
+    const element = this.getElement();
+    if (!element) return false;
+    const bgEffectId = `bg-effect-${this.id}`;
+    let canvas = document.getElementById(bgEffectId) as HTMLCanvasElement;
+    if (!canvas) {
+      canvas = document.createElement('canvas') as HTMLCanvasElement;
+      canvas.id = bgEffectId;
+      canvas.style.position = 'absolute';
+      canvas.style.top = '0';
+      canvas.style.left = '0';
+      canvas.style.zIndex = '-1';
+      element.appendChild(canvas);
+    }
+    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+    ctx.save();
+    ctx.beginPath();
+    ctx.fillStyle = option.color ?? '#000';
+    ctx.rect(0, 0, canvas.width, canvas.height);
+    ctx.fill();
+    ctx.globalCompositeOperation = 'xor';
+    ctx.beginPath();
+    ctx.fillText(element.textContent || '', 30, 200);
+    ctx.fill();
+    ctx.restore();
   }
 }

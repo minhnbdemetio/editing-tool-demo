@@ -68,6 +68,13 @@ export const getElementPalette = async (
 };
 
 export const hexToRgba = (hex: string, transparency: number = 1) => {
+  if (hex && hex.includes('rgba'))
+    return hex.replace(
+      /rgba\((\d+), (\d+), (\d+), (\d+(\.\d+)?)\)/,
+      `rgba($1, $2, $3, ${transparency})`,
+    );
+  if (hex && hex.includes('rgb'))
+    return hex.replace('rgb', 'rgba').replace(')', `, ${transparency})`);
   let r: string | number, g: string | number, b: string | number;
   if (hex.length === 4) {
     r = hex.slice(1, 2);

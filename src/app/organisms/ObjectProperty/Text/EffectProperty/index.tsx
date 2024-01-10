@@ -11,6 +11,9 @@ import { HollowEffect } from './HollowEffect';
 import { SpliceEffect } from './SpliceEffect';
 import { OutlineEffect } from './OutlineEffect';
 import { EchoEffect } from './EchoEffect';
+import { GlitchEffect } from './GlitchEffect';
+import { NeonEffect } from './NeonEffect';
+import { BackGroundEffect } from './BackgroundEffect';
 
 const TEXT_EFFECTS_STYLES: {
   id: MoveableTextStyleEffect;
@@ -63,16 +66,19 @@ const TEXT_EFFECTS_STYLES: {
     id: 'glitch',
     name: 'Glitch',
     imgUrl: '/text-effects/styles/glitch.webp',
+    effectComponent: GlitchEffect,
   },
   {
     id: 'neon',
     name: 'Neon',
     imgUrl: '/text-effects/styles/neon.webp',
+    effectComponent: NeonEffect,
   },
   {
     id: 'background',
     name: 'Background',
     imgUrl: '/text-effects/styles/background.webp',
+    effectComponent: BackGroundEffect,
   },
 ];
 
@@ -99,7 +105,7 @@ export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
         <span>Effects</span>
       </div>
       <p className="mb-[12px]">Style</p>
-      <div className="flex gap-2 items-center overflow-auto">
+      <div className="flex gap-2 items-center flex-wrap">
         {TEXT_EFFECTS_STYLES.map(style => (
           <div className="effect-styles" key={style.id}>
             <div
