@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useRef } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import { Button } from '../atoms/Button';
 import { EditablePage } from './EditablePage';
 import { useEditablePages } from '../store/editable-pages';
@@ -17,7 +17,8 @@ export const EDITOR_CONTAINER_ID = 'editor-container';
 
 export const Editor: FC = () => {
   const { pages, addBlankPage } = useEditablePages();
-  const { moveableTargets, setMoveableTargets, getAllObjects } = useDesign();
+  const { moveableTargets, setMoveableTargets, getAllObjects, setMovable } =
+    useDesign();
   const { setActiveMoveableObject } = useActiveMoveableObject();
   const moveableRef = useRef<Moveable | null>(null);
   const handleAddPage = () => {
@@ -34,12 +35,9 @@ export const Editor: FC = () => {
   }));
 
   // TODO: Set global moveable ref if needed
-  // useEffect(() => {
-  //   setMovable(moveableRef.current);
-  // }, [setMovable, moveableTargets]);
-
-  // TODO: Try implementing with raw js
-  // useEffect(() => {
+  useEffect(() => {
+    setMovable(moveableRef.current);
+  }, [setMovable, moveableTargets]);
   //   const initialMoveable = new Moveable(
   //     document.getElementById(EDITOR_CONTAINER_ID)!,
   //     {
@@ -120,7 +118,7 @@ export const Editor: FC = () => {
         }}
         onChangeTargets={e => {
           // TODO: Implement multiple active object when using group
-          if (e.targets[0]?.id) {
+          if (e.targets.length) {
             findAndSetActiveObject(e.targets[0].id);
           } else {
             setActiveMoveableObject(null);

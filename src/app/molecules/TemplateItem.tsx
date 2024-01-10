@@ -2,7 +2,6 @@
 
 import { FC, HTMLAttributes } from 'react';
 import { Template } from '@/app/services/template/template';
-import { useActivePageCanvas } from '../hooks/useActivePage';
 import { useDrag } from 'react-dnd';
 
 interface TemplateItemProps extends HTMLAttributes<HTMLImageElement> {
@@ -10,13 +9,7 @@ interface TemplateItemProps extends HTMLAttributes<HTMLImageElement> {
 }
 
 export const TemplateItem: FC<TemplateItemProps> = ({ template, ...rest }) => {
-  const activePageCanvas = useActivePageCanvas();
-
-  const loadTemplate = () => {
-    activePageCanvas?.loadFromJSON(template.data, () =>
-      activePageCanvas.renderAll(),
-    );
-  };
+  const loadTemplate = () => {};
 
   const [{}, drag] = useDrag(
     () => ({
@@ -32,7 +25,7 @@ export const TemplateItem: FC<TemplateItemProps> = ({ template, ...rest }) => {
         isDragging: monitor.isDragging(),
       }),
     }),
-    [template, activePageCanvas],
+    [template],
   );
 
   return (

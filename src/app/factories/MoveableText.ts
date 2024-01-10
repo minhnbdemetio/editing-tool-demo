@@ -113,11 +113,9 @@ export class MoveableTextObject extends MoveableObject {
   changeTransformOrigin(
     transformOrigin?: CSSStyleDeclaration['transformOrigin'],
   ) {
-    // this.transformOrigin = transformOrigin;
-    // const element = this.getElement();
-    // if (!element || !this.moveable) return;
-    // element.style.transformOrigin = transformOrigin ?? 'bottom';
-    // this.moveable.transformOrigin = transformOrigin ?? 'bottom';
-    // this.moveable.updateRect();
+    //TODO: Not working yet
+    const element = this.getElement();
+    if (!element) return;
+    element.style.transformOrigin = transformOrigin ?? 'bottom';
   }
 }

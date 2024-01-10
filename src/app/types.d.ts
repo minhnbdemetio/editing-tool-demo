@@ -26,8 +26,3 @@ export declare type ColorFilterType = {
 };
 
 export declare type TemplateFilterType = PriceFilterType | ColorFilterType;
-
-export declare type CanvasData = {
-  version: string;
-  objects: Array<Object>;
-};

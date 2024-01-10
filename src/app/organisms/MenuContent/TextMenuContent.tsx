@@ -1,7 +1,6 @@
 import SearchInput from '@/app/molecules/SearchInput';
 import { FC, useCallback, useState } from 'react';
 import { Button } from '@nextui-org/react';
-import { useActivePageCanvas } from '@/app/hooks/useActivePage';
 import { useAddObjectToActivePage } from '@/app/hooks/usePageObjects';
 import { MoveableHeadingTextObject } from '@/app/factories/MoveableHeadingText';
 import { MoveableSubheadingTextObject } from '@/app/factories/MoveableSubheadingText';
@@ -29,7 +28,6 @@ export const TextMenuContent: FC = () => {
     [],
   );
 
-  const activePageCanvas = useActivePageCanvas();
   const addObjectToActivePage = useAddObjectToActivePage();
   const handleAddTextBox = () => {
     addObjectToActivePage(new MoveableTextObject());
