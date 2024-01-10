@@ -1,20 +1,24 @@
+import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
 import {
   useToggleMoveableBoldText,
-  useToggleMoveableLineThroughText,
-  useToggleMoveableUppercaseText,
-  useToggleMoveableUnderlineText,
-  useToggleMoveableItalicText,
-  useChangeMoveableTextAlign,
-  useToggleMoveableListTypeDiscText,
-  useToggleMoveableListTypeNumberText,
-  useChangeMoveableTextSpacing,
-  useChangeMoveableTextLineHeight,
-  useChangeMoveableTextTransformOrigin,
-  useChangeMoveableTextStyles,
-  useChangeMoveableTextFontStyle,
-  useChangeMoveableTextTransform,
+  useToggleLineThroughText,
+  useToggleUppercaseText,
+  useToggleUnderlineText,
+  useToggleItalicText,
+  useChangeTextAlign,
+  useToggleListTypeDiscText,
+  useToggleListTypeNumberText,
+  useChangeTextSpacing,
+  useChangeTextLineHeight,
+  useChangeTextTransformOrigin,
+  useChangeTextStyles,
+  useChangeTextFontStyle,
+  useChangeTextTransform,
+  useDeleteObject,
 } from '../useActiveMoveableObject';
 import { debounce } from 'lodash';
+import { DeleteCommand } from '@/app/factories/command/DeleteCommand';
+import { useExecuteCommand } from './useCommand';
 
 // TODO: Add logic excute command
 export const useToggleMoveableBoldTextCommand = () => {
@@ -23,67 +27,79 @@ export const useToggleMoveableBoldTextCommand = () => {
 };
 
 export const useToggleMoveableItalicTextCommand = () => {
-  const toggleItalicText = useToggleMoveableItalicText();
+  const toggleItalicText = useToggleItalicText();
   return toggleItalicText;
 };
 
 export const useToggleMoveableUnderlineTextCommand = () => {
-  const toggleUnderlineText = useToggleMoveableUnderlineText();
+  const toggleUnderlineText = useToggleUnderlineText();
   return toggleUnderlineText;
 };
 
 export const useToggleMoveableStrokeTextCommand = () => {
-  const toggleStrokeText = useToggleMoveableLineThroughText();
+  const toggleStrokeText = useToggleLineThroughText();
   return toggleStrokeText;
 };
 
 export const useToggleMoveableCapitalTextCommand = () => {
-  const toggleCapitalText = useToggleMoveableUppercaseText();
+  const toggleCapitalText = useToggleUppercaseText();
   return toggleCapitalText;
 };
 
 export const useChangeMoveableTextAligeCommand = () => {
-  const changeTextAlige = useChangeMoveableTextAlign();
+  const changeTextAlige = useChangeTextAlign();
   return changeTextAlige;
 };
 
 export const useToggleMoveableListTypeDiscTextCommand = () => {
-  const toggleListTypeDiscText = useToggleMoveableListTypeDiscText();
+  const toggleListTypeDiscText = useToggleListTypeDiscText();
   return toggleListTypeDiscText;
 };
 
 export const useToggleMoveableListTypeNumberTextCommand = () => {
-  const toggleListTypeNumberText = useToggleMoveableListTypeNumberText();
+  const toggleListTypeNumberText = useToggleListTypeNumberText();
   return toggleListTypeNumberText;
 };
 
 export const useChangeMoveableTextSpacingCommand = () => {
-  const changeLetterSpacing = useChangeMoveableTextSpacing();
+  const changeLetterSpacing = useChangeTextSpacing();
   // TODO: Using excute command
   return debounce(changeLetterSpacing, 100);
 };
 
 export const useChangeMoveableTextLineHeightCommand = () => {
-  const changeLineHeight = useChangeMoveableTextLineHeight();
+  const changeLineHeight = useChangeTextLineHeight();
   return debounce(changeLineHeight, 100);
 };
 
 export const useChangeMoveableTextTransformOriginCommand = () => {
-  const changeTextTransformOrigin = useChangeMoveableTextTransformOrigin();
+  const changeTextTransformOrigin = useChangeTextTransformOrigin();
   return changeTextTransformOrigin;
 };
 
 export const useChangeMoveableTextStylesCommand = () => {
-  const changeStyles = useChangeMoveableTextStyles();
+  const changeStyles = useChangeTextStyles();
   return changeStyles;
 };
 
 export const useChangeMoveableTextFontStyleCommand = () => {
-  const changeFontStyle = useChangeMoveableTextFontStyle();
+  const changeFontStyle = useChangeTextFontStyle();
   return changeFontStyle;
 };
 
 export const useChangeMoveableTextTransformCommand = () => {
-  const changeTransform = useChangeMoveableTextTransform();
+  const changeTransform = useChangeTextTransform();
   return debounce(changeTransform, 100);
+};
+
+export const useDeleteObjetCommand = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+  const deleteFunction = useDeleteObject();
+
+  const deleteCommand = new DeleteCommand({
+    moveableObject: activeMoveableObject,
+    actionFunction: deleteFunction,
+    undoFunction: () => {},
+  });
+  return useExecuteCommand(deleteCommand);
 };

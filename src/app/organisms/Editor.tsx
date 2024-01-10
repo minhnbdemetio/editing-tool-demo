@@ -11,6 +11,7 @@ import Selecto from 'react-selecto';
 import { useDesign } from '../store/design-objects';
 import { MOVEABLE_TARGET_CLASS } from '../constants/moveable';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
+import { useDeleteObjetCommand } from '../hooks/editor-commands/useActiveMoveableObjectCommand';
 
 export const SELECTO_ID = 'editor-selecto';
 export const EDITOR_CONTAINER_ID = 'editor-container';
@@ -71,11 +72,14 @@ export const Editor: FC = () => {
     setActiveMoveableObject(objectWithId);
   };
 
+  const deleteObjectCommand = useDeleteObjetCommand();
+
   return (
     <div ref={drop} id={EDITOR_CONTAINER_ID} className="bg-gray-200 p-10">
       <div className="text-right mb-3">
         <LinePreviewToggle />
       </div>
+      <Button onClick={deleteObjectCommand}>Delete active object </Button>
       <div className="flex flex-col gap-10 h-full">
         {Object.entries(pages).map(([pageId]) => (
           <div key={pageId}>

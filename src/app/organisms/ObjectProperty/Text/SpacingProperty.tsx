@@ -1,8 +1,8 @@
 import { Button } from '@/app/atoms/Button';
 import {
-  useChangeMoveableTextLineHeight,
-  useChangeMoveableTextSpacing,
-  useChangeMoveableTextTransformOrigin,
+  useChangeTextLineHeight,
+  useChangeTextSpacing,
+  useChangeTextTransformOrigin,
 } from '@/app/hooks/useActiveMoveableObject';
 import { AnchorBottom } from '@/app/icons/AnchorBottom';
 import { AnchorCenter } from '@/app/icons/AnchorCenter';
@@ -29,10 +29,10 @@ export const SpacingProperty: FC<SpacingPropertyProps> = ({}) => {
   );
   const { moveable } = useDesign();
 
-  const handleChangeLetterSpacing = useChangeMoveableTextSpacing();
-  const handleChangeLineHeight = useChangeMoveableTextLineHeight();
+  const handleChangeLetterSpacing = useChangeTextSpacing();
+  const handleChangeLineHeight = useChangeTextLineHeight();
   const handleChangeMoveableTextTransformOrigin =
-    useChangeMoveableTextTransformOrigin();
+    useChangeTextTransformOrigin();
   return (
     <div className="w-full h-full">
       <div className="text-center mb-3">

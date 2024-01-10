@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { findIdFromString } from '../utilities/dom';
 import { MOVEABLE_TARGET_CLASS } from '../constants/moveable';
+import { EDITOR_CONTAINER_ID } from '../organisms/Editor';
 
 export const MAX_FIND_ELEMENT_ATTEMPTS = 100;
 export type ObjectType = 'rectangle' | 'text' | 'line';
@@ -8,6 +9,7 @@ export abstract class MoveableObject {
   id: string;
   type?: ObjectType;
   htmlString?: string;
+  pageId?: string;
   constructor(id?: string, htmlString?: string) {
     this.id = id || uuidv4();
     this.htmlString = htmlString;
@@ -80,5 +82,8 @@ export abstract class MoveableObject {
     if (!element) return null;
     const cssProperties = window.getComputedStyle(element);
     return cssProperties[property];
+  }
+  getContainer() {
+    return document.getElementById(EDITOR_CONTAINER_ID);
   }
 }

@@ -1,8 +1,5 @@
 import { create } from 'zustand';
-
-export interface Command {
-  pageId: string | undefined;
-}
+import { Command } from '../factories/command/Command';
 
 interface CommandHistoryState {
   commandHistory: Command[];

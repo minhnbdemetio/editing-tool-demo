@@ -23,6 +23,7 @@ import { EditableTextField } from '../atoms/EditableTextField';
 
 import { SettingsPopover } from '../molecules/SettingsPopover';
 import { BackgroundSizePopover } from '../molecules/BackgroundSizePopover';
+import { useUndoCommand } from '../hooks/editor-commands/useCommand';
 
 export const Header: FC = () => {
   const [openModal, setOpenModal] = useState<
@@ -30,6 +31,8 @@ export const Header: FC = () => {
   >(null);
 
   const isMobile = useMediaQuery(s => s.device === 'mobile');
+
+  const undoCommand = useUndoCommand();
 
   return (
     <>
@@ -55,7 +58,10 @@ export const Header: FC = () => {
           </div>
 
           <div className="flex items-center">
-            <button className="p-[4px] h-[40px] w-[40px] flex justify-center items-center">
+            <button
+              onClick={undoCommand}
+              className="p-[4px] h-[40px] w-[40px] flex justify-center items-center"
+            >
               <ArrowUTurnLeft
                 className={clsx(
                   'w-[20px] h-[20px] text-icon-light-gray',

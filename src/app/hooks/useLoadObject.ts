@@ -19,6 +19,7 @@ export const useLoadMoveableObject = (object: MoveableObject) => {
       defaultElement?.classList.remove('hidden');
     }
     object.setupMoveable();
+    object.pageId = pageId;
     setObjectLoaded(true);
   }, [object, objectLoaded, pageId]);
 

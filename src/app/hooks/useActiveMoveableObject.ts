@@ -1,12 +1,13 @@
-import { CSSProperties } from 'react';
+import { CSSProperties, useCallback } from 'react';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { useActivePage } from '../store/active-page';
 import { GradientStop } from '../utilities/color.type';
 import { parseTranslateString } from '../utilities/utils';
-import { usePageObjectsById } from './usePageObjects';
+import { useAddObjectToPage, usePageObjectsById } from './usePageObjects';
 import { isLine, isText } from '../utilities/moveable';
+import { MoveableObject } from '../factories/MoveableObject';
 
-export const useActiveMoveableTextObject = () => {
+export const useActiveTextObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
   return isText(activeMoveableObject) ? activeMoveableObject : null;
@@ -18,8 +19,8 @@ export const useActiveMoveableLineObject = () => {
   return isLine(activeMoveableObject) ? activeMoveableObject : null;
 };
 
-export const useUpdateActiveMoveableObjectFontSize = () => {
-  const activeText = useActiveMoveableTextObject();
+export const useUpdateFontSize = () => {
+  const activeText = useActiveTextObject();
 
   return (fontSize: number) => {
     activeText?.setFontSize(fontSize);
@@ -27,7 +28,7 @@ export const useUpdateActiveMoveableObjectFontSize = () => {
 };
 
 export const useUpdateTextColor = () => {
-  const activeText = useActiveMoveableTextObject();
+  const activeText = useActiveTextObject();
 
   return (color: string) => {
     activeText?.setTextColor(color);
@@ -35,18 +36,19 @@ export const useUpdateTextColor = () => {
 };
 
 export const useUpdateTextGradientColor = () => {
-  const activeText = useActiveMoveableTextObject();
+  const activeText = useActiveTextObject();
 
   return (gradientStops: GradientStop[]) => {
     activeText?.setTextGradient(gradientStops);
   };
 };
 
-export const useDeleteActiveMoveableObject = () => {
+export const useDeleteObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
   const { activePage } = useActivePage();
   const [pageObjects, setPageObjects] = usePageObjectsById(activePage);
-  return () => {
+
+  return useCallback(() => {
     if (!pageObjects || !setPageObjects || !activeMoveableObject) return false;
 
     const filteredObjects = pageObjects.filter(
@@ -56,10 +58,21 @@ export const useDeleteActiveMoveableObject = () => {
     setPageObjects(filteredObjects);
 
     return true;
-  };
+  }, [activeMoveableObject, pageObjects, setPageObjects]);
 };
 
-export const useCloneActiveMoveableObject = () => {
+export const useUndoDeleteObject = (deletedObject: MoveableObject) => {
+  const addObjectToPage = useAddObjectToPage(deletedObject.pageId || null);
+
+  return useCallback(() => {
+    const recreatedObject = deletedObject.clone();
+    if (recreatedObject) addObjectToPage(recreatedObject);
+
+    return true;
+  }, [addObjectToPage, deletedObject]);
+};
+
+export const useCloneObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
   const { activePage } = useActivePage();
   const [pageObjects, setPageObjects] = usePageObjectsById(activePage);
@@ -75,7 +88,7 @@ export const useCloneActiveMoveableObject = () => {
 };
 
 export const useToggleMoveableBoldText = () => {
-  const activeText = useActiveMoveableTextObject();
+  const activeText = useActiveTextObject();
   return (callback?: Function) => {
     const element = activeText?.getElement();
     if (!element) return false;
@@ -91,8 +104,8 @@ export const useToggleMoveableBoldText = () => {
   };
 };
 
-export const useToggleMoveableItalicText = () => {
-  const activeText = useActiveMoveableTextObject();
+export const useToggleItalicText = () => {
+  const activeText = useActiveTextObject();
 
   return (callback?: Function) => {
     const element = activeText?.getElement();
@@ -108,8 +121,8 @@ export const useToggleMoveableItalicText = () => {
   };
 };
 
-export const useToggleMoveableUnderlineText = () => {
-  const activeText = useActiveMoveableTextObject();
+export const useToggleUnderlineText = () => {
+  const activeText = useActiveTextObject();
 
   const toggleUnderlineText = (callback?: Function) => {
     const element = activeText?.getElement();
@@ -133,8 +146,8 @@ export const useToggleMoveableUnderlineText = () => {
   return toggleUnderlineText;
 };
 
-export const useToggleMoveableLineThroughText = () => {
-  const activeText = useActiveMoveableTextObject();
+export const useToggleLineThroughText = () => {
+  const activeText = useActiveTextObject();
 
   const toggleLineThroughText = (callback?: Function) => {
     const element = activeText?.getElement();
@@ -158,8 +171,8 @@ export const useToggleMoveableLineThroughText = () => {
   return toggleLineThroughText;
 };
 
-export const useToggleMoveableUppercaseText = () => {
-  const activeText = useActiveMoveableTextObject();
+export const useToggleUppercaseText = () => {
+  const activeText = useActiveTextObject();
 
   const toggleUppercaseText = (callback?: Function) => {
     const element = activeText?.getElement();
@@ -179,8 +192,8 @@ export const useToggleMoveableUppercaseText = () => {
   return toggleUppercaseText;
 };
 
-export const useChangeMoveableTextAlign = () => {
-  const activeText = useActiveMoveableTextObject();
+export const useChangeTextAlign = () => {
+  const activeText = useActiveTextObject();
 
   const changeTextAlign = (textAlign: string, callback?: Function) => {
     const element = activeText?.getElement();
@@ -193,8 +206,8 @@ export const useChangeMoveableTextAlign = () => {
   return changeTextAlign;
 };
 
-export const useToggleMoveableListTypeDiscText = () => {
-  const activeText = useActiveMoveableTextObject();
+export const useToggleListTypeDiscText = () => {
+  const activeText = useActiveTextObject();
 
   const toggleListTypeDiscText = (callback?: Function) => {
     const listElement = activeText?.getElement()?.querySelector('ul');
@@ -214,8 +227,8 @@ export const useToggleMoveableListTypeDiscText = () => {
   return toggleListTypeDiscText;
 };
 
-export const useToggleMoveableListTypeNumberText = () => {
-  const activeText = useActiveMoveableTextObject();
+export const useToggleListTypeNumberText = () => {
+  const activeText = useActiveTextObject();
 
   const toggleListTypeText = (callback?: Function) => {
     const listElement = activeText?.getElement()?.querySelector('ul');
@@ -236,8 +249,8 @@ export const useToggleMoveableListTypeNumberText = () => {
   return toggleListTypeText;
 };
 
-export const useChangeMoveableTextSpacing = () => {
-  const activeText = useActiveMoveableTextObject();
+export const useChangeTextSpacing = () => {
+  const activeText = useActiveTextObject();
 
   const handleChangeLetterSpacing = (fontSize: number, callback: Function) => {
     const element = activeText?.getElement();
@@ -250,8 +263,8 @@ export const useChangeMoveableTextSpacing = () => {
   return handleChangeLetterSpacing;
 };
 
-export const useChangeMoveableTextLineHeight = () => {
-  const activeText = useActiveMoveableTextObject();
+export const useChangeTextLineHeight = () => {
+  const activeText = useActiveTextObject();
 
   const handleChangeLineHeight = (lineHeight: number, callback: Function) => {
     const element = activeText?.getElement();
@@ -264,8 +277,8 @@ export const useChangeMoveableTextLineHeight = () => {
   return handleChangeLineHeight;
 };
 
-export const useChangeMoveableTextTransformOrigin = () => {
-  const activeText = useActiveMoveableTextObject();
+export const useChangeTextTransformOrigin = () => {
+  const activeText = useActiveTextObject();
 
   const handleChangeTransformOrigin = (
     transformOrigin: CSSStyleDeclaration['transformOrigin'],
@@ -285,8 +298,8 @@ type EditableCSSProperty = keyof Omit<
   | keyof { [Symbol.iterator]: () => IterableIterator<string> }
   | keyof { [property: string]: () => string }
 >;
-export const useChangeMoveableTextStyles = () => {
-  const activeText = useActiveMoveableTextObject();
+export const useChangeTextStyles = () => {
+  const activeText = useActiveTextObject();
 
   const handleChangeStyles = (
     styles: CSSStyleDeclaration,
@@ -306,8 +319,8 @@ export const useChangeMoveableTextStyles = () => {
   return handleChangeStyles;
 };
 
-export const useChangeMoveableTextFontStyle = () => {
-  const activeText = useActiveMoveableTextObject();
+export const useChangeTextFontStyle = () => {
+  const activeText = useActiveTextObject();
 
   const handleChangeFont = (
     fontFamily: string,
@@ -327,8 +340,8 @@ export const useChangeMoveableTextFontStyle = () => {
   return handleChangeFont;
 };
 
-export const useChangeMoveableTextTransform = () => {
-  const activeText = useActiveMoveableTextObject();
+export const useChangeTextTransform = () => {
+  const activeText = useActiveTextObject();
 
   const handleChangeTransform = (
     transformX: number,
