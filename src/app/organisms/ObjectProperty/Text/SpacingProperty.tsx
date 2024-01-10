@@ -1,12 +1,13 @@
 import { Button } from '@/app/atoms/Button';
 import {
-  useChangeMoveableTextLineHeightCommand,
-  useChangeMoveableTextSpacingCommand,
-  useChangeMoveableTextTransformOriginCommand,
-} from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
+  useChangeMoveableTextLineHeight,
+  useChangeMoveableTextSpacing,
+  useChangeMoveableTextTransformOrigin,
+} from '@/app/hooks/useActiveMoveableObject';
 import { AnchorBottom } from '@/app/icons/AnchorBottom';
 import { AnchorCenter } from '@/app/icons/AnchorCenter';
 import { AnchorTop } from '@/app/icons/AnchorTop';
+import { useDesign } from '@/app/store/design-objects';
 import { Slider, Tooltip } from '@nextui-org/react';
 import { FC, useState } from 'react';
 
@@ -26,9 +27,12 @@ export const SpacingProperty: FC<SpacingPropertyProps> = ({}) => {
   const [lineHeight, setLineHeight] = useState<number | undefined>(
     LINE_HEIGHT_DEFAULT,
   );
-  const handleChangeLetterSpacing = useChangeMoveableTextSpacingCommand();
-  const handleChangeLineHeight = useChangeMoveableTextLineHeightCommand();
-  const handleChangeMoveableTextTransformOrigin = useChangeMoveableTextTransformOriginCommand();
+  const { moveable } = useDesign();
+
+  const handleChangeLetterSpacing = useChangeMoveableTextSpacing();
+  const handleChangeLineHeight = useChangeMoveableTextLineHeight();
+  const handleChangeMoveableTextTransformOrigin =
+    useChangeMoveableTextTransformOrigin();
   return (
     <div className="w-full h-full">
       <div className="text-center mb-3">
@@ -118,7 +122,9 @@ export const SpacingProperty: FC<SpacingPropertyProps> = ({}) => {
         <div className="flex gap-2 items-center">
           <Button
             onClick={() =>
-              handleChangeMoveableTextTransformOrigin('center bottom')
+              handleChangeMoveableTextTransformOrigin('center bottom', () => {
+                moveable?.updateRect();
+              })
             }
             isIconOnly
           >
@@ -126,7 +132,9 @@ export const SpacingProperty: FC<SpacingPropertyProps> = ({}) => {
           </Button>
           <Button
             onClick={() =>
-              handleChangeMoveableTextTransformOrigin('center center')
+              handleChangeMoveableTextTransformOrigin('center center', () => {
+                moveable?.updateRect();
+              })
             }
             isIconOnly
           >
@@ -134,7 +142,9 @@ export const SpacingProperty: FC<SpacingPropertyProps> = ({}) => {
           </Button>
           <Button
             onClick={() =>
-              handleChangeMoveableTextTransformOrigin('center top')
+              handleChangeMoveableTextTransformOrigin('center top', () => {
+                moveable?.updateRect();
+              })
             }
             isIconOnly
           >

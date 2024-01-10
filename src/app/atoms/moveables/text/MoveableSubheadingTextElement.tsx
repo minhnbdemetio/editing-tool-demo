@@ -15,7 +15,7 @@ export const MoveableSubheadingTextElement: FC<MoveableTextProps> = ({
   return (
     <div
       id={object.id}
-      className={clsx('w-fit hidden text-md', className)}
+      className={clsx('absolute w-fit hidden text-md', className)}
       style={{ writingMode: 'horizontal-tb' }}
       contentEditable
       suppressContentEditableWarning

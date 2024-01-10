@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MoveableObject } from '../factories/MoveableObject';
 import { useCurrentPage } from './useCurrentPage';
 
@@ -18,7 +18,7 @@ export const useLoadMoveableObject = (object: MoveableObject) => {
     } else {
       defaultElement?.classList.remove('hidden');
     }
-    object.createMoveable(container);
+    object.setupMoveable();
     setObjectLoaded(true);
   }, [object, objectLoaded, pageId]);
 

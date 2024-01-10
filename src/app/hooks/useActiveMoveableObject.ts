@@ -4,11 +4,18 @@ import { useActivePage } from '../store/active-page';
 import { GradientStop } from '../utilities/color.type';
 import { parseTranslateString } from '../utilities/utils';
 import { usePageObjectsById } from './usePageObjects';
+import { isLine, isText } from '../utilities/moveable';
 
 export const useActiveMoveableTextObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
   return isText(activeMoveableObject) ? activeMoveableObject : null;
+};
+
+export const useActiveMoveableLineObject = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+
+  return isLine(activeMoveableObject) ? activeMoveableObject : null;
 };
 
 export const useUpdateActiveMoveableObjectFontSize = () => {
