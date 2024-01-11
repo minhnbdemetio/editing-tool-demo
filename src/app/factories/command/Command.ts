@@ -1,18 +1,15 @@
 export abstract class Command {
-  fromState?: Object;
-  toState?: Object;
   actionFunction: Function;
   undoFunction: Function;
+  redoFunction: Function;
   constructor(options: {
     actionFunction: Function;
     undoFunction: Function;
-    fromState?: Object;
-    toState?: Object;
+    redoFunction: Function;
   }) {
-    this.fromState = options.fromState;
-    this.toState = options.toState;
     this.actionFunction = options.actionFunction;
     this.undoFunction = options.undoFunction;
+    this.redoFunction = options.redoFunction;
   }
 
   performCommand(...params: any) {
@@ -21,5 +18,9 @@ export abstract class Command {
 
   performUndo(...params: any) {
     return this.undoFunction(...params);
+  }
+
+  performRedo(...params: any) {
+    return this.redoFunction(...params);
   }
 }

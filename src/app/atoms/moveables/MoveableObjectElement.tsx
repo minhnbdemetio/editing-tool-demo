@@ -57,9 +57,5 @@ export const MoveableObjectElement: FC<MoveableObjectProps> = props => {
     return <></>;
   };
 
-  return (
-    <>
-      <div className="relative">{renderElement()}</div>
-    </>
-  );
+  return <>{renderElement()}</>;
 };

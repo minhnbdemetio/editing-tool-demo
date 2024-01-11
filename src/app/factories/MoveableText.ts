@@ -11,7 +11,10 @@ export class MoveableTextObject extends MoveableObject {
     this.variant = 'normal';
   }
 
-  clone(): MoveableTextObject {
+  clone(options?: { htmlString: string; id: string }): MoveableTextObject {
+    if (options) {
+      return new MoveableTextObject(options.id, options.htmlString);
+    }
     const clonedData = this.cloneData();
     return new MoveableTextObject(
       clonedData.cloneObjectId,

@@ -45,43 +45,53 @@ export const useUpdateTextGradientColor = () => {
 };
 
 export const useDeleteObject = () => {
-  const { activeMoveableObject } = useActiveMoveableObject();
-  const { activePage } = useActivePage();
-  const { moveableTargets, setMoveableTargets } = useDesign();
-  const [pageObjects, setPageObjects] = usePageObjectsById(activePage);
-
-  return useCallback(() => {
-    if (!pageObjects || !setPageObjects || !activeMoveableObject) return false;
-
-    const filteredObjects = pageObjects.filter(
-      object => object.id !== activeMoveableObject.id,
-    );
-    const filteredTargets = moveableTargets.filter(
-      element => element.id !== activeMoveableObject.id,
-    );
-    setMoveableTargets(filteredTargets);
-    activeMoveableObject?.destroy();
-    setPageObjects(filteredObjects);
-    return true;
-  }, [
-    activeMoveableObject,
+  const {
     moveableTargets,
-    pageObjects,
     setMoveableTargets,
-    setPageObjects,
-  ]);
+    getPageObjects,
+    setDesignObjects,
+  } = useDesign();
+
+  return useCallback(
+    (shouldDeleteObject: MoveableObject | null) => {
+      if (!shouldDeleteObject || !shouldDeleteObject.pageId) return false;
+      const pageObjects = getPageObjects(shouldDeleteObject.pageId);
+
+      const filteredObjects = pageObjects.filter(
+        object => object.id !== shouldDeleteObject.id,
+      );
+      const filteredTargets = moveableTargets.filter(
+        element => element.id !== shouldDeleteObject.id,
+      );
+      setMoveableTargets(filteredTargets);
+      shouldDeleteObject?.destroy();
+      shouldDeleteObject.exportHtmlString();
+      console.log({ filteredObjects });
+      setDesignObjects(shouldDeleteObject.pageId, filteredObjects);
+      return shouldDeleteObject;
+    },
+    [getPageObjects, moveableTargets, setDesignObjects, setMoveableTargets],
+  );
 };
 
-export const useUndoDeleteObject = (deletedObject: MoveableObject | null) => {
-  const addObjectToPage = useAddObjectToPage(deletedObject?.pageId || null);
+export const useUndoDeleteObject = () => {
+  const { getPageObjects, setDesignObjects } = useDesign();
 
-  return useCallback(() => {
-    if (!deletedObject) return false;
-    const recreatedObject = deletedObject.clone();
-    addObjectToPage(recreatedObject);
+  return useCallback(
+    (deletedObject: MoveableObject | null) => {
+      if (!deletedObject || !deletedObject.pageId) return false;
+      const recreatedObject = deletedObject.clone({
+        htmlString: deletedObject.htmlString!,
+        id: deletedObject.id,
+      });
+      recreatedObject.setPageId(deletedObject.pageId);
+      const pageObjects = getPageObjects(deletedObject.pageId);
+      setDesignObjects(deletedObject.pageId, [...pageObjects, recreatedObject]);
 
-    return true;
-  }, [addObjectToPage, deletedObject]);
+      return recreatedObject;
+    },
+    [getPageObjects, setDesignObjects],
+  );
 };
 
 export const useCloneObject = () => {

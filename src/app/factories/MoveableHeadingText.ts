@@ -5,7 +5,13 @@ export class MoveableHeadingTextObject extends MoveableTextObject {
     super(id, htmlString);
     this.variant = 'heading';
   }
-  clone(): MoveableHeadingTextObject {
+  clone(options?: {
+    htmlString: string;
+    id: string;
+  }): MoveableHeadingTextObject {
+    if (options) {
+      return new MoveableHeadingTextObject(options.id, options.htmlString);
+    }
     const clonedData = this.cloneData();
     return new MoveableHeadingTextObject(
       clonedData.cloneObjectId,

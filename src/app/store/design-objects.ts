@@ -10,17 +10,22 @@ interface DesignProperties {
   moveable: Moveable | null;
   setMovable: (moveable: Moveable | null) => any;
   getAllObjects: () => MoveableObject[];
+  getPageObjects: (pageId: string) => MoveableObject[];
 }
 
 export const useDesign = create<DesignProperties>((set, get) => ({
   moveableTargets: [],
-  setMoveableTargets: (targets: Array<any>) =>
+  setMoveableTargets: (targets: Array<HTMLElement | SVGElement>) =>
     set(() => ({ moveableTargets: targets })),
   designObjects: {},
-  setDesignObjects: (pageId: string, objects: MoveableObject[]) =>
+  setDesignObjects: (pageId: string, objects: MoveableObject[]) => {
     set(state => ({
       designObjects: { ...state.designObjects, [pageId]: { objects } },
-    })),
+    }));
+  },
+  getPageObjects: (pageId: string) => {
+    return get().designObjects[pageId]?.objects || [];
+  },
   moveable: null,
   setMovable(moveable) {
     set({ moveable });

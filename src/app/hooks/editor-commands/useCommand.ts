@@ -10,8 +10,8 @@ export const useUndoCommand = () => {
   return useCallback(() => {
     if (!commandHistory.length) return;
     latestCommand.performUndo();
-    popCommand();
     pushUndoCommand(latestCommand);
+    popCommand();
   }, [commandHistory.length, latestCommand, popCommand, pushUndoCommand]);
 };
 
@@ -23,13 +23,15 @@ export const useRedoCommand = () => {
 
   return useCallback(() => {
     if (!undoneCommandHistory.length) return;
-
-    // popUndoCommand();
-    // pushCommand({
-    //   currentStateJSON,
-    //   pageId: latestUndoCommand?.pageId,
-    // });
-  }, [undoneCommandHistory.length]);
+    latestUndoCommand.performRedo();
+    pushCommand(latestUndoCommand);
+    popUndoCommand();
+  }, [
+    latestUndoCommand,
+    popUndoCommand,
+    pushCommand,
+    undoneCommandHistory.length,
+  ]);
 };
 
 const DEFAULT_DEBOUNCE_WAIT = 300; //ms

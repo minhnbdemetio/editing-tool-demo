@@ -29,7 +29,7 @@ export abstract class MoveableObject {
     this.pageId = pageId;
   }
   copy() {}
-  abstract clone(): MoveableObject;
+  abstract clone(options?: { htmlString: string; id: string }): MoveableObject;
   cloneData() {
     const outerHtml = this.exportHtmlString();
     const cloneObjectId = uuidv4();

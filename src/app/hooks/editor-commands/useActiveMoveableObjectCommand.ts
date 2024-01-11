@@ -95,17 +95,16 @@ export const useChangeMoveableTextTransformCommand = () => {
 };
 
 export const useDeleteObjetCommand = () => {
-  const { activeMoveableObject } = useActiveMoveableObject();
+  const { getActiveMoveableObject } = useActiveMoveableObject();
+  const activeMoveableObject = getActiveMoveableObject();
   const deleteFunction = useDeleteObject();
-  const undoDeleteFunction = useUndoDeleteObject(activeMoveableObject);
+  const undoDeleteFunction = useUndoDeleteObject();
 
   const deleteCommand = new DeleteCommand({
     actionFunction: deleteFunction,
     undoFunction: undoDeleteFunction,
+    redoFunction: deleteFunction,
   });
-  const executeCommand = useExecuteCommand(deleteCommand);
-  return useMemo(
-    () => (activeMoveableObject ? executeCommand : undefined),
-    [activeMoveableObject, executeCommand],
-  );
+  deleteCommand.setDeletedObject(activeMoveableObject);
+  return useExecuteCommand(deleteCommand);
 };
