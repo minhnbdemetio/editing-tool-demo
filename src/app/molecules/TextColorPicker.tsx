@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 import { ColorResult, SketchPicker, Color } from 'react-color';
 import {
-  useActiveMoveableTextObject,
+  useActiveTextObject,
   useUpdateTextColor,
 } from '../hooks/useActiveMoveableObject';
 
@@ -13,7 +13,7 @@ export const TextColorPicker: FC<TextColorPickerProps> = ({
   onSelectColor,
 }) => {
   const changeColorCommand = useUpdateTextColor();
-  const activeText = useActiveMoveableTextObject();
+  const activeText = useActiveTextObject();
   const [color, setColor] = useState<string | undefined>(
     activeText?.getCssProperty('color') || undefined,
   );

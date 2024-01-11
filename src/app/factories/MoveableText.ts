@@ -8,11 +8,13 @@ export class MoveableTextObject extends MoveableObject {
   constructor(id?: string, htmlString?: string) {
     super(id, htmlString);
     this.type = 'text';
-    // this.transformOrigin = 'bottom';
     this.variant = 'normal';
   }
 
-  clone(): MoveableTextObject {
+  clone(options?: { htmlString: string; id: string }): MoveableTextObject {
+    if (options) {
+      return new MoveableTextObject(options.id, options.htmlString);
+    }
     const clonedData = this.cloneData();
     return new MoveableTextObject(
       clonedData.cloneObjectId,
