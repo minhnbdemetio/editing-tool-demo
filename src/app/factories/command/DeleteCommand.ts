@@ -27,8 +27,8 @@ export class DeleteCommand extends Command {
     return;
   }
   performRedo(...params: any) {
-    const deletedObject = this.redoFunction(this.recreatedObject);
-    this.deletedObject = deletedObject;
+    const deletedObject =this.redoFunction(this.recreatedObject);
+    this.deletedObject = this.recreatedObject;
     this.recreatedObject = null;
     return;
   }

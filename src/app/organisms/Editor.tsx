@@ -90,7 +90,20 @@ export const Editor: FC = () => {
       <Button className="mt-10" onClick={handleAddPage}>
         +Add page
       </Button>
-      <div id={SELECTO_ID}></div>
+      <div id={SELECTO_ID}>
+        <Selecto
+          dragContainer={window}
+          selectableTargets={[`.${MOVEABLE_TARGET_CLASS}`]}
+          hitRate={0}
+          selectByClick={true}
+          selectFromInside={true}
+          toggleContinueSelect={['shift']}
+          ratio={0}
+          onSelectEnd={e => {
+            setMoveableTargets(e.selected);
+          }}
+        />
+      </div>
       <Moveable
         ref={moveableRef}
         target={moveableTargets}
@@ -129,18 +142,6 @@ export const Editor: FC = () => {
           }
         }}
       />
-      <Selecto
-        dragContainer={window}
-        selectableTargets={[`.${MOVEABLE_TARGET_CLASS}`]}
-        hitRate={0}
-        selectByClick={true}
-        selectFromInside={true}
-        toggleContinueSelect={['shift']}
-        ratio={0}
-        onSelectEnd={e => {
-          setMoveableTargets(e.selected);
-        }}
-      ></Selecto>
     </div>
   );
 };

@@ -3,7 +3,7 @@ import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { useActivePage } from '../store/active-page';
 import { GradientStop } from '../utilities/color.type';
 import { parseTranslateString } from '../utilities/utils';
-import { useAddObjectToPage, usePageObjectsById } from './usePageObjects';
+import { usePageObjectsById } from './usePageObjects';
 import { isLine, isText } from '../utilities/moveable';
 import { MoveableObject } from '../factories/MoveableObject';
 import { useDesign } from '../store/design-objects';
@@ -46,36 +46,36 @@ export const useUpdateTextGradientColor = () => {
 
 export const useDeleteObject = () => {
   const {
-    moveableTargets,
+    getMoveableTargets,
     setMoveableTargets,
     getPageObjects,
-    setDesignObjects,
+    setPageObjects: setDesignObjects,
   } = useDesign();
 
   return useCallback(
     (shouldDeleteObject: MoveableObject | null) => {
       if (!shouldDeleteObject || !shouldDeleteObject.pageId) return false;
       const pageObjects = getPageObjects(shouldDeleteObject.pageId);
-
+      const moveableTargets = getMoveableTargets();
       const filteredObjects = pageObjects.filter(
         object => object.id !== shouldDeleteObject.id,
       );
       const filteredTargets = moveableTargets.filter(
         element => element.id !== shouldDeleteObject.id,
       );
-      setMoveableTargets(filteredTargets);
       shouldDeleteObject?.destroy();
       shouldDeleteObject.exportHtmlString();
-      console.log({ filteredObjects });
-      setDesignObjects(shouldDeleteObject.pageId, filteredObjects);
+      setMoveableTargets(filteredTargets);
+      setDesignObjects(shouldDeleteObject.pageId || '', filteredObjects);
+
       return shouldDeleteObject;
     },
-    [getPageObjects, moveableTargets, setDesignObjects, setMoveableTargets],
+    [getPageObjects, getMoveableTargets, setMoveableTargets, setDesignObjects],
   );
 };
 
 export const useUndoDeleteObject = () => {
-  const { getPageObjects, setDesignObjects } = useDesign();
+  const { getPageObjects, setPageObjects: setDesignObjects } = useDesign();
 
   return useCallback(
     (deletedObject: MoveableObject | null) => {

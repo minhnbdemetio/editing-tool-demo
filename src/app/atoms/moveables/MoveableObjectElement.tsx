@@ -54,8 +54,8 @@ export const MoveableObjectElement: FC<MoveableObjectProps> = props => {
       return <MoveableBodyTextElement object={object} />;
     }
 
-    return <></>;
+    return null;
   };
 
-  return <>{renderElement()}</>;
+  return renderElement();
 };

@@ -77,7 +77,9 @@ export abstract class MoveableObject {
   }
   setupMoveable() {
     const element = this.getElement();
-    element?.classList.add(MOVEABLE_TARGET_CLASS);
+    if (!element?.classList.contains(MOVEABLE_TARGET_CLASS)) {
+      element?.classList.add(MOVEABLE_TARGET_CLASS);
+    }
   }
   getCssProperty<T extends keyof CSSStyleDeclaration>(property: T) {
     const element = this.getElement();
