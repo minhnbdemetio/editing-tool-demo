@@ -12,6 +12,7 @@ import { SpacingProperty } from './Text/SpacingProperty';
 import { EffectProperty } from './Text/EffectProperty';
 import { StylesProperty } from './Text/StylesProperty';
 import { NudgeProperty } from './Text/NudgeProperty';
+import { PositionProperty } from './Text/PositionProperty';
 
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
@@ -44,6 +45,9 @@ export const SelectedObjectProperty: FC = () => {
       }
       case SelectedProperty.TextNudge: {
         return <NudgeProperty />;
+      }
+      case SelectedProperty.TextPosition: {
+        return <PositionProperty />;
       }
       default: {
         return null;
