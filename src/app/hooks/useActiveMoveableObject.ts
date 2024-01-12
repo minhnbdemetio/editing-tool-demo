@@ -2,7 +2,7 @@ import { CSSProperties, useCallback } from 'react';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { useActivePage } from '../store/active-page';
 import { GradientStop } from '../utilities/color.type';
-import { parseTranslateString } from '../utilities/utils';
+import { parseTransformString, parseTranslateString } from '../utilities/utils';
 import { usePageObjectsById } from './usePageObjects';
 import { isLine, isText } from '../utilities/moveable';
 import { MoveableObject } from '../factories/MoveableObject';
@@ -372,13 +372,61 @@ export const useChangeTextTransform = () => {
   ) => {
     const element = activeText?.getElement();
     if (!element) return false;
-    const beforeTransForm = parseTranslateString(element.style.transform);
-    element.style.transform = `translate(${
-      beforeTransForm.translateX + transformX
-    }px, ${beforeTransForm.translateY + transformY}px)`;
+    const transformString = parseTransformString(element.style.transform);
+    element.style.transform = `translate(${transformX}px, ${transformY}px) rotate(${transformString.rotate})`;
     callback();
     return true;
   };
 
   return handleChangeTransform;
+};
+
+export const useChangeTextWidth = () => {
+  const activeText = useActiveTextObject();
+  const handleChangeWidth = (width: string, callback: Function) => {
+    const element = activeText?.getElement();
+    if (!element) return false;
+    element.style.width = width;
+    callback();
+    return true;
+  };
+
+  return handleChangeWidth;
+};
+export const useChangeTextHeight = () => {
+  const activeText = useActiveTextObject();
+  const handleChangeHeight = (height: string, callback: Function) => {
+    const element = activeText?.getElement();
+    if (!element) return false;
+    element.style.height = height;
+    callback();
+    return true;
+  };
+
+  return handleChangeHeight;
+};
+export const useChangeTextLockSize = () => {
+  const activeText = useActiveTextObject();
+  const handleChangeLockSize = (lockSize: number, callback: Function) => {
+    const element = activeText?.getElement();
+    if (!element) return false;
+    element.setAttribute('lockSizeId', lockSize.toString());
+    callback();
+    return true;
+  };
+
+  return handleChangeLockSize;
+};
+export const useChangeTextRotate = () => {
+  const activeText = useActiveTextObject();
+  const changeTextRotate = (rotate: string, callback: Function) => {
+    const element = activeText?.getElement();
+    if (!element) return false;
+    const transformString = parseTransformString(element.style.transform);
+    element.style.transform = `${transformString.translate} rotate(${rotate}deg)`;
+    callback();
+    return true;
+  };
+
+  return changeTextRotate;
 };

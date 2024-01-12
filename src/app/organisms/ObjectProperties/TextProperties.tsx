@@ -36,7 +36,11 @@ export const TextProperties: FC = () => {
       <Button>Animate</Button>
       <Button>Transparency</Button>
       <Button>Layers</Button>
-      <Button>Position</Button>
+      <Button
+        onClick={() => setSelectedProperty(SelectedProperty.TextPosition)}
+      >
+        Position
+      </Button>
       <Button onClick={() => setSelectedProperty(SelectedProperty.TextNudge)}>
         Nudge
       </Button>

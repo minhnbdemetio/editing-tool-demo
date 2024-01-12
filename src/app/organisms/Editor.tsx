@@ -180,7 +180,8 @@ export const Editor: FC = () => {
           if (e.targets.length) {
             findAndSetActiveObject(e.targets[0].id);
           } else {
-            setActiveMoveableObject(null);
+            // TODO: Clear active object when no target - gây ra lỗi khi edit
+            // setActiveMoveableObject(null);
           }
         }}
       />
