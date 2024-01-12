@@ -2,7 +2,10 @@ import { MoveableObject } from './MoveableObject';
 import { SvgLine, SvgLineAdornment } from '../utilities/svg-line';
 
 export class MoveableLineObject extends MoveableObject {
-  clone(): MoveableLineObject {
+  clone(options?: { htmlString: string; id: string }): MoveableLineObject {
+    if (options) {
+      return new MoveableLineObject(options.id, options.htmlString);
+    }
     const clonedData = this.cloneData();
     return new MoveableLineObject(
       clonedData.cloneObjectId,

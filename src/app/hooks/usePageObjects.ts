@@ -6,7 +6,7 @@ import { useActivePage } from '../store/active-page';
 
 export const useCurrentPageObjects = () => {
   const { pageId } = useCurrentPage();
-  const { designObjects, setDesignObjects } = useDesign();
+  const { designObjects, setPageObjects: setDesignObjects } = useDesign();
 
   return useMemo(
     () =>
@@ -14,7 +14,7 @@ export const useCurrentPageObjects = () => {
         designObjects[pageId]?.objects || [],
         (objects: MoveableObject[]) => setDesignObjects(pageId, objects),
       ] as const,
-    [pageId, designObjects[pageId]?.objects, setDesignObjects],
+    [designObjects, pageId, setDesignObjects],
   );
 };
 
@@ -27,7 +27,7 @@ export const useAddObjectToCurrentPage = (object: MoveableObject) => {
 };
 
 export const usePageObjectsById = (pageId: string | null) => {
-  const { designObjects, setDesignObjects } = useDesign();
+  const { designObjects, setPageObjects: setDesignObjects } = useDesign();
 
   return useMemo(() => {
     if (!pageId) {

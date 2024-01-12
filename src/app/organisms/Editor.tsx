@@ -13,6 +13,7 @@ import { MOVEABLE_TARGET_CLASS } from '../constants/moveable';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { isLine } from '../utilities/moveable';
 import { updateHeadControllerPosition } from '../utilities/line';
+import { useDeleteObjetCommand } from '../hooks/editor-commands/useActiveMoveableObjectCommand';
 
 export const SELECTO_ID = 'editor-selecto';
 export const EDITOR_CONTAINER_ID = 'editor-container';
@@ -74,6 +75,8 @@ export const Editor: FC = () => {
     setActiveMoveableObject(objectWithId);
   };
 
+  const deleteObjectCommand = useDeleteObjetCommand();
+
   return (
     <div
       ref={drop}
@@ -84,6 +87,7 @@ export const Editor: FC = () => {
       <div className="text-right mb-3">
         <LinePreviewToggle />
       </div>
+      <Button onClick={deleteObjectCommand}>Delete active object </Button>
       <div className="flex flex-col gap-10 h-full">
         {Object.entries(pages).map(([pageId]) => (
           <div key={pageId}>
@@ -97,9 +101,7 @@ export const Editor: FC = () => {
       <div id={SELECTO_ID}>
         <Selecto
           dragContainer={window}
-          keyContainer={document.getElementById(EDITOR_CONTAINER_ID)}
           selectableTargets={[`.${MOVEABLE_TARGET_CLASS}`]}
-          container={document.getElementById(SELECTO_ID)}
           hitRate={0}
           selectByClick={true}
           selectFromInside={true}

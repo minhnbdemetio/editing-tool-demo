@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { findIdFromString } from '../utilities/dom';
 import { MOVEABLE_TARGET_CLASS } from '../constants/moveable';
+import { EDITOR_CONTAINER_ID } from '../organisms/Editor';
 
 export const MAX_FIND_ELEMENT_ATTEMPTS = 100;
 export type ObjectType = 'rectangle' | 'text' | 'line';
@@ -8,9 +9,11 @@ export abstract class MoveableObject {
   id: string;
   type?: ObjectType;
   htmlString?: string;
+  pageId: string | null;
   constructor(id?: string, htmlString?: string) {
     this.id = id || uuidv4();
     this.htmlString = htmlString;
+    this.pageId = null;
   }
 
   setId(id: string) {
@@ -22,8 +25,11 @@ export abstract class MoveableObject {
   setType(type: ObjectType) {
     this.type = type;
   }
+  setPageId(pageId: string | null) {
+    this.pageId = pageId;
+  }
   copy() {}
-  abstract clone(): MoveableObject;
+  abstract clone(options?: { htmlString: string; id: string }): MoveableObject;
   cloneData() {
     const outerHtml = this.exportHtmlString();
     const cloneObjectId = uuidv4();
@@ -67,18 +73,21 @@ export abstract class MoveableObject {
     return '';
   }
   destroy() {
-    // if (!this.moveable) return false;
-    // this.moveable.destroy();
     return true;
   }
   setupMoveable() {
     const element = this.getElement();
-    element?.classList.add(MOVEABLE_TARGET_CLASS);
+    if (!element?.classList.contains(MOVEABLE_TARGET_CLASS)) {
+      element?.classList.add(MOVEABLE_TARGET_CLASS);
+    }
   }
   getCssProperty<T extends keyof CSSStyleDeclaration>(property: T) {
     const element = this.getElement();
     if (!element) return null;
     const cssProperties = window.getComputedStyle(element);
     return cssProperties[property];
+  }
+  getContainer() {
+    return document.getElementById(EDITOR_CONTAINER_ID);
   }
 }

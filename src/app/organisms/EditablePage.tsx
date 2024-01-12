@@ -53,7 +53,11 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
 
   return (
     <CuttingZoneReminder>
-      <div ref={containerRef} className="w-full">
+      <div
+        onMouseDown={() => setActivePage(pageId)}
+        ref={containerRef}
+        className="w-full"
+      >
         <div className="relative" ref={layerRef}>
           <div
             style={{

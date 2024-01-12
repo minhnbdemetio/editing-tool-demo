@@ -1,8 +1,5 @@
 import { create } from 'zustand';
-
-export interface Command {
-  pageId: string | undefined;
-}
+import { Command } from '../factories/command/Command';
 
 interface CommandHistoryState {
   commandHistory: Command[];
@@ -24,18 +21,12 @@ export const useCommandHistory = create<CommandHistoryState>((set, get) => ({
     set(state => ({ commandHistory: [...state.commandHistory, command] })),
   popCommand: () => {
     set(state => ({
-      commandHistory: state.commandHistory.slice(
-        0,
-        state.commandHistory.length - 1,
-      ),
+      commandHistory: state.commandHistory.slice(0, -1),
     }));
   },
   popUndoCommand: () => {
     set(state => ({
-      undoneCommandHistory: state.undoneCommandHistory.slice(
-        0,
-        state.undoneCommandHistory.length - 1,
-      ),
+      undoneCommandHistory: state.undoneCommandHistory.slice(0, -1),
     }));
   },
 }));
