@@ -12,7 +12,8 @@ export class MoveableLineObject extends MoveableObject {
       clonedData.clonedObjectHtml,
     );
   }
-  line?: SvgLine;
+  line: SvgLine;
+  private dragging = false;
   dragStartPoint: { x: number; y: number } = {
     x: 0,
     y: 0,
@@ -20,10 +21,28 @@ export class MoveableLineObject extends MoveableObject {
 
   constructor(id?: string, htmlString?: string) {
     super(id, htmlString);
-    this.line = new SvgLine({ strokeDashArray: [10, 10] });
-    this.line?.setStartAdornment(SvgLineAdornment.OutlinedTriangle);
-    this.line?.setEndAdornment(SvgLineAdornment.Triangle);
+    this.line = new SvgLine();
+    this.line.setStartAdornment(SvgLineAdornment.OutlinedTriangle);
+    this.line.setEndAdornment(SvgLineAdornment.Triangle);
+    // this.line.toElbowed();
     this.type = 'line';
+  }
+
+  public setDragging(dragging: boolean) {
+    this.dragging = dragging;
+  }
+  public isDragging(): boolean {
+    return this.dragging;
+  }
+
+  public updateUI() {
+    const anchorRef = this.getElement();
+
+    if (anchorRef) {
+      const { x, y } = this.line.getDisplayPosition();
+      anchorRef.innerHTML = this.line.toSvg() || '';
+      anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(${this.line.getRotateAngle()}deg)`;
+    }
   }
   // createMoveable(container: HTMLElement): void {
   //   const element = this.getElement();
