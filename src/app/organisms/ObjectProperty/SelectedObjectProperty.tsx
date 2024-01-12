@@ -15,6 +15,8 @@ import { NudgeProperty } from './Text/NudgeProperty';
 
 import { ColorProperty as LineColorProperty } from './Line/ColorProperty';
 import { LineProperty } from './Line/StyleProperty';
+import { LineStartProperty } from './Line/LineStartProperty';
+import { LineEndProperty } from './Line/LineEndProperty';
 
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
@@ -53,6 +55,12 @@ export const SelectedObjectProperty: FC = () => {
       }
       case SelectedProperty.LineStyle: {
         return <LineProperty />;
+      }
+      case SelectedProperty.LineStart: {
+        return <LineStartProperty />;
+      }
+      case SelectedProperty.LineEnd: {
+        return <LineEndProperty />;
       }
       default: {
         return null;
