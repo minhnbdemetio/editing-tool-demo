@@ -4,14 +4,15 @@ import { SvgLineType } from '../utilities/svg-line';
 import { twMerge } from '../utilities/tailwind';
 import { LinePoint } from '../utilities/line-point';
 import { useActiveMoveableLineObject } from '../hooks/useActiveMoveableObject';
+import { isLine } from '../utilities/moveable';
+import { MoveableLineObject } from '../factories/MoveableLine';
 
 interface MovableLineControllerProps {}
 
-const StraightLineController: React.FC<{ forceReload: () => void }> = ({
-  forceReload,
-}) => {
-  const activeMoveableObject = useActiveMoveableLineObject();
-
+const StraightLineController: React.FC<{
+  forceReload: () => void;
+  activeMoveableObject: MoveableLineObject;
+}> = ({ forceReload, activeMoveableObject }) => {
   const [anchorRef, setAnchorRef] = useState<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -29,47 +30,6 @@ const StraightLineController: React.FC<{ forceReload: () => void }> = ({
     }
   }, [activeMoveableObject]);
 
-  const lineObject = activeMoveableObject;
-
-  const updateHeadControllerPosition = (hide?: boolean) => {
-    const start = lineObject?.line?.points;
-    const end = lineObject?.line?.endPoint;
-
-    if (start && end) {
-      const startElement = document.getElementById('head-' + start.id);
-      const endElement = document.getElementById('head-' + end.id);
-
-      if (hide) {
-        if (startElement) startElement.style.display = `none`;
-
-        if (endElement) endElement.style.display = `none`;
-        return;
-      }
-
-      if (startElement) {
-        startElement.style.display = `block`;
-        startElement.style.transform = ` translate(${start?.x}px, ${start?.y}px)`;
-      }
-
-      if (endElement) {
-        endElement.style.display = `block`;
-        endElement.style.transform = ` translate(${end?.x}px, ${end?.y}px)`;
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (activeMoveableObject) {
-      // TODO: Update logic
-      // activeMoveableObject.moveable?.on('dragStart', () => {
-      //   updateHeadControllerPosition(true);
-      // });
-      // activeMoveableObject.moveable?.on('dragEnd', () => {
-      //   updateHeadControllerPosition();
-      // });
-    }
-  }, [activeMoveableObject]);
-
   if (!anchorRef) return null;
 
   const points = activeMoveableObject?.line?.getPoints() || [];
@@ -80,11 +40,7 @@ const StraightLineController: React.FC<{ forceReload: () => void }> = ({
     if (lineObject && lineObject.line) {
       lineObject.line.updatePoint(pointId, point.x, point.y);
 
-      if (anchorRef) {
-        const { x, y } = lineObject.line.getDisplayPosition();
-        anchorRef.innerHTML = lineObject.line.toSvg() || '';
-        anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(${lineObject.line.getRotateAngle()}deg)`;
-      }
+      lineObject.updateUI();
     }
   };
 
@@ -119,7 +75,7 @@ const StraightLineController: React.FC<{ forceReload: () => void }> = ({
             style={{
               background: 'red',
               border: '1px solid #e8e8e8',
-              transform: `translate(${lineObject.line?.padding}px, ${lineObject.line?.padding}px)`,
+              transform: `translate(${activeMoveableObject.line.padding}px, ${activeMoveableObject.line.padding}px)`,
             }}
           ></div>
         </Draggable>
@@ -128,11 +84,10 @@ const StraightLineController: React.FC<{ forceReload: () => void }> = ({
   );
 };
 
-const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
-  forceReload,
-}) => {
-  const activeMoveableObject = useActiveMoveableLineObject();
-
+const ElbowedLineController: React.FC<{
+  forceReload: () => void;
+  activeMoveableObject: MoveableLineObject;
+}> = ({ forceReload, activeMoveableObject }) => {
   const [anchorRef, setAnchorRef] = useState<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -150,16 +105,14 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
     }
   }, [activeMoveableObject]);
 
-  const lineObject = activeMoveableObject;
+  const startPoint = activeMoveableObject.line.points;
+  const endPoint = activeMoveableObject.line.endPoint;
 
-  const startPoint = lineObject?.line?.points;
-  const endPoint = lineObject?.line?.endPoint;
-
-  const linePositions = lineObject?.line?.getElbowedLinePositions();
+  const linePositions = activeMoveableObject.line.getElbowedLinePositions();
 
   const updateHeadControllerPosition = (hide?: boolean) => {
-    const start = lineObject?.line?.points;
-    const end = lineObject?.line?.endPoint;
+    const start = activeMoveableObject.line?.points;
+    const end = activeMoveableObject.line?.endPoint;
 
     if (start && end) {
       const startElement = document.getElementById('head-' + start.id);
@@ -185,7 +138,7 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
   };
 
   const updateLineControllerPosition = (hide?: boolean) => {
-    let point: LinePoint | undefined | null = lineObject?.line?.points;
+    let point: LinePoint | undefined | null = activeMoveableObject.line.points;
 
     while (point) {
       const next = point.getNext();
@@ -218,20 +171,6 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
     }
   };
 
-  useEffect(() => {
-    if (activeMoveableObject) {
-      // TODO: Update logic
-      // activeMoveableObject.moveable?.on('dragStart', () => {
-      //   updateLineControllerPosition(true);
-      //   updateHeadControllerPosition(true);
-      // });
-      // activeMoveableObject.moveable?.on('dragEnd', () => {
-      //   updateLineControllerPosition();
-      //   updateHeadControllerPosition();
-      // });
-    }
-  }, [activeMoveableObject]);
-
   if (!anchorRef) return null;
 
   const onDragFreePoint = (
@@ -242,20 +181,20 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
     onCreateHead: (id: string, x: number, y: number) => void,
     onRemoveNewHead: () => void,
   ) => {
-    const point = lineObject?.line?.getPointById(id);
+    const point = activeMoveableObject.line.getPointById(id);
 
-    if (point && referencePoint && lineObject && lineObject.line) {
+    if (point && referencePoint) {
       const isVertical = point.isEqual(point.x, referencePoint.x);
       const isHorizontal = point.isEqual(point.y, referencePoint.y);
 
       if (isVertical) {
-        lineObject.line?.updatePoint(id, referencePoint.x, e.y);
+        activeMoveableObject.line.updatePoint(id, referencePoint.x, e.y);
 
         if (Math.abs(e.x - referencePoint.x) >= 20) {
           if (!newHeadId) {
             onCreateHead(id, e.x, e.y);
           } else {
-            lineObject.line.updatePoint(newHeadId, e.x, e.y);
+            activeMoveableObject.line.updatePoint(newHeadId, e.x, e.y);
           }
         } else {
           if (newHeadId) {
@@ -263,13 +202,13 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
           }
         }
       } else if (isHorizontal) {
-        lineObject.line?.updatePoint(id, e.x, referencePoint.y);
+        activeMoveableObject.line.updatePoint(id, e.x, referencePoint.y);
 
         if (Math.abs(e.y - referencePoint.y) >= 20) {
           if (!newHeadId) {
             onCreateHead(id, e.x, e.y);
           } else {
-            lineObject.line.updatePoint(newHeadId, e.x, e.y);
+            activeMoveableObject.line.updatePoint(newHeadId, e.x, e.y);
           }
         } else {
           if (newHeadId) {
@@ -278,8 +217,8 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
         }
       }
 
-      const { x, y } = lineObject.line.getDisplayPosition();
-      anchorRef.innerHTML = lineObject.line.toSvg() || '';
+      const { x, y } = activeMoveableObject.line.getDisplayPosition();
+      anchorRef.innerHTML = activeMoveableObject.line.toSvg() || '';
       anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(0deg)`;
 
       updateLineControllerPosition();
@@ -292,7 +231,7 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
         <Draggable
           id={`head-` + startPoint.id}
           onDragEnd={target => {
-            lineObject.line?.mergeStraightLine();
+            activeMoveableObject.line.mergeStraightLine();
 
             const newHead = target.getAttribute('data-new-head') || '';
             if (newHead) {
@@ -310,17 +249,19 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
               id,
               newHeadId,
               e,
-              lineObject.line?.getPointById(id)?.getNext() as LinePoint,
+              activeMoveableObject.line
+                ?.getPointById(id)
+                ?.getNext() as LinePoint,
               (_, x, y) => {
-                lineObject.line?.createPrevFor(id, x, y);
+                activeMoveableObject.line?.createPrevFor(id, x, y);
                 target.setAttribute(
                   'data-new-head',
-                  lineObject.line?.points?.id || '',
+                  activeMoveableObject.line?.points?.id || '',
                 );
               },
               () => {
-                if (lineObject.line) {
-                  lineObject.line.removePoint(newHeadId);
+                if (activeMoveableObject.line) {
+                  activeMoveableObject.line.removePoint(newHeadId);
                   target.setAttribute('data-new-head', '');
                 }
               },
@@ -333,7 +274,7 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
         >
           <div
             style={{
-              transform: `translate(${lineObject.line?.padding}px, ${lineObject.line?.padding}px)`,
+              transform: `translate(${activeMoveableObject.line?.padding}px, ${activeMoveableObject.line?.padding}px)`,
             }}
             className="w-[15px] h-[15px] bg-[red] rounded-[50%]"
           ></div>
@@ -342,7 +283,7 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
       {linePositions?.map(pos => (
         <Draggable
           onDragEnd={() => {
-            lineObject?.line?.mergeStraightLine();
+            activeMoveableObject?.line?.mergeStraightLine();
             updateLineControllerPosition();
           }}
           id={pos.startId + pos.endId}
@@ -353,20 +294,28 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
           }}
           key={pos.startId + pos.endId}
           onDrag={point => {
-            if (lineObject?.line) {
+            if (activeMoveableObject.line) {
               if (pos.y2 === pos.y1) {
-                lineObject?.line?.updateElbowedPoints(pos.startId, pos.endId, {
-                  y: point.y,
-                });
+                activeMoveableObject.line.updateElbowedPoints(
+                  pos.startId,
+                  pos.endId,
+                  {
+                    y: point.y,
+                  },
+                );
               }
               if (pos.x2 === pos.x1) {
-                lineObject?.line?.updateElbowedPoints(pos.startId, pos.endId, {
-                  x: point.x,
-                });
+                activeMoveableObject.line.updateElbowedPoints(
+                  pos.startId,
+                  pos.endId,
+                  {
+                    x: point.x,
+                  },
+                );
               }
 
-              const { x, y } = lineObject.line.getDisplayPosition();
-              anchorRef.innerHTML = lineObject.line.toSvg() || '';
+              const { x, y } = activeMoveableObject.line.getDisplayPosition();
+              anchorRef.innerHTML = activeMoveableObject.line.toSvg() || '';
               anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(0deg)`;
 
               updateLineControllerPosition();
@@ -378,7 +327,7 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
           <div
             style={{
               background: 'red',
-              transform: `translate(${lineObject.line?.padding}px, ${lineObject.line?.padding}px)`,
+              transform: `translate(${activeMoveableObject.line?.padding}px, ${activeMoveableObject.line?.padding}px)`,
             }}
             className={twMerge('bg-red absolute rounded-md', {
               'w-[30px] h-[10px] ': pos.y2 === pos.y1,
@@ -391,7 +340,7 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
         <Draggable
           id={`head-` + endPoint.id}
           onDragEnd={target => {
-            lineObject.line?.mergeStraightLine();
+            activeMoveableObject.line?.mergeStraightLine();
             const newHead = target.getAttribute('data-new-end') || '';
             if (newHead) {
               target.setAttribute('data-target', newHead);
@@ -408,17 +357,19 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
               id,
               newHeadId,
               e,
-              lineObject.line?.getPointById(id)?.getPrev() as LinePoint,
+              activeMoveableObject.line
+                ?.getPointById(id)
+                ?.getPrev() as LinePoint,
               (_, x, y) => {
-                lineObject.line?.createNewEnd(id, x, y);
+                activeMoveableObject.line?.createNewEnd(id, x, y);
                 target.setAttribute(
                   'data-new-end',
-                  lineObject.line?.endPoint?.id || '',
+                  activeMoveableObject.line?.endPoint?.id || '',
                 );
               },
               () => {
-                if (lineObject.line) {
-                  lineObject.line.removePoint(newHeadId);
+                if (activeMoveableObject.line) {
+                  activeMoveableObject.line.removePoint(newHeadId);
                   target.setAttribute('data-new-end', '');
                 }
               },
@@ -430,7 +381,7 @@ const ElbowedLineController: React.FC<{ forceReload: () => void }> = ({
         >
           <div
             style={{
-              transform: `translate(${lineObject.line?.padding}px, ${lineObject.line?.padding}px)`,
+              transform: `translate(${activeMoveableObject.line?.padding}px, ${activeMoveableObject.line?.padding}px)`,
             }}
             className="w-[15px] h-[15px] bg-[red] rounded-[50%]"
           ></div>
@@ -444,16 +395,24 @@ export const MovableLineController: React.FC<
   MovableLineControllerProps
 > = () => {
   const activeMoveableObject = useActiveMoveableLineObject();
-  const [forceReload, setForceReload] = useState(0);
+  const [_, setForceReload] = useState(0);
 
-  if (activeMoveableObject?.line?.getType() === SvgLineType.Straight)
+  if (!isLine(activeMoveableObject) || activeMoveableObject.isDragging())
+    return null;
+  if (activeMoveableObject.line.getType() === SvgLineType.Straight)
     return (
-      <StraightLineController forceReload={() => setForceReload(v => v + 1)} />
+      <StraightLineController
+        activeMoveableObject={activeMoveableObject}
+        forceReload={() => setForceReload(v => v + 1)}
+      />
     );
 
-  if (activeMoveableObject?.line?.getType() === SvgLineType.Elbowed)
+  if (activeMoveableObject.line.getType() === SvgLineType.Elbowed)
     return (
-      <ElbowedLineController forceReload={() => setForceReload(v => v + 1)} />
+      <ElbowedLineController
+        activeMoveableObject={activeMoveableObject}
+        forceReload={() => setForceReload(v => v + 1)}
+      />
     );
 
   return <></>;

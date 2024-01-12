@@ -5,3 +5,11 @@
     }
   }
 }
+#editor-container[data-active-element-type='line'] {
+  .moveable-control {
+    display: none !important;
+  }
+  .moveable-line {
+    background: transparent !important;
+  }
+}

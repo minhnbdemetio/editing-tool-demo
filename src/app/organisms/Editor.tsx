@@ -11,6 +11,8 @@ import Selecto from 'react-selecto';
 import { useDesign } from '../store/design-objects';
 import { MOVEABLE_TARGET_CLASS } from '../constants/moveable';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
+import { isLine } from '../utilities/moveable';
+import { updateHeadControllerPosition } from '../utilities/line';
 
 export const SELECTO_ID = 'editor-selecto';
 export const EDITOR_CONTAINER_ID = 'editor-container';
@@ -19,7 +21,8 @@ export const Editor: FC = () => {
   const { pages, addBlankPage } = useEditablePages();
   const { moveableTargets, setMoveableTargets, getAllObjects, setMovable } =
     useDesign();
-  const { setActiveMoveableObject } = useActiveMoveableObject();
+  const { activeMoveableObject, setActiveMoveableObject } =
+    useActiveMoveableObject();
   const moveableRef = useRef<Moveable | null>(null);
   const handleAddPage = () => {
     const randomId = new Date().getTime();
@@ -72,7 +75,12 @@ export const Editor: FC = () => {
   };
 
   return (
-    <div ref={drop} id={EDITOR_CONTAINER_ID} className="bg-gray-200 p-10">
+    <div
+      ref={drop}
+      id={EDITOR_CONTAINER_ID}
+      data-active-element-type={activeMoveableObject?.type}
+      className="bg-gray-200 p-10"
+    >
       <div className="text-right mb-3">
         <LinePreviewToggle />
       </div>
@@ -86,7 +94,28 @@ export const Editor: FC = () => {
       <Button className="mt-10" onClick={handleAddPage}>
         +Add page
       </Button>
-      <div id={SELECTO_ID}></div>
+      <div id={SELECTO_ID}>
+        <Selecto
+          dragContainer={window}
+          keyContainer={document.getElementById(EDITOR_CONTAINER_ID)}
+          selectableTargets={[`.${MOVEABLE_TARGET_CLASS}`]}
+          container={document.getElementById(SELECTO_ID)}
+          hitRate={0}
+          selectByClick={true}
+          selectFromInside={true}
+          toggleContinueSelect={['shift']}
+          ratio={0}
+          onSelectEnd={e => {
+            const isClickInsideEditorContainer = document
+              .getElementById(EDITOR_CONTAINER_ID)
+              ?.contains(e.inputEvent.target);
+
+            if (isClickInsideEditorContainer) {
+              setMoveableTargets(e.selected);
+            }
+          }}
+        ></Selecto>
+      </div>
       <Moveable
         ref={moveableRef}
         target={moveableTargets}
@@ -96,6 +125,34 @@ export const Editor: FC = () => {
         keepRatio
         rotatable
         snapGridWidth={50}
+        onDragStart={e => {
+          if (isLine(activeMoveableObject)) {
+            const matrix = new WebKitCSSMatrix(e.target.style.transform);
+
+            activeMoveableObject.dragStartPoint = {
+              x: matrix.m41,
+              y: matrix.m42,
+            };
+            activeMoveableObject.setDragging(true);
+
+            updateHeadControllerPosition(activeMoveableObject, true);
+          }
+        }}
+        onDragEnd={e => {
+          var matrix = new WebKitCSSMatrix(e.target.style.transform);
+
+          if (isLine(activeMoveableObject)) {
+            const xChanged = matrix.m41 - activeMoveableObject.dragStartPoint.x;
+            const yChanged = matrix.m42 - activeMoveableObject.dragStartPoint.y;
+
+            activeMoveableObject.line?.moveAllPoints({
+              x: xChanged,
+              y: yChanged,
+            });
+            activeMoveableObject.setDragging(false);
+            updateHeadControllerPosition(activeMoveableObject);
+          }
+        }}
         onDrag={e => {
           e.target.style.transform = e.transform;
         }}
@@ -125,18 +182,6 @@ export const Editor: FC = () => {
           }
         }}
       />
-      <Selecto
-        dragContainer={window}
-        selectableTargets={[`.${MOVEABLE_TARGET_CLASS}`]}
-        hitRate={0}
-        selectByClick={true}
-        selectFromInside={true}
-        toggleContinueSelect={['shift']}
-        ratio={0}
-        onSelectEnd={e => {
-          setMoveableTargets(e.selected);
-        }}
-      ></Selecto>
     </div>
   );
 };
