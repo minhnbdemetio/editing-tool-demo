@@ -6,6 +6,7 @@ import { LinePoint } from '../utilities/line-point';
 import { useActiveMoveableLineObject } from '../hooks/useActiveMoveableObject';
 import { isLine } from '../utilities/moveable';
 import { MoveableLineObject } from '../factories/MoveableLine';
+import { useForceReloadLineController } from '../store/force-reload-line-controller';
 
 interface MovableLineControllerProps {}
 
@@ -137,40 +138,6 @@ const ElbowedLineController: React.FC<{
     }
   };
 
-  const updateLineControllerPosition = (hide?: boolean) => {
-    let point: LinePoint | undefined | null = activeMoveableObject.line.points;
-
-    while (point) {
-      const next = point.getNext();
-
-      if (next) {
-        const id = point.id + next.id;
-        const element = document.getElementById(id);
-
-        if (hide && element) {
-          element.style.display = 'none';
-          point = point.getNext();
-          continue;
-        }
-
-        if (point.hasNextCurve() || point.hasPrevCurve()) {
-          if (element) {
-            element.style.transform = `translate(${(point.x + next.x) / 2}px, ${
-              (point.y + next.y) / 2
-            }px)`;
-            element.style.display = 'block';
-          }
-        } else {
-          if (element) {
-            element.style.display = 'none';
-          }
-        }
-      }
-
-      point = point.getNext();
-    }
-  };
-
   if (!anchorRef) return null;
 
   const onDragFreePoint = (
@@ -221,7 +188,7 @@ const ElbowedLineController: React.FC<{
       anchorRef.innerHTML = activeMoveableObject.line.toSvg() || '';
       anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(0deg)`;
 
-      updateLineControllerPosition();
+      activeMoveableObject.updatePointerControllerUI();
     }
   };
 
@@ -284,7 +251,7 @@ const ElbowedLineController: React.FC<{
         <Draggable
           onDragEnd={() => {
             activeMoveableObject?.line?.mergeStraightLine();
-            updateLineControllerPosition();
+            activeMoveableObject.updatePointerControllerUI();
           }}
           id={pos.startId + pos.endId}
           style={{
@@ -318,7 +285,6 @@ const ElbowedLineController: React.FC<{
               anchorRef.innerHTML = activeMoveableObject.line.toSvg() || '';
               anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(0deg)`;
 
-              updateLineControllerPosition();
               updateHeadControllerPosition();
             }
           }}
@@ -394,6 +360,8 @@ const ElbowedLineController: React.FC<{
 export const MovableLineController: React.FC<
   MovableLineControllerProps
 > = () => {
+  useForceReloadLineController();
+
   const activeMoveableObject = useActiveMoveableLineObject();
   const [_, setForceReload] = useState(0);
 

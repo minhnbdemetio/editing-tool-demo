@@ -18,6 +18,8 @@ import { ColorProperty as LineColorProperty } from './Line/ColorProperty';
 import { LineProperty } from './Line/StyleProperty';
 import { LineStartProperty } from './Line/LineStartProperty';
 import { LineEndProperty } from './Line/LineEndProperty';
+import { LineTypeProperty } from './Line/LineTypeProperty';
+import { LineTransparencyProperty } from './Line/LineTransparencyProperty';
 
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
@@ -65,6 +67,12 @@ export const SelectedObjectProperty: FC = () => {
       }
       case SelectedProperty.LineEnd: {
         return <LineEndProperty />;
+      }
+      case SelectedProperty.LineType: {
+        return <LineTypeProperty />;
+      }
+      case SelectedProperty.LineTransparency: {
+        return <LineTransparencyProperty />;
       }
       default: {
         return null;

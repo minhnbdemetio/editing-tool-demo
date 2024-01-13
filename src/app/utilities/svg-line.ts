@@ -66,6 +66,8 @@ export class SvgLine {
   private shadowDistance: number = 0;
   private shadowBlur: number = 0;
 
+  private opacity: number = 100;
+
   private strokeLineCap: StrokeLineCap;
 
   private shadowSvgId = uuidV4();
@@ -86,6 +88,7 @@ export class SvgLine {
       shadowDistance?: number;
       shadowBlur?: number;
       strokeLineCap?: StrokeLineCap;
+      opacity?: number;
     } = {},
   ) {
     this.stroke = options.stroke || '#000';
@@ -134,6 +137,14 @@ export class SvgLine {
 
   public getEndAdornment() {
     return this.endAdornment;
+  }
+
+  public getOpacity() {
+    return this.opacity;
+  }
+
+  public setOpacity(opacity: number) {
+    this.opacity = opacity;
   }
 
   getCenterPoint(): number {
@@ -844,6 +855,15 @@ export class SvgLine {
     }
   }
 
+  public toStraight() {
+    if (this.type === SvgLineType.Elbowed) {
+      this.type = SvgLineType.Straight;
+
+      this.points.setNext(this.endPoint);
+      this.endPoint.setPrev(this.points);
+    }
+  }
+
   private convertPointsToElbowed() {
     let point: LinePoint | null = this.points;
 
@@ -900,9 +920,9 @@ export class SvgLine {
             ${this.getSvgShadow()}
             ${this.getLinearGradient()}
             </defs>
-            <g stroke-linejoin="${this.strokeLineCap}" stroke-linecap="${
+            <g  opacity="${this.opacity / 100}" stroke-linejoin="${
               this.strokeLineCap
-            }" filter="url(#${
+            }" stroke-linecap="${this.strokeLineCap}" filter="url(#${
               this.shadowSvgId
             })" fill="${this.getStrokeColor()}" stroke="${this.getStrokeColor()}"  stroke-width="${
               this.strokeWidth

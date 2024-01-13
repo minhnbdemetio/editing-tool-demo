@@ -1,5 +1,6 @@
 import { MoveableObject } from './MoveableObject';
 import { SvgLine, SvgLineAdornment } from '../utilities/svg-line';
+import { LinePoint } from '../utilities/line-point';
 
 export class MoveableLineObject extends MoveableObject {
   clone(options?: { htmlString: string; id: string }): MoveableLineObject {
@@ -44,43 +45,38 @@ export class MoveableLineObject extends MoveableObject {
       anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(${this.line.getRotateAngle()}deg)`;
     }
   }
-  // createMoveable(container: HTMLElement): void {
-  //   const element = this.getElement();
-  //   const moveable = new Moveable(container, {
-  //     target: element,
-  //     draggable: true,
-  //     scalable: false,
-  //     keepRatio: true,
-  //     rotatable: false,
-  //     resizable: false,
-  //     className: 'line-element',
-  //   });
-  //   moveable.on('dragStart', e => {
-  //     var matrix = new WebKitCSSMatrix(e.target.style.transform);
-  //     this.dragStartPoint = {
-  //       x: matrix.m41,
-  //       y: matrix.m42,
-  //     };
-  //   });
-  //   moveable.on('drag', e => {
-  //     e.target.style.transform = e.transform;
-  //   });
-  //   moveable.on('dragEnd', e => {
-  //     var matrix = new WebKitCSSMatrix(e.target.style.transform);
-  //     const xChanged = matrix.m41 - this.dragStartPoint.x;
-  //     const yChanged = matrix.m42 - this.dragStartPoint.y;
 
-  //     this.line?.moveAllPoints({ x: xChanged, y: yChanged });
-  //   });
-  //   moveable.on('rotate', e => (e.target.style.transform = e.transform));
-  //   moveable.on('resize', e => {
-  //     e.target.style.width = `${e.width}px`;
-  //     e.target.style.height = `${e.height}px`;
-  //     e.target.style.transform = e.drag.transform;
-  //   });
-  //   moveable.on('scale', e => (e.target.style.transform = e.drag.transform));
-  //   this.moveable = moveable;
-  // }
+  public updatePointerControllerUI(hide?: boolean) {
+    let point: LinePoint | undefined | null = this.line.points;
 
-  toElbowedLine() {}
+    while (point) {
+      const next = point.getNext();
+
+      if (next) {
+        const id = point.id + next.id;
+        const element = document.getElementById(id);
+
+        if (hide && element) {
+          element.style.display = 'none';
+          point = point.getNext();
+          continue;
+        }
+
+        if (point.hasNextCurve() || point.hasPrevCurve()) {
+          if (element) {
+            element.style.transform = `translate(${(point.x + next.x) / 2}px, ${
+              (point.y + next.y) / 2
+            }px)`;
+            element.style.display = 'block';
+          }
+        } else {
+          if (element) {
+            element.style.display = 'none';
+          }
+        }
+      }
+
+      point = point.getNext();
+    }
+  }
 }
