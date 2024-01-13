@@ -12,6 +12,7 @@ import { SpacingProperty } from './Text/SpacingProperty';
 import { EffectProperty } from './Text/EffectProperty';
 import { StylesProperty } from './Text/StylesProperty';
 import { NudgeProperty } from './Text/NudgeProperty';
+import { PositionProperty } from './Text/PositionProperty';
 
 import { ColorProperty as LineColorProperty } from './Line/ColorProperty';
 import { LineProperty } from './Line/StyleProperty';
@@ -49,6 +50,9 @@ export const SelectedObjectProperty: FC = () => {
       }
       case SelectedProperty.TextNudge: {
         return <NudgeProperty />;
+      }
+      case SelectedProperty.TextPosition: {
+        return <PositionProperty />;
       }
       case SelectedProperty.LineColor: {
         return <LineColorProperty />;

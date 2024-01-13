@@ -44,3 +44,34 @@ export const parseTranslateString = (
     return { translateX: 0, translateY: 0 };
   }
 };
+interface TransformResult {
+  translate?: string;
+  rotate?: string;
+}
+
+export function parseTransformString(transformString: string): TransformResult {
+  const translatePattern = /translate\(([\d.]+px),\s*([\d.]+px)\)/;
+  const rotatePattern = /rotate\(([\d.]+deg)\)/;
+
+  const hasTranslate = translatePattern.test(transformString);
+  const hasRotate = rotatePattern.test(transformString);
+
+  const result: TransformResult = { translate: '', rotate: '0' };
+
+  if (hasTranslate) {
+    const translateMatches = translatePattern.exec(transformString);
+    if (translateMatches) {
+      result.translate =
+        'translate(' + translateMatches[1] + ', ' + translateMatches[2] + ')';
+    }
+  }
+
+  if (hasRotate) {
+    const rotateMatches = rotatePattern.exec(transformString);
+    if (rotateMatches) {
+      result.rotate = rotateMatches[1];
+    }
+  }
+
+  return result;
+}

@@ -50,6 +50,8 @@ import { Information } from './Information';
 import { Link } from './Link';
 import { Document } from './Document';
 import { ArrowToLeft } from './ArrowToLeft';
+import { GoToTop } from './GoToTop';
+import { MoveOn } from './MoveOn';
 
 export {
   Home,
@@ -104,4 +106,6 @@ export {
   Link,
   Document,
   ArrowToLeft,
+  GoToTop,
+  MoveOn,
 };
