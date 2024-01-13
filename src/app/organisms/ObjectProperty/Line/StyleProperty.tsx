@@ -121,6 +121,7 @@ export const LineProperty: FC = () => {
             minValue={1}
             value={lightWeight}
             onChange={onChangeLightWeight}
+            classNames={{ base: 'w-full !max-w-none' }}
             className="max-w-md text-black"
           />
         </div>

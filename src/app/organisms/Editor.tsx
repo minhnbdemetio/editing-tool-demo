@@ -12,7 +12,6 @@ import { useDesign } from '../store/design-objects';
 import { MOVEABLE_TARGET_CLASS } from '../constants/moveable';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { isLine } from '../utilities/moveable';
-import { updateHeadControllerPosition } from '../utilities/line';
 import { useDeleteObjetCommand } from '../hooks/editor-commands/useActiveMoveableObjectCommand';
 
 export const SELECTO_ID = 'editor-selecto';
@@ -137,7 +136,7 @@ export const Editor: FC = () => {
             };
             activeMoveableObject.setDragging(true);
 
-            updateHeadControllerPosition(activeMoveableObject, true);
+            activeMoveableObject.updateHeadControl(true);
           }
         }}
         onDragEnd={e => {
@@ -152,7 +151,7 @@ export const Editor: FC = () => {
               y: yChanged,
             });
             activeMoveableObject.setDragging(false);
-            updateHeadControllerPosition(activeMoveableObject);
+            activeMoveableObject.updateHeadControl();
           }
         }}
         onDrag={e => {

@@ -10,6 +10,9 @@ export enum SvgLineAdornment {
   OutlinedSquare = 'outlined-square',
   OutlinedRhombus = 'outlined-rhombus',
   OutlinedTriangle = 'outlined-triangle',
+  OutlinedCircle = 'outlined-circle',
+  Circle = 'circle',
+  Line = 'line',
   None = 'none',
 }
 
@@ -63,6 +66,8 @@ export class SvgLine {
   private shadowDistance: number = 0;
   private shadowBlur: number = 0;
 
+  private opacity: number = 100;
+
   private strokeLineCap: StrokeLineCap;
 
   private shadowSvgId = uuidV4();
@@ -83,6 +88,7 @@ export class SvgLine {
       shadowDistance?: number;
       shadowBlur?: number;
       strokeLineCap?: StrokeLineCap;
+      opacity?: number;
     } = {},
   ) {
     this.stroke = options.stroke || '#000';
@@ -123,6 +129,22 @@ export class SvgLine {
       );
     }
     return `<path d="${d}" ${pathOptions.join(' ')} />`;
+  }
+
+  public getStartAdornment() {
+    return this.startAdornment;
+  }
+
+  public getEndAdornment() {
+    return this.endAdornment;
+  }
+
+  public getOpacity() {
+    return this.opacity;
+  }
+
+  public setOpacity(opacity: number) {
+    this.opacity = opacity;
   }
 
   getCenterPoint(): number {
@@ -357,6 +379,18 @@ export class SvgLine {
         return this.getTriangleAdornment(direction, x, y);
       case SvgLineAdornment.OutlinedTriangle:
         return this.getTriangleAdornment(direction, x, y, true);
+      case SvgLineAdornment.Circle:
+        return this.getCircleAdornment(direction, x, y);
+      case SvgLineAdornment.OutlinedCircle:
+        return this.getCircleAdornment(direction, x, y, true);
+      case SvgLineAdornment.Square:
+        return this.getSquareAdornment(direction, x, y);
+      case SvgLineAdornment.OutlinedSquare:
+        return this.getSquareAdornment(direction, x, y, true);
+      case SvgLineAdornment.Rhombus:
+        return this.getRhombusAdornment(direction, x, y);
+      case SvgLineAdornment.OutlinedRhombus:
+        return this.getRhombusAdornment(direction, x, y, true);
       default:
         return '';
     }
@@ -426,8 +460,6 @@ export class SvgLine {
         this.strokeDashArray = undefined;
       }
     }
-
-    console.debug(this.strokeDashArray);
   }
 
   private getArrowAdornment(
@@ -474,7 +506,7 @@ export class SvgLine {
   }
 
   private getAdornmentLength(): number {
-    return this.strokeWidth * 3;
+    return this.strokeWidth * 2;
   }
 
   private getStrokeColor(): string {
@@ -495,6 +527,88 @@ export class SvgLine {
   ): string {
     const option = { fill: outlined ? 'none' : this.getStrokeColor() };
     const arrowLength = this.getAdornmentLength();
+
+    switch (direction) {
+      case 'up': {
+        return this.addPath(
+          `M ${x - arrowLength} ${
+            y + arrowLength
+          }  l ${arrowLength} ${-arrowLength}  ${arrowLength} ${arrowLength} z`,
+          option,
+        );
+      }
+      case 'left': {
+        return this.addPath(
+          `M ${x + arrowLength} ${
+            y - arrowLength
+          } l ${-arrowLength} ${arrowLength}  ${arrowLength} ${arrowLength} z`,
+          option,
+        );
+      }
+      case 'right': {
+        return this.addPath(
+          `M ${x - arrowLength} ${
+            y - arrowLength
+          } l ${arrowLength} ${arrowLength}  ${-arrowLength} ${arrowLength} z`,
+          option,
+        );
+      }
+      case 'down': {
+        return this.addPath(
+          `M ${x - arrowLength} ${
+            y - arrowLength
+          } l ${arrowLength} ${arrowLength}  ${arrowLength} ${-arrowLength} z`,
+          option,
+        );
+      }
+    }
+  }
+  private getSquareAdornment(
+    direction: 'up' | 'left' | 'down' | 'right',
+    x: number,
+    y: number,
+    outlined?: boolean,
+  ): string {
+    const option = { fill: outlined ? 'none' : this.getStrokeColor() };
+    const arrowLength = this.getAdornmentLength() * 2;
+
+    return this.addPath(
+      `M  ${x + arrowLength / 2} ${
+        y + arrowLength / 2
+      } l 0 -${arrowLength} -${arrowLength} 0 0 ${arrowLength} ${arrowLength} 0 z`,
+      option,
+    );
+  }
+
+  private getRhombusAdornment(
+    direction: 'up' | 'left' | 'down' | 'right',
+    x: number,
+    y: number,
+    outlined?: boolean,
+  ): string {
+    const option = { fill: outlined ? 'none' : this.getStrokeColor() };
+    const rhombusSide = this.getAdornmentLength();
+
+    return this.addPath(
+      `M ${
+        x + rhombusSide
+      } ${y} l -${rhombusSide} -${rhombusSide} l -${rhombusSide} ${rhombusSide} l ${rhombusSide} ${rhombusSide} l ${rhombusSide} -${rhombusSide} z`,
+      option,
+    );
+  }
+
+  private getCircleAdornment(
+    direction: 'up' | 'left' | 'down' | 'right',
+    x: number,
+    y: number,
+    outlined?: boolean,
+  ): string {
+    const option = { fill: outlined ? 'none' : this.getStrokeColor() };
+    const arrowLength = this.getAdornmentLength();
+
+    return `<circle cx="${x}" cy="${y}" r="${arrowLength}" stroke="black" stroke-width="${
+      this.strokeWidth
+    }" fill="${outlined ? 'none' : 'currentColor'}" />`;
 
     switch (direction) {
       case 'up': {
@@ -584,9 +698,42 @@ export class SvgLine {
           startAdornmentPos === 'right' ? this.getAdornmentLength() : 0,
         );
         break;
+      case SvgLineAdornment.OutlinedCircle:
+      case SvgLineAdornment.OutlinedSquare:
+      case SvgLineAdornment.OutlinedRhombus:
+        adornmentPadding.startLeft = Math.max(
+          adornmentPadding.startLeft,
+          startAdornmentPos === 'left' ? this.getAdornmentLength() : 0,
+        );
+        adornmentPadding.startTop = Math.max(
+          adornmentPadding.startTop,
+          startAdornmentPos === 'up' ? this.getAdornmentLength() : 0,
+        );
+        adornmentPadding.startBottom = Math.max(
+          adornmentPadding.startBottom,
+          startAdornmentPos === 'down' ? this.getAdornmentLength() : 0,
+        );
+        adornmentPadding.startRight = Math.max(
+          adornmentPadding.startRight,
+          startAdornmentPos === 'right' ? this.getAdornmentLength() : 0,
+        );
+        break;
     }
     switch (this.endAdornment) {
       case SvgLineAdornment.OutlinedTriangle:
+        adornmentPadding.endLeft =
+          endAdornmentPos === 'left' ? this.getAdornmentLength() : 0;
+        adornmentPadding.endTop =
+          endAdornmentPos === 'up' ? this.getAdornmentLength() : 0;
+        adornmentPadding.endBottom =
+          endAdornmentPos === 'down' ? this.getAdornmentLength() : 0;
+        adornmentPadding.endRight =
+          endAdornmentPos === 'right' ? this.getAdornmentLength() : 0;
+        break;
+
+      case SvgLineAdornment.OutlinedCircle:
+      case SvgLineAdornment.OutlinedSquare:
+      case SvgLineAdornment.OutlinedRhombus:
         adornmentPadding.endLeft =
           endAdornmentPos === 'left' ? this.getAdornmentLength() : 0;
         adornmentPadding.endTop =
@@ -708,6 +855,15 @@ export class SvgLine {
     }
   }
 
+  public toStraight() {
+    if (this.type === SvgLineType.Elbowed) {
+      this.type = SvgLineType.Straight;
+
+      this.points.setNext(this.endPoint);
+      this.endPoint.setPrev(this.points);
+    }
+  }
+
   private convertPointsToElbowed() {
     let point: LinePoint | null = this.points;
 
@@ -764,9 +920,9 @@ export class SvgLine {
             ${this.getSvgShadow()}
             ${this.getLinearGradient()}
             </defs>
-            <g stroke-linejoin="${this.strokeLineCap}" stroke-linecap="${
+            <g  opacity="${this.opacity / 100}" stroke-linejoin="${
               this.strokeLineCap
-            }" filter="url(#${
+            }" stroke-linecap="${this.strokeLineCap}" filter="url(#${
               this.shadowSvgId
             })" fill="${this.getStrokeColor()}" stroke="${this.getStrokeColor()}"  stroke-width="${
               this.strokeWidth
