@@ -12,7 +12,7 @@ import { useActivePage } from '../store/active-page';
 import { twMerge } from '../utilities/tailwind';
 
 export const SELECTO_ID = 'editor-selecto';
-export const EDITOR_CONTAINER_ID = 'editor-container';
+export const EDITOR_CONTAINER = 'editor-container';
 
 export const Editor: FC = () => {
   const pages = usePages();
@@ -39,9 +39,9 @@ export const Editor: FC = () => {
   return (
     <div
       ref={drop}
-      id={EDITOR_CONTAINER_ID}
+      id={EDITOR_CONTAINER}
       data-active-element-type={activeMoveableObject?.type}
-      className="bg-gray-200 p-10"
+      className={`bg-gray-200 p-10 ${EDITOR_CONTAINER}`}
     >
       <div className="text-right mb-3">
         <LinePreviewToggle />
