@@ -1,6 +1,9 @@
 import { MobileNudgeButtons } from '@/app/atoms/MobileNudgeButtons';
 import { useChangeMoveableTextTransformCommand } from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
-import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
+import {
+  useActiveMoveableLineObject,
+  useActiveTextObject,
+} from '@/app/hooks/useActiveMoveableObject';
 import { ArrowToLeft } from '@/app/icons';
 import { parseTranslateString } from '@/app/utilities/utils';
 import { Button } from '@nextui-org/react';
@@ -8,20 +11,16 @@ import { FC } from 'react';
 
 interface NudgePropertyProps {}
 
-export const NudgeProperty: FC<NudgePropertyProps> = ({}) => {
-  const changeTransform = useChangeMoveableTextTransformCommand();
-  const activeText = useActiveTextObject();
-  const element = activeText?.getElement();
+export const LineNudgeProperty: FC<NudgePropertyProps> = ({}) => {
+  const activeLine = useActiveMoveableLineObject();
 
-  const handleChangeTransform = (translateX: number, translateY: number) => {
-    const beforeTransForm = parseTranslateString(
-      element?.style?.transform || '0',
-    );
-    changeTransform(
-      translateX + beforeTransForm.translateX,
-      translateY + beforeTransForm.translateY,
-      () => {},
-    );
+  const handleChangeTransform = (x: number, y: number) => {
+    if (activeLine) {
+      activeLine.line.moveAllPoints({ x, y });
+      activeLine.updateUI();
+      activeLine.updatePointerControllerUI();
+      activeLine.updateHeadControl();
+    }
   };
 
   return (

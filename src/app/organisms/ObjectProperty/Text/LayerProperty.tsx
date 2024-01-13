@@ -26,7 +26,7 @@ export const LayerProperty: FC<LayerPropertyProps> = ({}) => {
         : element.outerHTML;
       return (
         <div
-          className={`h-12 w-full bg-[#35475a33] rounded-lg	flex items-center justify-center my-2`}
+          className={`h-12 w-full bg-[#35475a33] rounded-lg	flex items-center justify-center`}
           key={element.id}
         >
           <div
@@ -67,7 +67,7 @@ export const LayerProperty: FC<LayerPropertyProps> = ({}) => {
         </div>
       </div>
       {mode === MODE.all && (
-        <div className="flex-1 w-full overflow-auto">
+        <div className="group flex flex-col flex-1 gap-1 w-full overflow-auto">
           {pageObjects &&
             pageObjects.map(pageObject => ElementRender(pageObject))}
         </div>

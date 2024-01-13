@@ -4,7 +4,6 @@ import { MoveableObject } from '@/app/factories/MoveableObject';
 import { MoveableNormalTextElement } from './text/MoveableNormalTextElement';
 import { MoveableLineElement } from './MoveableLineElement';
 import { useLoadMoveableObject } from '@/app/hooks/useLoadObject';
-import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
 import { MoveableHeadingTextElement } from './text/MoveableHeadingTextElement';
 import {
   isBodyText,
@@ -23,15 +22,13 @@ export interface MoveableObjectProps {
 
 export const MoveableObjectElement: FC<MoveableObjectProps> = props => {
   const { object } = props;
-  const { setActiveMoveableObject } = useActiveMoveableObject();
   const { objectLoaded } = useLoadMoveableObject(object);
 
   useEffect(() => {
     if (!objectLoaded) return;
     const element = object.getElement();
     if (!element) return;
-    element.onclick = () => setActiveMoveableObject(object);
-  }, [object, objectLoaded, setActiveMoveableObject]);
+  }, [object, objectLoaded]);
 
   const renderElement = () => {
     if (isNormalText(object)) {

@@ -17,6 +17,11 @@ import { PositionProperty } from './Text/PositionProperty';
 import { ColorProperty as LineColorProperty } from './Line/ColorProperty';
 import { LineProperty } from './Line/StyleProperty';
 import { LayerProperty } from './Text/LayerProperty';
+import { LineStartProperty } from './Line/LineStartProperty';
+import { LineEndProperty } from './Line/LineEndProperty';
+import { LineTypeProperty } from './Line/LineTypeProperty';
+import { LineTransparencyProperty } from './Line/LineTransparencyProperty';
+import { LineNudgeProperty } from './Line/LineNudgeProperty';
 
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
@@ -61,6 +66,21 @@ export const SelectedObjectProperty: FC = () => {
       }
       case SelectedProperty.TextLayers: {
         return <LayerProperty />;
+      }
+      case SelectedProperty.LineStart: {
+        return <LineStartProperty />;
+      }
+      case SelectedProperty.LineEnd: {
+        return <LineEndProperty />;
+      }
+      case SelectedProperty.LineType: {
+        return <LineTypeProperty />;
+      }
+      case SelectedProperty.LineTransparency: {
+        return <LineTransparencyProperty />;
+      }
+      case SelectedProperty.LineNudge: {
+        return <LineNudgeProperty />;
       }
       default: {
         return null;

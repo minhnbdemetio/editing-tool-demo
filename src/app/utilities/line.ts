@@ -63,33 +63,3 @@ export const getAngle = (line: fabric.Line, position: 'start' | 'end') => {
 
   return angle;
 };
-
-export const updateHeadControllerPosition = (
-  lineObject: MoveableLineObject,
-  hide?: boolean,
-) => {
-  const start = lineObject.line.points;
-  const end = lineObject.line.endPoint;
-
-  if (start && end) {
-    const startElement = document.getElementById('head-' + start.id);
-    const endElement = document.getElementById('head-' + end.id);
-
-    if (hide) {
-      if (startElement) startElement.style.display = `none`;
-
-      if (endElement) endElement.style.display = `none`;
-      return;
-    }
-
-    if (startElement) {
-      startElement.style.display = `block`;
-      startElement.style.transform = ` translate(${start?.x}px, ${start?.y}px)`;
-    }
-
-    if (endElement) {
-      endElement.style.display = `block`;
-      endElement.style.transform = ` translate(${end?.x}px, ${end?.y}px)`;
-    }
-  }
-};
