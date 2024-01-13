@@ -96,7 +96,6 @@ export const useDeleteObject = () => {
       const filteredTargets = moveableTargets.filter(
         element => element.id !== shouldDeleteObject.id,
       );
-      shouldDeleteObject?.destroy();
       shouldDeleteObject.exportHtmlString();
       setMoveableTargets(filteredTargets);
       setDesignObjects(shouldDeleteObject.pageId || '', filteredObjects);
@@ -462,4 +461,12 @@ export const useChangeTextRotate = () => {
   };
 
   return changeTextRotate;
+};
+
+export const useToggleLock = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+  const toggleLock = () => {
+    activeMoveableObject?.toggleLock();
+  };
+  return toggleLock;
 };

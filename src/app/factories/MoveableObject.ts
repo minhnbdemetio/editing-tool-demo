@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { findIdFromString } from '../utilities/dom';
-import { MOVEABLE_TARGET_CLASS } from '../constants/moveable';
+import { DATA_LOCKED, MOVEABLE_TARGET_CLASS } from '../constants/moveable';
 import { EDITOR_CONTAINER_ID } from '../organisms/Editor';
 
 export const MAX_FIND_ELEMENT_ATTEMPTS = 100;
@@ -10,10 +10,12 @@ export abstract class MoveableObject {
   type?: ObjectType;
   htmlString?: string;
   pageId: string | null;
+  isLocked: boolean;
   constructor(id?: string, htmlString?: string) {
     this.id = id || uuidv4();
     this.htmlString = htmlString;
     this.pageId = null;
+    this.isLocked = false;
   }
 
   setId(id: string) {
@@ -27,6 +29,9 @@ export abstract class MoveableObject {
   }
   setPageId(pageId: string | null) {
     this.pageId = pageId;
+  }
+  setIsLocked(isLocked: boolean) {
+    this.isLocked = isLocked;
   }
   copy() {}
   abstract clone(options?: { htmlString: string; id: string }): MoveableObject;
@@ -72,9 +77,6 @@ export abstract class MoveableObject {
     }
     return '';
   }
-  destroy() {
-    return true;
-  }
   setupMoveable() {
     const element = this.getElement();
     if (!element?.classList.contains(MOVEABLE_TARGET_CLASS)) {
@@ -89,5 +91,11 @@ export abstract class MoveableObject {
   }
   getContainer() {
     return document.getElementById(EDITOR_CONTAINER_ID);
+  }
+  toggleLock() {
+    const toggleValue = !this.isLocked;
+    const element = this.getElement();
+    element?.setAttribute(DATA_LOCKED, toggleValue + '');
+    this.setIsLocked(toggleValue);
   }
 }

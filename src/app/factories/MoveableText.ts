@@ -1,5 +1,6 @@
 import { MAX_FIND_ELEMENT_ATTEMPTS, MoveableObject } from './MoveableObject';
 import { GradientStop } from '../utilities/color.type';
+import { TEXT_CONTAINER } from '../constants/moveable';
 
 export type MoveableTextVariant = 'normal' | 'heading' | 'subheading' | 'body';
 
@@ -119,5 +120,12 @@ export class MoveableTextObject extends MoveableObject {
     const element = this.getElement();
     if (!element) return;
     element.style.transformOrigin = transformOrigin ?? 'bottom';
+  }
+  toggleLock(): void {
+    super.toggleLock();
+    const textContainer = document.getElementById(
+      `${TEXT_CONTAINER}${this.id}`,
+    );
+    textContainer?.setAttribute('contenteditable', !this.toggleLock + '');
   }
 }

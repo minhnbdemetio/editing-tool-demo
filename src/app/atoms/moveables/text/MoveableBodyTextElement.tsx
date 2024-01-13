@@ -2,6 +2,7 @@ import { FC } from 'react';
 
 import clsx from 'clsx';
 import { MoveableBodyTextObject } from '@/app/factories/MoveableBodyText';
+import { TEXT_CONTAINER } from '@/app/constants/moveable';
 
 interface MoveableTextProps {
   object: MoveableBodyTextObject;
@@ -17,11 +18,15 @@ export const MoveableBodyTextElement: FC<MoveableTextProps> = ({
       id={object.id}
       className={clsx('absolute w-fit hidden text-sm', className)}
       style={{ writingMode: 'horizontal-tb' }}
-      
-      suppressContentEditableWarning
     >
       <ul>
-        <li contentEditable>Add a body text</li>
+        <li
+          id={`${TEXT_CONTAINER}${object.id}`}
+          suppressContentEditableWarning
+          contentEditable
+        >
+          Add a body text
+        </li>
       </ul>
     </div>
   );

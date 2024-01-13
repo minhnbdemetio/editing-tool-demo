@@ -1,6 +1,8 @@
+import { useDeleteObjetCommand } from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
 import {
   useCopyActiveObject,
   usePasteObject,
+  useToggleLock,
 } from '@/app/hooks/useActiveMoveableObject';
 import { Link } from '@/app/icons';
 import { AlternativeText } from '@/app/icons/AlternativeText';
@@ -22,6 +24,8 @@ import { FC } from 'react';
 export const TextMoreProperty: FC = () => {
   const handleCopyObject = useCopyActiveObject();
   const handlePastObject = usePasteObject();
+  const handleLockObject = useToggleLock();
+  const deleteObjectCommand = useDeleteObjetCommand();
 
   return (
     <div className="w-full h-full">
@@ -59,13 +63,13 @@ export const TextMoreProperty: FC = () => {
         <Button size="lg" isIconOnly>
           <Link />
         </Button>
-        <Button size="lg" isIconOnly>
+        <Button onClick={handleLockObject} size="lg" isIconOnly>
           <Lock />
         </Button>
         <Button size="lg" isIconOnly>
           <AlternativeText />
         </Button>
-        <Button size="lg" isIconOnly>
+        <Button onClick={deleteObjectCommand} size="lg" isIconOnly>
           <Delete />
         </Button>
         <Button size="lg" isIconOnly>
