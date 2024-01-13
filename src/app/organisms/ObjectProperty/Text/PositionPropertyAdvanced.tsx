@@ -1,3 +1,4 @@
+import { FC, useEffect, useState } from 'react';
 import { useChangeMoveableTextTransformCommand } from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
 import {
   useChangeTextHeight,
@@ -5,7 +6,7 @@ import {
   useChangeTextRotate,
   useChangeTextWidth,
 } from '@/app/hooks/useActiveMoveableObject';
-import { ArrowToLeft, GoToTop, LockOpen, MoveOn } from '@/app/icons';
+import { LockOpen } from '@/app/icons';
 import { Lock } from '@/app/icons/Lock';
 import { InputUnit } from '@/app/molecules/InputUnit';
 import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
@@ -14,13 +15,9 @@ import {
   parseTranslateString,
 } from '@/app/utilities/utils';
 import { Button } from '@nextui-org/react';
-import { FC, useEffect, useState } from 'react';
 
 interface PositionPropertyAdvancedProps {}
-enum MODE {
-  'arrange',
-  'advanced',
-}
+
 export const PositionPropertyAdvanced: FC<
   PositionPropertyAdvancedProps
 > = ({}) => {

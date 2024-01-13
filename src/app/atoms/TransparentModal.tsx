@@ -1,7 +1,7 @@
-import clsx from 'clsx';
 import { FC, PropsWithChildren } from 'react';
 import { useOutsideClick } from '../hooks/useClickOutside';
 import { useSelectedProperty } from '../store/selected-property';
+import { twMerge } from '../utilities/tailwind';
 
 interface TransparentModalProps extends PropsWithChildren {
   className?: string;
@@ -18,7 +18,7 @@ export const TransparentModal: FC<TransparentModalProps> = ({
   return (
     <div
       ref={modalRef}
-      className={clsx(className, 'p-2 bg-white w-full h-full')}
+      className={twMerge('p-2 bg-white w-full h-full py-5', className)}
     >
       {children}
     </div>

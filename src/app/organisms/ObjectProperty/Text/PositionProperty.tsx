@@ -1,7 +1,7 @@
-import { GoToTop, MoveOn } from '@/app/icons';
 import { Button } from '@nextui-org/react';
 import { FC, useState } from 'react';
 import { PositionPropertyAdvanced } from './PositionPropertyAdvanced';
+import { PositionPropertyArrange } from './PositionPropertyArrange';
 
 interface PositionPropertyProps {}
 enum MODE {
@@ -17,26 +17,7 @@ export const PositionProperty: FC<PositionPropertyProps> = ({}) => {
         <span>Vị trí</span>
       </div>
       {mode === MODE.arrange ? (
-        <div className="w-full flex-1">
-          <div className="flex w-full">
-            <div className="w-1/2 flex h-10 items-center">
-              <MoveOn className="mx-4" />
-              Tiến lên 1 lớp
-            </div>
-            <div className="w-1/2 flex h-10 items-center">
-              <MoveOn className="mx-4 rotate-180" /> Lùi 1 lớp
-            </div>
-          </div>
-          <div className="flex w-full">
-            <div className="w-1/2 flex h-10 items-center">
-              <GoToTop className="mx-4" />
-              Lên trước
-            </div>
-            <div className="w-1/2 flex h-10 items-center">
-              <GoToTop className="mx-4 rotate-180" /> Về sau
-            </div>
-          </div>
-        </div>
+        <PositionPropertyArrange />
       ) : (
         <PositionPropertyAdvanced />
       )}
