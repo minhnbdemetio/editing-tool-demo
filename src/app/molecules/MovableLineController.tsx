@@ -111,33 +111,6 @@ const ElbowedLineController: React.FC<{
 
   const linePositions = activeMoveableObject.line.getElbowedLinePositions();
 
-  const updateHeadControllerPosition = (hide?: boolean) => {
-    const start = activeMoveableObject.line?.points;
-    const end = activeMoveableObject.line?.endPoint;
-
-    if (start && end) {
-      const startElement = document.getElementById('head-' + start.id);
-      const endElement = document.getElementById('head-' + end.id);
-
-      if (hide) {
-        if (startElement) startElement.style.display = `none`;
-
-        if (endElement) endElement.style.display = `none`;
-        return;
-      }
-
-      if (startElement) {
-        startElement.style.display = `block`;
-        startElement.style.transform = ` translate(${start?.x}px, ${start?.y}px)`;
-      }
-
-      if (endElement) {
-        endElement.style.display = `block`;
-        endElement.style.transform = ` translate(${end?.x}px, ${end?.y}px)`;
-      }
-    }
-  };
-
   if (!anchorRef) return null;
 
   const onDragFreePoint = (
@@ -285,7 +258,7 @@ const ElbowedLineController: React.FC<{
               anchorRef.innerHTML = activeMoveableObject.line.toSvg() || '';
               anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(0deg)`;
 
-              updateHeadControllerPosition();
+              activeMoveableObject.updateHeadControl();
             }
           }}
           dragStyle={pos.y2 === pos.y1 ? 'yOnly' : 'xOnly'}

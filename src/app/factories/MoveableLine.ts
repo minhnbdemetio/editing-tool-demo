@@ -79,4 +79,31 @@ export class MoveableLineObject extends MoveableObject {
       point = point.getNext();
     }
   }
+
+  public updateHeadControl(hide?: boolean) {
+    const start = this.line.points;
+    const end = this.line.endPoint;
+
+    if (start && end) {
+      const startElement = document.getElementById('head-' + start.id);
+      const endElement = document.getElementById('head-' + end.id);
+
+      if (hide) {
+        if (startElement) startElement.style.display = `none`;
+
+        if (endElement) endElement.style.display = `none`;
+        return;
+      }
+
+      if (startElement) {
+        startElement.style.display = `block`;
+        startElement.style.transform = ` translate(${start?.x}px, ${start?.y}px)`;
+      }
+
+      if (endElement) {
+        endElement.style.display = `block`;
+        endElement.style.transform = ` translate(${end?.x}px, ${end?.y}px)`;
+      }
+    }
+  }
 }
