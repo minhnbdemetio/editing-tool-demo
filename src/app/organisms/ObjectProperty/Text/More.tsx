@@ -1,3 +1,9 @@
+import { useDeleteObjetCommand } from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
+import {
+  useCopyActiveObject,
+  usePasteObject,
+  useToggleLock,
+} from '@/app/hooks/useActiveMoveableObject';
 import { Link } from '@/app/icons';
 import { AlternativeText } from '@/app/icons/AlternativeText';
 import { BringForward } from '@/app/icons/BringForward';
@@ -16,16 +22,21 @@ import { Button } from '@nextui-org/react';
 import { FC } from 'react';
 
 export const TextMoreProperty: FC = () => {
+  const handleCopyObject = useCopyActiveObject();
+  const handlePastObject = usePasteObject();
+  const handleLockObject = useToggleLock();
+  const deleteObjectCommand = useDeleteObjetCommand();
+
   return (
     <div className="w-full h-full">
       <div className="text-center mb-3">
         <span>More</span>
       </div>
       <div className="flex items-center gap-2 overflow-x-scroll w-full">
-        <Button size="lg" isIconOnly>
+        <Button onClick={handleCopyObject} size="lg" isIconOnly>
           <Copy />
         </Button>
-        <Button size="lg" isIconOnly>
+        <Button onClick={handlePastObject} size="lg" isIconOnly>
           <Paste />
         </Button>
         <Button size="lg" isIconOnly>
@@ -52,13 +63,13 @@ export const TextMoreProperty: FC = () => {
         <Button size="lg" isIconOnly>
           <Link />
         </Button>
-        <Button size="lg" isIconOnly>
+        <Button onClick={handleLockObject} size="lg" isIconOnly>
           <Lock />
         </Button>
         <Button size="lg" isIconOnly>
           <AlternativeText />
         </Button>
-        <Button size="lg" isIconOnly>
+        <Button onClick={deleteObjectCommand} size="lg" isIconOnly>
           <Delete />
         </Button>
         <Button size="lg" isIconOnly>

@@ -1,3 +1,4 @@
+import { DATA_LOCKED } from '../constants/moveable';
 import { MoveableBodyTextObject } from '../factories/MoveableBodyText';
 import { MoveableHeadingTextObject } from '../factories/MoveableHeadingText';
 import { MoveableLineObject } from '../factories/MoveableLine';
@@ -32,3 +33,9 @@ export const isBodyText = (
 export const isLine = (
   moveableObject: MoveableObject | null,
 ): moveableObject is MoveableLineObject => moveableObject?.type === 'line';
+
+export const isElementLocked = (
+  target: HTMLElement | SVGElement | undefined | null,
+) => {
+  return target?.getAttribute(DATA_LOCKED) === 'true';
+};

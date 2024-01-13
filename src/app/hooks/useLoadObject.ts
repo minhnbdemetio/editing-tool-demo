@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { MoveableObject } from '../factories/MoveableObject';
 import { useCurrentPage } from './useCurrentPage';
+import { DATA_LOCKED } from '../constants/moveable';
+import { isElementLocked } from '../utilities/moveable';
 
 export const useLoadMoveableObject = (object: MoveableObject) => {
   const [objectLoaded, setObjectLoaded] = useState(false);
@@ -20,6 +22,7 @@ export const useLoadMoveableObject = (object: MoveableObject) => {
     }
     object.setupMoveable();
     object.setPageId(pageId);
+    object.setIsLocked(isElementLocked(object.getElement()));
     setObjectLoaded(true);
   }, [object, objectLoaded, pageId]);
 

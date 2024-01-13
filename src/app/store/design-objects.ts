@@ -3,6 +3,10 @@ import { MoveableObject } from '../factories/MoveableObject';
 import Moveable from 'react-moveable';
 interface DesignProperties {
   designObjects: Record<string, { objects: MoveableObject[] }>;
+  setDesignObjects: (
+    designObjects: Record<string, { objects: MoveableObject[] }>,
+  ) => any;
+  getDesignObjects: () => Record<string, { objects: MoveableObject[] }>;
   setPageObjects: (pageId: string, objects: MoveableObject[]) => any;
   moveableTargets: Array<HTMLElement | SVGElement>;
   getMoveableTargets: () => Array<HTMLElement | SVGElement>;
@@ -21,6 +25,12 @@ export const useDesign = create<DesignProperties>((set, get) => ({
     return get().moveableTargets;
   },
   designObjects: {},
+  setDesignObjects(designObjects) {
+    set({ designObjects });
+  },
+  getDesignObjects() {
+    return get().designObjects;
+  },
   setPageObjects: (pageId: string, objects: MoveableObject[]) => {
     set(state => ({
       designObjects: { ...state.designObjects, [pageId]: { objects } },
