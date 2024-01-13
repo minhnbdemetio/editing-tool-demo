@@ -1,5 +1,5 @@
 import { MoveableTextShadow } from '@/app/factories/MoveableText';
-import { useActiveMoveableTextObject } from '@/app/hooks/useActiveMoveableObject';
+import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
 import { Button, Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 
@@ -38,7 +38,7 @@ const DEFAULT_VALUE = {
   offset: 50,
 };
 export const EchoEffect: FC<EchoEffectPropertyProps> = () => {
-  const activeText = useActiveMoveableTextObject();
+  const activeText = useActiveTextObject();
   const [echo, setEcho] = useState<MoveableTextShadow>(
     activeText?.echoEffect || DEFAULT_VALUE,
   );

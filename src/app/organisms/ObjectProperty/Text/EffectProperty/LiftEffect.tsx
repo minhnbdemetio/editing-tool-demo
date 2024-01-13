@@ -1,11 +1,11 @@
-import { useActiveMoveableTextObject } from '@/app/hooks/useActiveMoveableObject';
+import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
 import { Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 
 interface LiftPropertyProps {}
 
 export const LiftEffect: FC<LiftPropertyProps> = () => {
-  const activeText = useActiveMoveableTextObject();
+  const activeText = useActiveTextObject();
   if (activeText?.getTextIntensity() === undefined) {
     activeText?.setEffectLift(50);
   }

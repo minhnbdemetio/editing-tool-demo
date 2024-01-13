@@ -1,5 +1,5 @@
 import { MoveableTextShadow } from '@/app/factories/MoveableText';
-import { useActiveMoveableTextObject } from '@/app/hooks/useActiveMoveableObject';
+import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
 import { Button, Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 
@@ -46,7 +46,7 @@ const DEFAULT_VALUE = {
   offset: 50,
 };
 export const BackGroundEffect: FC = () => {
-  const activeText = useActiveMoveableTextObject();
+  const activeText = useActiveTextObject();
   const [backgroud, setBackground] = useState<MoveableTextShadow>(
     activeText?.backgroundEffect || DEFAULT_VALUE,
   );

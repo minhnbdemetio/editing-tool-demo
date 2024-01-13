@@ -1,5 +1,5 @@
 import { MoveableTextShadow } from '@/app/factories/MoveableText';
-import { useActiveMoveableTextObject } from '@/app/hooks/useActiveMoveableObject';
+import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
 import { Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 
@@ -8,7 +8,7 @@ interface NeonEffectProps {}
 const THICKNESS_DEFAULT = 50;
 
 export const NeonEffect: FC<NeonEffectProps> = () => {
-  const activeText = useActiveMoveableTextObject();
+  const activeText = useActiveTextObject();
   const [neonEffect, setNeonEffect] = useState<MoveableTextShadow>(
     activeText?.neonEffect || { thickness: THICKNESS_DEFAULT },
   );

@@ -1,5 +1,5 @@
 import { MoveableTextShadow } from '@/app/factories/MoveableText';
-import { useActiveMoveableTextObject } from '@/app/hooks/useActiveMoveableObject';
+import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
 import { Button, Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 
@@ -55,7 +55,7 @@ const SHADOW_OPTIONS = [
   },
 ];
 export const ShadowEffect: FC<ShadowPropertyProps> = () => {
-  const activeText = useActiveMoveableTextObject();
+  const activeText = useActiveTextObject();
   const [textShadow, setTextShadow] = useState<MoveableTextShadow | undefined>(
     activeText?.getTextShadow() || {
       color: '#000',

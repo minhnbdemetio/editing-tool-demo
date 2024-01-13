@@ -1,5 +1,5 @@
 import { TextSpliceEffectOption } from '@/app/factories/MoveableText';
-import { useActiveMoveableTextObject } from '@/app/hooks/useActiveMoveableObject';
+import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
 import { Button, Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 
@@ -48,7 +48,7 @@ const DEFAULT_VALUE = {
   thickness: 50,
 };
 export const SpliceEffect: FC<SpliceEffectPropertyProps> = () => {
-  const activeText = useActiveMoveableTextObject();
+  const activeText = useActiveTextObject();
   const [spliceEffect, setSpliceEffect] = useState<
     TextSpliceEffectOption | undefined
   >(activeText?.spliceEffect || DEFAULT_VALUE);

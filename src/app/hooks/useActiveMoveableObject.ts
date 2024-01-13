@@ -1,6 +1,7 @@
 import { CSSProperties, useCallback } from 'react';
 import {
   MoveableTextObject,
+  MoveableTextShapeEffect,
   MoveableTextStyleEffect,
 } from '../factories/MoveableText';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
@@ -495,6 +496,42 @@ export const useUpdateActiveMoveableObjectTextStyleEffect = () => {
 
     // Set style effect id
     activeText?.setStyleEffect(effect);
+    cb();
+    return true;
+  };
+  return handleChangeTextEffect;
+};
+
+export const useUpdateActiveTextShapeEffect = () => {
+  const activeText = useActiveTextObject();
+  const handleChangeTextEffect = (
+    effect: MoveableTextShapeEffect,
+    cb: Function,
+  ) => {
+    if (!activeText) return false;
+    const element = activeText?.getElement();
+    if (!element) return false;
+    const isCurveEffect = activeText?.shapeEffect === 'curve';
+    activeText?.setShapeEffect(effect);
+
+    if (isCurveEffect) {
+      activeText.setShapeNone();
+    } else {
+      activeText.setCurve(50);
+    }
+
+    cb();
+    return true;
+  };
+  return handleChangeTextEffect;
+};
+
+export const useUpdateOpacity = () => {
+  const activeText = useActiveTextObject();
+  const handleChangeTextEffect = (opacity: number, cb: Function) => {
+    if (!activeText) return false;
+    activeText.setOpacity(opacity);
+
     cb();
     return true;
   };

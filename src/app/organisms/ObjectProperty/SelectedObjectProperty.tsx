@@ -21,6 +21,7 @@ import { LineEndProperty } from './Line/LineEndProperty';
 import { LineTypeProperty } from './Line/LineTypeProperty';
 import { LineTransparencyProperty } from './Line/LineTransparencyProperty';
 import { LineNudgeProperty } from './Line/LineNudgeProperty';
+import { TransparencyProperty } from './Text/TransparencyProperty';
 
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
@@ -47,6 +48,9 @@ export const SelectedObjectProperty: FC = () => {
       }
       case SelectedProperty.TextEffect: {
         return <EffectProperty />;
+      }
+      case SelectedProperty.TextTransparency: {
+        return <TransparencyProperty />;
       }
       case SelectedProperty.TextStyles: {
         return <StylesProperty />;

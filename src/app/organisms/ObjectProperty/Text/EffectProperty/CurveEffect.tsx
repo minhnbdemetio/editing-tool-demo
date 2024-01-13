@@ -2,25 +2,23 @@ import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
 import { Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 
-interface HollowEffectProps {}
+const CURVE_DEFAULT = 50;
 
-const THICKNESS_DEFAULT = 50;
-
-export const HollowEffect: FC<HollowEffectProps> = () => {
+export const CurveEffect: FC = () => {
   const activeText = useActiveTextObject();
-  const [thickness, setThickness] = useState<number | undefined>(
-    activeText?.thicknessHollowEffect || THICKNESS_DEFAULT,
+  const [curve, setCurve] = useState<number | undefined>(
+    activeText?.curve || CURVE_DEFAULT,
   );
   useEffect(() => {
-    activeText?.setThicknessHollowEffect(THICKNESS_DEFAULT);
+    activeText?.setCurve(activeText?.curve || CURVE_DEFAULT);
   }, []);
   return (
     <Slider
       label="Thickness"
       size="sm"
       step={1}
-      maxValue={100}
-      minValue={1}
+      maxValue={90}
+      minValue={-90}
       color="foreground"
       classNames={{
         label: 'mt-[12px]',
@@ -36,22 +34,22 @@ export const HollowEffect: FC<HollowEffectProps> = () => {
               className="px-1 py-0.5 w-12 text-right text-small text-default-700 font-medium bg-default-100 outline-none transition-colors rounded-small border-medium border-transparent hover:border-primary focus:border-primary"
               type="text"
               aria-label="Temperature value"
-              value={thickness}
+              value={curve}
               onChange={e => {
                 const v = +e.target.value;
                 if (isNaN(v)) return;
-                setThickness(v);
-                activeText?.setThicknessHollowEffect(v);
+                setCurve(v);
+                activeText?.setCurve(v);
               }}
             />
           </Tooltip>
         </output>
       )}
-      value={thickness}
+      value={curve}
       onChange={value => {
         if (typeof value === 'number') {
-          setThickness(value);
-          activeText?.setThicknessHollowEffect(value);
+          setCurve(value);
+          activeText?.setCurve(value);
         }
       }}
     />

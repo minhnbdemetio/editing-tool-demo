@@ -17,6 +17,7 @@ import {
   useDeleteObject,
   useUndoDeleteObject,
   useUpdateActiveMoveableObjectTextStyleEffect,
+  useUpdateActiveTextShapeEffect,
 } from '../useActiveMoveableObject';
 import { debounce } from 'lodash';
 import { DeleteCommand } from '@/app/factories/command/DeleteCommand';
@@ -114,4 +115,9 @@ export const useDeleteObjetCommand = () => {
   });
   deleteCommand.setDeletedObject(activeMoveableObject);
   return useExecuteCommand(deleteCommand);
+};
+
+export const useUpdateActiveTextShapeEffectCommand = () => {
+  const updateActiveTextShapeEffect = useUpdateActiveTextShapeEffect();
+  return updateActiveTextShapeEffect;
 };

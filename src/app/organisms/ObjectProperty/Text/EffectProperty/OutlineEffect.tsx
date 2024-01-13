@@ -1,5 +1,5 @@
 import { TextOutlineEffectOption } from '@/app/factories/MoveableText';
-import { useActiveMoveableTextObject } from '@/app/hooks/useActiveMoveableObject';
+import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
 import { Button, Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 
@@ -28,7 +28,7 @@ const DEFAULT_VALUE = {
   thickness: 50,
 };
 export const OutlineEffect: FC<SpliceEffectPropertyProps> = () => {
-  const activeText = useActiveMoveableTextObject();
+  const activeText = useActiveTextObject();
   const [outline, setOutline] = useState<TextOutlineEffectOption>(
     activeText?.outlineEffect || DEFAULT_VALUE,
   );
