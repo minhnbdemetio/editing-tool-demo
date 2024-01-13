@@ -97,7 +97,6 @@ export const MoveableConfig: FC = () => {
         onDrag={e => {
           if (isElementLocked(e.target)) return;
           e.target.style.transform = e.transform;
-          console.log('aloalo');
         }}
         onRotate={e => {
           if (isElementLocked(e.target)) return;

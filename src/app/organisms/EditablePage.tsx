@@ -17,6 +17,7 @@ const DEFAULT_PAGE_SCALE = 1;
 
 const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   const [pageObjects] = useCurrentPageObjects();
+  console.log({ pageObjects });
 
   const { setActivePage } = useActivePage();
   const { workingWidthPixels, workingHeightPixels } = usePageSize();
