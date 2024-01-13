@@ -35,7 +35,9 @@ export const TextProperties: FC = () => {
       </Button>
       <Button>Animate</Button>
       <Button>Transparency</Button>
-      <Button>Layers</Button>
+      <Button onClick={() => setSelectedProperty(SelectedProperty.TextLayers)}>
+        Layers
+      </Button>
       <Button
         onClick={() => setSelectedProperty(SelectedProperty.TextPosition)}
       >

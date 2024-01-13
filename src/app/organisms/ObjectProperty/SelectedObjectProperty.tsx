@@ -16,6 +16,7 @@ import { PositionProperty } from './Text/PositionProperty';
 
 import { ColorProperty as LineColorProperty } from './Line/ColorProperty';
 import { LineProperty } from './Line/StyleProperty';
+import { LayerProperty } from './Text/LayerProperty';
 
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
@@ -57,6 +58,9 @@ export const SelectedObjectProperty: FC = () => {
       }
       case SelectedProperty.LineStyle: {
         return <LineProperty />;
+      }
+      case SelectedProperty.TextLayers: {
+        return <LayerProperty />;
       }
       default: {
         return null;
