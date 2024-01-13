@@ -20,6 +20,39 @@ export const useActiveMoveableLineObject = () => {
   return isLine(activeMoveableObject) ? activeMoveableObject : null;
 };
 
+export const useCopyActiveObject = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+
+  return useCallback(() => {
+    if (activeMoveableObject) {
+      navigator.clipboard.writeText(activeMoveableObject?.id);
+      return true;
+    }
+    return false;
+  }, [activeMoveableObject]);
+};
+
+export const usePasteObject = () => {
+  const { getAllObjects, setPageObjects } = useDesign();
+
+  return useCallback(async () => {
+    const allObjects = getAllObjects();
+    const copiedObjectId = await navigator.clipboard.readText();
+    const copiedObject = allObjects.find(
+      object => object.id === copiedObjectId,
+    );
+
+    if (copiedObject) {
+      const clonedObject = copiedObject.clone();
+      clonedObject.setPageId(copiedObject.pageId);
+      setPageObjects(copiedObject?.pageId || '', [...allObjects, clonedObject]);
+      return true;
+    }
+
+    return false;
+  }, [getAllObjects, setPageObjects]);
+};
+
 export const useUpdateFontSize = () => {
   const activeText = useActiveTextObject();
 

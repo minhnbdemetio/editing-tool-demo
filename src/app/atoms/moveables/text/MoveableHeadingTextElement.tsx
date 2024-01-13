@@ -17,11 +17,11 @@ export const MoveableHeadingTextElement: FC<MoveableTextProps> = ({
       id={object.id}
       className={clsx('absolute w-fit hidden text-lg', className)}
       style={{ writingMode: 'horizontal-tb' }}
-      contentEditable
+      
       suppressContentEditableWarning
     >
       <ul>
-        <li>Add a heading</li>
+        <li contentEditable>Add a heading</li>
       </ul>
     </div>
   );

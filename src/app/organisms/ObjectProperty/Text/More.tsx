@@ -1,3 +1,7 @@
+import {
+  useCopyActiveObject,
+  usePasteObject,
+} from '@/app/hooks/useActiveMoveableObject';
 import { Link } from '@/app/icons';
 import { AlternativeText } from '@/app/icons/AlternativeText';
 import { BringForward } from '@/app/icons/BringForward';
@@ -16,16 +20,19 @@ import { Button } from '@nextui-org/react';
 import { FC } from 'react';
 
 export const TextMoreProperty: FC = () => {
+  const handleCopyObject = useCopyActiveObject();
+  const handlePastObject = usePasteObject();
+
   return (
     <div className="w-full h-full">
       <div className="text-center mb-3">
         <span>More</span>
       </div>
       <div className="flex items-center gap-2 overflow-x-scroll w-full">
-        <Button size="lg" isIconOnly>
+        <Button onClick={handleCopyObject} size="lg" isIconOnly>
           <Copy />
         </Button>
-        <Button size="lg" isIconOnly>
+        <Button onClick={handlePastObject} size="lg" isIconOnly>
           <Paste />
         </Button>
         <Button size="lg" isIconOnly>

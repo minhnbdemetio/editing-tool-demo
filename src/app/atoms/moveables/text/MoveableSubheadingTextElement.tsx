@@ -17,11 +17,10 @@ export const MoveableSubheadingTextElement: FC<MoveableTextProps> = ({
       id={object.id}
       className={clsx('absolute w-fit hidden text-md', className)}
       style={{ writingMode: 'horizontal-tb' }}
-      contentEditable
       suppressContentEditableWarning
     >
       <ul>
-        <li>Add a subheading</li>
+        <li contentEditable>Add a subheading</li>
       </ul>
     </div>
   );

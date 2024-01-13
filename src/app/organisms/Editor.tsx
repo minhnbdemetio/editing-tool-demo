@@ -90,7 +90,7 @@ export const Editor: FC = () => {
       <Button onClick={deleteObjectCommand}>Delete active object </Button>
       <div className="flex flex-col gap-10 h-full">
         {Object.entries(pages).map(([pageId]) => (
-          <div key={pageId}>
+          <div className="editable-page" key={pageId}>
             <EditablePage pageId={pageId} />
           </div>
         ))}
@@ -107,6 +107,12 @@ export const Editor: FC = () => {
           selectFromInside={true}
           toggleContinueSelect={['shift']}
           ratio={0}
+          onDragStart={e => {
+            const target = e.inputEvent.target;
+            if (moveableRef.current!.isMoveableElement(target)) {
+              e.preventDrag();
+            }
+          }}
           onSelectEnd={e => {
             const isClickInsideEditorContainer = document
               .getElementById(EDITOR_CONTAINER_ID)
@@ -116,7 +122,7 @@ export const Editor: FC = () => {
               setMoveableTargets(e.selected);
             }
           }}
-        ></Selecto>
+        />
       </div>
       <Moveable
         ref={moveableRef}
@@ -180,8 +186,7 @@ export const Editor: FC = () => {
           if (e.targets.length) {
             findAndSetActiveObject(e.targets[0].id);
           } else {
-            // TODO: Clear active object when no target - gây ra lỗi khi edit
-            // setActiveMoveableObject(null);
+            setActiveMoveableObject(null);
           }
         }}
       />
