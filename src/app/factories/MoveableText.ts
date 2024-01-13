@@ -58,10 +58,17 @@ export class MoveableTextObject extends MoveableObject {
       'http://www.w3.org/2000/svg',
       'text',
     );
+    const textCssProperties = window.getComputedStyle(textContainer);
+
+    const textLineHeight = parseFloat(textCssProperties['lineHeight']);
+    const textFontSize = parseFloat(textCssProperties['fontSize']);
+    const distanceBetweenBaselineAndBox = (textLineHeight - textFontSize) / 2;
+
+    const textElementY =
+      textContainer.offsetHeight - distanceBetweenBaselineAndBox;
+
     textElement.setAttribute('x', '0');
-    textElement.setAttribute('y', '50%');
-    textElement.setAttribute('dominant-baseline', 'middle');
-    textElement.setAttribute('text-anchor', 'middle');
+    textElement.setAttribute('y', textElementY.toString());
     const computedStyles = window.getComputedStyle(textContainer);
     for (let i = 0; i < computedStyles.length; i++) {
       const styleName = computedStyles[i];
