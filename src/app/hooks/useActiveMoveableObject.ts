@@ -524,7 +524,7 @@ export const useUpdateActiveTextShapeEffect = () => {
     if (isCurveEffect) {
       activeText.setShapeNone();
     } else {
-      activeText.setCurve(50);
+      activeText.setShapeEffect(effect);
     }
 
     cb();

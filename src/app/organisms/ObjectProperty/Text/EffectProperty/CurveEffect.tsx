@@ -10,7 +10,7 @@ export const CurveEffect: FC = () => {
     activeText?.curve || CURVE_DEFAULT,
   );
   useEffect(() => {
-    activeText?.setCurve(activeText?.curve || CURVE_DEFAULT);
+    activeText?.setCurveEffect(activeText?.curve || CURVE_DEFAULT);
   }, []);
   return (
     <Slider
@@ -39,7 +39,7 @@ export const CurveEffect: FC = () => {
                 const v = +e.target.value;
                 if (isNaN(v)) return;
                 setCurve(v);
-                activeText?.setCurve(v);
+                activeText?.setCurveEffect(v);
               }}
             />
           </Tooltip>
@@ -49,7 +49,7 @@ export const CurveEffect: FC = () => {
       onChange={value => {
         if (typeof value === 'number') {
           setCurve(value);
-          activeText?.setCurve(value);
+          activeText?.setCurveEffect(value);
         }
       }}
     />
