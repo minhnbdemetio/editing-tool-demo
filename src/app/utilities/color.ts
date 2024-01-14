@@ -66,3 +66,27 @@ export const getElementPalette = async (
     ),
   );
 };
+
+export const hexToRgba = (hex: string, transparency: number = 1) => {
+  if (hex && hex.includes('rgba'))
+    return hex.replace(
+      /rgba\((\d+), (\d+), (\d+), (\d+(\.\d+)?)\)/,
+      `rgba($1, $2, $3, ${transparency})`,
+    );
+  if (hex && hex.includes('rgb'))
+    return hex.replace('rgb', 'rgba').replace(')', `, ${transparency})`);
+  let r: string | number, g: string | number, b: string | number;
+  if (hex.length === 4) {
+    r = hex.slice(1, 2);
+    g = hex.slice(2, 3);
+    b = hex.slice(3, 4);
+    r = parseInt(r + r, 16);
+    g = parseInt(g + g, 16);
+    b = parseInt(b + b, 16);
+  } else {
+    r = parseInt(hex.slice(1, 3), 16);
+    g = parseInt(hex.slice(3, 5), 16);
+    b = parseInt(hex.slice(5, 7), 16);
+  }
+  return `rgba(${r}, ${g}, ${b}, ${transparency})`;
+};

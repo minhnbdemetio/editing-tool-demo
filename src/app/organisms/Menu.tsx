@@ -77,7 +77,7 @@ export const Menu: FC = () => {
       </div>
 
       <TransparentModal
-        className={twMerge('z-10 fixed bottom-0 max-h-[30%] h-fit', {
+        className={twMerge('z-10 fixed bottom-0 max-h-[30%] h-fit overflow-auto', {
           hidden: !selectedProperty,
         })}
       >
