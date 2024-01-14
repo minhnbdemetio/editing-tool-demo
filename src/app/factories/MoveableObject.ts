@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { findIdFromString } from '../utilities/dom';
 import { DATA_LOCKED, MOVEABLE_TARGET_CLASS } from '../constants/moveable';
-import { EDITOR_CONTAINER_ID } from '../organisms/Editor';
+import { EDITOR_CONTAINER } from '../organisms/Editor';
 
 export const MAX_FIND_ELEMENT_ATTEMPTS = 100;
 export type ObjectType = 'rectangle' | 'text' | 'line';
@@ -90,7 +90,7 @@ export abstract class MoveableObject {
     return cssProperties[property];
   }
   getContainer() {
-    return document.getElementById(EDITOR_CONTAINER_ID);
+    return document.getElementById(EDITOR_CONTAINER);
   }
   toggleLock() {
     const toggleValue = !this.isLocked;

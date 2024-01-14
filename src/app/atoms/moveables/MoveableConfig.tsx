@@ -1,8 +1,9 @@
 import { MOVEABLE_TARGET_CLASS, DATA_LOCKED } from '@/app/constants/moveable';
-import { SELECTO_ID, EDITOR_CONTAINER_ID } from '@/app/organisms/Editor';
+import { BottomToolbar } from '@/app/molecules/ObjectToolbar/BottomToolbar';
+import { TopToolbar } from '@/app/molecules/ObjectToolbar/TopToolbar';
+import { SELECTO_ID, EDITOR_CONTAINER } from '@/app/organisms/Editor';
 import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
 import { useDesign } from '@/app/store/design-objects';
-import { updateHeadControllerPosition } from '@/app/utilities/line';
 import { isElementLocked, isLine } from '@/app/utilities/moveable';
 import { FC, useEffect, useRef } from 'react';
 import Moveable from 'react-moveable';
@@ -30,11 +31,11 @@ export const MoveableConfig: FC = () => {
     <>
       <div id={SELECTO_ID}>
         <Selecto
-          dragContainer={window}
+          dragContainer={`.${EDITOR_CONTAINER}`}
           selectableTargets={[`.${MOVEABLE_TARGET_CLASS}`]}
           hitRate={0}
-          selectByClick={true}
-          selectFromInside={true}
+          checkInput
+          preventDefault
           toggleContinueSelect={['shift']}
           ratio={0}
           onDragStart={e => {
@@ -46,7 +47,7 @@ export const MoveableConfig: FC = () => {
           }}
           onSelectEnd={e => {
             const isClickInsideEditorContainer = document
-              .getElementById(EDITOR_CONTAINER_ID)
+              .getElementById(EDITOR_CONTAINER)
               ?.contains(e.inputEvent.target);
 
             if (isClickInsideEditorContainer) {
@@ -58,6 +59,11 @@ export const MoveableConfig: FC = () => {
       <Moveable
         ref={moveableRef}
         target={moveableTargets}
+        ables={[TopToolbar, BottomToolbar]}
+        props={{
+          topToolbar: true,
+          bottomToolbar: true,
+        }}
         draggable
         resizable
         snappable
@@ -75,7 +81,7 @@ export const MoveableConfig: FC = () => {
             };
             activeMoveableObject.setDragging(true);
 
-            updateHeadControllerPosition(activeMoveableObject, true);
+            activeMoveableObject.updateHeadControl();
           }
         }}
         onDragEnd={e => {
@@ -91,7 +97,7 @@ export const MoveableConfig: FC = () => {
               y: yChanged,
             });
             activeMoveableObject.setDragging(false);
-            updateHeadControllerPosition(activeMoveableObject);
+            activeMoveableObject.updateHeadControl();
           }
         }}
         onDrag={e => {

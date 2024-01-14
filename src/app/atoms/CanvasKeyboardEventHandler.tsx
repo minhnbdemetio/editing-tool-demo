@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
-import { EDITOR_CONTAINER_ID } from '../organisms/Editor';
+import { EDITOR_CONTAINER } from '../organisms/Editor';
 
 export const CanvasKeyboardEventHandler = () => {
   useEffect(() => {
-    const editorContainer = document.getElementById(EDITOR_CONTAINER_ID);
+    const editorContainer = document.getElementById(EDITOR_CONTAINER);
 
     if (editorContainer) {
       editorContainer.addEventListener('keydown', function (event) {
