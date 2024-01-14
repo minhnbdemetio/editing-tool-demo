@@ -59,7 +59,7 @@ export const MoveableConfig: FC = () => {
       <Moveable
         ref={moveableRef}
         target={moveableTargets}
-        ables={[TopToolbar, BottomToolbar]}
+        ables={[BottomToolbar, TopToolbar]}
         props={{
           topToolbar: true,
           bottomToolbar: true,

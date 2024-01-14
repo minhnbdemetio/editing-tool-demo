@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import Tour, { ReactourStep } from 'reactour';
-import './style.scss';
+
+import dynamic from 'next/dynamic';
+import { ReactourStep } from 'reactour';
+
+const Tour = dynamic(() => import('reactour'), {
+  ssr: false,
+});
 
 interface CuttingZoneIntroductionProps {
   padding: number;

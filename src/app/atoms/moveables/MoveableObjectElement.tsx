@@ -54,5 +54,5 @@ export const MoveableObjectElement: FC<MoveableObjectProps> = props => {
     return null;
   };
 
-  return renderElement();
+  return <div id={`object-container-${object.id}`}>{renderElement()}</div>;
 };

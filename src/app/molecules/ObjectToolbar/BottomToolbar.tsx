@@ -1,48 +1,39 @@
 import { Button } from '@nextui-org/react';
-import { MoveableManagerInterface, Renderer } from 'react-moveable';
-
-const TOOLBAR_ID = 'bottom-toolbar-buttons'
+import { FC, useRef } from 'react';
+import { MoveableManagerInterface } from 'react-moveable';
 
 export const BottomToolbar = {
   name: 'bottomToolbar',
   props: [],
   events: [],
-  render(moveable: MoveableManagerInterface<any, any>, React: Renderer) {
-    const rect = moveable.getRect();
-    const rectHeight = rect.height;
-    const rectWidth = rect.width;
-    const toolbarButtons = document.getElementById(TOOLBAR_ID);
-    const EditableViewer = moveable.useCSS(
-      'div',
-      `
-        {
-            position: absolute;
-            left: 0px;
-            top: 0px;
-            will-change: transform;
-            transform-origin: 0px 0px;
-        }
-      `,
-    );
-    return (
-      <EditableViewer
-        key={'bottom-toolbar'}
-        style={{
-          transform: `translate(${rectWidth / 2}px, ${
-            rectHeight + 20
-          }px) translate(-${Number(toolbarButtons?.offsetWidth) / 2}px)`,
-        }}
-      >
-        <ToolbarButtons />
-      </EditableViewer>
-    );
+  render(moveable: MoveableManagerInterface<any, any>) {
+    return <ToolbarButtons key={'bottom-toolbar'} moveable={moveable} />;
   },
 } as const;
 
-const ToolbarButtons = () => {
+interface ToolbarButtonsProps {
+  moveable: MoveableManagerInterface<any, any>;
+}
+
+const ToolbarButtons: FC<ToolbarButtonsProps> = ({ moveable }) => {
+  const rect = moveable.getRect();
+  const rectWidth = rect.width;
+  const rectHeight = rect.height;
+  const ref = useRef<HTMLDivElement>(null);
+
   return (
-    <div id={TOOLBAR_ID} className="flex items-center gap-2">
-      <Button className="custom-button">Rotate</Button>
+    <div
+      ref={ref}
+      className="absolute left-0 top-0 flex items-center gap-2 moveable-bottom-toolbar"
+      style={{
+        transform: `translate(${rectWidth / 2}px, ${
+          rectHeight + 10
+        }px) translate(-${Number(ref.current?.clientWidth) / 2}px)`,
+        willChange: 'transform',
+        transformOrigin: '0px 0px',
+      }}
+    >
+      <Button>Rotate</Button>
     </div>
   );
 };
