@@ -112,7 +112,7 @@ export const useDeleteObject = () => {
 };
 
 export const useUndoDeleteObject = () => {
-  const { getPageObjects, setPageObjects: setDesignObjects } = useDesign();
+  const { getPageObjects, setPageObjects } = useDesign();
 
   return useCallback(
     (deletedObject: MoveableObject | null) => {
@@ -123,24 +123,26 @@ export const useUndoDeleteObject = () => {
       });
       recreatedObject.setPageId(deletedObject.pageId);
       const pageObjects = getPageObjects(deletedObject.pageId);
-      setDesignObjects(deletedObject.pageId, [...pageObjects, recreatedObject]);
+      setPageObjects(deletedObject.pageId, [...pageObjects, recreatedObject]);
 
       return recreatedObject;
     },
-    [getPageObjects, setDesignObjects],
+    [getPageObjects, setPageObjects],
   );
 };
 
 export const useCloneObject = () => {
-  const { activeMoveableObject } = useActiveMoveableObject();
+  const { getActiveMoveableObject } = useActiveMoveableObject();
   const { activePage } = useActivePage();
-  const [pageObjects, setPageObjects] = usePageObjectsById(activePage);
+  const { getPageObjects, setPageObjects } = useDesign();
   return () => {
-    if (!pageObjects || !setPageObjects || !activeMoveableObject) return false;
+    const activeMoveableObject = getActiveMoveableObject();
+    if (!activePage || !activeMoveableObject) return false;
+    const pageObjects = getPageObjects(activePage);
 
     const clonedObject = activeMoveableObject.clone();
 
-    setPageObjects([...pageObjects, clonedObject]);
+    setPageObjects(activePage, [...pageObjects, clonedObject]);
 
     return true;
   };
