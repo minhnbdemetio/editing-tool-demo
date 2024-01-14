@@ -4,7 +4,6 @@ import { TEXT_CONTAINER } from '../constants/moveable';
 
 export type MoveableTextVariant = 'normal' | 'heading' | 'subheading' | 'body';
 import { hexToRgba } from '../utilities/color';
-import { type } from 'os';
 
 export type MoveableTextShadow = {
   color?: string;
@@ -265,6 +264,7 @@ export class MoveableTextObject extends MoveableObject {
       (blur / 100) * MAX_VALUE
     }px ${hexToRgba(color, transparency / 100)}`;
     element.style.textShadow = shadow;
+    this.textShadow = textShadow;
   }
   setStyleEffect(styleEffect: MoveableTextStyleEffect) {
     this.styleEffect = styleEffect;
@@ -351,6 +351,7 @@ export class MoveableTextObject extends MoveableObject {
       clonedElement = element.cloneNode(true) as HTMLElement;
       element.style.position = 'relative';
       clonedElement.id = `outline-${this.id}`;
+      clonedElement.style.transform = 'initial';
       clonedElement.style.webkitTextFillColor = 'unset';
       clonedElement.style.position = 'absolute';
       clonedElement.style.top = '0';
@@ -385,6 +386,7 @@ export class MoveableTextObject extends MoveableObject {
       +hShadow * 2
     }px ${+vShadow * 2}px 0px`;
     element.style.textShadow = shadow;
+    this.echoEffect = option;
   }
 
   setGlitchEffect(option: MoveableTextShadow) {
@@ -416,7 +418,8 @@ export class MoveableTextObject extends MoveableObject {
     const element = this.getElement();
     if (!element) return false;
     const styles = window.getComputedStyle(element);
-    const color = styles.color;
+    const color =
+      element.style.getPropertyValue('--prev-color') || styles.color;
     const matches = styles.fontSize?.match(/^(\d+(\.\d+)?)px/);
     const MAX_THICKNESS = parseFloat(matches?.[1] ?? '0') * 0.0166;
     const { thickness = 1 } = option;
@@ -429,7 +432,9 @@ export class MoveableTextObject extends MoveableObject {
       0.75,
     )}) drop-shadow(0px 0px ${baseVal * 5 * 3}px ${hexToRgba(color, 0.44)})`;
     element.style.filter = filter;
+    element.style.setProperty('--prev-color', color);
     element.style.color = hexToRgba(color, (thickness * 0.55 + 34.45) / 100);
+    this.neonEffect = option;
   }
 
   setBackgroundEffect(option: MoveableTextShadow) {

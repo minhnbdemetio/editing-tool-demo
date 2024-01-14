@@ -12,7 +12,9 @@ export const HollowEffect: FC<HollowEffectProps> = () => {
     activeText?.thicknessHollowEffect || THICKNESS_DEFAULT,
   );
   useEffect(() => {
-    activeText?.setThicknessHollowEffect(THICKNESS_DEFAULT);
+    activeText?.setThicknessHollowEffect(
+      activeText?.thicknessHollowEffect || THICKNESS_DEFAULT,
+    );
   }, []);
   return (
     <Slider
