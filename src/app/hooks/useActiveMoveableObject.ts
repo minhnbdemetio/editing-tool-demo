@@ -493,6 +493,11 @@ export const useUpdateActiveMoveableObjectTextStyleEffect = () => {
     if (outlineElement) {
       el.removeChild(outlineElement);
     }
+    const preColor = el.style.getPropertyValue('--prev-color');
+    if (preColor) {
+      el.style.color = preColor;
+      el.style.removeProperty('--prev-color');
+    }
 
     // Set style effect id
     activeText?.setStyleEffect(effect);

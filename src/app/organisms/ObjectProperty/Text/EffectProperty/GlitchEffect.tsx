@@ -53,7 +53,7 @@ export const GlitchEffect: FC<GlitchEffectPropertyProps> = () => {
     };
     setGlitch(value);
     activeText?.setGlitchEffect(value);
-  }
+  };
   return (
     <>
       {SHADOW_OPTIONS.map(option => {

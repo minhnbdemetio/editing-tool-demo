@@ -149,7 +149,8 @@ export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
           <div className="effect-styles" key={style.id}>
             <div
               className="group flex flex-col flex-1 gap-1 items-center w-[60px] cursor-pointer"
-              onClick={() => {
+              onClick={(e) => {
+                console.log(e.target)
                 updateActiveMoveableObjectTextStyleEffect(style.id, () =>
                   setEffectStyle(style.id),
                 );
@@ -189,7 +190,7 @@ export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
               }}
             >
               <Image
-                className={clsx('border', {
+                className={clsx('border static', {
                   'border-gray-300': effectShape !== style.id,
                   'border-blue-500': effectShape === style.id,
                 })}

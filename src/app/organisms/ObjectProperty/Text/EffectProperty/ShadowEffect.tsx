@@ -2,6 +2,8 @@ import { MoveableTextShadow } from '@/app/factories/MoveableText';
 import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
 import { Button, Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
+import { EffectPickColor } from './EffectPickColor';
+import { ColorResult } from 'react-color';
 
 interface ShadowPropertyProps {}
 type TextShadowOptions =
@@ -54,28 +56,32 @@ const SHADOW_OPTIONS = [
     value: '#000000',
   },
 ];
+
+const DEFAULT_VALUE = {
+  color: '#000',
+  offset: 50,
+  direction: 45,
+  blur: 0,
+  transparency: 40,
+};
+
 export const ShadowEffect: FC<ShadowPropertyProps> = () => {
   const activeText = useActiveTextObject();
   const [textShadow, setTextShadow] = useState<MoveableTextShadow | undefined>(
-    activeText?.getTextShadow() || {
-      color: '#000',
-      offset: 50,
-      direction: 45,
-      blur: 0,
-      transparency: 40,
-    },
+    activeText?.getTextShadow() || DEFAULT_VALUE,
   );
+  const [colorPickerOpen, setOpenColorPicker] = useState<boolean>(false);
   useEffect(() => {
-    if (activeText?.getTextShadow() === undefined) {
-      activeText?.setTextShadow({
-        color: '#000',
-        offset: 50,
-        direction: 45,
-        blur: 0,
-        transparency: 40,
-      });
-    }
+    activeText?.setTextShadow(activeText?.getTextShadow() || DEFAULT_VALUE);
   }, []);
+  const handleChangeColor = (color: ColorResult) => {
+    const value = {
+      ...textShadow,
+      color: color.hex,
+    };
+    setTextShadow(value);
+    activeText?.setTextShadow(value);
+  };
   return (
     <>
       {SHADOW_OPTIONS.map(option => {
@@ -90,7 +96,15 @@ export const ShadowEffect: FC<ShadowPropertyProps> = () => {
                 <Button
                   className={`w-[32px] h-[32px] min-w-[32px] rounded-[4px]`}
                   style={{ backgroundColor: textShadow?.color as string }}
+                  onClick={() => setOpenColorPicker(!colorPickerOpen)}
                 ></Button>
+                {colorPickerOpen && (
+                  <EffectPickColor
+                    defaultColor={textShadow?.color}
+                    onChangeColor={handleChangeColor}
+                    onCloseColorPicker={() => setOpenColorPicker(false)}
+                  />
+                )}
               </div>
             );
           }

@@ -2,6 +2,8 @@ import { MoveableTextShadow } from '@/app/factories/MoveableText';
 import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
 import { Button, Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
+import { ColorResult } from 'react-color';
+import { EffectPickColor } from './EffectPickColor';
 
 interface EchoEffectPropertyProps {}
 type TextShadowOptions = 'offset' | 'direction' | 'color';
@@ -42,9 +44,18 @@ export const EchoEffect: FC<EchoEffectPropertyProps> = () => {
   const [echo, setEcho] = useState<MoveableTextShadow>(
     activeText?.echoEffect || DEFAULT_VALUE,
   );
+  const [colorPickerOpen, setOpenColorPicker] = useState<boolean>(false);
   useEffect(() => {
     activeText?.setEchoEffect(activeText?.echoEffect || DEFAULT_VALUE);
   }, []);
+  const handleChangeColor = (color: ColorResult) => {
+    const value = {
+      ...echo,
+      color: color.hex,
+    };
+    setEcho(value);
+    activeText?.setEchoEffect(value);
+  };
   return (
     <>
       {SHADOW_OPTIONS.map(option => {
@@ -59,7 +70,15 @@ export const EchoEffect: FC<EchoEffectPropertyProps> = () => {
                 <Button
                   className={`w-[32px] h-[32px] min-w-[32px] rounded-[4px]`}
                   style={{ backgroundColor: echo?.color as string }}
+                  onClick={() => setOpenColorPicker(!colorPickerOpen)}
                 ></Button>
+                {colorPickerOpen && (
+                  <EffectPickColor
+                    defaultColor={echo.color}
+                    onChangeColor={handleChangeColor}
+                    onCloseColorPicker={() => setOpenColorPicker(false)}
+                  />
+                )}
               </div>
             );
           }

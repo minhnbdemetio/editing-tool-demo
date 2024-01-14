@@ -2,6 +2,8 @@ import { TextOutlineEffectOption } from '@/app/factories/MoveableText';
 import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
 import { Button, Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
+import { EffectPickColor } from './EffectPickColor';
+import { ColorResult } from 'react-color';
 
 interface SpliceEffectPropertyProps {}
 type TextShadowOptions = 'thickness' | 'color';
@@ -25,16 +27,25 @@ const SHADOW_OPTIONS = [
 
 const DEFAULT_VALUE = {
   color: '#bfbfbf',
-  thickness: 50,
+  thickness: 100,
 };
 export const OutlineEffect: FC<SpliceEffectPropertyProps> = () => {
   const activeText = useActiveTextObject();
   const [outline, setOutline] = useState<TextOutlineEffectOption>(
     activeText?.outlineEffect || DEFAULT_VALUE,
   );
+  const [colorPickerOpen, setOpenColorPicker] = useState<boolean>(false);
   useEffect(() => {
     activeText?.setOutlineEffect(activeText?.outlineEffect || DEFAULT_VALUE);
   }, []);
+  const handleChangeColor = (color: ColorResult) => {
+    const value = {
+      ...outline,
+      color: color.hex,
+    };
+    setOutline(value);
+    activeText?.setOutlineEffect(value);
+  };
   return (
     <>
       {SHADOW_OPTIONS.map(option => {
@@ -49,7 +60,15 @@ export const OutlineEffect: FC<SpliceEffectPropertyProps> = () => {
                 <Button
                   className={`w-[32px] h-[32px] min-w-[32px] rounded-[4px]`}
                   style={{ backgroundColor: outline?.color as string }}
+                  onClick={() => setOpenColorPicker(!colorPickerOpen)}
                 ></Button>
+                {colorPickerOpen && (
+                  <EffectPickColor
+                    defaultColor={outline.color}
+                    onChangeColor={handleChangeColor}
+                    onCloseColorPicker={() => setOpenColorPicker(false)}
+                  />
+                )}
               </div>
             );
           }

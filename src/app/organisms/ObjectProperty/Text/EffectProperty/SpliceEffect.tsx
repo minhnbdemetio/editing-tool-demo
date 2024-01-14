@@ -2,6 +2,8 @@ import { TextSpliceEffectOption } from '@/app/factories/MoveableText';
 import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
 import { Button, Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
+import { EffectPickColor } from './EffectPickColor';
+import { ColorResult } from 'react-color';
 
 interface SpliceEffectPropertyProps {}
 type TextShadowOptions = 'offset' | 'direction' | 'thickness' | 'color';
@@ -52,9 +54,18 @@ export const SpliceEffect: FC<SpliceEffectPropertyProps> = () => {
   const [spliceEffect, setSpliceEffect] = useState<
     TextSpliceEffectOption | undefined
   >(activeText?.spliceEffect || DEFAULT_VALUE);
+  const [colorPickerOpen, setOpenColorPicker] = useState<boolean>(false);
   useEffect(() => {
     activeText?.setSpliceEffect(activeText?.spliceEffect || DEFAULT_VALUE);
   }, []);
+  const handleChangeColor = (color: ColorResult) => {
+    const value = {
+      ...spliceEffect,
+      color: color.hex,
+    };
+    setSpliceEffect(value);
+    activeText?.setSpliceEffect(value);
+  };
   return (
     <>
       {SHADOW_OPTIONS.map(option => {
@@ -69,7 +80,15 @@ export const SpliceEffect: FC<SpliceEffectPropertyProps> = () => {
                 <Button
                   className={`w-[32px] h-[32px] min-w-[32px] rounded-[4px]`}
                   style={{ backgroundColor: spliceEffect?.color as string }}
+                  onClick={() => setOpenColorPicker(!colorPickerOpen)}
                 ></Button>
+                {colorPickerOpen && (
+                  <EffectPickColor
+                    defaultColor={spliceEffect?.color}
+                    onChangeColor={handleChangeColor}
+                    onCloseColorPicker={() => setOpenColorPicker(false)}
+                  />
+                )}
               </div>
             );
           }
