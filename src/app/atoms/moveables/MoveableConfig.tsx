@@ -1,5 +1,6 @@
 import { MOVEABLE_TARGET_CLASS, DATA_LOCKED } from '@/app/constants/moveable';
-import { ObjectToolbar } from '@/app/molecules/ObjectToolbar';
+import { BottomToolbar } from '@/app/molecules/ObjectToolbar/BottomToolbar';
+import { TopToolbar } from '@/app/molecules/ObjectToolbar/TopToolbar';
 import { SELECTO_ID, EDITOR_CONTAINER } from '@/app/organisms/Editor';
 import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
 import { useDesign } from '@/app/store/design-objects';
@@ -58,9 +59,10 @@ export const MoveableConfig: FC = () => {
       <Moveable
         ref={moveableRef}
         target={moveableTargets}
-        ables={[ObjectToolbar]}
+        ables={[TopToolbar, BottomToolbar]}
         props={{
-          toolbar: true,
+          topToolbar: true,
+          bottomToolbar: true,
         }}
         draggable
         resizable
