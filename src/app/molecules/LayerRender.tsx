@@ -6,29 +6,26 @@ import { useDesign } from '../store/design-objects';
 
 interface LayerRenderProps {
   pageObject: MoveableObject;
+  isChoose?: boolean;
 }
-export const LayerRender: FC<LayerRenderProps> = ({ pageObject }) => {
+export const LayerRender: FC<LayerRenderProps> = ({
+  pageObject,
+  isChoose = false,
+}) => {
   const element = pageObject.getElement();
   const activePage = useActivePage();
   const containerRef = useRef<HTMLLIElement>(null);
-  const { moveableTargets, setMoveableTargets, getAllObjects, setMovable } =
-    useDesign();
+  const { moveableTargets, setMoveableTargets } = useDesign();
 
   useEffect(() => {
     if (element && containerRef.current) {
       const transformString = parseTransformString(element.style.transform);
-      const elementString = transformString.translate
-        ? element.outerHTML.replaceAll(
-            transformString.translate,
-            'translate(0px, 0px)',
-          )
-        : element.outerHTML;
-      pageObject.htmlString = elementString;
+      pageObject.htmlString = element.outerHTML;
       const loadedElement = pageObject.createElementFromHtmlString();
-      if (loadedElement) {
-        (loadedElement as HTMLElement).style.transform += ` scale(${
-          48 / element.getBoundingClientRect().height
-        })`;
+      if (loadedElement instanceof HTMLElement) {
+        loadedElement.style.transform = `rotate(${
+          transformString.rotate
+        }) scale(${48 / element.getBoundingClientRect().height})`;
         while (containerRef.current?.firstChild) {
           containerRef.current.removeChild(containerRef.current.firstChild);
         }
@@ -42,13 +39,34 @@ export const LayerRender: FC<LayerRenderProps> = ({ pageObject }) => {
       `[id='${activePage?.activePage || ''}'] [id='${objectId}']`,
     );
     if (objectWithId) {
-      setMoveableTargets([objectWithId]);
+      if (isChoose) {
+        if (isSelect(objectId)) {
+          setMoveableTargets(
+            moveableTargets?.filter(moveableTarget => {
+              return moveableTarget.id !== objectId;
+            }),
+          );
+        } else {
+          setMoveableTargets([...moveableTargets, objectWithId]);
+        }
+      } else {
+        setMoveableTargets([objectWithId]);
+      }
     }
   };
-
+  const isSelect = (id?: string) => {
+    if (!id) return false;
+    return moveableTargets
+      ?.map(moveableTarget => {
+        return moveableTarget.id;
+      })
+      .includes(id);
+  };
   return (
     <li
-      className={`h-12 w-full bg-[#35475a33] rounded-lg flex items-center justify-center my-1 relative`}
+      className={`h-12 w-full bg-[#35475a33] rounded-lg flex items-center justify-center my-1 relative cursor-pointer border-2 ${
+        isSelect(element?.id) && 'border-indigo-900	'
+      }`}
       key={element?.id || ''}
       ref={containerRef}
       onClick={() => handleClickSelect(element?.id || '')}
