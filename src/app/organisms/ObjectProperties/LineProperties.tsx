@@ -34,6 +34,9 @@ export const LineProperties: FC = () => {
       <Button onClick={() => setSelectedProperty(SelectedProperty.LineAlign)}>
         Align
       </Button>
+      <Button onClick={() => setSelectedProperty(SelectedProperty.LineShadow)}>
+        Shadow
+      </Button>
       <Button>Position</Button>
       <Button onClick={() => setSelectedProperty(SelectedProperty.LineNudge)}>
         Nudge

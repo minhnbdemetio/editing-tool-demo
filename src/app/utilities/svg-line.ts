@@ -1,4 +1,3 @@
-import { set } from 'lodash';
 import { getAngleByPoint } from './line';
 import { LinePoint } from './line-point';
 import { v4 as uuidV4 } from 'uuid';
@@ -71,10 +70,10 @@ export class SvgLine {
   private strokeDashArray: [number, number] | undefined = undefined;
   private strokeDashArraySize: StrokeDashArraySizes = StrokeDashArraySizes.None;
 
-  private shadowDirection: number = 0;
-  private shadowOpacity: number = 0;
-  private shadowDistance: number = 0;
-  private shadowBlur: number = 0;
+  public shadowDirection: number = 0;
+  public shadowOpacity: number = 0;
+  public shadowDistance: number = 0;
+  public shadowBlur: number = 0;
 
   private opacity: number = 100;
 
@@ -116,7 +115,14 @@ export class SvgLine {
 
     this.strokeLineCap = options.strokeLineCap || StrokeLineCap.Butt;
 
-    this.setShadow(options);
+    this.setShadow(
+      options || {
+        shadowBlur: 0,
+        shadowDirection: 0,
+        shadowDistance: 0,
+        shadowOpacity: 100,
+      },
+    );
 
     const end = new LinePoint(200, 0, null, null);
     const start = new LinePoint(0, 0, null, end);
@@ -1281,14 +1287,15 @@ export class SvgLine {
     shadowBlur?: number;
   }) {
     if (options.shadowBlur) this.shadowBlur = options.shadowBlur || 0;
-    if (options.shadowOpacity) this.shadowOpacity = options.shadowOpacity || 0;
+    if (options.shadowOpacity)
+      this.shadowOpacity = options.shadowOpacity || 100;
     if (options.shadowDistance)
       this.shadowDistance = options.shadowDistance || 0;
     if (options.shadowDirection)
       this.shadowDirection = options.shadowDirection || 0;
   }
   public getShadowPosition(): { dx: number; dy: number } {
-    const distance = this.shadowDistance;
+    const distance = (this.shadowDistance / 100) * this.strokeWidth;
     let angle = this.shadowDirection;
 
     const isLeft = angle >= 45 && angle < 135;
@@ -1320,14 +1327,15 @@ export class SvgLine {
   public getSvgShadow() {
     const { dx, dy } = this.getShadowPosition();
 
+    const blur = (this.shadowBlur / 100) * 4;
+    const opacity = this.shadowOpacity / 100;
+
     if (this.shadowDistance === 0) return ``;
 
     return `
    
       <filter  id="${this.shadowSvgId}" x="-40%" y="-40%" width="200%" height="200%">
-        <feOffset result="offOut" in="SourceGraphic" dx="${dx}" dy="${dy}" />
-        <feGaussianBlur result="blurOut" in="offOut" stdDeviation="2" />
-        <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+        <feDropShadow  dx="${dx}" dy="${dy}"  flood-opacity="${opacity}"  in="offOut"  stdDeviation="${blur}"  />
       </filter>
       
     `;

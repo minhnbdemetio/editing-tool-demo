@@ -23,6 +23,7 @@ export enum SelectedProperty {
   LineTransparency,
   LineNudge,
   LineAlign,
+  LineShadow,
 }
 
 interface SelectedPropertyState {
