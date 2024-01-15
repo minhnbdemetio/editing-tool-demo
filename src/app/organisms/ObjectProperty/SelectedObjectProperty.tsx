@@ -24,6 +24,7 @@ import { LineNudgeProperty } from './Line/LineNudgeProperty';
 import { TransparencyProperty } from './Text/TransparencyProperty';
 import { LineAlignProperty } from './Line/LineAlignProperty';
 import { LineShadowProperty } from './Line/LineShadowProperty';
+import { LineFlipProperty } from './Line/LineFlipProperty';
 
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
@@ -89,6 +90,9 @@ export const SelectedObjectProperty: FC = () => {
       }
       case SelectedProperty.LineShadow: {
         return <LineShadowProperty />;
+      }
+      case SelectedProperty.LineFlip: {
+        return <LineFlipProperty />;
       }
       default: {
         return null;

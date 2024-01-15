@@ -25,7 +25,6 @@ export const LineProperties: FC = () => {
       <Button onClick={() => setSelectedProperty(SelectedProperty.LineType)}>
         Line type
       </Button>
-
       <Button
         onClick={() => setSelectedProperty(SelectedProperty.LineTransparency)}
       >
@@ -36,6 +35,9 @@ export const LineProperties: FC = () => {
       </Button>
       <Button onClick={() => setSelectedProperty(SelectedProperty.LineShadow)}>
         Shadow
+      </Button>
+      <Button onClick={() => setSelectedProperty(SelectedProperty.LineFlip)}>
+        Flip
       </Button>
       <Button>Position</Button>
       <Button onClick={() => setSelectedProperty(SelectedProperty.LineNudge)}>
