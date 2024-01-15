@@ -23,9 +23,8 @@ export class MoveableLineObject extends MoveableObject {
   constructor(id?: string, htmlString?: string) {
     super(id, htmlString);
     this.line = new SvgLine();
-    this.line.setStartAdornment(SvgLineAdornment.OutlinedTriangle);
-    this.line.setEndAdornment(SvgLineAdornment.Triangle);
-    // this.line.toElbowed();
+    this.line.setStartAdornment(SvgLineAdornment.Triangle);
+    this.line.setEndAdornment(SvgLineAdornment.Arrow);
     this.type = 'line';
   }
 
@@ -41,8 +40,11 @@ export class MoveableLineObject extends MoveableObject {
 
     if (anchorRef) {
       const { x, y } = this.line.getDisplayPosition();
+
       anchorRef.innerHTML = this.line.toSvg() || '';
-      anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(${this.line.getRotateAngle()}deg)`;
+      anchorRef.style.transform = `translate(${x - this.line.padding}px, ${
+        y - this.line.padding
+      }px) rotate(${this.line.getRotateAngle()}deg)`;
     }
   }
 

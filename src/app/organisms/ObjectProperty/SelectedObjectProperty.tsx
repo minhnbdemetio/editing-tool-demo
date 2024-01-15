@@ -22,6 +22,7 @@ import { LineTypeProperty } from './Line/LineTypeProperty';
 import { LineTransparencyProperty } from './Line/LineTransparencyProperty';
 import { LineNudgeProperty } from './Line/LineNudgeProperty';
 import { TransparencyProperty } from './Text/TransparencyProperty';
+import { LineAlignProperty } from './Line/LineAlignProperty';
 
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
@@ -81,6 +82,9 @@ export const SelectedObjectProperty: FC = () => {
       }
       case SelectedProperty.LineNudge: {
         return <LineNudgeProperty />;
+      }
+      case SelectedProperty.LineAlign: {
+        return <LineAlignProperty />;
       }
       default: {
         return null;

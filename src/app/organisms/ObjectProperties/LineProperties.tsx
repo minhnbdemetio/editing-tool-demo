@@ -31,7 +31,9 @@ export const LineProperties: FC = () => {
       >
         Transparency
       </Button>
-      <Button>Layers</Button>
+      <Button onClick={() => setSelectedProperty(SelectedProperty.LineAlign)}>
+        Align
+      </Button>
       <Button>Position</Button>
       <Button onClick={() => setSelectedProperty(SelectedProperty.LineNudge)}>
         Nudge
