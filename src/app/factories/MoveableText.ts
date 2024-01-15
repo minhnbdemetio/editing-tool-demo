@@ -543,8 +543,17 @@ export class MoveableTextObject extends MoveableObject {
       } else {
         elWidth = this.getTextContentWidth(el.textContent) + 2 * spreadVal;
       }
+
+      const nextEl = textContainer.childNodes[index + 1];
+      const nextPathWidth =
+        nextEl && nextEl.textContent
+          ? this.getTextContentWidth(nextEl.textContent) + 2 * spreadVal
+          : prevPathWidth || elWidth;
+      const isRadiusTop = index === 0 || elWidth > prevPathWidth;
+      const isRadiusBottom =
+        index === lengthItems - 1 || elWidth > nextPathWidth;
       prevPathWidth = elWidth;
-      const startX = spreadVal - roundnessVal;
+      const startX = 0;
       const startY = elHeight * index;
       const path = document.createElementNS(
         'http://www.w3.org/2000/svg',
@@ -553,20 +562,18 @@ export class MoveableTextObject extends MoveableObject {
       path.setAttribute(
         'd',
         `M ${startX} ${startY} L ${
-          index === 0 ? startX + elWidth - roundnessVal : startX + elWidth
+          isRadiusTop ? startX + elWidth - roundnessVal : startX + elWidth
         } ${startY} ${
-          index === 0
+          isRadiusTop
             ? `C ${startX + elWidth - roundnessVal} ${startY}, ${
                 startX + elWidth
               } ${startY}, ${startX + elWidth} ${startY + roundnessVal}`
             : ''
         }L ${startX + elWidth} ${
-          index === lengthItems - 1
-            ? startY + elHeight - roundnessVal
-            : startY + elHeight
+          isRadiusBottom ? startY + elHeight - roundnessVal : startY + elHeight
         }
         ${
-          index === lengthItems - 1
+          isRadiusBottom
             ? `C ${startX + elWidth} ${startY + elHeight - roundnessVal}, ${
                 startX + elWidth
               } ${startY + elHeight}, ${startX + elWidth - roundnessVal} ${
