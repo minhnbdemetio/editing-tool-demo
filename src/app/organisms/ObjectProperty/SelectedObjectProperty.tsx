@@ -68,6 +68,9 @@ export const SelectedObjectProperty: FC = () => {
       case SelectedProperty.LineStyle: {
         return <LineProperty />;
       }
+      case SelectedProperty.TextLayers: {
+        return <LayerProperty />;
+      }
       case SelectedProperty.LineStart: {
         return <LineStartProperty />;
       }

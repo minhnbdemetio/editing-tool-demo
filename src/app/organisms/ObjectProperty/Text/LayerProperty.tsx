@@ -24,7 +24,6 @@ export const LayerProperty: FC<LayerPropertyProps> = ({}) => {
             mode === MODE.all && 'bg-[#394c6026] rounded font-medium'
           }`}
           onClick={() => setMode(MODE.all)}
-          draggable
         >
           Tất cả
         </div>
@@ -33,7 +32,6 @@ export const LayerProperty: FC<LayerPropertyProps> = ({}) => {
             mode === MODE.override && 'bg-[#394c6026] rounded font-medium'
           }`}
           onClick={() => setMode(MODE.override)}
-          draggable
         >
           Đè lên nhau
         </div>
