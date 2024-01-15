@@ -81,12 +81,12 @@ const TEXT_EFFECTS_STYLES: {
     imgUrl: '/text-effects/styles/neon.webp',
     effectComponent: NeonEffect,
   },
-  // {
-  //   id: 'background',
-  //   name: 'Background',
-  //   imgUrl: '/text-effects/styles/background.webp',
-  //   effectComponent: BackGroundEffect,
-  // },
+  {
+    id: 'background',
+    name: 'Background',
+    imgUrl: '/text-effects/styles/background.webp',
+    effectComponent: BackGroundEffect,
+  },
 ];
 
 const TEXT_EFFECTS_SHAPES: {

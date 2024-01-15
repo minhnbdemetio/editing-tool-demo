@@ -1,12 +1,14 @@
-import { MoveableTextShadow } from '@/app/factories/MoveableText';
+import { TextBackgroundEffectOption } from '@/app/factories/MoveableText';
 import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
 import { Button, Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
+import { EffectPickColor } from './EffectPickColor';
+import { ColorResult } from 'react-color';
 
-type TextShadowOptions = 'offset' | 'direction' | 'thickness' | 'color';
+type TextBackgroundOptions = 'roundness' | 'spread' | 'transparency' | 'color';
 const SHADOW_OPTIONS = [
   {
-    target: 'offset',
+    target: 'roundness',
     name: 'Roundness',
     type: 'number',
     step: 1,
@@ -15,7 +17,7 @@ const SHADOW_OPTIONS = [
     maxValue: 100,
   },
   {
-    target: 'thickness',
+    target: 'spread',
     name: 'Spread',
     type: 'number',
     step: 1,
@@ -24,8 +26,8 @@ const SHADOW_OPTIONS = [
     maxValue: 100,
   },
   {
-    target: 'direction',
-    name: 'Spread',
+    target: 'transparency',
+    name: 'Transparency',
     type: 'number',
     step: 1,
     default: 50,
@@ -34,7 +36,7 @@ const SHADOW_OPTIONS = [
   },
   {
     target: 'color',
-    name: 'Shadow color',
+    name: 'Color',
     type: 'color',
     value: '#ffed00',
   },
@@ -42,17 +44,29 @@ const SHADOW_OPTIONS = [
 
 const DEFAULT_VALUE = {
   color: '#ffed00',
-  direction: 50,
-  offset: 50,
+  spread: 50,
+  transparency: 100,
+  roundness: 50,
 };
 export const BackGroundEffect: FC = () => {
   const activeText = useActiveTextObject();
-  const [backgroud, setBackground] = useState<MoveableTextShadow>(
+  const [backgroud, setBackground] = useState<TextBackgroundEffectOption>(
     activeText?.backgroundEffect || DEFAULT_VALUE,
   );
+  const [colorPickerOpen, setOpenColorPicker] = useState<boolean>(false);
   useEffect(() => {
-    activeText?.setBackgroundEffect(activeText?.echoEffect || DEFAULT_VALUE);
+    activeText?.setBackgroundEffect(
+      activeText?.backgroundEffect || DEFAULT_VALUE,
+    );
   }, []);
+  const handleChangeColor = (color: ColorResult) => {
+    const value = {
+      ...backgroud,
+      color: color.hex,
+    };
+    setBackground(value);
+    activeText?.setBackgroundEffect(value);
+  };
   return (
     <>
       {SHADOW_OPTIONS.map(option => {
@@ -67,7 +81,15 @@ export const BackGroundEffect: FC = () => {
                 <Button
                   className={`w-[32px] h-[32px] min-w-[32px] rounded-[4px]`}
                   style={{ backgroundColor: backgroud?.color as string }}
+                  onClick={() => setOpenColorPicker(true)}
                 ></Button>
+                {colorPickerOpen && (
+                  <EffectPickColor
+                    defaultColor={backgroud.color}
+                    onChangeColor={handleChangeColor}
+                    onCloseColorPicker={() => setOpenColorPicker(false)}
+                  />
+                )}
               </div>
             );
           }
@@ -97,7 +119,7 @@ export const BackGroundEffect: FC = () => {
                         aria-label="Temperature value"
                         value={
                           backgroud &&
-                          backgroud[option.target as TextShadowOptions]
+                          backgroud[option.target as TextBackgroundOptions]
                         }
                         onChange={e => {
                           const v = +e.target.value;
@@ -115,7 +137,7 @@ export const BackGroundEffect: FC = () => {
                 )}
                 value={
                   backgroud &&
-                  (backgroud[option.target as TextShadowOptions] as number)
+                  (backgroud[option.target as TextBackgroundOptions] as number)
                 }
                 onChange={value => {
                   if (typeof value === 'number') {
