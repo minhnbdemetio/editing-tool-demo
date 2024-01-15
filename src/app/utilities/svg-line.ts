@@ -1442,8 +1442,6 @@ export class SvgLine {
     const { x2, x1, y4, y2 } = this.getBoundingPosition(true);
     let point: null | LinePoint = this.points;
 
-    console.debug(x2, x1, y4, y2);
-
     while (point) {
       if (direction === SvgFlip.HORIZONTAL) {
         point.x = x2 - point.x + x1;
