@@ -38,6 +38,8 @@ export type MoveableTextStyleEffect =
   | 'neon'
   | 'background';
 
+export type TransformDirection = 'bottom' | 'center' | 'top';
+
 export type MoveableTextShapeEffect = 'none' | 'curve';
 
 export class MoveableTextObject extends MoveableObject {
@@ -54,11 +56,13 @@ export class MoveableTextObject extends MoveableObject {
   neonEffect?: MoveableTextShadow;
   backgroundEffect?: MoveableTextShadow;
   curve?: number;
+  transformDirection: string;
   constructor(id?: string, htmlString?: string) {
     super(id, htmlString);
     this.type = 'text';
     this.variant = 'normal';
     this.styleEffect = 'none';
+    this.transformDirection = 'bottom';
   }
 
   clone(options?: { htmlString: string; id: string }): MoveableTextObject {
@@ -209,13 +213,43 @@ export class MoveableTextObject extends MoveableObject {
 
     return element;
   }
-  changeTransformOrigin(
-    transformOrigin?: CSSStyleDeclaration['transformOrigin'],
-  ) {
-    //TODO: Not working yet
+  changeTransformOrigin(transformDirection: TransformDirection) {
+    this.transformDirection = transformDirection;
+  }
+  onUpdateTransformDirection() {
+    if (this.transformDirection === 'bottom') return;
     const element = this.getElement();
-    if (!element) return;
-    element.style.transformOrigin = transformOrigin ?? 'bottom';
+    const textContainer = document.getElementById(
+      `${TEXT_CONTAINER}${this.id}`,
+    );
+    const firstItemContainer = textContainer?.firstElementChild;
+    if (!element || !firstItemContainer) return;
+    const elementStyles = window.getComputedStyle(element);
+    const firstTextStyles = window.getComputedStyle(firstItemContainer);
+    const lineHeight = parseFloat(
+      firstTextStyles.lineHeight?.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
+    );
+    const transform = elementStyles.transform;
+
+    // Extract the translateX and translateY values
+    const match =
+      /matrix\(\d+, \d+, \d+, \d+, (\d+(\.\d+)?), (\d+(\.\d+)?)\)/.exec(
+        transform,
+      );
+    const translateX = match ? parseFloat(match[1]) : 0;
+    const translateY = match ? parseFloat(match[3]) : 0;
+
+    // Calculate the new transform origin
+
+    if (this.transformDirection === 'center') {
+      element.style.transform = `translate(${translateX}px, ${
+        translateY - lineHeight / 2
+      }px)`;
+    } else if (this.transformDirection === 'top') {
+      element.style.transform = `translate(${translateX}px, ${
+        translateY - lineHeight
+      }px)`;
+    }
   }
   toggleLock(): void {
     super.toggleLock();
@@ -469,16 +503,16 @@ export class MoveableTextObject extends MoveableObject {
   }
 
   setShapeNone() {
-    const li = document.getElementById(
+    const ul = document.getElementById(
       `${TEXT_CONTAINER}${this.id}`,
     ) as HTMLElement;
     const curveContainerId = `curve-effect-${this.id}`;
     const curveContainer = document.getElementById(curveContainerId);
-    if (!curveContainer || !li) return;
+    if (!curveContainer || !ul) return;
     curveContainer.parentElement?.removeChild(curveContainer);
-    li.style.visibility = 'unset';
-    if (li.parentElement) {
-      li.parentElement.style.position = 'unset';
+    ul.style.visibility = 'unset';
+    if (ul.parentElement) {
+      ul.parentElement.style.position = 'unset';
     }
     document.removeEventListener(
       'mousedown',
@@ -489,13 +523,13 @@ export class MoveableTextObject extends MoveableObject {
   onInput(e: Event) {
     const curveContainerId = `curve-effect-${this.id}`;
     const curveContainer = document.getElementById(curveContainerId);
-    const li = document.getElementById(
+    const ul = document.getElementById(
       `${TEXT_CONTAINER}${this.id}`,
     ) as HTMLElement;
-    if (!curveContainer || !li) return;
+    if (!curveContainer || !ul) return;
     const target = e.target as HTMLInputElement;
     const textContent = target.textContent?.trim() || '';
-    li.textContent = textContent;
+    ul.textContent = textContent;
     this.generateCurveElement();
   }
 
@@ -557,10 +591,10 @@ export class MoveableTextObject extends MoveableObject {
     const element = this.getElement();
     if (!element) return false;
     const elId = this.id;
-    const li = element.querySelector(
+    const ul = element.querySelector(
       `#${TEXT_CONTAINER}${elId}`,
     ) as HTMLElement;
-    if (!li) return false;
+    if (!ul) return false;
     let curveContainer = document.getElementById(`curve-effect-${elId}`);
     if (!curveContainer) {
       curveContainer = document.createElement('div');
@@ -578,7 +612,7 @@ export class MoveableTextObject extends MoveableObject {
     }
     // Logic calculate curve
     const styles = window.getComputedStyle(element);
-    const text = li.textContent?.trim() || '';
+    const text = ul.textContent?.trim() || '';
     const fontSize = parseFloat(
       styles.fontSize?.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
     );
@@ -645,8 +679,8 @@ export class MoveableTextObject extends MoveableObject {
     const curveContainerId = `curve-effect-${this.id}`;
     const curveContainer = document.getElementById(curveContainerId);
     const element = this.getElement();
-    const li = document.getElementById(`${TEXT_CONTAINER}${this.id}`);
-    if (!curveContainer || !element || !li) return;
+    const ul = document.getElementById(`${TEXT_CONTAINER}${this.id}`);
+    if (!curveContainer || !element || !ul) return;
     const elementStyles = window.getComputedStyle(element);
     const { x, y } = element.getBoundingClientRect();
     let text = document.getElementById(`text-layer-${this.id}`) as HTMLElement;
@@ -654,7 +688,7 @@ export class MoveableTextObject extends MoveableObject {
       text = document.createElement('div');
       text.id = `text-layer-${this.id}`;
       text.contentEditable = 'true';
-      text.textContent = li.textContent?.trim() || '';
+      text.textContent = ul.textContent?.trim() || '';
       text.style.fontSize = elementStyles.fontSize;
       text.style.color = elementStyles.color;
       text.style.fontFamily = elementStyles.fontFamily;

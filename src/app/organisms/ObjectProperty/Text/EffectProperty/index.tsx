@@ -149,8 +149,7 @@ export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
           <div className="effect-styles" key={style.id}>
             <div
               className="group flex flex-col flex-1 gap-1 items-center w-[60px] cursor-pointer"
-              onClick={(e) => {
-                console.log(e.target)
+              onClick={e => {
                 updateActiveMoveableObjectTextStyleEffect(style.id, () =>
                   setEffectStyle(style.id),
                 );
