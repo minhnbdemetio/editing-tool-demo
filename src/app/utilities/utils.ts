@@ -51,7 +51,7 @@ interface TransformResult {
 
 export function parseTransformString(transformString: string): TransformResult {
   const translatePattern = /translate\(([\d.]+px),\s*([\d.]+px)\)/;
-  const rotatePattern = /rotate\(([\d.]+deg)\)/;
+  const rotatePattern = /rotate\((-?[\d.]+deg)\)/;
 
   const hasTranslate = translatePattern.test(transformString);
   const hasRotate = rotatePattern.test(transformString);

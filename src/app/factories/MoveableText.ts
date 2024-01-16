@@ -26,6 +26,13 @@ export type TextOutlineEffectOption = {
   color: string;
 };
 
+export type TextBackgroundEffectOption = {
+  spread?: number;
+  color?: string;
+  roundness?: number;
+  transparency?: number;
+};
+
 export type MoveableTextStyleEffect =
   | 'none'
   | 'shadow'
@@ -37,6 +44,8 @@ export type MoveableTextStyleEffect =
   | 'glitch'
   | 'neon'
   | 'background';
+
+export type TransformDirection = 'bottom' | 'center' | 'top';
 
 export type MoveableTextShapeEffect = 'none' | 'curve';
 
@@ -52,13 +61,15 @@ export class MoveableTextObject extends MoveableObject {
   echoEffect?: MoveableTextShadow;
   glitchEffect?: MoveableTextShadow;
   neonEffect?: MoveableTextShadow;
-  backgroundEffect?: MoveableTextShadow;
+  backgroundEffect?: TextBackgroundEffectOption;
   curve?: number;
+  transformDirection: string;
   constructor(id?: string, htmlString?: string) {
     super(id, htmlString);
     this.type = 'text';
     this.variant = 'normal';
     this.styleEffect = 'none';
+    this.transformDirection = 'bottom';
   }
 
   clone(options?: { htmlString: string; id: string }): MoveableTextObject {
@@ -124,6 +135,7 @@ export class MoveableTextObject extends MoveableObject {
     const element = this.getElement();
     if (!element) return false;
     element.style.fontSize = fontSize + 'px';
+    this.onUpdateBackgroundEffect();
   }
   setTextColor(color: string) {
     const element = this.getElement();
@@ -209,13 +221,43 @@ export class MoveableTextObject extends MoveableObject {
 
     return element;
   }
-  changeTransformOrigin(
-    transformOrigin?: CSSStyleDeclaration['transformOrigin'],
-  ) {
-    //TODO: Not working yet
+  changeTransformOrigin(transformDirection: TransformDirection) {
+    this.transformDirection = transformDirection;
+  }
+  onUpdateTransformDirection() {
+    if (this.transformDirection === 'bottom') return;
     const element = this.getElement();
-    if (!element) return;
-    element.style.transformOrigin = transformOrigin ?? 'bottom';
+    const textContainer = document.getElementById(
+      `${TEXT_CONTAINER}${this.id}`,
+    );
+    const firstItemContainer = textContainer?.firstElementChild;
+    if (!element || !firstItemContainer) return;
+    const elementStyles = window.getComputedStyle(element);
+    const firstTextStyles = window.getComputedStyle(firstItemContainer);
+    const lineHeight = parseFloat(
+      firstTextStyles.lineHeight?.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
+    );
+    const transform = elementStyles.transform;
+
+    // Extract the translateX and translateY values
+    const match =
+      /matrix\(\d+, \d+, \d+, \d+, (\d+(\.\d+)?), (\d+(\.\d+)?)\)/.exec(
+        transform,
+      );
+    const translateX = match ? parseFloat(match[1]) : 0;
+    const translateY = match ? parseFloat(match[3]) : 0;
+
+    // Calculate the new transform origin
+
+    if (this.transformDirection === 'center') {
+      element.style.transform = `translate(${translateX}px, ${
+        translateY - lineHeight / 2
+      }px)`;
+    } else if (this.transformDirection === 'top') {
+      element.style.transform = `translate(${translateX}px, ${
+        translateY - lineHeight
+      }px)`;
+    }
   }
   toggleLock(): void {
     super.toggleLock();
@@ -229,11 +271,13 @@ export class MoveableTextObject extends MoveableObject {
     const element = this.getElement();
     if (!element) return false;
     element.style.letterSpacing = letterSpacing + 'px';
+    this.onUpdateBackgroundEffect();
   }
   setLineHeight(lineHeight: number | null) {
     const element = this.getElement();
     if (!element) return false;
     element.style.lineHeight = lineHeight + 'px';
+    this.onUpdateBackgroundEffect();
   }
   setTextShadow(textShadow?: MoveableTextShadow) {
     if (!textShadow) {
@@ -437,194 +481,353 @@ export class MoveableTextObject extends MoveableObject {
     this.neonEffect = option;
   }
 
-  setBackgroundEffect(option: MoveableTextShadow) {
+  setBackgroundEffect(option: TextBackgroundEffectOption) {
+    this.backgroundEffect = option;
+    this.shapeEffect = 'none';
+    this.curve = undefined;
+    this.onUpdateBackgroundEffect();
+  }
+
+  onUpdateBackgroundEffect() {
     const element = this.getElement();
-    if (!element) return false;
+    if (
+      !element ||
+      this.styleEffect !== 'background' ||
+      this.shapeEffect === 'curve'
+    )
+      return false;
     const bgEffectId = `bg-effect-${this.id}`;
-    let canvas = document.getElementById(bgEffectId) as HTMLCanvasElement;
-    if (!canvas) {
-      canvas = document.createElement('canvas') as HTMLCanvasElement;
-      canvas.id = bgEffectId;
-      canvas.style.position = 'absolute';
-      canvas.style.top = '0';
-      canvas.style.left = '0';
-      canvas.style.zIndex = '-1';
-      element.appendChild(canvas);
+    const {
+      color = 'FFED00',
+      spread = 50,
+      roundness = 50,
+      transparency = 100,
+    } = this.backgroundEffect ?? {};
+    const textContainer = document.getElementById(
+      `${TEXT_CONTAINER}${this.id}`,
+    );
+    const firstTextChild = textContainer?.firstElementChild;
+    if (!textContainer || !firstTextChild) return false;
+    const textChildStyles = window.getComputedStyle(firstTextChild);
+    const elHeight = parseFloat(
+      textChildStyles.height.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
+    );
+    const widthContainer = parseFloat(
+      window
+        .getComputedStyle(textContainer)
+        .width.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
+    );
+
+    const bgElement = document.getElementById(bgEffectId);
+    if (bgElement) {
+      element.removeChild(bgElement);
     }
-    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-    ctx.save();
-    ctx.beginPath();
-    ctx.fillStyle = option.color ?? '#000';
-    ctx.rect(0, 0, canvas.width, canvas.height);
-    ctx.fill();
-    ctx.globalCompositeOperation = 'xor';
-    ctx.beginPath();
-    ctx.fillText(element.textContent || '', 30, 200);
-    ctx.fill();
-    ctx.restore();
+    const spreadVal = (spread / 100) * 10;
+    const roundnessVal = (roundness / 100) * 10;
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    element.style.position = 'relative';
+    svg.id = bgEffectId;
+    svg.style.position = 'absolute';
+    svg.style.top = '0';
+    svg.style.left = `${-spreadVal}px`;
+    svg.style.right = `${widthContainer + spreadVal}px`;
+    svg.style.zIndex = '-1';
+    svg.style.height = '100%';
+    element.appendChild(svg);
+    let prevPathWidth = 0;
+    const lengthItems = textContainer.childNodes.length;
+    textContainer.childNodes.forEach((el, index) => {
+      let elWidth = 0;
+      if (!el.textContent) {
+        elWidth = prevPathWidth;
+      } else {
+        elWidth = this.getTextContentWidth(el.textContent) + 2 * spreadVal;
+      }
+
+      const nextEl = textContainer.childNodes[index + 1];
+      const nextPathWidth =
+        nextEl && nextEl.textContent
+          ? this.getTextContentWidth(nextEl.textContent) + 2 * spreadVal
+          : prevPathWidth || elWidth;
+      const isRadiusTop = index === 0 || elWidth > prevPathWidth;
+      const isRadiusBottom =
+        index === lengthItems - 1 || elWidth > nextPathWidth;
+      prevPathWidth = elWidth;
+      const startX = 0;
+      const startY = elHeight * index;
+      const path = document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'path',
+      ) as SVGPathElement;
+      path.setAttribute(
+        'd',
+        `M ${startX} ${startY} L ${
+          isRadiusTop ? startX + elWidth - roundnessVal : startX + elWidth
+        } ${startY} ${
+          isRadiusTop
+            ? `C ${startX + elWidth - roundnessVal} ${startY}, ${
+                startX + elWidth
+              } ${startY}, ${startX + elWidth} ${startY + roundnessVal}`
+            : ''
+        }L ${startX + elWidth} ${
+          isRadiusBottom ? startY + elHeight - roundnessVal : startY + elHeight
+        }
+        ${
+          isRadiusBottom
+            ? `C ${startX + elWidth} ${startY + elHeight - roundnessVal}, ${
+                startX + elWidth
+              } ${startY + elHeight}, ${startX + elWidth - roundnessVal} ${
+                startY + elHeight
+              }`
+            : ''
+        }
+        L ${index === lengthItems - 1 ? startX + roundnessVal : startX} ${
+          startY + elHeight
+        }
+        ${
+          index === lengthItems - 1
+            ? `C ${startX + roundnessVal} ${startY + elHeight}, ${startX} ${
+                startY + elHeight
+              }, ${startX} ${startY + elHeight - roundnessVal}`
+            : ''
+        }
+        L ${startX} ${index === 0 ? startY + roundnessVal : startY}
+        ${
+          index === 0
+            ? `C ${startX} ${startY + roundnessVal}, ${startX} ${startY}, ${
+                startX + roundnessVal
+              } ${startY}`
+            : ''
+        } z`,
+      );
+      path.setAttribute('fill', color);
+      path.style.fillOpacity = `${transparency / 100}`;
+      svg.appendChild(path);
+    });
+  }
+
+  getTextContentWidth(textContent: string): number {
+    const element = this.getElement();
+    if (!textContent || !element) return 0;
+    const span = document.createElement('span');
+    span.textContent = textContent;
+    span.style.position = 'absolute';
+    span.style.visibility = 'hidden';
+    element.appendChild(span);
+    const styles = window.getComputedStyle(span);
+    const width = parseFloat(
+      styles.width.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
+    );
+    element.removeChild(span);
+    return width;
   }
 
   setShapeEffect(shapeEffect: MoveableTextShapeEffect) {
     this.shapeEffect = shapeEffect;
   }
 
-  setCurve(curve: number) {
+  setShapeNone() {
+    const ul = document.getElementById(
+      `${TEXT_CONTAINER}${this.id}`,
+    ) as HTMLElement;
+    const curveContainerId = `curve-effect-${this.id}`;
+    const curveContainer = document.getElementById(curveContainerId);
+    if (!curveContainer || !ul) return;
+    curveContainer.parentElement?.removeChild(curveContainer);
+    ul.style.visibility = 'unset';
+    if (ul.parentElement) {
+      ul.parentElement.style.position = 'unset';
+    }
+    document.removeEventListener(
+      'mousedown',
+      this.onClickOutsideCurveContainerElement.bind(this),
+    );
+  }
+
+  onInput(e: Event) {
+    const curveContainerId = `curve-effect-${this.id}`;
+    const curveContainer = document.getElementById(curveContainerId);
+    const ul = document.getElementById(
+      `${TEXT_CONTAINER}${this.id}`,
+    ) as HTMLElement;
+    if (!curveContainer || !ul) return;
+    const target = e.target as HTMLInputElement;
+    const textContent = target.textContent?.trim() || '';
+    ul.textContent = textContent;
+    this.generateCurveElement();
+  }
+
+  onClickOutsideCurveContainerElement(e: Event) {
+    const curveContainerId = `curve-effect-${this.id}`;
+    const curveContainer = document.getElementById(curveContainerId);
+    if (!curveContainer) return;
+    const text = document.getElementById(
+      `text-layer-${this.id}`,
+    ) as HTMLElement;
+    const target = e.target as HTMLElement;
+    if (
+      target !== curveContainer &&
+      target?.parentElement !== curveContainer &&
+      text !== e.target
+    ) {
+      curveContainer.style.opacity = '1';
+      if (text) {
+        text.removeEventListener('input', this.onInput.bind(this));
+        document.body.removeChild(text);
+      }
+      document.removeEventListener(
+        'mousedown',
+        this.onClickOutsideCurveContainerElement.bind(this),
+      );
+    }
+  }
+
+  setCurveEffect(curve: number) {
     const element = this.getElement();
     if (!element) return false;
     document.removeEventListener(
       'mousedown',
-      this.onClickOutsideSvgElement.bind(this),
+      this.onClickOutsideCurveContainerElement.bind(this),
     );
+    // Save state
+    this.curve = curve;
     const elId = this.id;
     const ul = element.querySelector(
       `#${TEXT_CONTAINER}${elId}`,
     ) as HTMLElement;
     if (!ul) return false;
+    element.style.position = 'relative';
+    element.style.zIndex = '1';
+    ul.style.visibility = 'hidden';
+    this.generateCurveElement();
+    const curveContainer = document.getElementById(
+      `curve-effect-${elId}`,
+    ) as HTMLElement;
+
+    // Add event listener
+    curveContainer?.addEventListener(
+      'click',
+      this.onClickToCurveContainerElement.bind(this),
+    );
+  }
+
+  generateCurveElement() {
+    const element = this.getElement();
+    if (!element) return false;
+    const elId = this.id;
+    const ul = element.querySelector(
+      `#${TEXT_CONTAINER}${elId}`,
+    ) as HTMLElement;
+    if (!ul) return false;
+    let curveContainer = document.getElementById(`curve-effect-${elId}`);
+    if (!curveContainer) {
+      curveContainer = document.createElement('div');
+      curveContainer.id = `curve-effect-${elId}`;
+      curveContainer.style.position = 'absolute';
+      curveContainer.style.top = '0';
+      curveContainer.style.left = '0';
+      curveContainer.style.zIndex = '1';
+      element.appendChild(curveContainer);
+    } else {
+      // Remove all child elements
+      while (curveContainer.firstChild) {
+        curveContainer.removeChild(curveContainer.firstChild);
+      }
+    }
+    // Logic calculate curve
     const styles = window.getComputedStyle(element);
-    const matches = styles.fontSize?.match(/^(\d+(\.\d+)?)px/);
-    const fontSize = parseFloat(matches?.[1] ?? '0');
+    const text = ul.textContent?.trim() || '';
+    const fontSize = parseFloat(
+      styles.fontSize?.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
+    );
     const width = parseFloat(
       styles.width?.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
     );
-    const svgId = `svg-${this.id}`;
-    if (element.querySelector(`#${svgId}`)) {
-      element.removeChild(element.querySelector(`#${svgId}`) as Element);
+    const Wi = width / text.length;
+    const R = (3.2 * fontSize) / Math.sin((Math.PI * (this.curve ?? 50)) / 180);
+    const dx = R - 3.2 * fontSize;
+    const alpha = this.caculateAlphaCurve((180 * width) / (Math.PI * R));
+    const delta = (180 * Wi) / (Math.PI * R);
+    let nextAlpha = alpha;
+    for (let i = 0; i < text.length; i++) {
+      const letter = text[i];
+      const span = document.createElement('span');
+      span.innerText = letter;
+      span.style.position = 'absolute';
+      const { x, y } = this.caculateCurveTranslate(nextAlpha, R, dx);
+      span.style.transform = `translate(${x}px, ${y}px) rotate(${
+        nextAlpha - 90
+      }deg)`;
+      nextAlpha = alpha + (i + 1) * delta;
+      if (nextAlpha > 360) {
+        nextAlpha -= 360;
+      }
+      curveContainer.appendChild(span);
     }
-    if (curve === 0) {
-      element.style.position = 'unset';
-      element.style.zIndex = 'unset';
-      ul.style.visibility = 'unset';
-      return;
+  }
+
+  caculateAlphaCurve(deg: number) {
+    let a = deg;
+    while (a > 360) {
+      a -= 360;
     }
-    this.curve = curve;
-    element.style.position = 'relative';
-    element.style.zIndex = '1';
-
-    // Create the SVG element
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-    svg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
-    svg.setAttribute('version', '1.1');
-    svg.setAttribute('id', svgId);
-
-    // Create the defs and path elements
-    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    const R = (fontSize * 2.5) / Math.sin((Math.abs(curve) * Math.PI) / 180);
-    const startOffset = (100 * (180 - (width * 180) / R / Math.PI)) / 4 / 180;
-    if (curve < 0) {
-      path.setAttribute(
-        'd',
-        `M 0, 0
-        a ${R},${R} 0 1,0  ${2 * R},0
-        a ${R},${R} 0 1,0 ${-2 * R},0`,
-      );
+    a = a / 2;
+    if (a <= 90) {
+      return 90 - a;
     } else {
-      path.setAttribute(
-        'd',
-        `M ${2 * R}, ${2 * R}
-        a ${R},${R} 0 1,0  ${-2 * R},0
-        a ${R},${R} 0 1,0 ${2 * R},0`,
-      );
+      return 450 - a;
     }
-    path.setAttribute('fill', 'red');
-    path.setAttribute('opacity', '0.2');
-    path.setAttribute('id', 'txt-path');
-    defs.appendChild(path);
-    svg.appendChild(defs);
-
-    // Create the text and textPath elements
-    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    text.setAttribute('fill', styles.color);
-    text.setAttribute('font-size', styles.fontSize);
-    text.setAttribute('font-family', styles.fontFamily);
-    text.setAttribute('font-weight', styles.fontWeight);
-    const textPath = document.createElementNS(
-      'http://www.w3.org/2000/svg',
-      'textPath',
-    );
-    textPath.setAttribute('startOffset', `${startOffset}%`);
-    textPath.setAttributeNS(
-      'http://www.w3.org/1999/xlink',
-      'xlink:href',
-      '#txt-path',
-    );
-    textPath.setAttribute('id', `svg-text-content-${this.id}`);
-    textPath.textContent = element.textContent;
-    text.appendChild(textPath);
-    svg.appendChild(text);
-    svg.style.position = 'absolute';
-    svg.style.zIndex = '1';
-    svg.style.top = '0';
-    svg.style.left = '0';
-    svg.style.width = `${R * 3}px`;
-    svg.style.height = `${3 * R}px`;
-    ul.style.visibility = 'hidden';
-
-    document.removeEventListener(
-      'mousedown',
-      this.onClickOutsideSvgElement.bind(this),
-    );
-
-    svg.addEventListener('click', () => {
-      ul.style.visibility = 'unset';
-      ul.parentElement.style.position = 'absolute';
-      ul.parentElement.style.zIndex = '9';
-      svg.style.opacity = '0.3';
-      document.addEventListener(
-        'mousedown',
-        this.onClickOutsideSvgElement.bind(this),
-      );
-      ul.addEventListener('input', this.onInput.bind(this));
-    });
-
-    // Append the SVG to the body
-    element.appendChild(svg);
   }
-
-  setShapeNone() {
-    const li = document.getElementById(
-      `${TEXT_CONTAINER}${this.id}`,
-    ) as HTMLElement;
-    const svgId = `svg-${this.id}`;
-    const svgElement = document.getElementById(svgId);
-    if (!svgElement || !li) return;
-    svgElement.parentElement?.removeChild(svgElement);
-    li.style.visibility = 'unset';
-    li.parentElement.style.position = 'unset';
-    li.removeEventListener('input', this.onInput.bind(this));
-    document.removeEventListener(
-      'mousedown',
-      this.onClickOutsideSvgElement.bind(this),
-    );
-  }
-
-  onInput(e: Event) {
-    const li = document.getElementById(
-      `${TEXT_CONTAINER}${this.id}`,
-    ) as HTMLElement;
-    const svgId = `svg-text-content-${this.id}`;
-    const svgElement = document.getElementById(svgId);
-    if (!svgElement) return;
-    svgElement.textContent = li.textContent;
-  }
-
-  onClickOutsideSvgElement(e: Event) {
-    const svgId = `svg-${this.id}`;
-    const svgElement = document.getElementById(svgId);
-    if (!svgElement) return;
-    const li = document.getElementById(
-      `${TEXT_CONTAINER}${this.id}`,
-    ) as HTMLElement;
-    if (e.target !== svgElement && li !== e.target) {
-      svgElement.style.opacity = '1';
-      li.parentElement.style.position = 'unset';
-      li.style.visibility = 'hidden';
-      document.removeEventListener(
-        'mousedown',
-        this.onClickOutsideSvgElement.bind(this),
-      );
-      li.removeEventListener('input', this.onInput.bind(this));
+  caculateCurveTranslate(
+    deg: number,
+    R: number,
+    dx: number,
+  ): { x: number; y: number } {
+    let x: number, y: number;
+    if (deg <= 90) {
+      x = R - R * Math.cos((deg * Math.PI) / 180);
+      y = R - R * Math.sin((deg * Math.PI) / 180);
+    } else if (deg <= 180) {
+      x = R + R * Math.sin(((deg - 90) * Math.PI) / 180);
+      y = R - R * Math.cos(((deg - 90) * Math.PI) / 180);
+    } else if (deg <= 270) {
+      x = R + R * Math.cos(((deg - 180) * Math.PI) / 180);
+      y = R + R * Math.sin(((deg - 180) * Math.PI) / 180);
+    } else {
+      x = R - R * Math.cos(((360 - deg) * Math.PI) / 180);
+      y = R + R * Math.sin(((360 - deg) * Math.PI) / 180);
     }
+    return { x: x - dx, y };
+  }
+  onClickToCurveContainerElement(e: Event) {
+    const curveContainerId = `curve-effect-${this.id}`;
+    const curveContainer = document.getElementById(curveContainerId);
+    const element = this.getElement();
+    const ul = document.getElementById(`${TEXT_CONTAINER}${this.id}`);
+    if (!curveContainer || !element || !ul) return;
+    const elementStyles = window.getComputedStyle(element);
+    const { x, y } = element.getBoundingClientRect();
+    let text = document.getElementById(`text-layer-${this.id}`) as HTMLElement;
+    if (!text) {
+      text = document.createElement('div');
+      text.id = `text-layer-${this.id}`;
+      text.contentEditable = 'true';
+      text.textContent = ul.textContent?.trim() || '';
+      text.style.fontSize = elementStyles.fontSize;
+      text.style.color = elementStyles.color;
+      text.style.fontFamily = elementStyles.fontFamily;
+      text.style.position = 'fixed';
+      text.style.top = `${y}px`;
+      text.style.left = `${x}px`;
+      text.style.minWidth = '20px';
+      text.style.minHeight = '20px';
+    }
+    curveContainer.style.opacity = '0.3';
+    document.body.appendChild(text);
+    document.addEventListener(
+      'mousedown',
+      this.onClickOutsideCurveContainerElement.bind(this),
+    );
+    text.addEventListener('input', this.onInput.bind(this));
   }
 }

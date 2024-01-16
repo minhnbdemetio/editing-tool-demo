@@ -25,6 +25,7 @@ import { TransparencyProperty } from './Text/TransparencyProperty';
 import { LineAlignProperty } from './Line/LineAlignProperty';
 import { LineShadowProperty } from './Line/LineShadowProperty';
 import { LineFlipProperty } from './Line/LineFlipProperty';
+import { LayerProperty } from './Text/LayerProperty';
 
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
@@ -70,6 +71,9 @@ export const SelectedObjectProperty: FC = () => {
       case SelectedProperty.LineStyle: {
         return <LineProperty />;
       }
+      case SelectedProperty.TextLayers: {
+        return <LayerProperty />;
+      }
       case SelectedProperty.LineStart: {
         return <LineStartProperty />;
       }
@@ -93,6 +97,9 @@ export const SelectedObjectProperty: FC = () => {
       }
       case SelectedProperty.LineFlip: {
         return <LineFlipProperty />;
+      }
+      case SelectedProperty.TextLayers: {
+        return <LayerProperty />;
       }
       default: {
         return null;
