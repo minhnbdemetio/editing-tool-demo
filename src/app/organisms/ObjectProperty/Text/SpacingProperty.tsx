@@ -128,7 +128,7 @@ export const SpacingProperty: FC<SpacingPropertyProps> = ({}) => {
         <div className="flex gap-2 items-center">
           <Button
             onClick={() =>
-              handleChangeMoveableTextTransformOrigin('center bottom', () => {
+              handleChangeMoveableTextTransformOrigin('bottom', () => {
                 moveable?.updateRect();
               })
             }
@@ -138,7 +138,7 @@ export const SpacingProperty: FC<SpacingPropertyProps> = ({}) => {
           </Button>
           <Button
             onClick={() =>
-              handleChangeMoveableTextTransformOrigin('center center', () => {
+              handleChangeMoveableTextTransformOrigin('center', () => {
                 moveable?.updateRect();
               })
             }
@@ -148,7 +148,7 @@ export const SpacingProperty: FC<SpacingPropertyProps> = ({}) => {
           </Button>
           <Button
             onClick={() =>
-              handleChangeMoveableTextTransformOrigin('center top', () => {
+              handleChangeMoveableTextTransformOrigin('top', () => {
                 moveable?.updateRect();
               })
             }

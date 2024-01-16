@@ -3,6 +3,7 @@ import {
   MoveableTextObject,
   MoveableTextShapeEffect,
   MoveableTextStyleEffect,
+  TransformDirection,
 } from '../factories/MoveableText';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { useActivePage } from '../store/active-page';
@@ -340,10 +341,10 @@ export const useChangeTextTransformOrigin = () => {
   const activeText = useActiveTextObject();
 
   const handleChangeTransformOrigin = (
-    transformOrigin: CSSStyleDeclaration['transformOrigin'],
+    transformDirection: TransformDirection,
     callback?: Function,
   ) => {
-    activeText?.changeTransformOrigin(transformOrigin);
+    activeText?.changeTransformOrigin(transformDirection);
     callback && callback();
     return true;
   };
