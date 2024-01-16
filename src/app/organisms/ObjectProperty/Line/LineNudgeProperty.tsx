@@ -1,12 +1,5 @@
 import { MobileNudgeButtons } from '@/app/atoms/MobileNudgeButtons';
-import { useChangeMoveableTextTransformCommand } from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
-import {
-  useActiveMoveableLineObject,
-  useActiveTextObject,
-} from '@/app/hooks/useActiveMoveableObject';
-import { ArrowToLeft } from '@/app/icons';
-import { parseTranslateString } from '@/app/utilities/utils';
-import { Button } from '@nextui-org/react';
+import { useActiveMoveableLineObject } from '@/app/hooks/useActiveMoveableObject';
 import { FC } from 'react';
 
 interface NudgePropertyProps {}

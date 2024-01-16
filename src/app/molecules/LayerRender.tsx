@@ -1,6 +1,9 @@
 import { MoveableObject } from '@/app/factories/MoveableObject';
 import { useActivePage } from '@/app/store/active-page';
-import { parseTransformString } from '@/app/utilities/utils';
+import {
+  calculateActualHeight,
+  parseTransformString,
+} from '@/app/utilities/utils';
 import { FC, useEffect, useRef } from 'react';
 import { useDesign } from '../store/design-objects';
 
@@ -25,7 +28,7 @@ export const LayerRender: FC<LayerRenderProps> = ({
       if (loadedElement instanceof HTMLElement) {
         loadedElement.style.transform = `rotate(${
           transformString.rotate
-        }) scale(${48 / element.getBoundingClientRect().height})`;
+        }) scale(${48 / (calculateActualHeight(element) || 48)})`;
         while (containerRef.current?.firstChild) {
           containerRef.current.removeChild(containerRef.current.firstChild);
         }
