@@ -400,15 +400,15 @@ export const useChangeTextFontStyle = () => {
   return handleChangeFont;
 };
 
-export const useChangeTextTransform = () => {
-  const activeText = useActiveTextObject();
+export const useChangeElementTransform = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
 
   const handleChangeTransform = (
     transformX: number,
     transformY: number,
     callback: Function,
   ) => {
-    const element = activeText?.getElement();
+    const element = activeMoveableObject?.getElement();
     if (!element) return false;
     const transformString = parseTransformString(element.style.transform);
     element.style.transform = `translate(${transformX}px, ${transformY}px) rotate(${transformString.rotate})`;
