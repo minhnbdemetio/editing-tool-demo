@@ -3,6 +3,7 @@ import { MoveableBodyTextObject } from '../factories/MoveableBodyText';
 import { MoveableHeadingTextObject } from '../factories/MoveableHeadingText';
 import { MoveableLineObject } from '../factories/MoveableLine';
 import { MoveableObject } from '../factories/MoveableObject';
+import { MoveablePhoto } from '../factories/MoveablePhoto';
 import { MoveableSubheadingTextObject } from '../factories/MoveableSubheadingText';
 import { MoveableTextObject } from '../factories/MoveableText';
 
@@ -39,3 +40,7 @@ export const isElementLocked = (
 ) => {
   return target?.getAttribute(DATA_LOCKED) === 'true';
 };
+
+export const isPhoto = (
+  moveableObject: MoveableObject | null,
+): moveableObject is MoveablePhoto => moveableObject?.type === 'photo';

@@ -1,5 +1,5 @@
 import { FC } from 'react';
 
-export const PhotoMenuProperty: FC = () => {
+export const PhotoAlignProperty: FC = () => {
   return <></>;
 };

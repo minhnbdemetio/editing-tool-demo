@@ -26,6 +26,7 @@ import { LineAlignProperty } from './Line/LineAlignProperty';
 import { LineShadowProperty } from './Line/LineShadowProperty';
 import { LineFlipProperty } from './Line/LineFlipProperty';
 import { LayerProperty } from './Text/LayerProperty';
+import { PhotoAlignProperty } from './Photo/AlignProperty';
 
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
@@ -100,6 +101,9 @@ export const SelectedObjectProperty: FC = () => {
       }
       case SelectedProperty.TextLayers: {
         return <LayerProperty />;
+      }
+      case SelectedProperty.PhotoAlign: {
+        return <PhotoAlignProperty />;
       }
       default: {
         return null;
