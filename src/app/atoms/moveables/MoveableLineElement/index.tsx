@@ -13,7 +13,10 @@ export const MoveableLineElement: FC<MoveableLineElementProps> = ({
     <div
       id={object.id}
       className={` hidden absolute border-none`}
-      style={{ transformOrigin: `${object.line?.padding}px center` }}
+      style={{
+        transformOrigin: `${object.line?.padding}px center`,
+        transform: `translate(-${object.line?.padding}px, -${object.line?.padding}px)`,
+      }}
       dangerouslySetInnerHTML={{ __html: object.line?.toSvg() || '' }}
     ></div>
   );

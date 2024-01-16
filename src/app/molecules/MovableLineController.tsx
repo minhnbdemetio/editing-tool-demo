@@ -70,13 +70,14 @@ const StraightLineController: React.FC<{
             transform: `translate(${point.x}px, ${point.y}px)`,
           }}
           onDrag={e => handleMove(point.id, e)}
+          className="absolute"
         >
           <div
             className="absolute w-[15px] h-[15px] rounded-[50%] border-[1px] border-gray-50 border-solid"
             style={{
               background: 'red',
               border: '1px solid #e8e8e8',
-              transform: `translate(${activeMoveableObject.line.padding}px, ${activeMoveableObject.line.padding}px)`,
+              transform: `translate(-50%, -100%)`,
             }}
           ></div>
         </Draggable>
@@ -157,9 +158,7 @@ const ElbowedLineController: React.FC<{
         }
       }
 
-      const { x, y } = activeMoveableObject.line.getDisplayPosition();
-      anchorRef.innerHTML = activeMoveableObject.line.toSvg() || '';
-      anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(0deg)`;
+      activeMoveableObject.updateUI();
 
       activeMoveableObject.updatePointerControllerUI();
     }
@@ -212,12 +211,7 @@ const ElbowedLineController: React.FC<{
             width: 'fit-content',
           }}
         >
-          <div
-            style={{
-              transform: `translate(${activeMoveableObject.line?.padding}px, ${activeMoveableObject.line?.padding}px)`,
-            }}
-            className="w-[15px] h-[15px] bg-[red] rounded-[50%]"
-          ></div>
+          <div className="w-[15px] h-[15px] bg-[red] rounded-[50%]"></div>
         </Draggable>
       )}
       {linePositions?.map(pos => (
@@ -254,9 +248,7 @@ const ElbowedLineController: React.FC<{
                 );
               }
 
-              const { x, y } = activeMoveableObject.line.getDisplayPosition();
-              anchorRef.innerHTML = activeMoveableObject.line.toSvg() || '';
-              anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(0deg)`;
+              activeMoveableObject.updateUI();
 
               activeMoveableObject.updateHeadControl();
             }
@@ -266,7 +258,7 @@ const ElbowedLineController: React.FC<{
           <div
             style={{
               background: 'red',
-              transform: `translate(${activeMoveableObject.line?.padding}px, ${activeMoveableObject.line?.padding}px)`,
+              // transform: `translate(${activeMoveableObject.line?.padding}px, ${activeMoveableObject.line?.padding}px)`,
             }}
             className={twMerge('bg-red absolute rounded-md', {
               'w-[30px] h-[10px] ': pos.y2 === pos.y1,
@@ -319,9 +311,9 @@ const ElbowedLineController: React.FC<{
           }}
         >
           <div
-            style={{
-              transform: `translate(${activeMoveableObject.line?.padding}px, ${activeMoveableObject.line?.padding}px)`,
-            }}
+            // style={{
+            //   transform: `translate(${activeMoveableObject.line?.padding}px, ${activeMoveableObject.line?.padding}px)`,
+            // }}
             className="w-[15px] h-[15px] bg-[red] rounded-[50%]"
           ></div>
         </Draggable>
