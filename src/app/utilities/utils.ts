@@ -84,3 +84,25 @@ export function parseTransformString(transformString: string): TransformResult {
 
   return result;
 }
+
+export function calculateActualHeight(element: HTMLElement): number | null {
+  if (!element) {
+    return null;
+  }
+
+  // Lấy chiều rộng và chiều cao ban đầu của phần tử
+  const width: number = element.offsetWidth;
+  const height: number = element.offsetHeight;
+
+  // Lấy góc xoay của phần tử (chuyển đổi về radian)
+  const rotate: number = element.style.transform
+    ? parseFloat(element.style.transform.replace(/[^\d.-]/g, '')) *
+      (Math.PI / 180)
+    : 0;
+  // Tính chiều cao thực tế
+  const actualHeight: number =
+    Math.abs(height * Math.cos(Math.abs(rotate))) +
+    Math.abs(width * Math.sin(Math.abs(rotate)));
+
+  return actualHeight;
+}
