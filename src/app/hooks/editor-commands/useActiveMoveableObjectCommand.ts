@@ -13,7 +13,7 @@ import {
   useChangeTextTransformOrigin,
   useChangeTextStyles,
   useChangeTextFontStyle,
-  useChangeTextTransform,
+  useChangeElementTransform,
   useDeleteObject,
   useUndoDeleteObject,
   useUpdateActiveMoveableObjectTextStyleEffect,
@@ -91,8 +91,8 @@ export const useChangeMoveableTextFontStyleCommand = () => {
   return changeFontStyle;
 };
 
-export const useChangeMoveableTextTransformCommand = () => {
-  const changeTransform = useChangeTextTransform();
+export const useChangeMoveableElementTransformCommand = () => {
+  const changeTransform = useChangeElementTransform();
   return debounce(changeTransform, 100);
 };
 

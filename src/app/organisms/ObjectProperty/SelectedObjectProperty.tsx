@@ -11,7 +11,6 @@ import { TextMoreProperty } from './Text/More';
 import { SpacingProperty } from './Text/SpacingProperty';
 import { EffectProperty } from './Text/EffectProperty';
 import { StylesProperty } from './Text/StylesProperty';
-import { NudgeProperty } from './Text/NudgeProperty';
 import { PositionProperty } from './Text/PositionProperty';
 
 import { ColorProperty as LineColorProperty } from './Line/ColorProperty';
@@ -25,8 +24,9 @@ import { TransparencyProperty } from './Text/TransparencyProperty';
 import { LineAlignProperty } from './Line/LineAlignProperty';
 import { LineShadowProperty } from './Line/LineShadowProperty';
 import { LineFlipProperty } from './Line/LineFlipProperty';
-import { LayerProperty } from './Text/LayerProperty';
+import { LayerProperty } from './Common/LayerProperty';
 import { PhotoAlignProperty } from './Photo/AlignProperty';
+import { NudgeProperty } from './Common/NudgeProperty';
 
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
@@ -104,6 +104,15 @@ export const SelectedObjectProperty: FC = () => {
       }
       case SelectedProperty.PhotoAlign: {
         return <PhotoAlignProperty />;
+      }
+      case SelectedProperty.PhotoNudge: {
+        return <NudgeProperty />;
+      }
+      case SelectedProperty.PhotoNudge: {
+        return <NudgeProperty />;
+      }
+      case SelectedProperty.PhotoLayer: {
+        return <LayerProperty />;
       }
       default: {
         return null;

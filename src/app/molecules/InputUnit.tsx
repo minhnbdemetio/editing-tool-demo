@@ -1,7 +1,4 @@
-import { useChangeMoveableTextTransformCommand } from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
-import { ArrowToLeft, GoToTop, MoveOn } from '@/app/icons';
-import { Button } from '@nextui-org/react';
-import { FC, useState } from 'react';
+import { FC } from 'react';
 
 interface InputUnitProps {
   label: string;
