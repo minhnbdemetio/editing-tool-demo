@@ -8,24 +8,28 @@ export const useLoadMoveableObject = (object: MoveableObject) => {
   const [objectLoaded, setObjectLoaded] = useState(false);
   const { pageId } = useCurrentPage();
   useEffect(() => {
-    const container = document.getElementById(
-      `${OBJECT_CONTAINER}-${object.id}`,
-    );
-    if (!container || objectLoaded) return;
-    const defaultElement = object.getElement();
-    if (object.htmlString) {
-      const loadedElement = object.createElementFromHtmlString();
-      if (loadedElement) {
-        container.appendChild(loadedElement);
+    (async () => {
+      const container = document.getElementById(
+        `${OBJECT_CONTAINER}-${object.id}`,
+      );
+      if (!container || objectLoaded) return;
+      const defaultElement = object.getElement();
+      if (object.htmlString) {
+        const loadedElement = object.createElementFromHtmlString();
+        if (loadedElement) {
+          container.appendChild(loadedElement);
+        }
+        defaultElement?.remove();
+      } else {
+        defaultElement?.classList.remove('hidden');
       }
-      defaultElement?.remove();
-    } else {
-      defaultElement?.classList.remove('hidden');
-    }
-    object.setupMoveable();
-    object.setPageId(pageId);
-    object.setIsLocked(isElementLocked(object.getElement()));
-    setObjectLoaded(true);
+      object.setPageId(pageId);
+      object.setIsLocked(isElementLocked(object.getElement()));
+
+      await object.setupMoveable();
+
+      setObjectLoaded(true);
+    })();
   }, [object, objectLoaded, pageId]);
 
   return { objectLoaded };

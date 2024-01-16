@@ -77,7 +77,7 @@ export abstract class MoveableObject {
     }
     return '';
   }
-  setupMoveable() {
+  async setupMoveable() {
     const element = this.getElement();
     if (!element?.classList.contains(MOVEABLE_TARGET_CLASS)) {
       element?.classList.add(MOVEABLE_TARGET_CLASS);
