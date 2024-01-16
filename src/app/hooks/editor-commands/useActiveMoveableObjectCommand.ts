@@ -13,7 +13,7 @@ import {
   useChangeTextTransformOrigin,
   useChangeTextStyles,
   useChangeTextFontStyle,
-  useChangeTextTransform,
+  useChangeObjectTransform,
   useDeleteObject,
   useUndoDeleteObject,
   useUpdateActiveMoveableObjectTextStyleEffect,
@@ -22,7 +22,6 @@ import {
 import { debounce } from 'lodash';
 import { DeleteCommand } from '@/app/factories/command/DeleteCommand';
 import { useExecuteCommand } from './useCommand';
-import { useMemo } from 'react';
 
 // TODO: Add logic excute command
 export const useToggleMoveableBoldTextCommand = () => {
@@ -92,7 +91,7 @@ export const useChangeMoveableTextFontStyleCommand = () => {
 };
 
 export const useChangeMoveableTextTransformCommand = () => {
-  const changeTransform = useChangeTextTransform();
+  const changeTransform = useChangeObjectTransform();
   return debounce(changeTransform, 100);
 };
 

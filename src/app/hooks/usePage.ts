@@ -36,7 +36,6 @@ export const useClonePage = () => {
       const currentPageObjects = getPageObjects(pageId).map(pageObject =>
         pageObject.clone(),
       );
-      console.log(currentPageObjects);
       addPage(currentPageObjects);
     },
     [addPage, getPageObjects],
