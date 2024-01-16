@@ -39,6 +39,9 @@ export const PhotoMenuProperties: FC = () => {
       <Button onClick={() => setSelectedProperty(SelectedProperty.PhotoOrder)}>
         Flip
       </Button>
+      <Button onClick={() => setSelectedProperty(SelectedProperty.PhotoLayer)}>
+        Layer
+      </Button>
       <Button>Set as background</Button>
       <Button onClick={() => setSelectedProperty(SelectedProperty.PhotoMore)}>
         More
