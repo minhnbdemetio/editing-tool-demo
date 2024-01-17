@@ -617,3 +617,15 @@ export const useAlignElement = () => {
     moveable?.updateRect();
   };
 };
+
+export const useUpdateElementOpacity = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+  const changeOpacity = (opacity: number, callback: Function) => {
+    if (!activeMoveableObject) return false;
+    activeMoveableObject.setOpacity(opacity);
+
+    callback();
+    return true;
+  };
+  return changeOpacity;
+};
