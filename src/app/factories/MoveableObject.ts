@@ -98,4 +98,9 @@ export abstract class MoveableObject {
     element?.setAttribute(DATA_LOCKED, toggleValue + '');
     this.setIsLocked(toggleValue);
   }
+  setOpacity(opacity: number) {
+    const element = this.getElement();
+    if (!element) return false;
+    element.style.opacity = `${opacity / 100}`;
+  }
 }
