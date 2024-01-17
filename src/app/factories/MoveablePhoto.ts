@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { MoveableObject } from './MoveableObject';
+import { v4 as uuid } from 'uuid';
 
 export class MoveablePhoto extends MoveableObject {
   private x: number = 0;
@@ -7,6 +8,9 @@ export class MoveablePhoto extends MoveableObject {
   public width: number = 0;
   public height: number = 0;
   public loaded: boolean = false;
+
+  public contrast: number = 0;
+  public filterId: string = uuid();
 
   clone(
     options?: { htmlString: string; id: string } | undefined,
@@ -68,5 +72,63 @@ export class MoveablePhoto extends MoveableObject {
         });
       });
     }
+  }
+
+  public getFilterContainer() {
+    return document.querySelector(
+      `div[data-id='${this.id}'] > svg > defs > filter`,
+    );
+  }
+
+  public removeAllDefs() {
+    const filterElement = this.getFilterContainer();
+    if (filterElement)
+      filterElement.childNodes.forEach(child => child.remove());
+  }
+
+  public getContrastFilter(): string | null {
+    if (this.contrast === 0) return null;
+    let contrastRate = this.contrast > 0 ? 0.5 : 0.4;
+
+    const slope = 1 + (this.contrast / 100) * contrastRate;
+    const intercept = (-this.contrast / 100) * contrastRate;
+    return `
+    <feComponentTransfer>
+        <feFuncR type="linear" slope="${slope}" intercept="${intercept}"/>
+    
+        <feFuncG type="linear" slope="${slope}" intercept="${intercept}"/>
+    
+        <feFuncB type="linear" slope="${slope}" intercept="${intercept}"/>
+    </feComponentTransfer>
+    `;
+  }
+
+  public renderFilter() {
+    this.removeAllDefs();
+
+    const filters: (string | null)[] = [this.getContrastFilter()];
+    const appliedFilters: string[] = filters.filter(f => !!f) as string[];
+
+    const imageElement = document.querySelector(
+      `div[data-id='${this.id}'] > svg > g`,
+    );
+
+    const element = this.getFilterContainer();
+
+    if (element && imageElement) {
+      if (appliedFilters.length) {
+        imageElement.setAttribute('filter', `url(#${this.filterId})`);
+        element.innerHTML = appliedFilters.join(' ');
+      } else {
+        element.innerHTML = '';
+        imageElement.setAttribute('filter', ``);
+      }
+    }
+  }
+
+  public changeContrast(contrast: number) {
+    this.contrast = contrast;
+
+    this.renderFilter();
   }
 }
