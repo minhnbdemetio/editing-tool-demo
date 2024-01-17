@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import { MoveableObject } from '../factories/MoveableObject';
 import Moveable from 'react-moveable';
+
+const DEFAULT_PAGE_SCALE = 1;
+
 interface DesignProperties {
   designObjects: Record<string, { objects: MoveableObject[] }>;
   setDesignObjects: (
@@ -15,6 +18,8 @@ interface DesignProperties {
   setMovable: (moveable: Moveable | null) => any;
   getAllObjects: () => MoveableObject[];
   getPageObjects: (pageId: string) => MoveableObject[];
+  scale: number;
+  setScale: (scale: number) => any;
 }
 
 export const useDesign = create<DesignProperties>((set, get) => ({
@@ -50,5 +55,9 @@ export const useDesign = create<DesignProperties>((set, get) => ({
       allObjects = [...allObjects, ...page.objects];
     });
     return allObjects;
+  },
+  scale: DEFAULT_PAGE_SCALE,
+  setScale(scale) {
+    set({ scale });
   },
 }));
