@@ -1,3 +1,4 @@
+import { IMAGE_CONTAINER } from '@/app/constants/moveable';
 import { MoveablePhoto } from '@/app/factories/MoveablePhoto';
 import { FC } from 'react';
 

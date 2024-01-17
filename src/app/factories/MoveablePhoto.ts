@@ -3,6 +3,13 @@ import { MoveableObject } from './MoveableObject';
 import { v4 as uuid } from 'uuid';
 import { PhotoFilter } from '../types';
 
+export type PhotoPosition = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
 export class MoveablePhoto extends MoveableObject {
   private x: number = 0;
   private y: number = 0;
@@ -453,6 +460,17 @@ export class MoveablePhoto extends MoveableObject {
       contrast: this.contrast,
       saturation: this.saturation,
       temperature: this.temperature,
+    };
+  }
+  getPhotoPosition(): PhotoPosition | undefined {
+    const element = this.getElement();
+    if (!element) return;
+    const { x, y, width, height } = element.getBoundingClientRect();
+    return {
+      x,
+      y,
+      width,
+      height,
     };
   }
 }

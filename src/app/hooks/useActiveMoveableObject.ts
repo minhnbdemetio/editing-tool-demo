@@ -21,6 +21,11 @@ export const useActiveTextObject = () => {
   return isText(activeMoveableObject) ? activeMoveableObject : null;
 };
 
+export const useActivePhotoObject = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+  return isPhoto(activeMoveableObject) ? activeMoveableObject : null;
+};
+
 export const useActiveMoveableLineObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
