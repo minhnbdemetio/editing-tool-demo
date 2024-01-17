@@ -25,6 +25,17 @@ export enum SelectedProperty {
   LineAlign,
   LineShadow,
   LineFlip,
+  PhotoNudge,
+  PhotoFilter,
+  PhotoManualFilter,
+  PhotoEffect,
+  PhotoCrop,
+  PhotoOpacity,
+  PhotoAlign,
+  PhotoOrder,
+  PhotoFlip,
+  PhotoMore,
+  PhotoLayer,
 }
 
 interface SelectedPropertyState {

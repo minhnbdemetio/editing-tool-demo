@@ -8,16 +8,14 @@ import { useCurrentPageObjects } from '../hooks/usePageObjects';
 import { useActivePage } from '../store/active-page';
 import { MovableLineController } from '../molecules/MovableLineController';
 import { usePageSize } from '../store/use-page-size';
+import { useDesign } from '../store/design-objects';
 
 export interface EditablePageProps {
   pageId: string;
 }
 
-const DEFAULT_PAGE_SCALE = 1;
-
 const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   const [pageObjects] = useCurrentPageObjects();
-  console.log({ pageObjects });
 
   const { setActivePage } = useActivePage();
   const { workingWidthPixels, workingHeightPixels } = usePageSize();
@@ -26,7 +24,7 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
     setActivePage(pageId);
   }, [pageId, setActivePage]);
 
-  const [scale, setScale] = useState(DEFAULT_PAGE_SCALE);
+  const { scale, setScale } = useDesign();
   const containerRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef<HTMLDivElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);

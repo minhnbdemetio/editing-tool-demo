@@ -10,6 +10,8 @@ import { MoveableConfig } from '../atoms/moveables/MoveableConfig';
 import { useAddPage, useClonePage, usePages } from '../hooks/usePage';
 import { useActivePage } from '../store/active-page';
 import { twMerge } from '../utilities/tailwind';
+import { MoveablePhoto } from '../factories/MoveablePhoto';
+import { useAddObjectToActivePage } from '../hooks/usePageObjects';
 
 export const SELECTO_ID = 'editor-selecto';
 export const EDITOR_CONTAINER = 'editor-container';
@@ -36,6 +38,16 @@ export const Editor: FC = () => {
     }),
   }));
 
+  const addObjectToPage = useAddObjectToActivePage();
+
+  const handleAddPhoto = () => {
+    addObjectToPage(
+      new MoveablePhoto(
+        'https://iso.500px.com/wp-content/uploads/2015/05/inna_cover.jpeg',
+      ),
+    );
+  };
+
   return (
     <div
       ref={drop}
@@ -46,6 +58,9 @@ export const Editor: FC = () => {
       <div className="text-right mb-3">
         <LinePreviewToggle />
       </div>
+      <Button className="mt-10" onClick={handleAddPhoto}>
+        +Add photo
+      </Button>
       <div className="flex flex-col gap-10 h-full">
         {pages.map(pageId => (
           <div

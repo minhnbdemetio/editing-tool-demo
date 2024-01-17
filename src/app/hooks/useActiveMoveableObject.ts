@@ -13,6 +13,7 @@ import { usePageObjectsById } from './usePageObjects';
 import { isLine, isText } from '../utilities/moveable';
 import { MoveableObject } from '../factories/MoveableObject';
 import { useDesign } from '../store/design-objects';
+import { isNumber } from 'lodash';
 
 export const useActiveTextObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
@@ -400,19 +401,23 @@ export const useChangeTextFontStyle = () => {
   return handleChangeFont;
 };
 
-export const useChangeTextTransform = () => {
-  const activeText = useActiveTextObject();
+export const useChangeObjectTransform = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
 
   const handleChangeTransform = (
-    transformX: number,
-    transformY: number,
-    callback: Function,
+    translateX?: number,
+    translateY?: number,
+    callback?: Function,
   ) => {
-    const element = activeText?.getElement();
+    const element = activeMoveableObject?.getElement();
     if (!element) return false;
     const transformString = parseTransformString(element.style.transform);
-    element.style.transform = `translate(${transformX}px, ${transformY}px) rotate(${transformString.rotate})`;
-    callback();
+    element.style.transform = `translate(${
+      isNumber(translateX) ? translateX + 'px' : transformString.translateX
+    }, ${
+      isNumber(translateY) ? translateY + 'px' : transformString.translateY
+    }) rotate(${transformString.rotate})`;
+    callback && callback();
     return true;
   };
 
@@ -544,4 +549,83 @@ export const useUpdateOpacity = () => {
     return true;
   };
   return handleChangeTextEffect;
+};
+
+export const useAlignElement = () => {
+  const updateTransform = useChangeObjectTransform();
+  const { activeMoveableObject } = useActiveMoveableObject();
+
+  const { moveable, scale } = useDesign();
+  return (
+    direction: 'left' | 'top' | 'right' | 'bottom' | 'center' | 'middle',
+  ) => {
+    const element = activeMoveableObject?.getElement();
+    if (!element || !moveable || !activeMoveableObject?.pageId) return;
+    const elementWidth = element.clientWidth;
+    const elementHeight = element.clientHeight;
+    const scaledElementWidth = element.clientWidth * scale;
+    const scaledElementHeight = element.clientHeight * scale;
+    const moveableRect = moveable.getRect();
+    const pageContainer = document.getElementById(activeMoveableObject.pageId);
+
+    if (!pageContainer) return;
+    const pageWidth = pageContainer.clientWidth;
+    const pageHeight = pageContainer.clientHeight;
+
+    switch (direction) {
+      case 'left': {
+        const translateXToUpdate =
+          (moveableRect.width - scaledElementWidth) / 2 / scale;
+        updateTransform(Math.round(translateXToUpdate));
+        break;
+      }
+      case 'top': {
+        const translateYToUpdate =
+          (moveableRect.height - scaledElementHeight) / 2 / scale;
+        updateTransform(undefined, Math.round(translateYToUpdate));
+        break;
+      }
+      case 'right': {
+        const redundantX =
+          (moveableRect.width - scaledElementWidth) / 2 / scale;
+        const shouldTranslateX = pageWidth - elementWidth - redundantX;
+
+        updateTransform(Math.round(shouldTranslateX));
+        break;
+      }
+      case 'bottom': {
+        const redundantY =
+          (moveableRect.height - scaledElementHeight) / 2 / scale;
+
+        const shouldTranslateY = pageHeight - elementHeight - redundantY;
+        updateTransform(undefined, Math.round(shouldTranslateY));
+        break;
+      }
+      case 'center': {
+        const centerX = (pageWidth - elementWidth) / 2;
+        const centerY = (pageHeight - elementHeight) / 2;
+        updateTransform(Math.round(centerX), Math.round(centerY));
+        break;
+      }
+      case 'middle': {
+        const centerY = (pageHeight - elementHeight) / 2;
+        updateTransform(undefined, Math.round(centerY));
+        break;
+      }
+    }
+
+    moveable?.updateRect();
+  };
+};
+
+export const useUpdateElementOpacity = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+  const changeOpacity = (opacity: number, callback: Function) => {
+    if (!activeMoveableObject) return false;
+    activeMoveableObject.setOpacity(opacity);
+
+    callback();
+    return true;
+  };
+  return changeOpacity;
 };

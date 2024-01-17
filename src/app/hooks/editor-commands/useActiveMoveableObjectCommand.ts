@@ -13,16 +13,16 @@ import {
   useChangeTextTransformOrigin,
   useChangeTextStyles,
   useChangeTextFontStyle,
-  useChangeTextTransform,
+  useChangeObjectTransform,
   useDeleteObject,
   useUndoDeleteObject,
   useUpdateActiveMoveableObjectTextStyleEffect,
   useUpdateActiveTextShapeEffect,
+  useUpdateElementOpacity,
 } from '../useActiveMoveableObject';
 import { debounce } from 'lodash';
 import { DeleteCommand } from '@/app/factories/command/DeleteCommand';
 import { useExecuteCommand } from './useCommand';
-import { useMemo } from 'react';
 
 // TODO: Add logic excute command
 export const useToggleMoveableBoldTextCommand = () => {
@@ -91,8 +91,8 @@ export const useChangeMoveableTextFontStyleCommand = () => {
   return changeFontStyle;
 };
 
-export const useChangeMoveableTextTransformCommand = () => {
-  const changeTransform = useChangeTextTransform();
+export const useChangeMoveableElementTransformCommand = () => {
+  const changeTransform = useChangeObjectTransform();
   return debounce(changeTransform, 100);
 };
 
@@ -120,4 +120,9 @@ export const useDeleteObjetCommand = () => {
 export const useUpdateActiveTextShapeEffectCommand = () => {
   const updateActiveTextShapeEffect = useUpdateActiveTextShapeEffect();
   return updateActiveTextShapeEffect;
+};
+
+export const useChangeMoveableElementOpacityCommand = () => {
+  const changeOpacity = useUpdateElementOpacity();
+  return debounce(changeOpacity, 100);
 };

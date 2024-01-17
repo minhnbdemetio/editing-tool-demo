@@ -47,22 +47,31 @@ export const parseTranslateString = (
 interface TransformResult {
   translate?: string;
   rotate?: string;
+  translateX: string;
+  translateY: string;
 }
 
 export function parseTransformString(transformString: string): TransformResult {
-  const translatePattern = /translate\(([\d.]+px),\s*([\d.]+px)\)/;
+  const translatePattern = /translate\((-?[\d.]+px),\s*(-?[\d.]+px)\)/;
   const rotatePattern = /rotate\((-?[\d.]+deg)\)/;
 
   const hasTranslate = translatePattern.test(transformString);
   const hasRotate = rotatePattern.test(transformString);
 
-  const result: TransformResult = { translate: '', rotate: '0' };
+  const result: TransformResult = {
+    translate: '',
+    rotate: '0',
+    translateX: '',
+    translateY: '',
+  };
 
   if (hasTranslate) {
     const translateMatches = translatePattern.exec(transformString);
     if (translateMatches) {
       result.translate =
         'translate(' + translateMatches[1] + ', ' + translateMatches[2] + ')';
+      result.translateX = translateMatches[1];
+      result.translateY = translateMatches[2];
     }
   }
 
@@ -74,4 +83,26 @@ export function parseTransformString(transformString: string): TransformResult {
   }
 
   return result;
+}
+
+export function calculateActualHeight(element: HTMLElement): number | null {
+  if (!element) {
+    return null;
+  }
+
+  // Lấy chiều rộng và chiều cao ban đầu của phần tử
+  const width: number = element.offsetWidth;
+  const height: number = element.offsetHeight;
+
+  // Lấy góc xoay của phần tử (chuyển đổi về radian)
+  const rotate: number = element.style.transform
+    ? parseFloat(element.style.transform.replace(/[^\d.-]/g, '')) *
+      (Math.PI / 180)
+    : 0;
+  // Tính chiều cao thực tế
+  const actualHeight: number =
+    Math.abs(height * Math.cos(Math.abs(rotate))) +
+    Math.abs(width * Math.sin(Math.abs(rotate)));
+
+  return actualHeight;
 }

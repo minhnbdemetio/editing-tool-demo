@@ -1,5 +1,4 @@
 import { FC, useEffect, useState } from 'react';
-import { useChangeMoveableTextTransformCommand } from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
 import {
   useChangeTextHeight,
   useChangeTextLockSize,
@@ -15,6 +14,7 @@ import {
   parseTranslateString,
 } from '@/app/utilities/utils';
 import { Button } from '@nextui-org/react';
+import { useChangeMoveableElementTransformCommand } from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
 
 interface PositionPropertyAdvancedProps {}
 
@@ -25,7 +25,7 @@ export const PositionPropertyAdvanced: FC<
   const handleChangeWidth = useChangeTextWidth();
   const handleChangeHeight = useChangeTextHeight();
   const handleChangeLockSize = useChangeTextLockSize();
-  const changeTransform = useChangeMoveableTextTransformCommand();
+  const changeTransform = useChangeMoveableElementTransformCommand();
   const handleChangeRotate = useChangeTextRotate();
 
   const [lockSize, setLockSize] = useState<number>(0);

@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { PhotoMenuProperty } from './PhotoMenuProperty';
+import { PhotoMenuProperties } from './PhotoMenuProperties';
 import { TextProperties } from './TextProperties';
 import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
 import { isLine, isText } from '@/app/utilities/moveable';
@@ -13,5 +13,5 @@ export const ObjectProperties: FC<ObjectPropertiesProps> = ({}) => {
   if (isText(activeMoveableObject)) return <TextProperties />;
   if (isLine(activeMoveableObject)) return <LineProperties />;
 
-  return <PhotoMenuProperty />;
+  return <PhotoMenuProperties />;
 };

@@ -10,10 +10,12 @@ import {
   isHeading,
   isLine,
   isNormalText,
+  isPhoto,
   isSubheading,
 } from '@/app/utilities/moveable';
 import { MoveableSubheadingTextElement } from './text/MoveableSubheadingTextElement';
 import { MoveableBodyTextElement } from './text/MoveableBodyTextElement';
+import { MoveablePhotoElement } from './MoveablePhotoElement';
 
 export interface MoveableObjectProps {
   object: MoveableObject;
@@ -49,6 +51,9 @@ export const MoveableObjectElement: FC<MoveableObjectProps> = props => {
 
     if (isBodyText(object)) {
       return <MoveableBodyTextElement object={object} />;
+    }
+    if (isPhoto(object)) {
+      return <MoveablePhotoElement object={object} />;
     }
 
     return null;

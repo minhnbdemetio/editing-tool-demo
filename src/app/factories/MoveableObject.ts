@@ -4,7 +4,7 @@ import { DATA_LOCKED, MOVEABLE_TARGET_CLASS } from '../constants/moveable';
 import { EDITOR_CONTAINER } from '../organisms/Editor';
 
 export const MAX_FIND_ELEMENT_ATTEMPTS = 100;
-export type ObjectType = 'rectangle' | 'text' | 'line';
+export type ObjectType = 'rectangle' | 'text' | 'line' | 'photo';
 export abstract class MoveableObject {
   id: string;
   type?: ObjectType;
@@ -97,5 +97,10 @@ export abstract class MoveableObject {
     const element = this.getElement();
     element?.setAttribute(DATA_LOCKED, toggleValue + '');
     this.setIsLocked(toggleValue);
+  }
+  setOpacity(opacity: number) {
+    const element = this.getElement();
+    if (!element) return false;
+    element.style.opacity = `${opacity / 100}`;
   }
 }
