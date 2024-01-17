@@ -1,29 +1,6 @@
 import React, { useCallback } from 'react';
 import { Items, LineType } from './items';
 import Image from 'next/image';
-import {
-  createDashedLine,
-  createDotsLine,
-  createSolidLine,
-  withEndArrow,
-  withEndCircle,
-  widthEndTriangle,
-  withStartArrow,
-  widthStartTriangle,
-  withStartCircle,
-  withEndOutlineCircle,
-  withStartOutlineCircle,
-  withStartOutlineSquare,
-  withEndOutlineSquare,
-  withStartSquare,
-  withEndSquare,
-  withEndRhombus,
-  withStartRhombus,
-  withEndOutlineRhombus,
-  withStartOutlineRhombus,
-  withStartLine,
-  withEndLine,
-} from '@/app/utilities/line';
 
 import { useAddObjectToActivePage } from '@/app/hooks/usePageObjects';
 import { MoveableLineObject } from '@/app/factories/MoveableLine';
