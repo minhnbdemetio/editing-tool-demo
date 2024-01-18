@@ -10,10 +10,16 @@ import Moveable from 'react-moveable';
 import Selecto from 'react-selecto';
 
 export const MoveableConfig: FC = () => {
-  const { moveableTargets, setMoveableTargets, getAllObjects, setMovable } =
-    useDesign();
-  const { activeMoveableObject, setActiveMoveableObject } =
-    useActiveMoveableObject();
+  const {
+    moveableTargets,
+    setMoveableTargets,
+    getAllObjects,
+    setMovable,
+  } = useDesign();
+  const {
+    activeMoveableObject,
+    setActiveMoveableObject,
+  } = useActiveMoveableObject();
   const moveableRef = useRef<Moveable | null>(null);
 
   // TODO: Set global moveable ref if needed
@@ -83,6 +89,13 @@ export const MoveableConfig: FC = () => {
 
             activeMoveableObject.updateHeadControl();
           }
+          if (isPhoto(activeMoveableObject)) {
+            const matrix = new WebKitCSSMatrix(e.target.style.transform);
+            activeMoveableObject.dragStartPoint = {
+              x: matrix.m41,
+              y: matrix.m42,
+            };
+          }
         }}
         onDragEnd={e => {
           if (isElementLocked(e.target)) return;
@@ -98,6 +111,13 @@ export const MoveableConfig: FC = () => {
             });
             activeMoveableObject.setDragging(false);
             activeMoveableObject.updateHeadControl();
+          }
+          if (isPhoto(activeMoveableObject)) {
+            const xChanged =
+              matrix.m41 - activeMoveableObject.dragStartPoint!.x;
+            const yChanged =
+              matrix.m42 - activeMoveableObject.dragStartPoint!.y;
+            activeMoveableObject.updateCropPosition(xChanged, yChanged);
           }
         }}
         onDrag={e => {
