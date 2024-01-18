@@ -27,6 +27,7 @@ import { LineFlipProperty } from './Line/LineFlipProperty';
 import { LayerProperty } from './Common/LayerProperty';
 import { PhotoAlignProperty } from './Photo/AlignProperty';
 import { NudgeProperty } from './Common/NudgeProperty';
+import { ManuallyFilterProperty } from './Photo/ManuallyFilterProperty';
 import { OpacityProperty } from './Common/OpacityProperty';
 
 export const SelectedObjectProperty: FC = () => {
@@ -114,6 +115,9 @@ export const SelectedObjectProperty: FC = () => {
       }
       case SelectedProperty.PhotoLayer: {
         return <LayerProperty />;
+      }
+      case SelectedProperty.PhotoManualFilter: {
+        return <ManuallyFilterProperty />;
       }
       case SelectedProperty.PhotoOpacity: {
         return <OpacityProperty />;

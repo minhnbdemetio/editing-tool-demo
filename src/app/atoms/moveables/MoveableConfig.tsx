@@ -4,7 +4,7 @@ import { TopToolbar } from '@/app/molecules/ObjectToolbar/TopToolbar';
 import { SELECTO_ID, EDITOR_CONTAINER } from '@/app/organisms/Editor';
 import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
 import { useDesign } from '@/app/store/design-objects';
-import { isElementLocked, isLine } from '@/app/utilities/moveable';
+import { isElementLocked, isLine, isPhoto } from '@/app/utilities/moveable';
 import { FC, useEffect, useRef } from 'react';
 import Moveable from 'react-moveable';
 import Selecto from 'react-selecto';
@@ -110,6 +110,13 @@ export const MoveableConfig: FC = () => {
         }}
         onResize={e => {
           if (isElementLocked(e.target)) return;
+
+          if (isPhoto(activeMoveableObject)) {
+            activeMoveableObject.setWidth(e.width);
+            activeMoveableObject.setHeight(e.height);
+            activeMoveableObject.renderFilter();
+          }
+
           e.target.style.width = `${e.width}px`;
           e.target.style.height = `${e.height}px`;
           e.target.style.transform = e.drag.transform;

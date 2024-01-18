@@ -10,7 +10,7 @@ import { useActivePage } from '../store/active-page';
 import { GradientStop } from '../utilities/color.type';
 import { parseTransformString, parseTranslateString } from '../utilities/utils';
 import { usePageObjectsById } from './usePageObjects';
-import { isLine, isText } from '../utilities/moveable';
+import { isLine, isPhoto, isText } from '../utilities/moveable';
 import { MoveableObject } from '../factories/MoveableObject';
 import { useDesign } from '../store/design-objects';
 import { isNumber } from 'lodash';
@@ -25,6 +25,11 @@ export const useActiveMoveableLineObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
   return isLine(activeMoveableObject) ? activeMoveableObject : null;
+};
+export const useActiveMoveablePhotoObject = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+
+  return isPhoto(activeMoveableObject) ? activeMoveableObject : null;
 };
 
 export const useCopyActiveObject = () => {
