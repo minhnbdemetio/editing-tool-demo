@@ -1,14 +1,11 @@
 import { MoveablePhoto } from '@/app/factories/MoveablePhoto';
-import { FC, useEffect, useState } from 'react';
-import { v4 as uuid } from 'uuid';
+import { FC } from 'react';
 
 interface MoveablePhotoProps {
   object: MoveablePhoto;
 }
 
 export const MoveablePhotoElement: FC<MoveablePhotoProps> = ({ object }) => {
-  const id = uuid();
-
   return (
     <div
       data-id={object.id}
