@@ -143,17 +143,24 @@ export class MoveablePhoto extends MoveableObject {
         html: null,
       };
 
-    const maxIntercept = 3; // change 30% brightness
+    const maxSlope = 0.5;
 
-    const intercept = 1 + (this.brightness / 100) * maxIntercept;
+    const slope = 1 + (this.brightness / 100) * maxSlope;
+
+    const maxIntercept = 0.09; // change 30% brightness
+
+    const intercept = (this.brightness / 100) * maxIntercept;
     return {
       html: `
     <feComponentTransfer id="brightness">
-        <feFuncR type="gamma" amplitude="${intercept}" intercept="0"/>
+
+        <feFuncR type="linear" slope="${slope}" intercept="${intercept}"/>
     
-        <feFuncG type="gamma" amplitude="${intercept}" intercept="0"/>
+        <feFuncG type="linear" slope="${slope}" intercept="${intercept}"/>
     
-        <feFuncB type="gamma" amplitude="${intercept}" intercept="0"/>
+        <feFuncB type="linear" slope="${slope}" intercept="${intercept}"/>
+
+        
     </feComponentTransfer>
 
     <feBlend  result="brightness-mask" in="brightness" in2="${source}" mode="normal"></feBlend>

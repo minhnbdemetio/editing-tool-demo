@@ -18,7 +18,10 @@ export const MoveablePhotoElement: FC<MoveablePhotoProps> = ({ object }) => {
     >
       <svg width={'100%'} height={'100%'} className="w-full h-full">
         <defs>
-          <filter id={object.filterId}></filter>
+          <filter
+            color-interpolation-filters="sRGB"
+            id={object.filterId}
+          ></filter>
         </defs>
         <g>
           <image
