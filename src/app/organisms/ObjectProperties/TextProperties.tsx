@@ -43,7 +43,7 @@ export const TextProperties: FC = () => {
         Layers
       </Button>
       <Button
-        onClick={() => setSelectedProperty(SelectedProperty.TextPosition)}
+        onClick={() => setSelectedProperty(SelectedProperty.Position)}
       >
         Position
       </Button>

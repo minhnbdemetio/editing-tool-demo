@@ -35,7 +35,7 @@ export const PhotoMenuProperties: FC = () => {
       <Button onClick={() => setSelectedProperty(SelectedProperty.PhotoAlign)}>
         Align
       </Button>
-      <Button>Order</Button>
+      <Button onClick={() => setSelectedProperty(SelectedProperty.Position)}>Order</Button>
       <Button onClick={() => setSelectedProperty(SelectedProperty.PhotoOrder)}>
         Flip
       </Button>
