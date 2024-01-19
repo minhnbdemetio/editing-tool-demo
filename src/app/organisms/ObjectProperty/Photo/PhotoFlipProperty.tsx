@@ -1,12 +1,10 @@
 import { PhotoFlip } from '@/app/factories/MoveablePhoto';
 import { useActiveMoveablePhotoObject } from '@/app/hooks/useActiveMoveableObject';
 import { twMerge } from '@/app/utilities/tailwind';
-import { FC, useState } from 'react';
+import { FC } from 'react';
 
 export const PhotoFlipProperty: FC = () => {
   const photo = useActiveMoveablePhotoObject();
-
-  const [] = useState();
 
   if (!photo) return null;
 
