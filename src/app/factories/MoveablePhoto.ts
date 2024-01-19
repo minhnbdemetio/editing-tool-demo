@@ -3,6 +3,10 @@ import { MoveableObject } from './MoveableObject';
 import { v4 as uuid } from 'uuid';
 import { PhotoFilter } from '../types';
 
+export enum PhotoFlip {
+  VERTICAL = 'vertical',
+  HORIZONTAL = 'horizontal',
+}
 export class MoveablePhoto extends MoveableObject {
   private x: number = 0;
   private y: number = 0;
@@ -25,6 +29,11 @@ export class MoveablePhoto extends MoveableObject {
     | undefined = undefined;
 
   public vignette: number = 0;
+
+  public flipDirection: {
+    x: boolean;
+    y: boolean;
+  } = { x: false, y: false };
 
   clone(
     options?: { htmlString: string; id: string } | undefined,
@@ -92,6 +101,10 @@ export class MoveablePhoto extends MoveableObject {
     return document.querySelector(
       `div[data-id='${this.id}'] > svg > defs > filter`,
     );
+  }
+
+  public getSvg() {
+    return document.querySelector(`div[data-id='${this.id}'] > svg`);
   }
 
   public removeAllDefs() {
@@ -345,6 +358,37 @@ export class MoveablePhoto extends MoveableObject {
     `,
       id: 'hue-mask',
     };
+  }
+
+  public getFlipScaleRatio(): { x: number; y: number } {
+    return {
+      x: this.flipDirection.x ? -1 : 1,
+      y: this.flipDirection.y ? -1 : 1,
+    };
+  }
+
+  public getSvgTransform(): string {
+    const { x, y } = this.getFlipScaleRatio();
+
+    return `scale(${x},${y})`;
+  }
+
+  private applySvgTransform() {
+    const svg = this.getSvg();
+    if (svg) {
+      svg.setAttribute('transform', this.getSvgTransform());
+    }
+  }
+
+  public flip(direction: PhotoFlip) {
+    if (direction === PhotoFlip.HORIZONTAL) {
+      this.flipDirection.x = !this.flipDirection.x;
+    }
+    if (direction === PhotoFlip.VERTICAL) {
+      this.flipDirection.y = !this.flipDirection.y;
+    }
+
+    this.applySvgTransform();
   }
 
   public renderFilter() {

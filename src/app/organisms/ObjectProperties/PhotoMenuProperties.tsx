@@ -35,8 +35,10 @@ export const PhotoMenuProperties: FC = () => {
       <Button onClick={() => setSelectedProperty(SelectedProperty.PhotoAlign)}>
         Align
       </Button>
-      <Button onClick={() => setSelectedProperty(SelectedProperty.Position)}>Order</Button>
-      <Button onClick={() => setSelectedProperty(SelectedProperty.PhotoOrder)}>
+      <Button onClick={() => setSelectedProperty(SelectedProperty.Position)}>
+        Order
+      </Button>
+      <Button onClick={() => setSelectedProperty(SelectedProperty.PhotoFlip)}>
         Flip
       </Button>
       <Button onClick={() => setSelectedProperty(SelectedProperty.PhotoLayer)}>
