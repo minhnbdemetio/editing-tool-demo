@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { MoveableObject } from './MoveableObject';
 import { v4 as uuid } from 'uuid';
+import { PhotoFilter } from '../types';
 
 export class MoveablePhoto extends MoveableObject {
   private x: number = 0;
@@ -112,10 +113,26 @@ export class MoveablePhoto extends MoveableObject {
         id: source,
         html: null,
       };
-    let contrastRate = this.contrast > 0 ? 0.3 : 0.2;
 
-    const slope = 1 + (this.contrast / 100) * contrastRate;
-    const intercept = (-this.contrast / 100) * contrastRate;
+    const contrastPercent = this.contrast / 100;
+
+    let slope = 0;
+    let intercept = 0;
+    const BASE_SLOPE = 1;
+
+    if (this.contrast < 0) {
+      const MAX_SLOPE = 0.6;
+      const MAX_INTERCEPT = 0.3;
+
+      slope = BASE_SLOPE + contrastPercent * MAX_SLOPE;
+      intercept = -contrastPercent * MAX_INTERCEPT;
+    } else {
+      const MAX_SLOPE = 1.4949999999999997;
+      const MAX_INTERCEPT = -0.7447599999999999;
+
+      slope = BASE_SLOPE + contrastPercent * MAX_SLOPE;
+      intercept = contrastPercent * MAX_INTERCEPT;
+    }
 
     return {
       html: `
@@ -142,14 +159,26 @@ export class MoveablePhoto extends MoveableObject {
         id: source,
         html: null,
       };
+    const brightnessPercent = this.brightness / 100;
 
-    const maxSlope = 0.5;
+    let slope = 0;
+    let intercept = 0;
+    const BASE_SLOPE = 1;
 
-    const slope = 1 + (this.brightness / 100) * maxSlope;
+    if (this.brightness > 0) {
+      const MAX_SLOPE = 1.4822215967726804;
+      const MAX_INTERCEPT = 0.09019607843137255;
 
-    const maxIntercept = 0.09; // change 30% brightness
+      slope = BASE_SLOPE + brightnessPercent * MAX_SLOPE;
+      intercept = -brightnessPercent * MAX_INTERCEPT;
+    } else {
+      const MAX_SLOPE = 1.4822215967726804;
+      const MAX_INTERCEPT = -0.5725490196078431;
 
-    const intercept = (this.brightness / 100) * maxIntercept;
+      slope = BASE_SLOPE + Math.abs(brightnessPercent) * MAX_SLOPE;
+      intercept = Math.abs(brightnessPercent) * MAX_INTERCEPT;
+    }
+
     return {
       html: `
     <feComponentTransfer id="brightness">
@@ -174,27 +203,31 @@ export class MoveablePhoto extends MoveableObject {
     html: string | null;
   } {
     if (this.temperature === 0) return { id: source, html: null };
-    let r = 0;
-    let g = 0;
-    let b = 0;
+
+    const temperaturePercent = this.temperature / 100;
+
+    const MAX_INTERCEPT = 0.1;
+    const changeIntercept = MAX_INTERCEPT * temperaturePercent;
+    let redIntercept: number;
+    let blueIntercept: number;
+    let greenIntercept: number;
+
     if (this.temperature > 0) {
-      r = 1 + (this.temperature / 100) * 1.2;
-      g = 1 + (this.temperature / 100) * 0.8;
-      b = 1;
+      redIntercept = changeIntercept;
+      greenIntercept = changeIntercept;
+      blueIntercept = -changeIntercept;
     } else {
-      r = 1;
-      g = 1;
-      b = 1 + (-this.temperature / 100) * 1.2;
+      redIntercept = -changeIntercept;
+      greenIntercept = changeIntercept;
+      blueIntercept = changeIntercept;
     }
 
     return {
       html: `
-    <feComponentTransfer id="temperature-filter">
-        <feFuncR type="gamma" amplitude="${r}" intercept="0"/>
-    
-        <feFuncG type="gamma" amplitude="${g}" intercept="0"/>
-    
-        <feFuncB type="gamma" amplitude="${b}" intercept="0"/>
+   <feComponentTransfer id="hue-filter">
+        <feFuncR type="linear" slope="1" intercept="${redIntercept}"/>
+        <feFuncG type="linear" slope="1" intercept="${greenIntercept}"/>
+        <feFuncB type="linear" slope="1" intercept="${blueIntercept}"/>
     </feComponentTransfer>
 
      <feBlend  result="temperature-mask" in="temperature-filter" in2="${source}" mode="normal"></feBlend>
@@ -209,8 +242,7 @@ export class MoveablePhoto extends MoveableObject {
   } {
     if (this.saturation === 0) return { id: source, html: null };
 
-    const saturation =
-      1 + (this.saturation / 100) * (this.saturation > 0 ? 2 : 1);
+    const saturation = 1 + (this.saturation / 100) * 1;
     return {
       html: `
      <feColorMatrix id="saturation-filter" type="saturate" values="${saturation}"/>
@@ -229,6 +261,19 @@ export class MoveablePhoto extends MoveableObject {
         id: source,
         html: null,
       };
+
+    if (this.blur < 0) {
+      const k2 = 1 + -1.25 * (-this.blur / 100);
+      const k3 = 1.25 * (-this.blur / 100);
+
+      return {
+        html: `
+          <feConvolveMatrix kernelMatrix="0 -1 0 -1 4.5 -1 0 -1 0" result="t2"></feConvolveMatrix>
+          <feComposite operator="arithmetic" result="blur-filter" k1="0" k2="${k2}" k3="${k3}" k4="0" in="${source}" in2="t2"></feComposite>
+          `,
+        id: 'blur-filter',
+      };
+    }
 
     const blur = (this.blur / 100) * 5;
     return {
@@ -280,16 +325,20 @@ export class MoveablePhoto extends MoveableObject {
         html: null,
       };
 
-    let r = 1 + this.hue.r / 255;
-    let g = 1 + this.hue.g / 255;
-    let b = 1 + this.hue.b / 255;
+    const MAX_INTERCEPT = 0.1;
+
+    const redIntercept = MAX_INTERCEPT * (this.hue.r / 255);
+    const blueIntercept = MAX_INTERCEPT * (this.hue.b / 255);
+    const greenIntercept = MAX_INTERCEPT * (this.hue.g / 255);
+
+    console.debug(this.hue.r / 255);
 
     return {
       html: `
      <feComponentTransfer id="hue-filter">
-        <feFuncR type="linear" slope="${r}" intercept="0"/>
-        <feFuncG type="linear" slope="${g}" intercept="0"/>
-        <feFuncB type="linear" slope="${b}" intercept="0"/>
+        <feFuncR type="linear" slope="0.9" intercept="${redIntercept}"/>
+        <feFuncG type="linear" slope="0.9" intercept="${greenIntercept}"/>
+        <feFuncB type="linear" slope="0.9" intercept="${blueIntercept}"/>
     </feComponentTransfer>
 
      <feBlend  result="hue-mask" in="hue-filter" in2="${source}" mode="normal"></feBlend>
@@ -361,6 +410,7 @@ export class MoveablePhoto extends MoveableObject {
     this.renderFilter();
   }
   public changeHue(hue: { r: number; g: number; b: number }) {
+    console.debug({ hue });
     this.hue = hue;
 
     this.renderFilter();
@@ -379,5 +429,28 @@ export class MoveablePhoto extends MoveableObject {
     this.vignette = vignette;
 
     this.renderFilter();
+  }
+
+  public setFilter(filter: PhotoFilter) {
+    this.hue = filter.hue;
+    this.brightness = filter.brightness;
+    this.blur = filter.blur;
+    this.vignette = filter.vignette;
+    this.contrast = filter.contrast;
+    this.saturation = filter.saturation;
+    this.temperature = filter.temperature;
+
+    this.renderFilter();
+  }
+  public getFilterParam(): PhotoFilter {
+    return {
+      hue: this.hue,
+      brightness: this.brightness,
+      blur: this.blur,
+      vignette: this.vignette,
+      contrast: this.contrast,
+      saturation: this.saturation,
+      temperature: this.temperature,
+    };
   }
 }
