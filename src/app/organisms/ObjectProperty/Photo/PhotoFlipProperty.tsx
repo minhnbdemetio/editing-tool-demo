@@ -1,4 +1,4 @@
-import { PhotoFlip } from '@/app/factories/MoveablePhoto';
+import { ObjectFlip } from '@/app/factories/MoveableObject';
 import { useActiveMoveablePhotoObject } from '@/app/hooks/useActiveMoveableObject';
 import { twMerge } from '@/app/utilities/tailwind';
 import { FC } from 'react';
@@ -14,7 +14,7 @@ export const PhotoFlipProperty: FC = () => {
         <div className="flex gap-2 justify-center">
           <button
             onClick={() => {
-              photo.flip(PhotoFlip.HORIZONTAL);
+              photo.flip(ObjectFlip.HORIZONTAL);
             }}
             className={twMerge(
               'border-[1px] border-solid border-gray-500 rounded-md px-3 py-3',
@@ -24,7 +24,7 @@ export const PhotoFlipProperty: FC = () => {
           </button>
           <button
             onClick={() => {
-              photo.flip(PhotoFlip.VERTICAL);
+              photo.flip(ObjectFlip.VERTICAL);
             }}
             className={twMerge(
               'border-[1px] border-solid border-gray-500 rounded-md px-3 py-3',
