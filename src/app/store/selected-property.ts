@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 
 export enum SelectedProperty {
-  TextFont = 1,
+  Position = 1,
+  TextFont,
   TextStyles,
   TextFontSize,
   TextColor,
@@ -11,7 +12,6 @@ export enum SelectedProperty {
   TextAnimation,
   TextTransparency,
   TextLayers,
-  TextPosition,
   TextNudge,
   TextMore,
   LineColor,

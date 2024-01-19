@@ -11,7 +11,7 @@ import { TextMoreProperty } from './Text/More';
 import { SpacingProperty } from './Text/SpacingProperty';
 import { EffectProperty } from './Text/EffectProperty';
 import { StylesProperty } from './Text/StylesProperty';
-import { PositionProperty } from './Text/PositionProperty';
+import { PositionProperty } from './PositionProperty';
 
 import { ColorProperty as LineColorProperty } from './Line/ColorProperty';
 import { LineProperty } from './Line/StyleProperty';
@@ -30,6 +30,7 @@ import { NudgeProperty } from './Common/NudgeProperty';
 import { ManuallyFilterProperty } from './Photo/ManuallyFilterProperty';
 import { OpacityProperty } from './Common/OpacityProperty';
 import { FiltersProperty } from './Photo/FiltersProperty';
+import { PhotoEffectProperty } from './Photo/PhotoEffectProperty';
 
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
@@ -66,7 +67,7 @@ export const SelectedObjectProperty: FC = () => {
       case SelectedProperty.TextNudge: {
         return <NudgeProperty />;
       }
-      case SelectedProperty.TextPosition: {
+      case SelectedProperty.Position: {
         return <PositionProperty />;
       }
       case SelectedProperty.LineColor: {
@@ -125,6 +126,9 @@ export const SelectedObjectProperty: FC = () => {
       }
       case SelectedProperty.PhotoFilter: {
         return <FiltersProperty />;
+      }
+      case SelectedProperty.PhotoEffect: {
+        return <PhotoEffectProperty />;
       }
 
       default: {
