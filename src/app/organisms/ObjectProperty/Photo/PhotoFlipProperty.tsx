@@ -1,4 +1,4 @@
-import { ObjectFlip } from '@/app/factories/MoveableObject';
+import { ObjectFlip } from '@/app/lib/moveable/MoveableObject';
 import { useActiveMoveablePhotoObject } from '@/app/hooks/useActiveMoveableObject';
 import { twMerge } from '@/app/utilities/tailwind';
 import { FC } from 'react';

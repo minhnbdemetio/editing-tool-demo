@@ -1,6 +1,6 @@
 import { MoveableObject } from './MoveableObject';
-import { SvgLine, SvgLineAdornment } from '../utilities/svg-line';
-import { LinePoint } from '../utilities/line-point';
+import { SvgLine, SvgLineAdornment } from '../../utilities/svg-line';
+import { LinePoint } from '../../utilities/line-point';
 
 export class MoveableLineObject extends MoveableObject {
   clone(options?: { htmlString: string; id: string }): MoveableLineObject {

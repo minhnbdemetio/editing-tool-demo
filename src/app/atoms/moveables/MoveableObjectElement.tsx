@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react';
 
-import { MoveableObject } from '@/app/factories/MoveableObject';
+import { MoveableObject } from '@/app/lib/moveable/MoveableObject';
 import { MoveableNormalTextElement } from './text/MoveableNormalTextElement';
 import { MoveableLineElement } from './MoveableLineElement';
 import { useLoadMoveableObject } from '@/app/hooks/useLoadObject';
@@ -16,6 +16,7 @@ import {
 import { MoveableSubheadingTextElement } from './text/MoveableSubheadingTextElement';
 import { MoveableBodyTextElement } from './text/MoveableBodyTextElement';
 import { MoveablePhotoElement } from './MoveablePhotoElement';
+import { OBJECT_CONTAINER } from '@/app/lib/moveable/constant/object';
 
 export interface MoveableObjectProps {
   object: MoveableObject;
@@ -59,5 +60,5 @@ export const MoveableObjectElement: FC<MoveableObjectProps> = props => {
     return null;
   };
 
-  return <div id={`object-container-${object.id}`}>{renderElement()}</div>;
+  return <div id={`${OBJECT_CONTAINER}-${object.id}`}>{renderElement()}</div>;
 };

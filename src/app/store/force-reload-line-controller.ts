@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { MoveableObject } from '../factories/MoveableObject';
+import { MoveableObject } from '../lib/moveable/MoveableObject';
 
 interface ForceReloadLineController {
   _count: number;

@@ -1,11 +1,11 @@
-import { DATA_LOCKED } from '../constants/moveable';
-import { MoveableBodyTextObject } from '../factories/MoveableBodyText';
-import { MoveableHeadingTextObject } from '../factories/MoveableHeadingText';
-import { MoveableLineObject } from '../factories/MoveableLine';
-import { MoveableObject } from '../factories/MoveableObject';
-import { MoveablePhoto } from '../factories/MoveablePhoto';
-import { MoveableSubheadingTextObject } from '../factories/MoveableSubheadingText';
-import { MoveableTextObject } from '../factories/MoveableText';
+import { DATA_LOCKED } from '../lib/moveable/constant/object';
+import { MoveableBodyTextObject } from '../lib/moveable/text/MoveableBodyText';
+import { MoveableHeadingTextObject } from '../lib/moveable/text/MoveableHeadingText';
+import { MoveableLineObject } from '../lib/moveable/MoveableLine';
+import { MoveableObject } from '../lib/moveable/MoveableObject';
+import { MoveablePhoto } from '../lib/moveable/MoveablePhoto';
+import { MoveableSubheadingTextObject } from '../lib/moveable/text/MoveableSubheadingText';
+import { MoveableTextObject } from '../lib/moveable/text/MoveableText';
 
 export const isText = (
   moveableObject: MoveableObject | null,

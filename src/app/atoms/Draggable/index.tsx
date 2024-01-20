@@ -1,7 +1,6 @@
-import Moveable, { OnDrag, OnEvent, WithEventStop } from 'moveable';
+import Moveable from 'moveable';
 import React, {
   HtmlHTMLAttributes,
-  PropsWithChildren,
   useEffect,
   useRef,
 } from 'react';

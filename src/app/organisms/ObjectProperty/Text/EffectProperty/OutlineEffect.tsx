@@ -1,4 +1,4 @@
-import { TextOutlineEffectOption } from '@/app/factories/MoveableText';
+import { TextOutlineEffectOption } from '@/app/lib/moveable/text/MoveableText';
 import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
 import { Button, Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';

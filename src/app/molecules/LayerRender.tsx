@@ -1,4 +1,4 @@
-import { MoveableObject } from '@/app/factories/MoveableObject';
+import { MoveableObject } from '@/app/lib/moveable/MoveableObject';
 import { useActivePage } from '@/app/store/active-page';
 import {
   calculateActualHeight,

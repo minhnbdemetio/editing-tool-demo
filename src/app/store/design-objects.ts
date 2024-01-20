@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { MoveableObject } from '../factories/MoveableObject';
+import { MoveableObject } from '../lib/moveable/MoveableObject';
 import Moveable from 'react-moveable';
 
 const DEFAULT_PAGE_SCALE = 1;

@@ -21,7 +21,7 @@ import {
   useUpdateElementOpacity,
 } from '../useActiveMoveableObject';
 import { debounce } from 'lodash';
-import { DeleteCommand } from '@/app/factories/command/DeleteCommand';
+import { DeleteCommand } from '@/app/lib/command/DeleteCommand';
 import { useExecuteCommand } from './useCommand';
 
 // TODO: Add logic excute command

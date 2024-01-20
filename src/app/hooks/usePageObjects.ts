@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useDesign } from '../store/design-objects';
-import { MoveableObject } from '../factories/MoveableObject';
+import { MoveableObject } from '../lib/moveable/MoveableObject';
 import { useCurrentPage } from './useCurrentPage';
 import { useActivePage } from '../store/active-page';
 

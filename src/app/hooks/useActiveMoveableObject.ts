@@ -4,17 +4,17 @@ import {
   MoveableTextShapeEffect,
   MoveableTextStyleEffect,
   TransformDirection,
-} from '../factories/MoveableText';
+} from '../lib/moveable/text/MoveableText';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { useActivePage } from '../store/active-page';
 import { GradientStop } from '../utilities/color.type';
 import { parseTransformString, parseTranslateString } from '../utilities/utils';
 import { usePageObjectsById } from './usePageObjects';
 import { isLine, isPhoto, isText } from '../utilities/moveable';
-import { MoveableObject } from '../factories/MoveableObject';
+import { MoveableObject } from '../lib/moveable/MoveableObject';
 import { useDesign } from '../store/design-objects';
 import { isNumber } from 'lodash';
-import { PhotoPosition } from '../factories/MoveablePhoto';
+import { PhotoPosition } from '../lib/moveable/MoveablePhoto';
 
 export const useActiveTextObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();

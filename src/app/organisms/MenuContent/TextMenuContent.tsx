@@ -2,10 +2,10 @@ import SearchInput from '@/app/molecules/SearchInput';
 import { FC, useCallback, useState } from 'react';
 import { Button } from '@nextui-org/react';
 import { useAddObjectToActivePage } from '@/app/hooks/usePageObjects';
-import { MoveableHeadingTextObject } from '@/app/factories/MoveableHeadingText';
-import { MoveableSubheadingTextObject } from '@/app/factories/MoveableSubheadingText';
-import { MoveableBodyTextObject } from '@/app/factories/MoveableBodyText';
-import { MoveableTextObject } from '@/app/factories/MoveableText';
+import { MoveableHeadingTextObject } from '@/app/lib/moveable/text/MoveableHeadingText';
+import { MoveableSubheadingTextObject } from '@/app/lib/moveable/text/MoveableSubheadingText';
+import { MoveableBodyTextObject } from '@/app/lib/moveable/text/MoveableBodyText';
+import { MoveableTextObject } from '@/app/lib/moveable/text/MoveableText';
 
 const recommendedKeywords = [
   'Xuân',

@@ -2,7 +2,7 @@ import { Button } from '@/app/atoms/Button';
 import {
   MoveableTextShapeEffect,
   MoveableTextStyleEffect,
-} from '@/app/factories/MoveableText';
+} from '@/app/lib/moveable/text/MoveableText';
 import {
   useUpdateActiveMoveableObjectTextStyleEffectCommand,
   useUpdateActiveTextShapeEffectCommand,
