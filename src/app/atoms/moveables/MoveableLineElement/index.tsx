@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { MoveableLineObject } from '@/app/factories/MoveableLine';
+import { MoveableLineObject } from '@/app/lib/moveable/MoveableLine';
 import './style.scss';
 
 interface MoveableLineElementProps {

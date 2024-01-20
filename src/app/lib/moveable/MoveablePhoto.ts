@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { MoveableObject } from './MoveableObject';
 import { v4 as uuid } from 'uuid';
-import { PhotoFilter } from '../types';
+import { PhotoFilter } from '../../types';
 
 export type PhotoPosition = {
   x: number;

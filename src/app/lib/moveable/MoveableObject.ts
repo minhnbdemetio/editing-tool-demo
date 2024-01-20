@@ -1,7 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
-import { findIdFromString } from '../utilities/dom';
-import { DATA_LOCKED, MOVEABLE_TARGET_CLASS } from '../constants/moveable';
-import { EDITOR_CONTAINER } from '../organisms/Editor';
+import { findIdFromString } from '../../utilities/dom';
+import { MOVEABLE_TARGET_CLASS } from '../../constants/moveable';
+import { DATA_LOCKED } from './constant/object';
+import { EDITOR_CONTAINER } from '../../organisms/Editor';
 
 export const MAX_FIND_ELEMENT_ATTEMPTS = 100;
 export type ObjectType = 'rectangle' | 'text' | 'line' | 'photo';

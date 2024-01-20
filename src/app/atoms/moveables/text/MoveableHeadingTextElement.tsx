@@ -1,8 +1,8 @@
 import { FC, useEffect, useRef } from 'react';
 
-import { MoveableTextObject } from '@/app/factories/MoveableText';
+import { MoveableTextObject } from '@/app/lib/moveable/text/MoveableText';
 import clsx from 'clsx';
-import { TEXT_CONTAINER } from '@/app/constants/moveable';
+import { TEXT_INNER_ELEMENTS } from '@/app/lib/moveable/constant/text';
 
 interface MoveableTextProps {
   object: MoveableTextObject;
@@ -54,7 +54,7 @@ export const MoveableHeadingTextElement: FC<MoveableTextProps> = ({
     >
       <ul
         ref={textContainerRef}
-        id={`${TEXT_CONTAINER}${object.id}`}
+        id={`${TEXT_INNER_ELEMENTS.CONTAINER}-${object.id}`}
         suppressContentEditableWarning
         contentEditable
       >

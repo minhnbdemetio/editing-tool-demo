@@ -1,4 +1,5 @@
-import { MOVEABLE_TARGET_CLASS, DATA_LOCKED } from '@/app/constants/moveable';
+import { MOVEABLE_TARGET_CLASS } from '@/app/constants/moveable';
+import { DATA_LOCKED } from "@/app/lib/moveable/constant/object";
 import { BottomToolbar } from '@/app/molecules/ObjectToolbar/BottomToolbar';
 import { TopToolbar } from '@/app/molecules/ObjectToolbar/TopToolbar';
 import { SELECTO_ID, EDITOR_CONTAINER } from '@/app/organisms/Editor';

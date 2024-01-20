@@ -1,7 +1,7 @@
 import { useCommandHistory } from '@/app/store/editor-command-history';
 import { useCallback, useRef } from 'react';
 import { debounce } from 'lodash';
-import { Command } from '@/app/factories/command/Command';
+import { Command } from '@/app/lib/command/Command';
 
 export const useUndoCommand = () => {
   const { popCommand, commandHistory, pushUndoCommand } = useCommandHistory();

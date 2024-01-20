@@ -1,8 +1,8 @@
 import { FC, useEffect, useRef } from 'react';
 
 import clsx from 'clsx';
-import { MoveableSubheadingTextObject } from '@/app/factories/MoveableSubheadingText';
-import { TEXT_CONTAINER } from '@/app/constants/moveable';
+import { MoveableSubheadingTextObject } from '@/app/lib/moveable/text/MoveableSubheadingText';
+import { TEXT_INNER_ELEMENTS } from '@/app/lib/moveable/constant/text';
 
 interface MoveableTextProps {
   object: MoveableSubheadingTextObject;
@@ -54,7 +54,7 @@ export const MoveableSubheadingTextElement: FC<MoveableTextProps> = ({
     >
       <ul
         ref={textContainerRef}
-        id={`${TEXT_CONTAINER}${object.id}`}
+        id={`${TEXT_INNER_ELEMENTS.CONTAINER}-${object.id}`}
         suppressContentEditableWarning
         contentEditable
       >

@@ -1,4 +1,4 @@
-import { MoveableObject } from '../MoveableObject';
+import { MoveableObject } from '../moveable/MoveableObject';
 import { Command } from './Command';
 
 export class DeleteCommand extends Command {
@@ -27,7 +27,7 @@ export class DeleteCommand extends Command {
     return;
   }
   performRedo(...params: any) {
-    const deletedObject =this.redoFunction(this.recreatedObject);
+    const deletedObject = this.redoFunction(this.recreatedObject);
     this.deletedObject = this.recreatedObject;
     this.recreatedObject = null;
     return;

@@ -1,9 +1,9 @@
-import { MAX_FIND_ELEMENT_ATTEMPTS, MoveableObject } from './MoveableObject';
-import { GradientStop } from '../utilities/color.type';
-import { TEXT_CONTAINER } from '../constants/moveable';
+import { MAX_FIND_ELEMENT_ATTEMPTS, MoveableObject } from '../MoveableObject';
+import { GradientStop } from '../../../utilities/color.type';
 
 export type MoveableTextVariant = 'normal' | 'heading' | 'subheading' | 'body';
-import { hexToRgba } from '../utilities/color';
+import { hexToRgba } from '../../../utilities/color';
+import { TEXT_INNER_ELEMENTS } from '../constant/text';
 
 export type MoveableTextShadow = {
   color?: string;
@@ -63,6 +63,7 @@ export class MoveableTextObject extends MoveableObject {
   neonEffect?: MoveableTextShadow;
   backgroundEffect?: TextBackgroundEffectOption;
   curve?: number;
+  gradientStops?: GradientStop[];
   transformDirection: string;
   constructor(id?: string, htmlString?: string) {
     super(id, htmlString);
@@ -126,6 +127,9 @@ export class MoveableTextObject extends MoveableObject {
     }
     return 100;
   }
+  getSvgElement() {
+    return document.getElementById(`${TEXT_INNER_ELEMENTS.SVG}-${this.id}`);
+  }
   setOpacity(opacity: number) {
     const element = this.getElement();
     if (!element) return false;
@@ -141,26 +145,30 @@ export class MoveableTextObject extends MoveableObject {
     const element = this.getElement();
     if (!element) return false;
     element.style.color = color;
+    this.gradientStops = undefined;
   }
   setTextGradient(stops: GradientStop[]) {
+    const currentSvgElement = this.getSvgElement();
     const element = this.getElement();
     const textContainer = this.getTextContainer();
     if (!element || !textContainer) return false;
+    if (currentSvgElement) {
+      currentSvgElement.remove();
+      textContainer.style.display = 'block';
+    }
     const svgElement = document.createElementNS(
       'http://www.w3.org/2000/svg',
       'svg',
     );
     svgElement.setAttribute('width', textContainer.offsetWidth.toString());
-
     svgElement.setAttribute('height', textContainer.offsetHeight.toString());
 
-    svgElement.setAttribute('id', `svg-${this.id}`);
+    svgElement.setAttribute('id', `${TEXT_INNER_ELEMENTS.SVG}-${this.id}`);
     var textElement = document.createElementNS(
       'http://www.w3.org/2000/svg',
       'text',
     );
     const textCssProperties = window.getComputedStyle(textContainer);
-
     const textLineHeight = parseFloat(textCssProperties['lineHeight']);
     const textFontSize = parseFloat(textCssProperties['fontSize']);
     const distanceBetweenBaselineAndBox = (textLineHeight - textFontSize) / 2;
@@ -204,11 +212,12 @@ export class MoveableTextObject extends MoveableObject {
     svgElement.appendChild(textElement);
     textContainer.style.display = 'none';
     element.appendChild(svgElement);
+    this.gradientStops = stops;
   }
   getTextContainer() {
     let attempt = 0;
     let element = null;
-    const textContainerId = `text-container-${this.id}`;
+    const textContainerId = `${TEXT_INNER_ELEMENTS.CONTAINER}-${this.id}`;
     while (attempt < MAX_FIND_ELEMENT_ATTEMPTS) {
       const elementById = document.getElementById(textContainerId);
       if (elementById) {
@@ -227,9 +236,7 @@ export class MoveableTextObject extends MoveableObject {
   onUpdateTransformDirection() {
     if (this.transformDirection === 'bottom') return;
     const element = this.getElement();
-    const textContainer = document.getElementById(
-      `${TEXT_CONTAINER}${this.id}`,
-    );
+    const textContainer = this.getTextContainer();
     const firstItemContainer = textContainer?.firstElementChild;
     if (!element || !firstItemContainer) return;
     const elementStyles = window.getComputedStyle(element);
@@ -261,9 +268,7 @@ export class MoveableTextObject extends MoveableObject {
   }
   toggleLock(): void {
     super.toggleLock();
-    const textContainer = document.getElementById(
-      `${TEXT_CONTAINER}${this.id}`,
-    );
+    const textContainer = this.getTextContainer();
     textContainer?.setAttribute('contenteditable', !this.toggleLock + '');
   }
 
@@ -503,9 +508,7 @@ export class MoveableTextObject extends MoveableObject {
       roundness = 50,
       transparency = 100,
     } = this.backgroundEffect ?? {};
-    const textContainer = document.getElementById(
-      `${TEXT_CONTAINER}${this.id}`,
-    );
+    const textContainer = this.getTextContainer();
     const firstTextChild = textContainer?.firstElementChild;
     if (!textContainer || !firstTextChild) return false;
     const textChildStyles = window.getComputedStyle(firstTextChild);
@@ -627,9 +630,7 @@ export class MoveableTextObject extends MoveableObject {
   }
 
   setShapeNone() {
-    const ul = document.getElementById(
-      `${TEXT_CONTAINER}${this.id}`,
-    ) as HTMLElement;
+    const ul = this.getTextContainer();
     const curveContainerId = `curve-effect-${this.id}`;
     const curveContainer = document.getElementById(curveContainerId);
     if (!curveContainer || !ul) return;
@@ -647,9 +648,7 @@ export class MoveableTextObject extends MoveableObject {
   onInput(e: Event) {
     const curveContainerId = `curve-effect-${this.id}`;
     const curveContainer = document.getElementById(curveContainerId);
-    const ul = document.getElementById(
-      `${TEXT_CONTAINER}${this.id}`,
-    ) as HTMLElement;
+    const ul = this.getTextContainer();
     if (!curveContainer || !ul) return;
     const target = e.target as HTMLInputElement;
     const textContent = target.textContent?.trim() || '';
@@ -692,9 +691,7 @@ export class MoveableTextObject extends MoveableObject {
     // Save state
     this.curve = curve;
     const elId = this.id;
-    const ul = element.querySelector(
-      `#${TEXT_CONTAINER}${elId}`,
-    ) as HTMLElement;
+    const ul = this.getTextContainer();
     if (!ul) return false;
     element.style.position = 'relative';
     element.style.zIndex = '1';
@@ -715,9 +712,7 @@ export class MoveableTextObject extends MoveableObject {
     const element = this.getElement();
     if (!element) return false;
     const elId = this.id;
-    const ul = element.querySelector(
-      `#${TEXT_CONTAINER}${elId}`,
-    ) as HTMLElement;
+    const ul = this.getTextContainer();
     if (!ul) return false;
     let curveContainer = document.getElementById(`curve-effect-${elId}`);
     if (!curveContainer) {
@@ -746,7 +741,7 @@ export class MoveableTextObject extends MoveableObject {
     const Wi = width / text.length;
     const R = (3.2 * fontSize) / Math.sin((Math.PI * (this.curve ?? 50)) / 180);
     const dx = R - 3.2 * fontSize;
-    const alpha = this.caculateAlphaCurve((180 * width) / (Math.PI * R));
+    const alpha = this.calculateAlphaCurve((180 * width) / (Math.PI * R));
     const delta = (180 * Wi) / (Math.PI * R);
     let nextAlpha = alpha;
     for (let i = 0; i < text.length; i++) {
@@ -754,7 +749,7 @@ export class MoveableTextObject extends MoveableObject {
       const span = document.createElement('span');
       span.innerText = letter;
       span.style.position = 'absolute';
-      const { x, y } = this.caculateCurveTranslate(nextAlpha, R, dx);
+      const { x, y } = this.calculateCurveTranslate(nextAlpha, R, dx);
       span.style.transform = `translate(${x}px, ${y}px) rotate(${
         nextAlpha - 90
       }deg)`;
@@ -766,7 +761,7 @@ export class MoveableTextObject extends MoveableObject {
     }
   }
 
-  caculateAlphaCurve(deg: number) {
+  calculateAlphaCurve(deg: number) {
     let a = deg;
     while (a > 360) {
       a -= 360;
@@ -778,7 +773,7 @@ export class MoveableTextObject extends MoveableObject {
       return 450 - a;
     }
   }
-  caculateCurveTranslate(
+  calculateCurveTranslate(
     deg: number,
     R: number,
     dx: number,
@@ -803,7 +798,7 @@ export class MoveableTextObject extends MoveableObject {
     const curveContainerId = `curve-effect-${this.id}`;
     const curveContainer = document.getElementById(curveContainerId);
     const element = this.getElement();
-    const ul = document.getElementById(`${TEXT_CONTAINER}${this.id}`);
+    const ul = this.getTextContainer();
     if (!curveContainer || !element || !ul) return;
     const elementStyles = window.getComputedStyle(element);
     const { x, y } = element.getBoundingClientRect();

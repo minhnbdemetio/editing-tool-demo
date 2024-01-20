@@ -3,7 +3,7 @@ import { Items, LineType } from './items';
 import Image from 'next/image';
 
 import { useAddObjectToActivePage } from '@/app/hooks/usePageObjects';
-import { MoveableLineObject } from '@/app/factories/MoveableLine';
+import { MoveableLineObject } from '@/app/lib/moveable/MoveableLine';
 
 interface LinesProps {}
 

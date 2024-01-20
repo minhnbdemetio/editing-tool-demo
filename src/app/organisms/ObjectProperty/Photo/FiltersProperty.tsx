@@ -1,4 +1,4 @@
-import { FILTERS } from '@/app/constants/photo-filters';
+import { FILTERS } from '@/app/lib/moveable/constant/photo';
 import { useActiveMoveablePhotoObject } from '@/app/hooks/useActiveMoveableObject';
 import { PhotoFilter } from '@/app/types';
 import { isEqual } from '@/app/utilities/photo';

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { MoveableObject } from '../factories/MoveableObject';
+import { MoveableObject } from '../lib/moveable/MoveableObject';
 import { useCurrentPage } from './useCurrentPage';
 import { isElementLocked } from '../utilities/moveable';
-import { OBJECT_CONTAINER } from '../constants/moveable';
+import { OBJECT_CONTAINER } from '../lib/moveable/constant/object';
 
 export const useLoadMoveableObject = (object: MoveableObject) => {
   const [objectLoaded, setObjectLoaded] = useState(false);

@@ -5,7 +5,7 @@ import { twMerge } from '../utilities/tailwind';
 import { LinePoint } from '../utilities/line-point';
 import { useActiveMoveableLineObject } from '../hooks/useActiveMoveableObject';
 import { isLine } from '../utilities/moveable';
-import { MoveableLineObject } from '../factories/MoveableLine';
+import { MoveableLineObject } from '../lib/moveable/MoveableLine';
 import { useForceReloadLineController } from '../store/force-reload-line-controller';
 
 interface MovableLineControllerProps {}

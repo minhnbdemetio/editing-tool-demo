@@ -1,5 +1,5 @@
-import { IMAGE_CONTAINER } from '@/app/constants/moveable';
-import { MoveablePhoto } from '@/app/factories/MoveablePhoto';
+import { IMAGE_CONTAINER } from "@/app/lib/moveable/constant/image";
+import { MoveablePhoto } from '@/app/lib/moveable/MoveablePhoto';
 import { FC } from 'react';
 
 interface MoveablePhotoProps {

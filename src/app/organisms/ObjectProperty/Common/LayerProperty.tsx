@@ -4,7 +4,7 @@ import { LayerRender } from '@/app/molecules/LayerRender';
 import { useActivePage } from '@/app/store/active-page';
 import { useDesign } from '@/app/store/design-objects';
 import { Button } from '@nextui-org/react';
-import { MoveableObject } from '@/app/factories/MoveableObject';
+import { MoveableObject } from '@/app/lib/moveable/MoveableObject';
 import { CardDrag } from '@/app/molecules/CardDrag';
 
 interface LayerPropertyProps {}

@@ -1,4 +1,4 @@
-import { PhotoFilter } from '../types';
+import { PhotoFilter } from '@/app/types';
 import { v4 as uuid } from 'uuid';
 
 export declare type Filter = {
@@ -7,7 +7,6 @@ export declare type Filter = {
   thumbnail: string;
   setup: PhotoFilter;
 };
-
 const NONE_FILTER: Filter = {
   id: uuid(),
   name: 'None',
@@ -22,7 +21,6 @@ const NONE_FILTER: Filter = {
     vignette: 0,
   },
 };
-
 const COLORFUL_FILTER: Filter = {
   id: uuid(),
   name: 'Colorful',
@@ -37,7 +35,6 @@ const COLORFUL_FILTER: Filter = {
     vignette: 0,
   },
 };
-
 const SUNSET_FILTER: Filter = {
   id: uuid(),
   name: 'Sunset',
@@ -52,7 +49,6 @@ const SUNSET_FILTER: Filter = {
     vignette: 0,
   },
 };
-
 const BRIGHT_FILTER: Filter = {
   id: uuid(),
   name: 'Bright',
@@ -67,7 +63,6 @@ const BRIGHT_FILTER: Filter = {
     vignette: 0,
   },
 };
-
 const EARLY_MORNING_FILTER: Filter = {
   id: uuid(),
   name: 'Early morning',
@@ -82,7 +77,6 @@ const EARLY_MORNING_FILTER: Filter = {
     vignette: 0,
   },
 };
-
 const RECALL_FILTER: Filter = {
   id: uuid(),
   name: 'Recall',
@@ -98,7 +92,6 @@ const RECALL_FILTER: Filter = {
     vignette: 0,
   },
 };
-
 const ROMANTIC_FILTER: Filter = {
   id: uuid(),
   name: 'Romantic',
@@ -113,7 +106,6 @@ const ROMANTIC_FILTER: Filter = {
     vignette: 0,
   },
 };
-
 const CONTRAST_FILTER: Filter = {
   id: uuid(),
   name: 'Contrast',
@@ -128,7 +120,6 @@ const CONTRAST_FILTER: Filter = {
     vignette: 0,
   },
 };
-
 const CALM_FILTER: Filter = {
   id: uuid(),
   name: 'Calm',
@@ -144,7 +135,6 @@ const CALM_FILTER: Filter = {
     vignette: 0,
   },
 };
-
 const VINTAGE_FILTER: Filter = {
   id: uuid(),
   name: 'Vintage',
@@ -160,7 +150,6 @@ const VINTAGE_FILTER: Filter = {
     vignette: 18,
   },
 };
-
 const BLUE_FILTER: Filter = {
   id: uuid(),
   name: 'Blue',
@@ -176,7 +165,6 @@ const BLUE_FILTER: Filter = {
     vignette: 0,
   },
 };
-
 const LOVELY_FILTER: Filter = {
   id: uuid(),
   name: 'Lovely',
@@ -192,7 +180,6 @@ const LOVELY_FILTER: Filter = {
     vignette: 0,
   },
 };
-
 const SEPIA_FILTER: Filter = {
   id: uuid(),
   name: 'Sepia',
@@ -208,7 +195,6 @@ const SEPIA_FILTER: Filter = {
     vignette: 19,
   },
 };
-
 const ANALOG_FILTER: Filter = {
   id: uuid(),
   name: 'Analog',
@@ -224,7 +210,6 @@ const ANALOG_FILTER: Filter = {
     vignette: 0,
   },
 };
-
 const MONSTERS_FILTER: Filter = {
   id: uuid(),
   name: 'Monsters',
@@ -240,7 +225,6 @@ const MONSTERS_FILTER: Filter = {
     vignette: 0,
   },
 };
-
 const BLACK_WHITE_FILTER: Filter = {
   id: uuid(),
   name: 'Black and white',

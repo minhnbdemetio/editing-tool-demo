@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { MoveableRectangleObject } from '@/app/factories/MoveableRectangle';
+import { MoveableRectangleObject } from '@/app/lib/moveable/MoveableRectangle';
 
 interface MoveableRectangleProps {
   object: MoveableRectangleObject;

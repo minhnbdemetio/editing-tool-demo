@@ -1,5 +1,5 @@
 import { fabric } from 'fabric';
-import { MoveableLineObject } from '../factories/MoveableLine';
+import { MoveableLineObject } from '../lib/moveable/MoveableLine';
 
 export const getAngleByPoint = (
   x1: number,

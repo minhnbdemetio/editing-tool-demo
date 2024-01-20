@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Command } from '../factories/command/Command';
+import { Command } from '../lib/command/Command';
 
 interface CommandHistoryState {
   commandHistory: Command[];
