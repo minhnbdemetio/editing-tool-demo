@@ -99,7 +99,7 @@ export class MoveablePhoto extends MoveableObject {
 
   public getFilterContainer() {
     return document.querySelector(
-      `div[data-id='${this.id}'] > svg > defs > filter`,
+      `div[data-id='${this.id}'] > div > svg > defs > filter`,
     );
   }
 
@@ -388,7 +388,7 @@ export class MoveablePhoto extends MoveableObject {
     const appliedFilters: string[] = filters.filter(f => !!f) as string[];
 
     const imageElement = document.querySelector(
-      `div[data-id='${this.id}'] > svg > g`,
+      `div[data-id='${this.id}'] > div > svg > g`,
     );
 
     const element = this.getFilterContainer();
@@ -514,6 +514,8 @@ export class MoveablePhoto extends MoveableObject {
       activePageElement.getBoundingClientRect();
     const translateX = (position.x - activePageX) / scale;
     const translateY = (position.y - activePageY) / scale;
+    const deltaX = (position.x - originPosition.x) / scale;
+    const deltaY = (position.y - originPosition.y) / scale;
     element.setAttribute('data-origin-width', `${originPosition.width}`);
     element.setAttribute('data-origin-height', `${originPosition.height}`);
     element.setAttribute('data-origin-x', `${originPosition.x}`);
@@ -523,7 +525,9 @@ export class MoveablePhoto extends MoveableObject {
     element.style.transform = `translate(${translateX}px, ${translateY}px)`;
     imageLayerContainer.style.width = `${imagePosition.width / scale}px`;
     imageLayerContainer.style.height = `${imagePosition.height / scale}px`;
-    imageLayerContainer.style.transform = `translate(${-translateX}px, ${-translateY}px)`;
+    imageLayerContainer.style.transform = `translate(${
+      deltaX ? -deltaX : -translateX
+    }px, ${deltaY ? -deltaY : -translateY}px)`;
 
     this.cropPosition = position;
   }
