@@ -8,7 +8,7 @@ import {
   useActiveMoveablePhotoObject,
   useUpdateGradientMask,
 } from '@/app/hooks/useActiveMoveableObject';
-import { GradientMask } from '@/app/factories/MoveablePhoto';
+import { GradientMask } from '@/app/lib/moveable/MoveablePhoto';
 
 enum EffectType {
   Common = 'common',
@@ -19,7 +19,7 @@ enum EffectType {
 export const DEFAULT_GRADIENT_MASK: GradientMask = {
   type: 'rect',
   range: 50,
-  direction: 50,
+  direction: 90,
 };
 export const PhotoEffectProperty: FC = () => {
   const activePhotoObject = useActiveMoveablePhotoObject();
@@ -95,8 +95,9 @@ export const PhotoEffectProperty: FC = () => {
         }}
         checkGradientMask={checkGradientMask}
         toggleGradientMask={() => {
-          changeGradientMask(DEFAULT_GRADIENT_MASK, () =>
-            setCheckGradientMask(!checkGradientMask),
+          changeGradientMask(
+            checkGradientMask ? undefined : DEFAULT_GRADIENT_MASK,
+            () => setCheckGradientMask(!checkGradientMask),
           );
         }}
       />
@@ -156,10 +157,12 @@ export const PhotoEffectProperty: FC = () => {
             }}
             size="lg"
             onClick={() => {
-              changeGradientMask(DEFAULT_GRADIENT_MASK, () =>
-                setCheckGradientMask(!checkGradientMask),
+              changeGradientMask(
+                checkGradientMask ? undefined : DEFAULT_GRADIENT_MASK,
+                () => setCheckGradientMask(!checkGradientMask),
               );
             }}
+            isSelected={checkGradientMask}
           >
             Gradient mask
           </Checkbox>

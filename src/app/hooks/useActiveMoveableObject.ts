@@ -664,15 +664,11 @@ export const useUpdateGradientMask = () => {
   const { activePage } = useActivePage();
   const activePhotoObject = useActivePhotoObject();
   const changeGradientMask = (
-    gradientMask: GradientMask,
+    gradientMask?: GradientMask,
     callback?: Function,
   ) => {
     if (!activePhotoObject) return false;
-    if (activePhotoObject.gradientMask) {
-      activePhotoObject.updateGradientMask();
-    } else {
-      activePhotoObject.updateGradientMask(gradientMask);
-    }
+    activePhotoObject.updateGradientMask(gradientMask);
 
     callback && callback();
     return true;

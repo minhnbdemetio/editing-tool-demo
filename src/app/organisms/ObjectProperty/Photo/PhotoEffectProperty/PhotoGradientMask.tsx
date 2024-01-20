@@ -2,10 +2,12 @@ import { ChevronLeft, Square } from '@/app/icons';
 import { Button, Checkbox } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 import { Slider } from '@nextui-org/react';
-import { useActivePhotoObject } from '@/app/hooks/useActiveMoveableObject';
-import { GradientMask } from '@/app/factories/MoveablePhoto';
+import {
+  useActivePhotoObject,
+  useUpdateGradientMask,
+} from '@/app/hooks/useActiveMoveableObject';
+import { GradientMask } from '@/app/lib/moveable/MoveablePhoto';
 import { DEFAULT_GRADIENT_MASK } from '.';
-import { LineStartNone } from '@/app/icons/LineStartNone';
 import { Line } from '@/app/icons/Line';
 import { Circle } from '@/app/icons/Circle';
 
@@ -32,6 +34,7 @@ export const PhotoGradientMask: FC<PhotoGradientMaskProps> = ({
   const onUpdateRange = (val: number) => {};
   const changeFillColor = () => {};
   const onUpdateGradientMask = () => {};
+  const handleUpdateGradientMask = useUpdateGradientMask();
 
   return (
     <div className="w-full h-full">
@@ -54,61 +57,103 @@ export const PhotoGradientMask: FC<PhotoGradientMaskProps> = ({
           </Checkbox>
         </div>
       </div>
-      <div className="flex items-center justify-center m-2">
+      <div className="flex items-center justify-between m-2">
         <p>Type</p>
-        <p className="">
-          <Button className="w-full" isIconOnly onClick={() => {}}>
+        <p className="flex items-center">
+          <Button
+            className="w-[28px]"
+            style={{ borderRadius: 0, borderRight: `1px solid #fff` }}
+            isIconOnly
+            onClick={() => {
+              const newGradientMask: GradientMask = {
+                ...gradientMask,
+                type: 'rect',
+              };
+              handleUpdateGradientMask(newGradientMask);
+              setGradientMask(newGradientMask);
+            }}
+          >
             <Square />
           </Button>
-          <Button className="w-full" isIconOnly onClick={() => {}}>
+          <Button
+            className="w-[28px]"
+            style={{ borderRadius: 0, borderRight: `1px solid #fff` }}
+            isIconOnly
+            onClick={() => {
+              const newGradientMask: GradientMask = {
+                ...gradientMask,
+                type: 'circle',
+              };
+              handleUpdateGradientMask(newGradientMask);
+              setGradientMask(newGradientMask);
+            }}
+          >
             <Circle />
           </Button>
-          <Button className="w-full" isIconOnly onClick={() => {}}>
+          <Button
+            className="w-[28px]"
+            style={{ borderRadius: 0 }}
+            isIconOnly
+            onClick={() => {
+              const newGradientMask: GradientMask = {
+                ...gradientMask,
+                type: 'linear',
+              };
+              handleUpdateGradientMask(newGradientMask);
+              setGradientMask(newGradientMask);
+            }}
+          >
             <Line />
           </Button>
         </p>
       </div>
-      <div className="m-2">
-        <span>Direction</span>
-      </div>
-
-      <div className="flex w-full px-2 items-center justify-center">
-        <Slider
-          size="sm"
-          aria-label="Temperature"
-          step={1}
-          maxValue={360}
-          minValue={0}
-          value={gradientMask.direction}
-          onChange={val => {
-            const value = +val;
-            if (value) {
-              setGradientMask({
-                ...gradientMask,
-                direction: value,
-              });
-            }
-          }}
-          classNames={{ base: 'w-full !max-w-none' }}
-          className="max-w-md text-black"
-        />
-        <input
-          type="number"
-          value={gradientMask.direction}
-          onChange={e => {
-            const value = +e.target.value as number;
-            if (value) {
-              setGradientMask({
-                ...gradientMask,
-                direction: value,
-              });
-            }
-          }}
-          min={0}
-          max={100}
-          className="w-[72px] border-[1px] border-border border-solid text-md rounded-sm font-normal text-black-500 ml-2 p-2"
-        />
-      </div>
+      {gradientMask.type === 'linear' && (
+        <>
+          <div className="m-2">
+            <span>Direction</span>
+          </div>
+          <div className="flex w-full px-2 items-center justify-center">
+            <Slider
+              size="sm"
+              aria-label="Temperature"
+              step={1}
+              maxValue={360}
+              minValue={0}
+              value={gradientMask.direction}
+              onChange={val => {
+                if (!isNaN(+val)) {
+                  const newGradientMask: GradientMask = {
+                    ...gradientMask,
+                    direction: +val,
+                  };
+                  handleUpdateGradientMask(newGradientMask);
+                  setGradientMask(newGradientMask);
+                }
+              }}
+              classNames={{ base: 'w-full !max-w-none' }}
+              className="max-w-md text-black"
+            />
+            <input
+              type="number"
+              value={gradientMask.direction}
+              onChange={e => {
+                const val = +e.target.value as number;
+                if (!isNaN(+val)) {
+                  const newGradientMask: GradientMask = {
+                    ...gradientMask,
+                    direction: +val,
+                  };
+                  handleUpdateGradientMask(newGradientMask);
+                  setGradientMask(newGradientMask);
+                }
+              }}
+              min={0}
+              max={100}
+              className="w-[72px] border-[1px] border-border border-solid text-md rounded-sm font-normal text-black-500 ml-2 p-2"
+            />
+          </div>
+        </>
+      )}
       <div className="m-2">
         <span>Range</span>
       </div>
@@ -120,7 +165,16 @@ export const PhotoGradientMask: FC<PhotoGradientMaskProps> = ({
           maxValue={100}
           minValue={0}
           value={gradientMask.range}
-          onChange={val => !isNaN(+val) && onUpdateRange(+val)}
+          onChange={val => {
+            if (!isNaN(+val)) {
+              const newGradientMask = {
+                ...gradientMask,
+                range: +val,
+              };
+              handleUpdateGradientMask(newGradientMask);
+              setGradientMask(newGradientMask);
+            }
+          }}
           classNames={{ base: 'w-full !max-w-none' }}
           className="max-w-md text-black"
         />
@@ -128,7 +182,15 @@ export const PhotoGradientMask: FC<PhotoGradientMaskProps> = ({
           type="number"
           value={gradientMask.range}
           onChange={e => {
-            onUpdateRange(+e.target.value as number);
+            const val = e.target.value;
+            if (!isNaN(+val)) {
+              const newGradientMask = {
+                ...gradientMask,
+                range: +val,
+              };
+              handleUpdateGradientMask(newGradientMask);
+              setGradientMask(newGradientMask);
+            }
           }}
           min={0}
           max={100}
