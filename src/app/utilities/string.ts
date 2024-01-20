@@ -10,3 +10,7 @@ export function generateRandomString(length: number) {
 
   return result;
 }
+
+export function convertPxToNumber(px: string) {
+  return Number(px.replace('px', ''));
+}

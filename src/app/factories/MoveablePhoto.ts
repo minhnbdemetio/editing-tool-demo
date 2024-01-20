@@ -3,6 +3,13 @@ import { MoveableObject } from './MoveableObject';
 import { v4 as uuid } from 'uuid';
 import { PhotoFilter } from '../types';
 
+export type PhotoPosition = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
 export class MoveablePhoto extends MoveableObject {
   private x: number = 0;
   private y: number = 0;
@@ -26,6 +33,8 @@ export class MoveablePhoto extends MoveableObject {
 
   public vignette: number = 0;
 
+  dragStartPoint?: { x: number; y: number };
+  cropPosition?: PhotoPosition;
   clone(
     options?: { htmlString: string; id: string } | undefined,
   ): MoveableObject {
@@ -90,7 +99,7 @@ export class MoveablePhoto extends MoveableObject {
 
   public getFilterContainer() {
     return document.querySelector(
-      `div[data-id='${this.id}'] > svg > defs > filter`,
+      `div[data-id='${this.id}'] > div > svg > defs > filter`,
     );
   }
 
@@ -379,7 +388,7 @@ export class MoveablePhoto extends MoveableObject {
     const appliedFilters: string[] = filters.filter(f => !!f) as string[];
 
     const imageElement = document.querySelector(
-      `div[data-id='${this.id}'] > svg > g`,
+      `div[data-id='${this.id}'] > div > svg > g`,
     );
 
     const element = this.getFilterContainer();
@@ -454,5 +463,87 @@ export class MoveablePhoto extends MoveableObject {
       saturation: this.saturation,
       temperature: this.temperature,
     };
+  }
+  getImagePosition(): PhotoPosition | undefined {
+    const element = this.getElement();
+    if (!element) return;
+    const { x, y, width, height } = element.getBoundingClientRect();
+    const xOrigin = parseFloat(element.getAttribute('data-origin-x') ?? '0');
+    const yOrigin = parseFloat(element.getAttribute('data-origin-y') ?? '0');
+    const widthOrigin = parseFloat(
+      element.getAttribute('data-origin-width') ?? '0',
+    );
+    const heightOrigin = parseFloat(
+      element.getAttribute('data-origin-height') ?? '0',
+    );
+    return {
+      x: xOrigin || x,
+      y: yOrigin || y,
+      width: widthOrigin || width,
+      height: heightOrigin || height,
+    };
+  }
+
+  setPhotoObjectPosition(
+    position: PhotoPosition,
+    originPosition: PhotoPosition,
+    activePageId: string,
+  ) {
+    const element = this.getElement();
+    const imageLayerContainer = document.getElementById(
+      `image-layer-${this.id}`,
+    );
+    const imagePosition = this.getImagePosition();
+    const activePageElement = document.getElementById(activePageId);
+    if (
+      !element ||
+      !imageLayerContainer ||
+      !activePageElement ||
+      !imagePosition
+    )
+      return;
+
+    const style = window.getComputedStyle(activePageElement);
+    const scale = parseFloat(
+      /matrix\((\d+(\.\d+)?), (\d+(\.\d+)?), (\d+(\.\d+)?), (\d+(\.\d+)?), (\d+(\.\d+)?), (\d+(\.\d+)?)\)/.exec(
+        style.transform,
+      )?.[1] ?? '1',
+    );
+
+    const { x: activePageX, y: activePageY } =
+      activePageElement.getBoundingClientRect();
+    const translateX = (position.x - activePageX) / scale;
+    const translateY = (position.y - activePageY) / scale;
+    const deltaX = (position.x - originPosition.x) / scale;
+    const deltaY = (position.y - originPosition.y) / scale;
+    element.setAttribute('data-origin-width', `${originPosition.width}`);
+    element.setAttribute('data-origin-height', `${originPosition.height}`);
+    element.setAttribute('data-origin-x', `${originPosition.x}`);
+    element.setAttribute('data-origin-y', `${originPosition.y}`);
+    element.style.width = `${position.width / scale}px`;
+    element.style.height = `${position.height / scale}px`;
+    element.style.transform = `translate(${translateX}px, ${translateY}px)`;
+    imageLayerContainer.style.width = `${imagePosition.width / scale}px`;
+    imageLayerContainer.style.height = `${imagePosition.height / scale}px`;
+    imageLayerContainer.style.transform = `translate(${
+      deltaX ? -deltaX : -translateX
+    }px, ${deltaY ? -deltaY : -translateY}px)`;
+
+    this.cropPosition = position;
+  }
+
+  updateCropPosition(xChanged: number, yChanged: number) {
+    const element = this.getElement();
+    if (!element || !this.cropPosition) return;
+    const { x, y } = this.cropPosition;
+    this.cropPosition = {
+      ...this.cropPosition,
+      x: x + xChanged,
+      y: y + yChanged,
+    };
+    const xOrigin = parseFloat(element.getAttribute('data-origin-x') ?? '0');
+    const yOrigin = parseFloat(element.getAttribute('data-origin-y') ?? '0');
+    element.setAttribute('data-origin-x', `${xOrigin + xChanged}`);
+    element.setAttribute('data-origin-y', `${yOrigin + yChanged}`);
   }
 }

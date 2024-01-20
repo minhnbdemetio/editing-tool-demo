@@ -14,11 +14,17 @@ import { isLine, isPhoto, isText } from '../utilities/moveable';
 import { MoveableObject } from '../factories/MoveableObject';
 import { useDesign } from '../store/design-objects';
 import { isNumber } from 'lodash';
+import { PhotoPosition } from '../factories/MoveablePhoto';
 
 export const useActiveTextObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
   return isText(activeMoveableObject) ? activeMoveableObject : null;
+};
+
+export const useActivePhotoObject = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+  return isPhoto(activeMoveableObject) ? activeMoveableObject : null;
 };
 
 export const useActiveMoveableLineObject = () => {
@@ -630,6 +636,27 @@ export const useUpdateElementOpacity = () => {
     activeMoveableObject.setOpacity(opacity);
 
     callback();
+    return true;
+  };
+  return changeOpacity;
+};
+
+export const useUpdatePhotoPosition = () => {
+  const { activePage } = useActivePage();
+  const activePhotoObject = useActivePhotoObject();
+  const changeOpacity = (
+    position: PhotoPosition,
+    originPosition: PhotoPosition,
+    callback?: Function,
+  ) => {
+    if (!activePhotoObject || !activePage) return false;
+    activePhotoObject.setPhotoObjectPosition(
+      position,
+      originPosition,
+      activePage,
+    );
+
+    callback && callback();
     return true;
   };
   return changeOpacity;
