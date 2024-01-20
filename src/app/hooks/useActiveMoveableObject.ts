@@ -14,7 +14,7 @@ import { isLine, isPhoto, isText } from '../utilities/moveable';
 import { MoveableObject } from '../factories/MoveableObject';
 import { useDesign } from '../store/design-objects';
 import { isNumber } from 'lodash';
-import { PhotoPosition } from '../factories/MoveablePhoto';
+import { GradientMask, PhotoPosition } from '../factories/MoveablePhoto';
 
 export const useActiveTextObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
@@ -644,7 +644,7 @@ export const useUpdateElementOpacity = () => {
 export const useUpdatePhotoPosition = () => {
   const { activePage } = useActivePage();
   const activePhotoObject = useActivePhotoObject();
-  const changeOpacity = (
+  const changePhotoPosition = (
     position: PhotoPosition,
     originPosition: PhotoPosition,
     callback?: Function,
@@ -659,5 +659,25 @@ export const useUpdatePhotoPosition = () => {
     callback && callback();
     return true;
   };
-  return changeOpacity;
+  return changePhotoPosition;
+};
+
+export const useUpdateGradientMask = () => {
+  const { activePage } = useActivePage();
+  const activePhotoObject = useActivePhotoObject();
+  const changeGradientMask = (
+    gradientMask: GradientMask,
+    callback?: Function,
+  ) => {
+    if (!activePhotoObject) return false;
+    if (activePhotoObject.gradientMask) {
+      activePhotoObject.updateGradientMask();
+    } else {
+      activePhotoObject.updateGradientMask(gradientMask);
+    }
+
+    callback && callback();
+    return true;
+  };
+  return changeGradientMask;
 };

@@ -10,6 +10,12 @@ export type PhotoPosition = {
   height: number;
 };
 
+export type GradientMask = {
+  direction?: number;
+  range?: number;
+  type?: 'rect' | 'circle' | 'linear';
+};
+
 export class MoveablePhoto extends MoveableObject {
   private x: number = 0;
   private y: number = 0;
@@ -35,6 +41,7 @@ export class MoveablePhoto extends MoveableObject {
 
   dragStartPoint?: { x: number; y: number };
   cropPosition?: PhotoPosition;
+  gradientMask?: GradientMask;
   clone(
     options?: { htmlString: string; id: string } | undefined,
   ): MoveableObject {
@@ -104,7 +111,11 @@ export class MoveablePhoto extends MoveableObject {
   }
 
   public getSvg() {
-    return document.querySelector(`div[data-id='${this.id}'] > svg`);
+    return document.getElementById(`svg-container-${this.id}`);
+  }
+
+  public getDefsContainer() {
+    return document.getElementById(`defs-${this.id}`);
   }
 
   public removeAllDefs() {
@@ -545,5 +556,88 @@ export class MoveablePhoto extends MoveableObject {
     const yOrigin = parseFloat(element.getAttribute('data-origin-y') ?? '0');
     element.setAttribute('data-origin-x', `${xOrigin + xChanged}`);
     element.setAttribute('data-origin-y', `${yOrigin + yChanged}`);
+  }
+
+  removeAllGradientMask() {
+    const defsContainer = this.getDefsContainer();
+    const imageElement = document.getElementById(`g-${this.id}`);
+    const svg = this.getSvg();
+    const maskImage = document.querySelector(
+      `#svg-container-${this.id} .mask-svg-${this.id}`,
+    );
+    debugger
+    if (!defsContainer || !imageElement || !svg || !maskImage) return;
+    const cloneImageElement = imageElement.cloneNode(true);
+    const gradientMasks = defsContainer.querySelectorAll(
+      `.gradient-def-${this.id}`,
+    );
+    gradientMasks.forEach(mask => mask.remove());
+    maskImage.remove();
+    svg.appendChild(cloneImageElement);
+  }
+
+  getRectGradientMask() {
+    const elements = [];
+    for (let i = 0; i < 4; i++) {
+      const linearGradient = document.createElement('linearGradient');
+      linearGradient.setAttribute('class', `gradient-def-${this.id}`);
+      linearGradient.setAttribute('id', `gradient-def-${i}-${this.id}`);
+      linearGradient.setAttribute('x1', '0');
+      linearGradient.setAttribute('y1', '0');
+      linearGradient.setAttribute('x2', '1');
+      linearGradient.setAttribute('y2', '0');
+      linearGradient.innerHTML = ` <stop offset="0" stop-color="white" stop-opacity="0"></stop>
+      <stop offset="0.24" stop-color="white" stop-opacity="1"></stop>
+      <stop offset="1" stop-color="white" stop-opacity="1"></stop>`;
+      const mask = document.createElement('mask');
+      mask.setAttribute('class', `mask-def-${this.id}`);
+      mask.setAttribute('id', `mask-def-${i}-${this.id}`);
+      mask.innerHTML = `<rect x="0" y="0" width="100%" height="100%" fill="url(#${`gradient-def-${i}-${this.id}`})"></rect>`;
+      elements.push(linearGradient);
+      elements.push(mask);
+    }
+    return elements;
+  }
+
+  updateGradientMask(gradientMask?: GradientMask) {
+    this.gradientMask = gradientMask;
+    const defsContainer = this.getDefsContainer();
+    const svg = document.getElementById(`svg-container-${this.id}`);
+    if (!defsContainer || !svg) return;
+    this.removeAllGradientMask();
+    const imageElement = document.getElementById(`g-${this.id}`);
+    if (!imageElement) return;
+    if (!gradientMask) return;
+    switch (gradientMask.type) {
+      case 'rect':
+        const defElements = this.getRectGradientMask();
+        defElements.forEach(element => defsContainer.appendChild(element));
+        const maskElement = document.createElement('g');
+        maskElement.setAttribute('id', `mask-svg-3-${this.id}`);
+        maskElement.setAttribute('class', `mask-svg-${this.id}`);
+        maskElement.setAttribute('mask', `url(#mask-def-3-${this.id})`);
+
+        for (let i = 2; i >= 0; i--) {
+          const maskImage = document.createElement('g');
+          maskImage.setAttribute('id', `mask-svg-${i}-${this.id}`);
+          maskImage.setAttribute('mask', `url(#mask-def-${i}-${this.id})`);
+          const lastChild = maskElement.querySelector(
+            `#mask-svg-${i + 1}-${this.id}`,
+          );
+          if (!lastChild) {
+            maskElement.appendChild(maskImage);
+          } else {
+            lastChild.appendChild(maskImage);
+          }
+        }
+        const lastChild = maskElement.querySelector(`#mask-svg-0-${this.id}`);
+        if (!lastChild) break;
+        lastChild.appendChild(imageElement);
+        svg.appendChild(maskElement);
+        break;
+
+      default:
+        break;
+    }
   }
 }
