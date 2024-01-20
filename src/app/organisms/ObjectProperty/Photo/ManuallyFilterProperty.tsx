@@ -88,7 +88,7 @@ export const ManuallyFilterProperty: FC = () => {
         label="Sharp/blur"
         step={1}
         maxValue={100}
-        minValue={0}
+        minValue={-100}
         value={blur}
         onChange={value => {
           setBlur(value as number);

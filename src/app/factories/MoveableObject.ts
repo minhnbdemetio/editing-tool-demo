@@ -5,12 +5,22 @@ import { EDITOR_CONTAINER } from '../organisms/Editor';
 
 export const MAX_FIND_ELEMENT_ATTEMPTS = 100;
 export type ObjectType = 'rectangle' | 'text' | 'line' | 'photo';
+export enum ObjectFlip {
+  VERTICAL = 'vertical',
+  HORIZONTAL = 'horizontal',
+}
 export abstract class MoveableObject {
   id: string;
   type?: ObjectType;
   htmlString?: string;
   pageId: string | null;
   isLocked: boolean;
+
+  public flipDirection: {
+    x: boolean;
+    y: boolean;
+  } = { x: false, y: false };
+
   constructor(id?: string, htmlString?: string) {
     this.id = id || uuidv4();
     this.htmlString = htmlString;
@@ -102,5 +112,35 @@ export abstract class MoveableObject {
     const element = this.getElement();
     if (!element) return false;
     element.style.opacity = `${opacity / 100}`;
+  }
+
+  public getFlipScaleRatio(): { x: number; y: number } {
+    return {
+      x: this.flipDirection.x ? -1 : 1,
+      y: this.flipDirection.y ? -1 : 1,
+    };
+  }
+
+  public getSvgTransform(): string {
+    const { x, y } = this.getFlipScaleRatio();
+
+    return `scale(${x},${y})`;
+  }
+  private applySvgTransform() {
+    const element = this.getElement();
+    if (element) {
+      element.style.transform = this.getSvgTransform();
+    }
+  }
+
+  flip(direction: ObjectFlip) {
+    if (direction === ObjectFlip.HORIZONTAL) {
+      this.flipDirection.x = !this.flipDirection.x;
+    }
+    if (direction === ObjectFlip.VERTICAL) {
+      this.flipDirection.y = !this.flipDirection.y;
+    }
+
+    this.applySvgTransform();
   }
 }

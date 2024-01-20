@@ -26,3 +26,19 @@ export declare type ColorFilterType = {
 };
 
 export declare type TemplateFilterType = PriceFilterType | ColorFilterType;
+
+declare type PhotoFilter = {
+  contrast: number;
+  brightness: number;
+  saturation: number;
+  blur: number;
+  temperature: number;
+  hue:
+    | {
+        r: number;
+        g: number;
+        b: number;
+      }
+    | undefined;
+  vignette: number;
+};
