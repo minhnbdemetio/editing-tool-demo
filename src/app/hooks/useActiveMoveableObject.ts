@@ -1,6 +1,5 @@
 import { CSSProperties, useCallback } from 'react';
 import {
-  MoveableTextObject,
   MoveableTextShapeEffect,
   MoveableTextStyleEffect,
   TransformDirection,
@@ -8,13 +7,12 @@ import {
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { useActivePage } from '../store/active-page';
 import { GradientStop } from '../utilities/color.type';
-import { parseTransformString, parseTranslateString } from '../utilities/utils';
-import { usePageObjectsById } from './usePageObjects';
+import { parseTransformString } from '../utilities/utils';
 import { isLine, isPhoto, isText } from '../utilities/moveable';
 import { MoveableObject } from '../lib/moveable/MoveableObject';
 import { useDesign } from '../store/design-objects';
 import { isNumber } from 'lodash';
-import { PhotoPosition } from '../lib/moveable/MoveablePhoto';
+import { GradientMask, PhotoPosition } from '../lib/moveable/MoveablePhoto';
 
 export const useActiveTextObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
@@ -644,7 +642,7 @@ export const useUpdateElementOpacity = () => {
 export const useUpdatePhotoPosition = () => {
   const { activePage } = useActivePage();
   const activePhotoObject = useActivePhotoObject();
-  const changeOpacity = (
+  const changePhotoPosition = (
     position: PhotoPosition,
     originPosition: PhotoPosition,
     callback?: Function,
@@ -659,5 +657,25 @@ export const useUpdatePhotoPosition = () => {
     callback && callback();
     return true;
   };
-  return changeOpacity;
+  return changePhotoPosition;
+};
+
+export const useUpdateGradientMask = () => {
+  const { activePage } = useActivePage();
+  const activePhotoObject = useActivePhotoObject();
+  const changeGradientMask = (
+    gradientMask: GradientMask,
+    callback?: Function,
+  ) => {
+    if (!activePhotoObject) return false;
+    if (activePhotoObject.gradientMask) {
+      activePhotoObject.updateGradientMask();
+    } else {
+      activePhotoObject.updateGradientMask(gradientMask);
+    }
+
+    callback && callback();
+    return true;
+  };
+  return changeGradientMask;
 };

@@ -3,6 +3,12 @@ import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
 import { Button, Checkbox } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 import { PhotoFillColor } from './PhotoFillColor';
+import { PhotoGradientMask } from './PhotoGradientMask';
+import {
+  useActiveMoveablePhotoObject,
+  useUpdateGradientMask,
+} from '@/app/hooks/useActiveMoveableObject';
+import { GradientMask } from '@/app/factories/MoveablePhoto';
 
 enum EffectType {
   Common = 'common',
@@ -10,16 +16,25 @@ enum EffectType {
   Shadow = 'shadow',
   GradientMask = 'gradientMask',
 }
+export const DEFAULT_GRADIENT_MASK: GradientMask = {
+  type: 'rect',
+  range: 50,
+  direction: 50,
+};
 export const PhotoEffectProperty: FC = () => {
-  const { activeMoveableObject } = useActiveMoveableObject();
+  const activePhotoObject = useActiveMoveablePhotoObject();
   const [checkFillColor, setCheckFillColor] = useState<boolean>(false);
+  const [checkGradientMask, setCheckGradientMask] = useState<boolean>(
+    !!activePhotoObject?.gradientMask,
+  );
   const [modeEffect, setModeEffect] = useState<EffectType>(EffectType.Common);
 
   useEffect(() => {
-    const activeElement = activeMoveableObject?.getElement();
+    const activeElement = activePhotoObject?.getElement();
     if (activeElement instanceof HTMLElement) {
-      const fillColorElement: HTMLDivElement | null =
-        activeElement.querySelector('.fill-color');
+      const fillColorElement: HTMLDivElement | null = activeElement.querySelector(
+        '.fill-color',
+      );
       if (fillColorElement) {
         setCheckFillColor(Boolean(fillColorElement?.style.display === 'block'));
       } else {
@@ -38,14 +53,15 @@ export const PhotoEffectProperty: FC = () => {
         activeElement.appendChild(newFillColorElement);
       }
     }
-  }, [activeMoveableObject]);
+  }, [activePhotoObject]);
 
   const changeFillColor = () => {
-    const activeElement = activeMoveableObject?.getElement();
+    const activeElement = activePhotoObject?.getElement();
 
     if (activeElement instanceof HTMLElement) {
-      const fillColorElement: HTMLDivElement | null =
-        activeElement.querySelector('.fill-color');
+      const fillColorElement: HTMLDivElement | null = activeElement.querySelector(
+        '.fill-color',
+      );
       if (fillColorElement) {
         if (fillColorElement?.style.display === 'block') {
           fillColorElement.style.display = 'none';
@@ -59,6 +75,8 @@ export const PhotoEffectProperty: FC = () => {
     }
   };
 
+  const changeGradientMask = useUpdateGradientMask();
+
   if (modeEffect === EffectType.FillColor)
     return (
       <PhotoFillColor
@@ -69,6 +87,21 @@ export const PhotoEffectProperty: FC = () => {
         changeFillColor={changeFillColor}
       />
     );
+  if (modeEffect === EffectType.GradientMask) {
+    return (
+      <PhotoGradientMask
+        onBack={() => {
+          setModeEffect(EffectType.Common);
+        }}
+        checkGradientMask={checkGradientMask}
+        toggleGradientMask={() => {
+          changeGradientMask(DEFAULT_GRADIENT_MASK, () =>
+            setCheckGradientMask(!checkGradientMask),
+          );
+        }}
+      />
+    );
+  }
   if (modeEffect === EffectType.Common)
     return (
       <div className="w-full h-full">
@@ -122,10 +155,22 @@ export const PhotoEffectProperty: FC = () => {
               wrapper: 'w-[26px] h-[26px]',
             }}
             size="lg"
+            onClick={() => {
+              changeGradientMask(DEFAULT_GRADIENT_MASK, () =>
+                setCheckGradientMask(!checkGradientMask),
+              );
+            }}
           >
             Gradient mask
           </Checkbox>
-          <Button size="sm" isIconOnly variant="light" onClick={() => {}}>
+          <Button
+            size="sm"
+            isIconOnly
+            variant="light"
+            onClick={() => {
+              setModeEffect(EffectType.GradientMask);
+            }}
+          >
             <ChevronRight />
           </Button>
         </div>
