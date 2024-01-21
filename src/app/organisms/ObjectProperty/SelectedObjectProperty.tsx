@@ -33,6 +33,7 @@ import { FiltersProperty } from './Photo/FiltersProperty';
 import { PhotoEffectProperty } from './Photo/PhotoEffectProperty';
 import { PhotoFlipProperty } from './Photo/PhotoFlipProperty';
 import { PhotoCropProperty } from './Photo/CropProperty';
+import { PhotoMoreProperty } from './Photo/More';
 
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
@@ -138,6 +139,9 @@ export const SelectedObjectProperty: FC = () => {
 
       case SelectedProperty.PhotoCrop: {
         return <PhotoCropProperty />;
+      }
+      case SelectedProperty.PhotoMore: {
+        return <PhotoMoreProperty />;
       }
       default: {
         return null;

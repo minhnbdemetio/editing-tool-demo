@@ -675,3 +675,16 @@ export const useUpdateGradientMask = () => {
   };
   return changeGradientMask;
 };
+
+export const useSetBackgroundImage = () => {
+  const { activePage } = useActivePage();
+  const activePhotoObject = useActivePhotoObject();
+  const setBackgroundImage = (callback?: Function) => {
+    if (!activePhotoObject || !activePage) return false;
+    activePhotoObject.setBackground(activePage);
+
+    callback && callback();
+    return true;
+  };
+  return setBackgroundImage;
+}
