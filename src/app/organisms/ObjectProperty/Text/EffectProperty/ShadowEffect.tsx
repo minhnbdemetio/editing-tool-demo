@@ -1,9 +1,18 @@
 import { MoveableTextShadow } from '@/app/lib/moveable/text/MoveableText';
-import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
+import {
+  useActiveTextObject,
+  useUpdateTextStyleEffectOptions,
+} from '@/app/hooks/useActiveMoveableObject';
 import { Button, Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 import { EffectPickColor } from './EffectPickColor';
 import { ColorResult } from 'react-color';
+import {
+  TextShadowEffect,
+  TextStyleEffect,
+} from '@/app/lib/moveable/effects/text/StyleEffect';
+import { TEXT_SHADOW_DEFAULT_VALUE } from '@/app/lib/moveable/constant/text';
+import { TextEffectOptions } from '@/app/lib/moveable/effects/text/TextEffect';
 
 interface ShadowPropertyProps {}
 type TextShadowOptions =
@@ -57,30 +66,20 @@ const SHADOW_OPTIONS = [
   },
 ];
 
-const DEFAULT_VALUE = {
-  color: '#000',
-  offset: 50,
-  direction: 45,
-  blur: 0,
-  transparency: 40,
-};
-
 export const ShadowEffect: FC<ShadowPropertyProps> = () => {
   const activeText = useActiveTextObject();
-  const [textShadow, setTextShadow] = useState<MoveableTextShadow | undefined>(
-    activeText?.getTextShadow() || DEFAULT_VALUE,
+  const [shadowEffect, setShadowEffect] = useState<TextEffectOptions>(
+    activeText?.newStyleEffect?.getOptions() || TEXT_SHADOW_DEFAULT_VALUE,
   );
   const [colorPickerOpen, setOpenColorPicker] = useState<boolean>(false);
-  useEffect(() => {
-    activeText?.setTextShadow(activeText?.getTextShadow() || DEFAULT_VALUE);
-  }, []);
+
+  const handleUpdateShadowEffect = useUpdateTextStyleEffectOptions();
   const handleChangeColor = (color: ColorResult) => {
-    const value = {
-      ...textShadow,
+    const value: TextEffectOptions = {
+      ...shadowEffect,
       color: color.hex,
     };
-    setTextShadow(value);
-    activeText?.setTextShadow(value);
+    handleUpdateShadowEffect(value, () => setShadowEffect(value));
   };
   return (
     <>
@@ -95,12 +94,12 @@ export const ShadowEffect: FC<ShadowPropertyProps> = () => {
                 <p>Color</p>
                 <Button
                   className={`w-[32px] h-[32px] min-w-[32px] rounded-[4px]`}
-                  style={{ backgroundColor: textShadow?.color as string }}
+                  style={{ backgroundColor: shadowEffect?.color as string }}
                   onClick={() => setOpenColorPicker(!colorPickerOpen)}
                 ></Button>
                 {colorPickerOpen && (
                   <EffectPickColor
-                    defaultColor={textShadow?.color}
+                    defaultColor={shadowEffect?.color}
                     onChangeColor={handleChangeColor}
                     onCloseColorPicker={() => setOpenColorPicker(false)}
                   />
@@ -133,35 +132,35 @@ export const ShadowEffect: FC<ShadowPropertyProps> = () => {
                         type="text"
                         aria-label="Temperature value"
                         value={
-                          textShadow &&
-                          textShadow[option.target as TextShadowOptions]
+                          shadowEffect &&
+                          shadowEffect[option.target as TextShadowOptions]
                         }
                         onChange={e => {
                           const v = +e.target.value;
                           if (isNaN(v)) return;
                           const value = {
-                            ...textShadow,
+                            ...shadowEffect,
                             [option.target]: v,
                           };
-                          setTextShadow(value);
-                          activeText?.setTextShadow(value);
+                          handleUpdateShadowEffect(value, () =>
+                            setShadowEffect(value),
+                          );
                         }}
                       />
                     </Tooltip>
                   </output>
                 )}
                 value={
-                  textShadow &&
-                  (textShadow[option.target as TextShadowOptions] as number)
+                  shadowEffect &&
+                  (shadowEffect[option.target as TextShadowOptions] as number)
                 }
                 onChange={value => {
                   if (typeof value === 'number') {
                     const val = {
-                      ...textShadow,
+                      ...shadowEffect,
                       [option.target]: value,
                     };
-                    setTextShadow(val);
-                    activeText?.setTextShadow(val);
+                    handleUpdateShadowEffect(val, () => setShadowEffect(val));
                   }
                 }}
               />

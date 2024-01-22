@@ -13,6 +13,8 @@ import { MoveableObject } from '../lib/moveable/MoveableObject';
 import { useDesign } from '../store/design-objects';
 import { isNumber } from 'lodash';
 import { GradientMask, PhotoPosition } from '../lib/moveable/MoveablePhoto';
+import { TextStyleEffect } from '../lib/moveable/effects/text/StyleEffect';
+import { TextEffectOptions } from '../lib/moveable/effects/text/TextEffect';
 
 export const useActiveTextObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
@@ -82,6 +84,7 @@ export const useUpdateTextColor = () => {
 
   return (color: string) => {
     activeText?.setTextColor(color);
+    activeText?.render();
   };
 };
 
@@ -705,4 +708,36 @@ export const useUpdateTextStretchFont = () => {
     return true;
   };
   return updateTextStretchFont;
+};
+
+export const useUpdateTextStyleEffect = () => {
+  const activeText = useActiveTextObject();
+  const updateTextStyleEffect = (
+    styleEffect: TextStyleEffect,
+    callback?: Function,
+  ) => {
+    const element = activeText?.getElement();
+    if (!activeText || !element) return false;
+    activeText.newStyleEffect.reset(element);
+    activeText.setNewStyleEffect(styleEffect);
+    activeText.render();
+    callback && callback();
+    return true;
+  };
+  return updateTextStyleEffect;
+};
+
+export const useUpdateTextStyleEffectOptions = () => {
+  const activeText = useActiveTextObject();
+  const updateTextStyleEffectOptions = (
+    styleEffectOption: TextEffectOptions,
+    callback?: Function,
+  ) => {
+    if (!activeText) return false;
+    activeText.updateNewStyleEffectOption(styleEffectOption);
+    activeText.render();
+    callback && callback();
+    return true;
+  };
+  return updateTextStyleEffectOptions;
 };

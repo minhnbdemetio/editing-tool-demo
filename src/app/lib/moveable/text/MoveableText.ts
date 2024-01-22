@@ -4,6 +4,17 @@ import { GradientStop } from '../../../utilities/color.type';
 export type MoveableTextVariant = 'normal' | 'heading' | 'subheading' | 'body';
 import { hexToRgba } from '../../../utilities/color';
 import { DEFAULT_TEXT_SCALE, TEXT_INNER_ELEMENTS } from '../constant/text';
+import { Editable } from '../editable/Editable';
+import { EditableText } from '../editable/EditableText';
+import { Effect } from '../effects/Effect';
+import {
+  StyleEffect,
+  TextHollowEffect,
+  TextLiftEffect,
+  TextShadowEffect,
+  TextStyleEffect,
+} from '../effects/text/StyleEffect';
+import { TextEffectOptions } from '../effects/text/TextEffect';
 
 export type MoveableTextShadow = {
   color?: string;
@@ -49,7 +60,7 @@ export type TransformDirection = 'bottom' | 'center' | 'top';
 
 export type MoveableTextShapeEffect = 'none' | 'curve';
 
-export class MoveableTextObject extends MoveableObject {
+export class MoveableTextObject extends MoveableObject implements EditableText {
   variant?: MoveableTextVariant;
   styleEffect?: MoveableTextStyleEffect;
   shapeEffect?: MoveableTextShapeEffect;
@@ -67,12 +78,14 @@ export class MoveableTextObject extends MoveableObject {
   transformDirection: string;
   scaleY: number = DEFAULT_TEXT_SCALE;
   scaleX: number = DEFAULT_TEXT_SCALE;
+  newStyleEffect: StyleEffect;
   constructor(options?: { id: string; htmlString: string }) {
     super(options);
     this.type = 'text';
     this.variant = 'normal';
     this.styleEffect = 'none';
     this.transformDirection = 'bottom';
+    this.newStyleEffect = new StyleEffect(TextStyleEffect.NONE);
   }
 
   clone(options?: { htmlString: string; id: string }): MoveableTextObject {
@@ -322,6 +335,29 @@ export class MoveableTextObject extends MoveableObject {
   }
   setStyleEffect(styleEffect: MoveableTextStyleEffect) {
     this.styleEffect = styleEffect;
+  }
+  setNewStyleEffect(styleEffect: TextStyleEffect) {
+    switch (styleEffect) {
+      case TextStyleEffect.SHADOW: {
+        this.newStyleEffect = new TextShadowEffect();
+        break;
+      }
+      case TextStyleEffect.LIFT: {
+        this.newStyleEffect = new TextLiftEffect();
+        break;
+      }
+      case TextStyleEffect.HOLLOW: {
+        this.newStyleEffect = new TextHollowEffect();
+        break;
+      }
+      default: {
+        this.newStyleEffect = new StyleEffect(TextStyleEffect.NONE);
+        break;
+      }
+    }
+  }
+  updateNewStyleEffectOption(option: TextEffectOptions) {
+    this.newStyleEffect.setOption(option);
   }
   setEffectLift(intensity?: number, color: string = '#000') {
     if (!intensity) {
@@ -848,6 +884,9 @@ export class MoveableTextObject extends MoveableObject {
   }
 
   render() {
+    const element = this.getElement();
+    if (!element) return;
+    this.newStyleEffect.apply(element);
     this.renderTextScale();
   }
 }

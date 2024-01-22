@@ -7,7 +7,10 @@ import {
   useUpdateActiveMoveableObjectTextStyleEffectCommand,
   useUpdateActiveTextShapeEffectCommand,
 } from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
-import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
+import {
+  useActiveTextObject,
+  useUpdateTextStyleEffect,
+} from '@/app/hooks/useActiveMoveableObject';
 import { Image } from '@nextui-org/react';
 import clsx from 'clsx';
 import { FC, useState } from 'react';
@@ -21,6 +24,38 @@ import { GlitchEffect } from './GlitchEffect';
 import { NeonEffect } from './NeonEffect';
 import { BackGroundEffect } from './BackgroundEffect';
 import { CurveEffect } from './CurveEffect';
+import { TextStyleEffect } from '@/app/lib/moveable/effects/text/StyleEffect';
+
+const NEW_TEXT_EFFECTS_STYLES: {
+  id: TextStyleEffect;
+  name: string;
+  imgUrl: string;
+  effectComponent?: FC;
+}[] = [
+  {
+    id: TextStyleEffect.NONE,
+    name: 'None',
+    imgUrl: '/text-effects/styles/none.webp',
+  },
+  {
+    id: TextStyleEffect.SHADOW,
+    name: 'Shadow',
+    imgUrl: '/text-effects/styles/shadow.webp',
+    effectComponent: ShadowEffect,
+  },
+  {
+    id: TextStyleEffect.LIFT,
+    name: 'Lift',
+    imgUrl: '/text-effects/styles/lift.webp',
+    effectComponent: LiftEffect,
+  },
+  {
+    id: TextStyleEffect.HOLLOW,
+    name: 'Hollow',
+    imgUrl: '/text-effects/styles/hollow.webp',
+    effectComponent: HollowEffect,
+  },
+];
 
 const TEXT_EFFECTS_STYLES: {
   id: MoveableTextStyleEffect;
@@ -28,29 +63,6 @@ const TEXT_EFFECTS_STYLES: {
   imgUrl: string;
   effectComponent?: FC;
 }[] = [
-  {
-    id: 'none',
-    name: 'None',
-    imgUrl: '/text-effects/styles/none.webp',
-  },
-  {
-    id: 'shadow',
-    name: 'Shadow',
-    imgUrl: '/text-effects/styles/shadow.webp',
-    effectComponent: ShadowEffect,
-  },
-  {
-    id: 'lift',
-    name: 'Lift',
-    imgUrl: '/text-effects/styles/lift.webp',
-    effectComponent: LiftEffect,
-  },
-  {
-    id: 'hollow',
-    name: 'Hollow',
-    imgUrl: '/text-effects/styles/hollow.webp',
-    effectComponent: HollowEffect,
-  },
   {
     id: 'emboss',
     name: 'Splice',
@@ -115,6 +127,9 @@ export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
   const [effectStyle, setEffectStyle] = useState<MoveableTextStyleEffect>(
     activeText?.getTextStyleEffect() || 'none',
   );
+  const [newEffectStyle, setNewEffectStyle] = useState(
+    activeText?.newStyleEffect?.name || 'none',
+  );
 
   const [effectShape, setEffectShape] = useState<MoveableTextShapeEffect>(
     activeText?.shapeEffect || 'none',
@@ -123,6 +138,14 @@ export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
   const renderEffectComponent = () => {
     const EffectOptions = TEXT_EFFECTS_STYLES.find(
       style => style.id === effectStyle,
+    )?.effectComponent;
+    if (!EffectOptions) return <></>;
+    return <EffectOptions />;
+  };
+
+  const renderNewEffectComponent = () => {
+    const EffectOptions = NEW_TEXT_EFFECTS_STYLES.find(
+      style => style.id === newEffectStyle,
     )?.effectComponent;
     if (!EffectOptions) return <></>;
     return <EffectOptions />;
@@ -138,10 +161,44 @@ export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
 
   const updateActiveMoveableObjectTextStyleEffect = useUpdateActiveMoveableObjectTextStyleEffectCommand();
   const updateActiveTextShapeEffect = useUpdateActiveTextShapeEffectCommand();
+  const updateNewTextStyleEffect = useUpdateTextStyleEffect();
   return (
     <div className="w-full h-full">
       <div className="text-center mb-3">
         <span>Effects</span>
+      </div>
+      <p className="mb-[12px]">Refactor style</p>
+      <div className="flex gap-2 items-center flex-wrap">
+        {NEW_TEXT_EFFECTS_STYLES.map(style => (
+          <div className="effect-styles" key={style.id}>
+            <div
+              className="group flex flex-col flex-1 gap-1 items-center w-[60px] cursor-pointer"
+              onClick={e => {
+                updateNewTextStyleEffect(style.id, () =>
+                  setNewEffectStyle(style.id),
+                );
+              }}
+            >
+              <Image
+                className={clsx('border', {
+                  'border-gray-300': newEffectStyle !== style.id,
+                  'border-blue-500': newEffectStyle === style.id,
+                })}
+                width={60}
+                alt={style.name}
+                src={style.imgUrl}
+                radius="sm"
+                style={{ maxWidth: '60px' }}
+              />
+              <p className="text-center font-light text-[10px]">
+                <span>{style.name}</span>
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="effect-options font-light text-[14px]">
+        {renderNewEffectComponent()}
       </div>
       <p className="mb-[12px]">Style</p>
       <div className="flex gap-2 items-center flex-wrap">

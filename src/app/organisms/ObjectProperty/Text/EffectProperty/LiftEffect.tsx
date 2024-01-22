@@ -1,4 +1,8 @@
-import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
+import {
+  useActiveTextObject,
+  useUpdateTextStyleEffectOptions,
+} from '@/app/hooks/useActiveMoveableObject';
+import { TEXT_LIFT_DEFAULT_VALUE } from '@/app/lib/moveable/constant/text';
 import { Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 
@@ -6,17 +10,11 @@ interface LiftPropertyProps {}
 
 export const LiftEffect: FC<LiftPropertyProps> = () => {
   const activeText = useActiveTextObject();
-  if (activeText?.getTextIntensity() === undefined) {
-    activeText?.setEffectLift(50);
-  }
   const [insensity, setInsensity] = useState<number | undefined>(
-    activeText?.getTextIntensity(),
+    activeText?.newStyleEffect?.getOptions()?.offset ||
+      TEXT_LIFT_DEFAULT_VALUE.offset,
   );
-  useEffect(() => {
-    if (insensity) {
-      activeText?.setEffectLift(insensity);
-    }
-  }, [insensity]);
+  const handleUpdateLiftEffect = useUpdateTextStyleEffectOptions();
   return (
     <Slider
       label="Intensity"
@@ -43,16 +41,16 @@ export const LiftEffect: FC<LiftPropertyProps> = () => {
               onChange={e => {
                 const v = +e.target.value;
                 if (isNaN(v)) return;
-                setInsensity(v);
+                handleUpdateLiftEffect({ offset: v }, () => setInsensity(v));
               }}
             />
           </Tooltip>
         </output>
       )}
       value={insensity}
-      onChange={value => {
-        if (typeof value === 'number') {
-          setInsensity(value);
+      onChange={v => {
+        if (typeof v === 'number') {
+          handleUpdateLiftEffect({ offset: v }, () => setInsensity(v));
         }
       }}
     />
