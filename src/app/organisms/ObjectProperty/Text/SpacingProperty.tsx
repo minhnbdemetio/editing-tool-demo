@@ -3,6 +3,7 @@ import {
   useChangeTextLineHeight,
   useChangeTextSpacing,
   useChangeTextTransformOrigin,
+  useUpdateTextStretchFont,
 } from '@/app/hooks/useActiveMoveableObject';
 import {
   useChangeMoveableTextLineHeightCommand,
@@ -16,6 +17,7 @@ import { AnchorTop } from '@/app/icons/AnchorTop';
 import { useDesign } from '@/app/store/design-objects';
 import { Slider, Tooltip } from '@nextui-org/react';
 import { FC, useState } from 'react';
+import { DEFAULT_TEXT_SCALE } from '@/app/lib/moveable/constant/text';
 
 interface SpacingPropertyProps {}
 
@@ -34,11 +36,15 @@ export const SpacingProperty: FC<SpacingPropertyProps> = ({}) => {
   const [lineHeight, setLineHeight] = useState<number | undefined>(
     activeText?.getLineHeight(),
   );
+  const [stretchFont, setStretchFont] = useState<number>(
+    (activeText?.scaleX || DEFAULT_TEXT_SCALE) * 100,
+  );
   const { moveable } = useDesign();
 
   const handleChangeLetterSpacing = useChangeTextSpacing();
   const handleChangeLineHeight = useChangeTextLineHeight();
   const handleChangeMoveableTextTransformOrigin = useChangeTextTransformOrigin();
+  const handleUpdateTextStretchFont = useUpdateTextStretchFont();
   return (
     <div className="w-full h-full">
       <div className="text-center mb-3">
@@ -117,6 +123,44 @@ export const SpacingProperty: FC<SpacingPropertyProps> = ({}) => {
         onChange={value => {
           if (typeof value === 'number') {
             handleChangeLineHeight(value, () => setLineHeight(value));
+          }
+        }}
+      />
+      <Slider
+        label="Stretch line"
+        size="sm"
+        step={1}
+        maxValue={150}
+        minValue={50}
+        color="foreground"
+        classNames={{
+          label: 'text-medium mt-[12px]',
+        }}
+        renderValue={({ children, ...props }) => (
+          <output {...props}>
+            <Tooltip
+              className="text-tiny text-default-500 rounded-md"
+              content="Press Enter to confirm"
+              placement="left"
+            >
+              <input
+                className="px-1 py-0.5 w-12 text-right text-small text-default-700 font-medium bg-default-100 outline-none transition-colors rounded-small border-medium border-transparent hover:border-primary focus:border-primary"
+                type="text"
+                aria-label="Temperature value"
+                value={stretchFont}
+                onChange={e => {
+                  const v = +e.target.value;
+                  if (isNaN(v)) return;
+                  handleUpdateTextStretchFont(v, () => setStretchFont(v));
+                }}
+              />
+            </Tooltip>
+          </output>
+        )}
+        value={stretchFont}
+        onChange={value => {
+          if (typeof value === 'number') {
+            handleUpdateTextStretchFont(value, () => setStretchFont(value));
           }
         }}
       />

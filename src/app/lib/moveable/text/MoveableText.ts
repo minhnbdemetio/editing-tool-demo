@@ -3,7 +3,7 @@ import { GradientStop } from '../../../utilities/color.type';
 
 export type MoveableTextVariant = 'normal' | 'heading' | 'subheading' | 'body';
 import { hexToRgba } from '../../../utilities/color';
-import { TEXT_INNER_ELEMENTS } from '../constant/text';
+import { DEFAULT_TEXT_SCALE, TEXT_INNER_ELEMENTS } from '../constant/text';
 
 export type MoveableTextShadow = {
   color?: string;
@@ -65,6 +65,8 @@ export class MoveableTextObject extends MoveableObject {
   curve?: number;
   gradientStops?: GradientStop[];
   transformDirection: string;
+  scaleY: number = DEFAULT_TEXT_SCALE;
+  scaleX: number = DEFAULT_TEXT_SCALE;
   constructor(options?: { id: string; htmlString: string }) {
     super(options);
     this.type = 'text';
@@ -827,5 +829,25 @@ export class MoveableTextObject extends MoveableObject {
       this.onClickOutsideCurveContainerElement.bind(this),
     );
     text.addEventListener('input', this.onInput.bind(this));
+  }
+
+  setTextScale({ scaleX, scaleY }: { scaleX?: number; scaleY?: number }) {
+    this.scaleX = scaleX ?? this.scaleX;
+    this.scaleY = scaleY ?? this.scaleY;
+  }
+
+  renderTextScale(el?: HTMLElement) {
+    const element = el ?? this.getElement();
+    if (!element) return;
+
+    element.style.transform =
+      element.style.transform.replace(
+        /scale\(\d+(\.\d+)?, \d+(\.\d+)?\)/g,
+        '',
+      ) + ` scale(${this.scaleX}, ${this.scaleY})`;
+  }
+
+  render() {
+    this.renderTextScale();
   }
 }
