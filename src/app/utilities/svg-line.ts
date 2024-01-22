@@ -261,6 +261,8 @@ export class SvgLine {
     const { startLeft, startRight, endLeft, endRight } =
       this.getLineAdornmentPadding();
 
+    console.debug({ startLeft, startRight, endLeft, endRight });
+
     if (this.getType() === SvgLineType.Straight) {
       dx = this.getStraightLineWidth();
     }
@@ -429,6 +431,8 @@ export class SvgLine {
         return this.getRhombusAdornment(direction, x, y);
       case SvgLineAdornment.OutlinedRhombus:
         return this.getRhombusAdornment(direction, x, y, true);
+      case SvgLineAdornment.Line:
+        return this.getLineAdornment(direction, x, y, true);
       default:
         return '';
     }
@@ -611,12 +615,12 @@ export class SvgLine {
   ): string {
     const option = { fill: outlined ? 'none' : this.getStrokeColor() };
     const arrowLength = this.getAdornmentLength();
-    const arrowSide = arrowLength;
+    const arrowSide = arrowLength * 2;
 
     switch (direction) {
       case 'up': {
         return this.addPath(
-          `M  ${x} ${y} h -${
+          `M  ${x} ${y}  h -${
             arrowSide / 2
           } v ${arrowSide} h ${arrowSide} v -${arrowSide} z`,
           option,
@@ -624,7 +628,7 @@ export class SvgLine {
       }
       case 'left': {
         return this.addPath(
-          `M  ${x + arrowLength} ${y} l 0 -${
+          `M  ${x + arrowSide} ${y} l 0 -${
             arrowSide / 2
           } -${arrowSide} 0 0 ${arrowSide} ${arrowSide} 0 z`,
           option,
@@ -696,13 +700,40 @@ export class SvgLine {
     }
   }
 
-  private getCircleAdornment(
+  private getLineAdornment(
     direction: 'up' | 'left' | 'down' | 'right',
     x: number,
     y: number,
     outlined?: boolean,
   ): string {
     const option = { fill: outlined ? 'none' : this.getStrokeColor() };
+    const lineSide = this.getAdornmentLength();
+
+    switch (direction) {
+      case 'down':
+      case 'up': {
+        return this.addPath(
+          `M ${x} ${y} m ${lineSide},0 h ${-lineSide * 2}`,
+          option,
+        );
+      }
+
+      case 'right':
+      case 'left': {
+        return this.addPath(
+          `M ${x} ${y} m 0,${-lineSide} v ${lineSide * 2}`,
+          option,
+        );
+      }
+    }
+  }
+
+  private getCircleAdornment(
+    direction: 'up' | 'left' | 'down' | 'right',
+    x: number,
+    y: number,
+    outlined?: boolean,
+  ): string {
     const arrowLength = this.getAdornmentLength();
 
     switch (direction) {
@@ -770,49 +801,91 @@ export class SvgLine {
     const startAdornmentPos = this.getStartAdornmentDirection(this.points);
     const endAdornmentPos = this.getEndAdornmentDirection(this.endPoint);
 
+    const setStartPadding = (
+      direction: 'left' | 'up' | 'down' | 'right',
+      padding: number,
+    ) => {
+      adornmentPadding.startBottom = 0;
+      adornmentPadding.startRight = 0;
+      adornmentPadding.startLeft = 0;
+      adornmentPadding.startTop = 0;
+
+      switch (direction) {
+        case 'left':
+          adornmentPadding.startLeft = padding;
+          break;
+        case 'right':
+          adornmentPadding.startRight = padding;
+          break;
+        case 'up':
+          adornmentPadding.startTop = padding;
+          break;
+        case 'down':
+          adornmentPadding.startBottom = padding;
+          break;
+      }
+    };
+
+    const setEndPadding = (
+      direction: 'left' | 'up' | 'down' | 'right',
+      padding: number,
+    ) => {
+      adornmentPadding.endBottom = 0;
+      adornmentPadding.endLeft = 0;
+      adornmentPadding.endRight = 0;
+      adornmentPadding.endTop = 0;
+
+      switch (direction) {
+        case 'left':
+          adornmentPadding.endLeft = padding;
+          break;
+        case 'right':
+          adornmentPadding.endRight = padding;
+          break;
+        case 'up':
+          adornmentPadding.endTop = padding;
+          break;
+        case 'down':
+          adornmentPadding.endBottom = padding;
+          break;
+      }
+    };
+
     switch (this.startAdornment) {
       case SvgLineAdornment.Arrow:
-        adornmentPadding.startLeft =
-          startAdornmentPos === 'left' ? (this.strokeWidth * 1) / 4 : 0;
-        adornmentPadding.startTop =
-          startAdornmentPos === 'up' ? (this.strokeWidth * 1) / 4 : 0;
-        adornmentPadding.startBottom =
-          startAdornmentPos === 'down' ? (this.strokeWidth * 1) / 4 : 0;
-        adornmentPadding.startRight =
-          startAdornmentPos === 'right' ? (this.strokeWidth * 1) / 5 : 0;
+        setStartPadding(startAdornmentPos, (this.strokeWidth * 1) / 4);
+        break;
+      case SvgLineAdornment.OutlinedSquare:
+      case SvgLineAdornment.OutlinedRhombus:
+      case SvgLineAdornment.OutlinedCircle:
+        setStartPadding(startAdornmentPos, this.getAdornmentLength() * 2);
+        break;
+      case SvgLineAdornment.None:
+      case SvgLineAdornment.Line:
+        setStartPadding(startAdornmentPos, -this.strokeWidth / 2);
         break;
 
       default:
-        adornmentPadding.startLeft =
-          startAdornmentPos === 'left' ? this.getAdornmentLength() : 0;
-        adornmentPadding.startTop =
-          startAdornmentPos === 'up' ? this.getAdornmentLength() : 0;
-        adornmentPadding.startBottom =
-          startAdornmentPos === 'down' ? this.getAdornmentLength() : 0;
-        adornmentPadding.startRight =
-          startAdornmentPos === 'right' ? this.getAdornmentLength() : 0;
+        setStartPadding(startAdornmentPos, this.getAdornmentLength());
     }
+
     switch (this.endAdornment) {
       case SvgLineAdornment.Arrow:
-        adornmentPadding.endLeft =
-          endAdornmentPos === 'left' ? (this.strokeWidth * 1) / 4 : 0;
-        adornmentPadding.endTop =
-          endAdornmentPos === 'up' ? (this.strokeWidth * 1) / 4 : 0;
-        adornmentPadding.endBottom =
-          endAdornmentPos === 'down' ? (this.strokeWidth * 1) / 4 : 0;
-        adornmentPadding.endRight =
-          endAdornmentPos === 'right' ? (this.strokeWidth * 1) / 4 : 0;
+        setEndPadding(endAdornmentPos, (this.strokeWidth * 1) / 4);
+
+        break;
+      case SvgLineAdornment.OutlinedSquare:
+      case SvgLineAdornment.OutlinedRhombus:
+      case SvgLineAdornment.OutlinedCircle:
+        setEndPadding(endAdornmentPos, this.getAdornmentLength() * 2);
+        break;
+      case SvgLineAdornment.None:
+      case SvgLineAdornment.Line:
+        setEndPadding(endAdornmentPos, -this.strokeWidth / 2);
         break;
 
       default:
-        adornmentPadding.endLeft =
-          endAdornmentPos === 'left' ? this.getAdornmentLength() : 0;
-        adornmentPadding.endTop =
-          endAdornmentPos === 'up' ? this.getAdornmentLength() : 0;
-        adornmentPadding.endBottom =
-          endAdornmentPos === 'down' ? this.getAdornmentLength() : 0;
-        adornmentPadding.endRight =
-          endAdornmentPos === 'right' ? this.getAdornmentLength() : 0;
+        setEndPadding(startAdornmentPos, this.getAdornmentLength());
     }
 
     return adornmentPadding;
