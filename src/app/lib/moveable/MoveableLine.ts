@@ -1,5 +1,5 @@
 import { MoveableObject } from './MoveableObject';
-import { SvgLine, SvgLineAdornment } from '../../utilities/svg-line';
+import { SvgLine, SvgLineOptions } from '../../utilities/svg-line';
 import { LinePoint } from '../../utilities/line-point';
 
 export class MoveableLineObject extends MoveableObject {
@@ -20,11 +20,15 @@ export class MoveableLineObject extends MoveableObject {
     y: 0,
   };
 
-  constructor(id?: string, htmlString?: string) {
+  constructor(
+    id?: string,
+    htmlString?: string,
+    options?: {
+      svgLineOptions?: SvgLineOptions;
+    },
+  ) {
     super(id, htmlString);
-    this.line = new SvgLine();
-    this.line.setStartAdornment(SvgLineAdornment.Triangle);
-    this.line.setEndAdornment(SvgLineAdornment.Arrow);
+    this.line = new SvgLine(options?.svgLineOptions);
     this.type = 'line';
   }
 

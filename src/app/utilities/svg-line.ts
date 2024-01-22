@@ -60,6 +60,23 @@ declare type SvgStrokeType =
       color: string;
     }[];
 
+export type SvgLineOptions = {
+  strokeWidth?: number;
+  length?: number;
+  stroke?: string;
+  startAdornment?: SvgLineAdornment;
+  endAdornment?: SvgLineAdornment;
+  type?: SvgLineType.Elbowed | SvgLineType.Straight;
+  cornerRounding?: number;
+  strokeDashArray?: StrokeDashArraySizes;
+  shadowDirection?: number;
+  shadowOpacity?: number;
+  shadowDistance?: number;
+  shadowBlur?: number;
+  strokeLineCap?: StrokeLineCap;
+  opacity?: number;
+};
+
 export class SvgLine {
   private strokeWidth: number;
   private length: number;
@@ -87,24 +104,7 @@ export class SvgLine {
   private shadowSvgId = uuidV4();
   private gradientId = uuidV4();
 
-  constructor(
-    options: {
-      strokeWidth?: number;
-      length?: number;
-      stroke?: string;
-      startAdornment?: SvgLineAdornment;
-      endAdornment?: SvgLineAdornment;
-      type?: SvgLineType.Elbowed | SvgLineType.Straight;
-      cornerRounding?: number;
-      strokeDashArray?: StrokeDashArraySizes;
-      shadowDirection?: number;
-      shadowOpacity?: number;
-      shadowDistance?: number;
-      shadowBlur?: number;
-      strokeLineCap?: StrokeLineCap;
-      opacity?: number;
-    } = {},
-  ) {
+  constructor(options: SvgLineOptions = {}) {
     this.stroke = options.stroke || '#000';
     this.strokeWidth = options.strokeWidth || 5;
     this.startAdornment = options.startAdornment || SvgLineAdornment.None;
