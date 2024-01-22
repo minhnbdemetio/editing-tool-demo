@@ -507,8 +507,14 @@ export const useUpdateActiveMoveableObjectTextStyleEffect = () => {
     el.style.webkitTextFillColor = 'unset';
     el.style.filter = 'unset';
     const outlineElement = document.getElementById(`outline-${activeText?.id}`);
+    const backgroundElement = document.getElementById(
+      `bg-effect-${activeText?.id}`,
+    );
     if (outlineElement) {
       el.removeChild(outlineElement);
+    }
+    if (backgroundElement) {
+      el.removeChild(backgroundElement);
     }
     const preColor = el.style.getPropertyValue('--prev-color');
     if (preColor) {
@@ -687,4 +693,16 @@ export const useSetBackgroundImage = () => {
     return true;
   };
   return setBackgroundImage;
+};
+
+export const useUpdateTextStretchFont = () => {
+  const activeText = useActiveTextObject();
+  const updateTextStretchFont = (stretchFont: number, callback?: Function) => {
+    if (!activeText) return false;
+    activeText.setTextScale({ scaleX: stretchFont / 100 });
+    activeText.render();
+    callback && callback();
+    return true;
+  };
+  return updateTextStretchFont;
 };
