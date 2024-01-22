@@ -44,14 +44,19 @@ export class MoveablePhoto extends MoveableObject {
   dragStartPoint?: { x: number; y: number };
   cropPosition?: PhotoPosition;
   gradientMask?: GradientMask;
+  isBackground: boolean = false;
+  backgroundStartPosition?: PhotoPosition;
+
   clone(
     options?: { htmlString: string; id: string } | undefined,
   ): MoveableObject {
     if (options) {
-      return new MoveablePhoto(options.id, options.htmlString);
+      return new MoveablePhoto(this.src, options.id, options.htmlString);
     }
     const clonedData = this.cloneData();
+
     return new MoveablePhoto(
+      this.src,
       clonedData.cloneObjectId,
       clonedData.clonedObjectHtml,
     );
@@ -824,5 +829,46 @@ export class MoveablePhoto extends MoveableObject {
         break;
     }
     this.gradientMask = gradientMask;
+  }
+
+  setBackground(activePageId: string) {
+    this.isBackground = !this.isBackground;
+    const activePageElement = document.getElementById(activePageId);
+    const element = this.getElement();
+    if (!activePageElement || !element) return;
+    const activePageStyles = window.getComputedStyle(activePageElement);
+    const scale = parseFloat(
+      /matrix\((\d+(\.\d+)?), (\d+(\.\d+)?), (\d+(\.\d+)?), (\d+(\.\d+)?), (\d+(\.\d+)?), (\d+(\.\d+)?)\)/.exec(
+        activePageStyles.transform,
+      )?.[1] ?? '1',
+    );
+    if (!this.isBackground && this.backgroundStartPosition) {
+      const { x, y, width, height } = this.backgroundStartPosition;
+      activePageElement.style.overflow = 'visible';
+      element.style.width = `${width / scale}px`;
+      element.style.height = `${height / scale}px`;
+      element.style.transform = `translate(${x / scale}px, ${y / scale}px)`;
+      this.backgroundStartPosition = undefined;
+      return;
+    }
+    const radition = this.width / this.height;
+    const { x, y, width, height } = element.getBoundingClientRect();
+    const {
+      x: pageX,
+      y: pageY,
+      height: pageHeight,
+    } = activePageElement.getBoundingClientRect();
+
+    element.style.width = `${(pageHeight * radition) / scale}px`;
+    element.style.height = `${pageHeight / scale}px`;
+    element.style.transform = `translate(0px, 0px)`;
+    activePageElement.style.overflow = 'hidden';
+
+    this.backgroundStartPosition = {
+      x: x - pageX,
+      y: y - pageY,
+      width,
+      height,
+    };
   }
 }

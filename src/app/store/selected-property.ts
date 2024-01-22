@@ -36,6 +36,7 @@ export enum SelectedProperty {
   PhotoFlip,
   PhotoMore,
   PhotoLayer,
+  PhotoBackground,
 }
 
 interface SelectedPropertyState {
