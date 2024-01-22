@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { withCurrentPage } from '../hocs/withCurrentPage';
 import { MoveableObjectElement } from '../atoms/moveables/MoveableObjectElement';
 import { CuttingZoneReminder } from '../molecules/CuttingZoneReminder';
@@ -17,12 +17,14 @@ export interface EditablePageProps {
 const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   const [pageObjects] = useCurrentPageObjects();
 
-  const { setActivePage } = useActivePage();
+  const { setActivePage, activePage } = useActivePage();
   const { workingWidthPixels, workingHeightPixels } = usePageSize();
 
   useEffect(() => {
     setActivePage(pageId);
   }, [pageId, setActivePage]);
+
+  const isActive = useMemo(() => activePage === pageId, [pageId, activePage]);
 
   const { scale, setScale } = useDesign();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -71,7 +73,7 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
               </div>
             ))}
 
-            <MovableLineController />
+            {isActive && <MovableLineController />}
           </div>
         </div>
       </div>

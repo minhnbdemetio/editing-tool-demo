@@ -1,5 +1,5 @@
 import { MOVEABLE_TARGET_CLASS } from '@/app/constants/moveable';
-import { DATA_LOCKED } from "@/app/lib/moveable/constant/object";
+import { DATA_LOCKED } from '@/app/lib/moveable/constant/object';
 import { BottomToolbar } from '@/app/molecules/ObjectToolbar/BottomToolbar';
 import { TopToolbar } from '@/app/molecules/ObjectToolbar/TopToolbar';
 import { SELECTO_ID, EDITOR_CONTAINER } from '@/app/organisms/Editor';
@@ -11,16 +11,10 @@ import Moveable from 'react-moveable';
 import Selecto from 'react-selecto';
 
 export const MoveableConfig: FC = () => {
-  const {
-    moveableTargets,
-    setMoveableTargets,
-    getAllObjects,
-    setMovable,
-  } = useDesign();
-  const {
-    activeMoveableObject,
-    setActiveMoveableObject,
-  } = useActiveMoveableObject();
+  const { moveableTargets, setMoveableTargets, getAllObjects, setMovable } =
+    useDesign();
+  const { activeMoveableObject, setActiveMoveableObject } =
+    useActiveMoveableObject();
   const moveableRef = useRef<Moveable | null>(null);
 
   // TODO: Set global moveable ref if needed
@@ -112,6 +106,7 @@ export const MoveableConfig: FC = () => {
             });
             activeMoveableObject.setDragging(false);
             activeMoveableObject.updateHeadControl();
+            activeMoveableObject.updatePointerControllerUI();
           }
           if (isPhoto(activeMoveableObject)) {
             const xChanged =
@@ -122,6 +117,11 @@ export const MoveableConfig: FC = () => {
           }
         }}
         onDrag={e => {
+          if (isLine(activeMoveableObject)) {
+            activeMoveableObject.updateHeadControl(true);
+            activeMoveableObject.updatePointerControllerUI(true);
+          }
+
           if (isElementLocked(e.target)) return;
           e.target.style.transform = e.transform;
         }}
