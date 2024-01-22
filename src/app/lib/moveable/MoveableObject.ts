@@ -15,11 +15,11 @@ export enum ObjectFlip {
   HORIZONTAL = 'horizontal',
 }
 export abstract class MoveableObject implements IMoveableObject {
-  id: string;
+  id: string = '';
   type?: ObjectType;
   htmlString?: string;
-  pageId: string | null;
-  isLocked: boolean;
+  pageId: string | null = null;
+  isLocked: boolean = false;
 
   x: number = 0;
   y: number = 0;
@@ -32,11 +32,8 @@ export abstract class MoveableObject implements IMoveableObject {
     y: boolean;
   } = { x: false, y: false };
 
-  constructor(id?: string, htmlString?: string) {
-    this.id = id || uuidv4();
-    this.htmlString = htmlString;
-    this.pageId = null;
-    this.isLocked = false;
+  constructor(properties?: Partial<IMoveableObjectProperties>) {
+    this.setup(properties);
   }
 
   setId(id: string) {
@@ -191,17 +188,17 @@ export abstract class MoveableObject implements IMoveableObject {
     };
   }
 
-  setup(properties: IMoveableObjectProperties) {
-    this.id = properties.id;
-    this.x = properties.x;
-    this.y = properties.y;
-    this.flipDirection = properties.flipDirection;
-    this.opacity = properties.opacity;
-    this.height = properties.height;
-    this.width = properties.width;
-    this.isLocked = properties.isLocked;
-    this.htmlString = properties.htmlString;
-    this.pageId = properties.pageId;
-    this.type = properties.type;
+  setup(properties?: Partial<IMoveableObjectProperties>) {
+    this.id = properties?.id || uuidv4();
+    this.x = properties?.x || 0;
+    this.y = properties?.y || 0;
+    this.flipDirection = properties?.flipDirection || { x: false, y: false };
+    this.opacity = properties?.opacity || 100;
+    this.height = properties?.height || 0;
+    this.width = properties?.width || 0;
+    this.isLocked = properties?.isLocked || false;
+    this.htmlString = properties?.htmlString;
+    this.pageId = properties?.pageId || '';
+    this.type = properties?.type;
   }
 }

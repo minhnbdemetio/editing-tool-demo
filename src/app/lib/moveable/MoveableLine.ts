@@ -27,7 +27,7 @@ export class MoveableLineObject extends MoveableObject {
       svgLineOptions?: SvgLineOptions;
     },
   ) {
-    super(id, htmlString);
+    super({ id, htmlString });
     this.line = new SvgLine(options?.svgLineOptions);
     this.type = 'line';
   }

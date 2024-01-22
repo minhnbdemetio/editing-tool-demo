@@ -59,7 +59,7 @@ export class MoveablePhoto extends MoveableObject {
   }
   src: string;
   constructor(src: string, id?: string, htmlString?: string) {
-    super(id, htmlString);
+    super({ id, htmlString });
     this.type = 'photo';
     this.src = src;
   }

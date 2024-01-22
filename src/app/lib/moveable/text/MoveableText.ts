@@ -66,7 +66,7 @@ export class MoveableTextObject extends MoveableObject {
   gradientStops?: GradientStop[];
   transformDirection: string;
   constructor(id?: string, htmlString?: string) {
-    super(id, htmlString);
+    super({ id, htmlString });
     this.type = 'text';
     this.variant = 'normal';
     this.styleEffect = 'none';

@@ -13,8 +13,9 @@ export class MoveableShape extends MoveableObject implements IMoveableShape {
   shapeText: undefined;
   shapeType: MoveableShapeType = MoveableShapeType.Square;
 
-  constructor(options: IMoveableShapeProperties) {
-    super(undefined, undefined);
+  constructor(options: Partial<IMoveableShapeProperties>) {
+    super(options);
+    this.setup(options);
   }
   getShape(shapeType: MoveableShapeType): string {
     switch (shapeType) {
@@ -50,14 +51,12 @@ export class MoveableShape extends MoveableObject implements IMoveableShape {
     };
   }
 
-  setup(properties: IMoveableShapeProperties): void {
-    super.setup(properties);
-
-    this.shapeColor = properties.shapeColor;
-    this.shapeCornerRounding = properties.shapeCornerRounding;
-    this.shapeOutline = properties.shapeOutline;
-    this.shapeShadow = properties.shapeShadow;
+  setup(properties: Partial<IMoveableShapeProperties>): void {
+    this.shapeColor = properties.shapeColor || '#000';
+    this.shapeCornerRounding = properties.shapeCornerRounding || 0;
+    this.shapeOutline = properties.shapeOutline || '#000';
+    this.shapeShadow = properties.shapeShadow || '#000';
     this.shapeText = properties.shapeText;
-    this.shapeType = properties.shapeType;
+    this.shapeType = properties.shapeType || MoveableShapeType.Square;
   }
 }
