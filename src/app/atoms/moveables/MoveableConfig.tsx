@@ -133,10 +133,15 @@ export const MoveableConfig: FC = () => {
           if (isElementLocked(e.target)) return;
 
           if (isPhoto(activeMoveableObject)) {
-            activeMoveableObject.setWidth(e.width);
-            activeMoveableObject.setHeight(e.height);
             activeMoveableObject.renderFilter();
           }
+
+          const matrix = new WebKitCSSMatrix(e.target.style.transform);
+
+          activeMoveableObject?.setWidth(e.width);
+          activeMoveableObject?.setHeight(e.height);
+          activeMoveableObject?.setX(matrix.m41);
+          activeMoveableObject?.setHeight(matrix.m42);
 
           e.target.style.width = `${e.width}px`;
           e.target.style.height = `${e.height}px`;

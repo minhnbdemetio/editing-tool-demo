@@ -3,6 +3,10 @@ import { findIdFromString } from '../../utilities/dom';
 import { MOVEABLE_TARGET_CLASS } from '../../constants/moveable';
 import { DATA_LOCKED } from './constant/object';
 import { EDITOR_CONTAINER } from '../../organisms/Editor';
+import {
+  IMoveableObject,
+  IMoveableObjectProperties,
+} from '@/app/interfaces/MoveableObject';
 
 export const MAX_FIND_ELEMENT_ATTEMPTS = 100;
 export type ObjectType = 'rectangle' | 'text' | 'line' | 'photo';
@@ -10,12 +14,18 @@ export enum ObjectFlip {
   VERTICAL = 'vertical',
   HORIZONTAL = 'horizontal',
 }
-export abstract class MoveableObject {
+export abstract class MoveableObject implements IMoveableObject {
   id: string;
   type?: ObjectType;
   htmlString?: string;
   pageId: string | null;
   isLocked: boolean;
+
+  x: number = 0;
+  y: number = 0;
+  public width: number = 0;
+  public height: number = 0;
+  public opacity: number = 100;
 
   public flipDirection: {
     x: boolean;
@@ -109,7 +119,14 @@ export abstract class MoveableObject {
     element?.setAttribute(DATA_LOCKED, toggleValue + '');
     this.setIsLocked(toggleValue);
   }
+
+  getOpacity() {
+    return this.opacity;
+  }
+
   setOpacity(opacity: number) {
+    this.opacity = opacity;
+
     const element = this.getElement();
     if (!element) return false;
     element.style.opacity = `${opacity / 100}`;
@@ -143,5 +160,48 @@ export abstract class MoveableObject {
     }
 
     this.applySvgTransform();
+  }
+
+  public setHeight(height: number) {
+    this.height = height;
+  }
+  public setWidth(width: number) {
+    this.width = width;
+  }
+  public setX(x: number) {
+    this.x = x;
+  }
+  public setY(y: number) {
+    this.y = y;
+  }
+
+  public toObject(): IMoveableObjectProperties {
+    return {
+      id: this.id,
+      type: this.type,
+      htmlString: this.htmlString,
+      pageId: this.pageId,
+      isLocked: this.isLocked,
+      x: this.x,
+      y: this.y,
+      width: this.width,
+      height: this.height,
+      opacity: this.opacity,
+      flipDirection: this.flipDirection,
+    };
+  }
+
+  setup(properties: IMoveableObjectProperties) {
+    this.id = properties.id;
+    this.x = properties.x;
+    this.y = properties.y;
+    this.flipDirection = properties.flipDirection;
+    this.opacity = properties.opacity;
+    this.height = properties.height;
+    this.width = properties.width;
+    this.isLocked = properties.isLocked;
+    this.htmlString = properties.htmlString;
+    this.pageId = properties.pageId;
+    this.type = properties.type;
   }
 }
