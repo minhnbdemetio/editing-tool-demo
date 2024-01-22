@@ -19,10 +19,6 @@ export type GradientMask = {
 };
 
 export class MoveablePhoto extends MoveableObject {
-  private x: number = 0;
-  private y: number = 0;
-  public width: number = 0;
-  public height: number = 0;
   public loaded: boolean = false;
 
   public contrast: number = 0;
@@ -63,16 +59,9 @@ export class MoveablePhoto extends MoveableObject {
   }
   src: string;
   constructor(src: string, id?: string, htmlString?: string) {
-    super(id, htmlString);
+    super({ id, htmlString });
     this.type = 'photo';
     this.src = src;
-  }
-
-  public setHeight(height: number) {
-    this.height = height;
-  }
-  public setWidth(width: number) {
-    this.width = width;
   }
 
   async setupMoveable() {

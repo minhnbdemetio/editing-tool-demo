@@ -15,7 +15,7 @@ export const useLoadMoveableObject = (object: MoveableObject) => {
       if (!container || objectLoaded) return;
       const defaultElement = object.getElement();
       if (object.htmlString) {
-        const loadedElement = object.createElementFromHtmlString();
+        const loadedElement = object.createElementFromHtml();
         if (loadedElement) {
           container.appendChild(loadedElement);
         }

@@ -112,7 +112,7 @@ export const useDeleteObject = () => {
       const filteredTargets = moveableTargets.filter(
         element => element.id !== shouldDeleteObject.id,
       );
-      shouldDeleteObject.exportHtmlString();
+      shouldDeleteObject.toHtmlString();
       setMoveableTargets(filteredTargets);
       setDesignObjects(shouldDeleteObject.pageId || '', filteredObjects);
 
@@ -164,7 +164,7 @@ export const useToggleMoveableBoldText = () => {
   return (callback?: Function) => {
     const element = activeText?.getElement();
     if (!element) return false;
-    const fontWeight = activeText?.getCssProperty('fontWeight');
+    const fontWeight = activeText?.getElementCss('fontWeight');
     const isBold = fontWeight === 'bold' || fontWeight === '700';
     if (isBold) {
       element.style.fontWeight = 'normal';
@@ -182,7 +182,7 @@ export const useToggleItalicText = () => {
   return (callback?: Function) => {
     const element = activeText?.getElement();
     if (!element) return false;
-    const isItalic = activeText?.getCssProperty('fontStyle') === 'italic';
+    const isItalic = activeText?.getElementCss('fontStyle') === 'italic';
     if (isItalic) {
       element.style.fontStyle = 'normal';
     } else {
@@ -199,7 +199,7 @@ export const useToggleUnderlineText = () => {
   const toggleUnderlineText = (callback?: Function) => {
     const element = activeText?.getElement();
     if (!element) return false;
-    const textDecoration = activeText?.getCssProperty('textDecoration') || '';
+    const textDecoration = activeText?.getElementCss('textDecoration') || '';
     const isUnderlined = textDecoration.includes('underline');
     if (isUnderlined) {
       element.style.textDecoration =
@@ -224,7 +224,7 @@ export const useToggleLineThroughText = () => {
   const toggleLineThroughText = (callback?: Function) => {
     const element = activeText?.getElement();
     if (!element) return false;
-    const textDecoration = activeText?.getCssProperty('textDecoration') || '';
+    const textDecoration = activeText?.getElementCss('textDecoration') || '';
     const hasLineThrough = textDecoration.includes('line-through');
     if (hasLineThrough) {
       element.style.textDecoration =
@@ -250,7 +250,7 @@ export const useToggleUppercaseText = () => {
     const element = activeText?.getElement();
     if (!element) return false;
     const isUppercase =
-      activeText?.getCssProperty('textTransform') === 'uppercase';
+      activeText?.getElementCss('textTransform') === 'uppercase';
 
     if (isUppercase) {
       element.style.textTransform = 'none';
@@ -687,4 +687,4 @@ export const useSetBackgroundImage = () => {
     return true;
   };
   return setBackgroundImage;
-}
+};

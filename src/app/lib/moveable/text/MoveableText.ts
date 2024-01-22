@@ -65,8 +65,8 @@ export class MoveableTextObject extends MoveableObject {
   curve?: number;
   gradientStops?: GradientStop[];
   transformDirection: string;
-  constructor(id?: string, htmlString?: string) {
-    super(id, htmlString);
+  constructor(options?: { id: string; htmlString: string }) {
+    super(options);
     this.type = 'text';
     this.variant = 'normal';
     this.styleEffect = 'none';
@@ -75,16 +75,19 @@ export class MoveableTextObject extends MoveableObject {
 
   clone(options?: { htmlString: string; id: string }): MoveableTextObject {
     if (options) {
-      return new MoveableTextObject(options.id, options.htmlString);
+      return new MoveableTextObject({
+        id: options.id,
+        htmlString: options.htmlString,
+      });
     }
     const clonedData = this.cloneData();
-    return new MoveableTextObject(
-      clonedData.cloneObjectId,
-      clonedData.clonedObjectHtml,
-    );
+    return new MoveableTextObject({
+      id: clonedData.cloneObjectId,
+      htmlString: clonedData.clonedObjectHtml,
+    });
   }
   getFontSize() {
-    const fontSizeString = this.getCssProperty('fontSize');
+    const fontSizeString = this.getElementCss('fontSize');
     const matches = fontSizeString?.match(/^(\d+(\.\d+)?)px/);
 
     if (matches && matches[1]) {
@@ -93,7 +96,7 @@ export class MoveableTextObject extends MoveableObject {
     return undefined;
   }
   getLetterSpacing() {
-    const letterSpacing = this.getCssProperty('letterSpacing');
+    const letterSpacing = this.getElementCss('letterSpacing');
     const matches = letterSpacing?.match(/^(\d+(\.\d+)?)px/);
 
     if (matches && matches[1]) {
@@ -102,7 +105,7 @@ export class MoveableTextObject extends MoveableObject {
     return undefined;
   }
   getLineHeight() {
-    const lineHeight = this.getCssProperty('lineHeight');
+    const lineHeight = this.getElementCss('lineHeight');
     const matches = lineHeight?.match(/^(\d+(\.\d+)?)px/);
 
     if (matches && matches[1]) {
@@ -121,7 +124,7 @@ export class MoveableTextObject extends MoveableObject {
     return this.textIntensity;
   }
   getOpacity() {
-    const opacity = this.getCssProperty('opacity');
+    const opacity = this.getElementCss('opacity');
     if (opacity) {
       return Math.round(parseFloat(opacity) * 100);
     }

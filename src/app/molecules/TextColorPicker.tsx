@@ -15,7 +15,7 @@ export const TextColorPicker: FC<TextColorPickerProps> = ({
   const changeColorCommand = useUpdateTextColor();
   const activeText = useActiveTextObject();
   const [color, setColor] = useState<string | undefined>(
-    activeText?.getCssProperty('color') || undefined,
+    activeText?.getElementCss('color') || undefined,
   );
 
   const handleChangeColor = (color: ColorResult) => {
