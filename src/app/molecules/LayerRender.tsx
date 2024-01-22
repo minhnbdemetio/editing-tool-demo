@@ -24,7 +24,7 @@ export const LayerRender: FC<LayerRenderProps> = ({
     if (element && containerRef.current) {
       const transformString = parseTransformString(element.style.transform);
       pageObject.htmlString = element.outerHTML;
-      const loadedElement = pageObject.createElementFromHtmlString();
+      const loadedElement = pageObject.createElementFromHtml();
       if (loadedElement instanceof HTMLElement) {
         loadedElement.style.transform = `rotate(${
           transformString.rotate

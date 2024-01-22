@@ -2,59 +2,127 @@ import { v4 as uuidv4 } from 'uuid';
 import { findIdFromString } from '../../utilities/dom';
 import { MOVEABLE_TARGET_CLASS } from '../../constants/moveable';
 import { DATA_LOCKED } from './constant/object';
-import { EDITOR_CONTAINER } from '../../organisms/Editor';
-import {
-  IMoveableObject,
-  IMoveableObjectProperties,
-} from '@/app/interfaces/MoveableObject';
+import { Importable } from './Importable';
+import { ClipboardOperation } from './ClipboardOperation';
+import { Exportable } from './Exportable';
+import { Effect } from './effects/Effect';
+import { GradientStop } from '@/app/utilities/color.type';
+import { Editable, FlipDirection } from './editable/Editable';
 
 export const MAX_FIND_ELEMENT_ATTEMPTS = 100;
-export type ObjectType = 'rectangle' | 'text' | 'line' | 'photo';
-export enum ObjectFlip {
-  VERTICAL = 'vertical',
-  HORIZONTAL = 'horizontal',
-}
-export abstract class MoveableObject implements IMoveableObject {
-  id: string = '';
+export type ObjectType = 'rectangle' | 'text' | 'line' | 'photo' | 'shape';
+
+export abstract class MoveableObject
+  implements Exportable, Importable, ClipboardOperation, Editable
+{
+  id: string = uuidv4();
   type?: ObjectType;
   htmlString?: string;
   pageId: string | null = null;
-  isLocked: boolean = false;
+  isLocked = false;
+  x = 0;
+  y = 0;
+  width = 0;
+  height = 0;
+  opacity = 100;
+  flipDirection = { x: false, y: false };
+  effect: Effect | undefined;
+  color: string | undefined;
+  gradient: GradientStop[] | undefined;
 
-  x: number = 0;
-  y: number = 0;
-  public width: number = 0;
-  public height: number = 0;
-  public opacity: number = 100;
-
-  public flipDirection: {
-    x: boolean;
-    y: boolean;
-  } = { x: false, y: false };
-
-  constructor(properties?: Partial<IMoveableObjectProperties>) {
-    this.setup(properties);
+  constructor(options?: { id?: string; htmlString?: string }) {
+    this.id = options?.id || uuidv4();
+    this.htmlString = options?.htmlString;
   }
 
+  createElementFromJSON(jsonString: string) {
+    return;
+  }
   setId(id: string) {
     this.id = id;
   }
-  setHtmlString(htmlString: string) {
+  getId() {
+    return this.id;
+  }
+  setHtmlString(htmlString?: string) {
     this.htmlString = htmlString;
   }
-  setType(type: ObjectType) {
+  getHtmlString() {
+    return this.htmlString;
+  }
+  setType(type?: ObjectType) {
     this.type = type;
+  }
+  getType() {
+    return this.type;
   }
   setPageId(pageId: string | null) {
     this.pageId = pageId;
   }
+  getPageId() {
+    return this.pageId;
+  }
   setIsLocked(isLocked: boolean) {
     this.isLocked = isLocked;
+  }
+  getIsLocked() {
+    return this.isLocked;
+  }
+  getOpacity() {
+    return this.opacity;
+  }
+  setOpacity(opacity: number) {
+    const element = this.getElement();
+    if (!element) return false;
+    element.style.opacity = `${opacity / 100}`;
+    this.opacity = opacity;
+  }
+  setHeight(height: number) {
+    this.height = height;
+  }
+  getHeight() {
+    return this.height;
+  }
+  setWidth(width: number) {
+    this.width = width;
+  }
+  getWidth() {
+    return this.width;
+  }
+  setX(x: number) {
+    this.x = x;
+  }
+  getX() {
+    return this.x;
+  }
+  setY(y: number) {
+    this.y = y;
+  }
+  getY() {
+    return this.y;
+  }
+  setEffect(effect: Effect | undefined) {
+    this.effect = effect;
+  }
+  getEffect() {
+    return this.effect;
+  }
+  setColor(color: string | undefined) {
+    this.color = color;
+  }
+  getColor() {
+    return this.color;
+  }
+  setGradient(gradientStops: GradientStop[] | undefined) {
+    this.gradient = gradientStops;
+  }
+  getGradient() {
+    return this.gradient;
   }
   copy() {}
   abstract clone(options?: { htmlString: string; id: string }): MoveableObject;
   cloneData() {
-    const outerHtml = this.exportHtmlString();
+    const outerHtml = this.toHtmlString();
     const cloneObjectId = uuidv4();
     const clonedObjectHtml = outerHtml.replaceAll(this.id, cloneObjectId);
     return { cloneObjectId, clonedObjectHtml };
@@ -75,7 +143,7 @@ export abstract class MoveableObject implements IMoveableObject {
 
     return element;
   }
-  createElementFromHtmlString() {
+  createElementFromHtml() {
     if (!this.htmlString) return null;
     const elementIdFromString = findIdFromString(this.htmlString);
     if (elementIdFromString) {
@@ -87,12 +155,13 @@ export abstract class MoveableObject implements IMoveableObject {
 
     return parsedDocument.body.firstChild;
   }
-  exportHtmlString() {
+  toHtmlString() {
     const element = this.getElement();
     if (element) {
-      this.htmlString = element.outerHTML;
+      this.setHtmlString(element.outerHTML);
       return element.outerHTML;
     }
+    this.setHtmlString();
     return '';
   }
   async setupMoveable() {
@@ -101,32 +170,17 @@ export abstract class MoveableObject implements IMoveableObject {
       element?.classList.add(MOVEABLE_TARGET_CLASS);
     }
   }
-  getCssProperty<T extends keyof CSSStyleDeclaration>(property: T) {
+  getElementCss<T extends keyof CSSStyleDeclaration>(property: T) {
     const element = this.getElement();
     if (!element) return null;
     const cssProperties = window.getComputedStyle(element);
     return cssProperties[property];
-  }
-  getContainer() {
-    return document.getElementById(EDITOR_CONTAINER);
   }
   toggleLock() {
     const toggleValue = !this.isLocked;
     const element = this.getElement();
     element?.setAttribute(DATA_LOCKED, toggleValue + '');
     this.setIsLocked(toggleValue);
-  }
-
-  getOpacity() {
-    return this.opacity;
-  }
-
-  setOpacity(opacity: number) {
-    this.opacity = opacity;
-
-    const element = this.getElement();
-    if (!element) return false;
-    element.style.opacity = `${opacity / 100}`;
   }
 
   public getFlipScaleRatio(): { x: number; y: number } {
@@ -148,31 +202,18 @@ export abstract class MoveableObject implements IMoveableObject {
     }
   }
 
-  flip(direction: ObjectFlip) {
-    if (direction === ObjectFlip.HORIZONTAL) {
+  flip(direction: FlipDirection) {
+    if (direction === FlipDirection.Horizontal) {
       this.flipDirection.x = !this.flipDirection.x;
     }
-    if (direction === ObjectFlip.VERTICAL) {
+    if (direction === FlipDirection.Vertical) {
       this.flipDirection.y = !this.flipDirection.y;
     }
 
     this.applySvgTransform();
   }
 
-  public setHeight(height: number) {
-    this.height = height;
-  }
-  public setWidth(width: number) {
-    this.width = width;
-  }
-  public setX(x: number) {
-    this.x = x;
-  }
-  public setY(y: number) {
-    this.y = y;
-  }
-
-  public toObject(): IMoveableObjectProperties {
+  toJSON() {
     return {
       id: this.id,
       type: this.type,
@@ -186,19 +227,5 @@ export abstract class MoveableObject implements IMoveableObject {
       opacity: this.opacity,
       flipDirection: this.flipDirection,
     };
-  }
-
-  setup(properties?: Partial<IMoveableObjectProperties>) {
-    this.id = properties?.id || uuidv4();
-    this.x = properties?.x || 0;
-    this.y = properties?.y || 0;
-    this.flipDirection = properties?.flipDirection || { x: false, y: false };
-    this.opacity = properties?.opacity || 100;
-    this.height = properties?.height || 0;
-    this.width = properties?.width || 0;
-    this.isLocked = properties?.isLocked || false;
-    this.htmlString = properties?.htmlString;
-    this.pageId = properties?.pageId || '';
-    this.type = properties?.type;
   }
 }

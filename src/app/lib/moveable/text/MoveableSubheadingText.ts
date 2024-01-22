@@ -1,8 +1,8 @@
 import { MoveableTextObject } from './MoveableText';
 
 export class MoveableSubheadingTextObject extends MoveableTextObject {
-  constructor(id?: string, htmlString?: string) {
-    super(id, htmlString);
+  constructor(options?: { id: string; htmlString: string }) {
+    super(options);
     this.variant = 'subheading';
   }
   clone(options?: {
@@ -10,12 +10,15 @@ export class MoveableSubheadingTextObject extends MoveableTextObject {
     id: string;
   }): MoveableSubheadingTextObject {
     if (options) {
-      return new MoveableSubheadingTextObject(options.id, options.htmlString);
+      return new MoveableSubheadingTextObject({
+        id: options.id,
+        htmlString: options.htmlString,
+      });
     }
     const clonedData = this.cloneData();
-    return new MoveableSubheadingTextObject(
-      clonedData.cloneObjectId,
-      clonedData.clonedObjectHtml,
-    );
+    return new MoveableSubheadingTextObject({
+      id: clonedData.cloneObjectId,
+      htmlString: clonedData.clonedObjectHtml,
+    });
   }
 }
