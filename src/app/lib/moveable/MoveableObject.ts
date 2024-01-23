@@ -228,4 +228,5 @@ export abstract class MoveableObject
       flipDirection: this.flipDirection,
     };
   }
+  render() {}
 }

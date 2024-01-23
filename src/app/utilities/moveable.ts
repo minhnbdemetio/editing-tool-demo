@@ -6,6 +6,7 @@ import { MoveableObject } from '../lib/moveable/MoveableObject';
 import { MoveablePhoto } from '../lib/moveable/MoveablePhoto';
 import { MoveableSubheadingTextObject } from '../lib/moveable/text/MoveableSubheadingText';
 import { MoveableTextObject } from '../lib/moveable/text/MoveableText';
+import { MoveableShape } from '../lib/moveable/shape/MoveableShape';
 
 export const isText = (
   moveableObject: MoveableObject | null,
@@ -44,3 +45,6 @@ export const isElementLocked = (
 export const isPhoto = (
   moveableObject: MoveableObject | null,
 ): moveableObject is MoveablePhoto => moveableObject?.type === 'photo';
+export const isShape = (
+  moveableObject: MoveableObject | null,
+): moveableObject is MoveableShape => moveableObject?.type === 'shape';

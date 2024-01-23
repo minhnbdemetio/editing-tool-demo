@@ -1,5 +1,7 @@
 import { MoveableObject, ObjectType } from '../MoveableObject';
 import { EditableShape, MoveableShapeType } from '../editable/EditableShape';
+import { Square } from '../svg/Square';
+import { SvgShape } from '../svg/SvgShape';
 
 export abstract class MoveableShape
   extends MoveableObject
@@ -12,6 +14,9 @@ export abstract class MoveableShape
   shapeText: undefined;
   shapeType: MoveableShapeType = MoveableShapeType.Square;
 
+  width: number = 100;
+  height: number = 100;
+
   constructor(options?: {
     id: string;
     type?: ObjectType;
@@ -21,7 +26,7 @@ export abstract class MoveableShape
     super(options);
     this.type = 'shape';
   }
-  abstract getShape(): string;
+  abstract getShape(): SvgShape;
 
   toJSON() {
     return {
@@ -33,6 +38,29 @@ export abstract class MoveableShape
       shapeText: this.shapeText,
       shapeType: this.shapeType,
     };
+  }
+
+  toSVG() {
+    const shape = this.getShape();
+
+    return `
+    <svg  fill="${this.shapeColor}" width="${this.width}" height="${
+      this.height
+    }">
+      <g>
+        ${shape.getPath()}
+      </g>
+    </svg>
+    `;
+  }
+
+  render() {
+    const svg = this.toSVG();
+    const element = this.getElement();
+
+    if (element) {
+      element.innerHTML = svg;
+    }
   }
 
   // setup(properties: Partial<IMoveableShapeProperties>): void {
