@@ -12,7 +12,7 @@ const THICKNESS_DEFAULT = 50;
 export const HollowEffect: FC<HollowEffectProps> = () => {
   const activeText = useActiveTextObject();
   const [thickness, setThickness] = useState<number | undefined>(
-    activeText?.newStyleEffect?.getOptions()?.thickness || THICKNESS_DEFAULT,
+    activeText?.styleEffect?.getOptions()?.thickness || THICKNESS_DEFAULT,
   );
   const handleUpdateHollowEffect = useUpdateTextStyleEffectOptions();
   return (

@@ -3,10 +3,7 @@ import {
   MoveableTextShapeEffect,
   MoveableTextStyleEffect,
 } from '@/app/lib/moveable/text/MoveableText';
-import {
-  useUpdateActiveMoveableObjectTextStyleEffectCommand,
-  useUpdateActiveTextShapeEffectCommand,
-} from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
+import { useUpdateActiveTextShapeEffectCommand } from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
 import {
   useActiveTextObject,
   useUpdateTextStyleEffect,
@@ -24,77 +21,94 @@ import { GlitchEffect } from './GlitchEffect';
 import { NeonEffect } from './NeonEffect';
 import { BackGroundEffect } from './BackgroundEffect';
 import { CurveEffect } from './CurveEffect';
-import { TextStyleEffect } from '@/app/lib/moveable/effects/text/StyleEffect';
+import {
+  StyleEffect,
+  TextBackgroundEffect,
+  TextEchoEffect,
+  TextGlitchEffect,
+  TextHollowEffect,
+  TextLiftEffect,
+  TextNeonEffect,
+  TextOutlineEffect,
+  TextShadowEffect,
+  TextSpliceEffect,
+  TextStyleEffect,
+} from '@/app/lib/moveable/effects/text/StyleEffect';
+import { TextEffect } from '@/app/lib/moveable/effects/text/TextEffect';
 
 const NEW_TEXT_EFFECTS_STYLES: {
   id: TextStyleEffect;
+  createEffect: () => TextEffect;
   name: string;
   imgUrl: string;
   effectComponent?: FC;
 }[] = [
   {
     id: TextStyleEffect.NONE,
+    createEffect: () => new StyleEffect(),
     name: 'None',
     imgUrl: '/text-effects/styles/none.webp',
   },
   {
     id: TextStyleEffect.SHADOW,
+    createEffect: () => new TextShadowEffect(),
     name: 'Shadow',
     imgUrl: '/text-effects/styles/shadow.webp',
     effectComponent: ShadowEffect,
   },
   {
     id: TextStyleEffect.LIFT,
+    createEffect: () => new TextLiftEffect(),
     name: 'Lift',
     imgUrl: '/text-effects/styles/lift.webp',
     effectComponent: LiftEffect,
   },
   {
     id: TextStyleEffect.HOLLOW,
+    createEffect: () => new TextHollowEffect(),
     name: 'Hollow',
     imgUrl: '/text-effects/styles/hollow.webp',
     effectComponent: HollowEffect,
   },
-];
-
-const TEXT_EFFECTS_STYLES: {
-  id: MoveableTextStyleEffect;
-  name: string;
-  imgUrl: string;
-  effectComponent?: FC;
-}[] = [
   {
-    id: 'emboss',
+    id: TextStyleEffect.SPLICE,
+    createEffect: () => new TextSpliceEffect(),
     name: 'Splice',
     imgUrl: '/text-effects/styles/splice.webp',
     effectComponent: SpliceEffect,
   },
   {
-    id: 'outline',
+    id: TextStyleEffect.OUTLINE,
+    createEffect: () => new TextOutlineEffect(),
     name: 'Outline',
     imgUrl: '/text-effects/styles/outline.webp',
     effectComponent: OutlineEffect,
   },
+
   {
-    id: 'echo',
+    id: TextStyleEffect.ECHO,
+    createEffect: () => new TextEchoEffect(),
     name: 'Echo',
     imgUrl: '/text-effects/styles/echo.webp',
     effectComponent: EchoEffect,
   },
   {
-    id: 'glitch',
+    id: TextStyleEffect.GLITCH,
+    createEffect: () => new TextGlitchEffect(),
     name: 'Glitch',
     imgUrl: '/text-effects/styles/glitch.webp',
     effectComponent: GlitchEffect,
   },
   {
-    id: 'neon',
+    id: TextStyleEffect.NEON,
+    createEffect: () => new TextNeonEffect(),
     name: 'Neon',
     imgUrl: '/text-effects/styles/neon.webp',
     effectComponent: NeonEffect,
   },
   {
-    id: 'background',
+    id: TextStyleEffect.BACKGROUND,
+    createEffect: () => new TextBackgroundEffect(),
     name: 'Background',
     imgUrl: '/text-effects/styles/background.webp',
     effectComponent: BackGroundEffect,
@@ -124,24 +138,13 @@ interface SpacingPropertyProps {}
 
 export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
   const activeText = useActiveTextObject();
-  const [effectStyle, setEffectStyle] = useState<MoveableTextStyleEffect>(
-    activeText?.getTextStyleEffect() || 'none',
-  );
   const [newEffectStyle, setNewEffectStyle] = useState(
-    activeText?.newStyleEffect?.name || 'none',
+    activeText?.styleEffect?.varient || 'none',
   );
 
   const [effectShape, setEffectShape] = useState<MoveableTextShapeEffect>(
     activeText?.shapeEffect || 'none',
   );
-
-  const renderEffectComponent = () => {
-    const EffectOptions = TEXT_EFFECTS_STYLES.find(
-      style => style.id === effectStyle,
-    )?.effectComponent;
-    if (!EffectOptions) return <></>;
-    return <EffectOptions />;
-  };
 
   const renderNewEffectComponent = () => {
     const EffectOptions = NEW_TEXT_EFFECTS_STYLES.find(
@@ -158,8 +161,6 @@ export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
     if (!EffectOptions) return <></>;
     return <EffectOptions />;
   };
-
-  const updateActiveMoveableObjectTextStyleEffect = useUpdateActiveMoveableObjectTextStyleEffectCommand();
   const updateActiveTextShapeEffect = useUpdateActiveTextShapeEffectCommand();
   const updateNewTextStyleEffect = useUpdateTextStyleEffect();
   return (
@@ -167,14 +168,14 @@ export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
       <div className="text-center mb-3">
         <span>Effects</span>
       </div>
-      <p className="mb-[12px]">Refactor style</p>
+      <p className="mb-[12px]">Style</p>
       <div className="flex gap-2 items-center flex-wrap">
         {NEW_TEXT_EFFECTS_STYLES.map(style => (
           <div className="effect-styles" key={style.id}>
             <div
               className="group flex flex-col flex-1 gap-1 items-center w-[60px] cursor-pointer"
               onClick={e => {
-                updateNewTextStyleEffect(style.id, () =>
+                updateNewTextStyleEffect(style.createEffect(), () =>
                   setNewEffectStyle(style.id),
                 );
               }}
@@ -199,39 +200,6 @@ export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
       </div>
       <div className="effect-options font-light text-[14px]">
         {renderNewEffectComponent()}
-      </div>
-      <p className="mb-[12px]">Style</p>
-      <div className="flex gap-2 items-center flex-wrap">
-        {TEXT_EFFECTS_STYLES.map(style => (
-          <div className="effect-styles" key={style.id}>
-            <div
-              className="group flex flex-col flex-1 gap-1 items-center w-[60px] cursor-pointer"
-              onClick={e => {
-                updateActiveMoveableObjectTextStyleEffect(style.id, () =>
-                  setEffectStyle(style.id),
-                );
-              }}
-            >
-              <Image
-                className={clsx('border', {
-                  'border-gray-300': effectStyle !== style.id,
-                  'border-blue-500': effectStyle === style.id,
-                })}
-                width={60}
-                alt={style.name}
-                src={style.imgUrl}
-                radius="sm"
-                style={{ maxWidth: '60px' }}
-              />
-              <p className="text-center font-light text-[10px]">
-                <span>{style.name}</span>
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="effect-options font-light text-[14px]">
-        {renderEffectComponent()}
       </div>
       <p className="mb-[12px]">Shape</p>
       <div className="flex gap-2 items-center flex-wrap">

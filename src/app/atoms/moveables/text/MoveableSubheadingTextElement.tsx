@@ -18,11 +18,6 @@ export const MoveableSubheadingTextElement: FC<MoveableTextProps> = ({
     const textContainer = textContainerRef.current;
     if (!textContainer) return;
 
-    (textContainer as HTMLInputElement).addEventListener(
-      'input',
-      object.onUpdateBackgroundEffect.bind(object),
-    );
-
     // Create a new ResizeObserver instance
     let resizeObserver = new ResizeObserver(entries => {
       for (let entry of entries) {
@@ -37,12 +32,6 @@ export const MoveableSubheadingTextElement: FC<MoveableTextProps> = ({
     return () => {
       if (resizeObserver && textContainer) {
         resizeObserver.unobserve(textContainer);
-      }
-      if (textContainer) {
-        (textContainer as HTMLInputElement).removeEventListener(
-          'input',
-          object.onUpdateBackgroundEffect.bind(object),
-        );
       }
     };
   }, []);

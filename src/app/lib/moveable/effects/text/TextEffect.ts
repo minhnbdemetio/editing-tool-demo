@@ -8,14 +8,15 @@ export type TextEffectOptions = {
   blur?: number;
   transparency?: number;
   thickness?: number;
+  spread?: number;
+  roundness?: number;
 };
 
 export abstract class TextEffect extends Effect {
-  name: string;
+  varient: string = 'none';
   options: TextEffectOptions = {};
-  constructor(name: string, options: TextEffectOptions = {}) {
+  constructor(options: TextEffectOptions = {}) {
     super();
-    this.name = name;
     this.options = options;
   }
 

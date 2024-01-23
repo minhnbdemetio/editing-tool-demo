@@ -1,9 +1,13 @@
 import { MoveableTextShadow } from '@/app/lib/moveable/text/MoveableText';
-import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
+import {
+  useActiveTextObject,
+  useUpdateTextStyleEffectOptions,
+} from '@/app/hooks/useActiveMoveableObject';
 import { Button, Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 import { ColorResult } from 'react-color';
 import { EffectPickColor } from './EffectPickColor';
+import { TEXT_ECHO_DEFAULT_VALUE } from '@/app/lib/moveable/constant/text';
 
 interface EchoEffectPropertyProps {}
 type TextShadowOptions = 'offset' | 'direction' | 'color';
@@ -41,20 +45,17 @@ const DEFAULT_VALUE = {
 };
 export const EchoEffect: FC<EchoEffectPropertyProps> = () => {
   const activeText = useActiveTextObject();
-  const [echo, setEcho] = useState<MoveableTextShadow>(
-    activeText?.echoEffect || DEFAULT_VALUE,
+  const [echo, setEcho] = useState(
+    activeText?.styleEffect?.getOptions() || TEXT_ECHO_DEFAULT_VALUE,
   );
   const [colorPickerOpen, setOpenColorPicker] = useState<boolean>(false);
-  useEffect(() => {
-    activeText?.setEchoEffect(activeText?.echoEffect || DEFAULT_VALUE);
-  }, []);
+  const handleUpdateEchoEffect = useUpdateTextStyleEffectOptions();
   const handleChangeColor = (color: ColorResult) => {
     const value = {
       ...echo,
       color: color.hex,
     };
-    setEcho(value);
-    activeText?.setEchoEffect(value);
+    handleUpdateEchoEffect(value, () => setEcho(value));
   };
   return (
     <>
@@ -114,8 +115,7 @@ export const EchoEffect: FC<EchoEffectPropertyProps> = () => {
                             ...echo,
                             [option.target]: v,
                           };
-                          setEcho(value);
-                          activeText?.setEchoEffect(value);
+                          handleUpdateEchoEffect(value, () => setEcho(value));
                         }}
                       />
                     </Tooltip>
@@ -130,8 +130,7 @@ export const EchoEffect: FC<EchoEffectPropertyProps> = () => {
                       ...echo,
                       [option.target]: value,
                     };
-                    setEcho(val);
-                    activeText?.setEchoEffect(val);
+                    handleUpdateEchoEffect(val, () => setEcho(val));
                   }
                 }}
               />

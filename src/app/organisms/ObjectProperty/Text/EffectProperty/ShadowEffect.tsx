@@ -69,7 +69,7 @@ const SHADOW_OPTIONS = [
 export const ShadowEffect: FC<ShadowPropertyProps> = () => {
   const activeText = useActiveTextObject();
   const [shadowEffect, setShadowEffect] = useState<TextEffectOptions>(
-    activeText?.newStyleEffect?.getOptions() || TEXT_SHADOW_DEFAULT_VALUE,
+    activeText?.styleEffect?.getOptions() || TEXT_SHADOW_DEFAULT_VALUE,
   );
   const [colorPickerOpen, setOpenColorPicker] = useState<boolean>(false);
 

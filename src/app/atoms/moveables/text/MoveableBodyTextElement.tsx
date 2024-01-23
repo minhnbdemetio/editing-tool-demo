@@ -18,10 +18,6 @@ export const MoveableBodyTextElement: FC<MoveableTextProps> = ({
     const textContainer = textContainerRef.current;
     if (!textContainer) return;
 
-    (textContainer as HTMLInputElement).addEventListener(
-      'input',
-      object.onUpdateBackgroundEffect.bind(object),
-    );
 
     // Create a new ResizeObserver instance
     let resizeObserver = new ResizeObserver(entries => {

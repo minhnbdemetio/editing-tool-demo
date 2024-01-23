@@ -11,7 +11,7 @@ interface LiftPropertyProps {}
 export const LiftEffect: FC<LiftPropertyProps> = () => {
   const activeText = useActiveTextObject();
   const [insensity, setInsensity] = useState<number | undefined>(
-    activeText?.newStyleEffect?.getOptions()?.offset ||
+    activeText?.styleEffect?.getOptions()?.offset ||
       TEXT_LIFT_DEFAULT_VALUE.offset,
   );
   const handleUpdateLiftEffect = useUpdateTextStyleEffectOptions();

@@ -2,19 +2,10 @@ import { MAX_FIND_ELEMENT_ATTEMPTS, MoveableObject } from '../MoveableObject';
 import { GradientStop } from '../../../utilities/color.type';
 
 export type MoveableTextVariant = 'normal' | 'heading' | 'subheading' | 'body';
-import { hexToRgba } from '../../../utilities/color';
 import { DEFAULT_TEXT_SCALE, TEXT_INNER_ELEMENTS } from '../constant/text';
-import { Editable } from '../editable/Editable';
 import { EditableText } from '../editable/EditableText';
-import { Effect } from '../effects/Effect';
-import {
-  StyleEffect,
-  TextHollowEffect,
-  TextLiftEffect,
-  TextShadowEffect,
-  TextStyleEffect,
-} from '../effects/text/StyleEffect';
-import { TextEffectOptions } from '../effects/text/TextEffect';
+import { StyleEffect } from '../effects/text/StyleEffect';
+import { TextEffect, TextEffectOptions } from '../effects/text/TextEffect';
 
 export type MoveableTextShadow = {
   color?: string;
@@ -62,30 +53,19 @@ export type MoveableTextShapeEffect = 'none' | 'curve';
 
 export class MoveableTextObject extends MoveableObject implements EditableText {
   variant?: MoveableTextVariant;
-  styleEffect?: MoveableTextStyleEffect;
   shapeEffect?: MoveableTextShapeEffect;
-  textShadow?: MoveableTextShadow;
-  textIntensity?: number;
-  thicknessHollowEffect?: number;
-  spliceEffect?: TextSpliceEffectOption;
-  outlineEffect?: TextOutlineEffectOption;
-  echoEffect?: MoveableTextShadow;
-  glitchEffect?: MoveableTextShadow;
-  neonEffect?: MoveableTextShadow;
-  backgroundEffect?: TextBackgroundEffectOption;
-  curve?: number;
   gradientStops?: GradientStop[];
   transformDirection: string;
+  curve?: number;
   scaleY: number = DEFAULT_TEXT_SCALE;
   scaleX: number = DEFAULT_TEXT_SCALE;
-  newStyleEffect: StyleEffect;
+  styleEffect: StyleEffect;
   constructor(options?: { id: string; htmlString: string }) {
     super(options);
     this.type = 'text';
     this.variant = 'normal';
-    this.styleEffect = 'none';
     this.transformDirection = 'bottom';
-    this.newStyleEffect = new StyleEffect(TextStyleEffect.NONE);
+    this.styleEffect = new StyleEffect();
   }
 
   clone(options?: { htmlString: string; id: string }): MoveableTextObject {
@@ -128,15 +108,8 @@ export class MoveableTextObject extends MoveableObject implements EditableText {
     }
     return undefined;
   }
-  getTextShadow() {
-    if (this.textShadow) return this.textShadow;
-    return undefined;
-  }
   getTextStyleEffect() {
     return this.styleEffect;
-  }
-  getTextIntensity() {
-    return this.textIntensity;
   }
   getOpacity() {
     const opacity = this.getElementCss('opacity');
@@ -157,7 +130,6 @@ export class MoveableTextObject extends MoveableObject implements EditableText {
     const element = this.getElement();
     if (!element) return false;
     element.style.fontSize = fontSize + 'px';
-    this.onUpdateBackgroundEffect();
   }
   setTextColor(color: string) {
     const element = this.getElement();
@@ -294,93 +266,17 @@ export class MoveableTextObject extends MoveableObject implements EditableText {
     const element = this.getElement();
     if (!element) return false;
     element.style.letterSpacing = letterSpacing + 'px';
-    this.onUpdateBackgroundEffect();
   }
   setLineHeight(lineHeight: number | null) {
     const element = this.getElement();
     if (!element) return false;
     element.style.lineHeight = lineHeight + 'px';
-    this.onUpdateBackgroundEffect();
   }
-  setTextShadow(textShadow?: MoveableTextShadow) {
-    if (!textShadow) {
-      this.textShadow = undefined;
-      return true;
-    }
-    const element = this.getElement();
-    if (!element) return false;
-    const styles = window.getComputedStyle(element);
-    const matches = styles.fontSize?.match(/^(\d+(\.\d+)?)px/);
-    const MAX_VALUE = parseFloat(matches?.[1] ?? '0') * 0.166;
-
-    const {
-      color = styles.color,
-      offset = 50,
-      direction = 45,
-      blur = 0,
-      transparency = 40,
-    } = textShadow;
-    const offsetVal = (offset / 100) * MAX_VALUE;
-    const hShadow = (
-      -offsetVal * Math.sin((direction * Math.PI) / 180)
-    ).toFixed(4);
-    const vShadow = (offsetVal * Math.cos((direction * Math.PI) / 180)).toFixed(
-      4,
-    );
-    const shadow = `${hShadow}px ${vShadow}px ${
-      (blur / 100) * MAX_VALUE
-    }px ${hexToRgba(color, transparency / 100)}`;
-    element.style.textShadow = shadow;
-    this.textShadow = textShadow;
-  }
-  setStyleEffect(styleEffect: MoveableTextStyleEffect) {
+  setStyleEffect(styleEffect: TextEffect) {
     this.styleEffect = styleEffect;
   }
-  setNewStyleEffect(styleEffect: TextStyleEffect) {
-    switch (styleEffect) {
-      case TextStyleEffect.SHADOW: {
-        this.newStyleEffect = new TextShadowEffect();
-        break;
-      }
-      case TextStyleEffect.LIFT: {
-        this.newStyleEffect = new TextLiftEffect();
-        break;
-      }
-      case TextStyleEffect.HOLLOW: {
-        this.newStyleEffect = new TextHollowEffect();
-        break;
-      }
-      default: {
-        this.newStyleEffect = new StyleEffect(TextStyleEffect.NONE);
-        break;
-      }
-    }
-  }
-  updateNewStyleEffectOption(option: TextEffectOptions) {
-    this.newStyleEffect.setOption(option);
-  }
-  setEffectLift(intensity?: number, color: string = '#000') {
-    if (!intensity) {
-      this.textIntensity = undefined;
-      return true;
-    }
-    const element = this.getElement();
-    if (!element) return false;
-    this.textIntensity = intensity;
-    const transparency = ((60 - 5) / 100) * intensity + 5;
-    const blur = ((34.5 - 4.6) / 100) * intensity + 4.6;
-    const shadow = `${hexToRgba(
-      color,
-      transparency / 100,
-    )} 0px 4.6px ${blur}px `;
-    element.style.textShadow = shadow;
-  }
-
-  setThicknessHollowEffect(thickness: number) {
-    const element = this.getElement();
-    if (!element) return false;
-    this.thicknessHollowEffect = thickness;
-    this.setTextStrokeEffect(thickness);
+  updateStyleEffectOption(option: TextEffectOptions) {
+    this.styleEffect.setOption(option);
   }
 
   setTextStrokeEffect(
@@ -400,270 +296,6 @@ export class MoveableTextObject extends MoveableObject implements EditableText {
     }px`;
     element.style.webkitTextStrokeColor = color ?? styles.color;
     element.style.webkitTextFillColor = 'transparent';
-  }
-
-  setSpliceEffect(option: TextSpliceEffectOption) {
-    const element = this.getElement();
-    if (!element) return false;
-    this.spliceEffect = option;
-    const styles = window.getComputedStyle(element);
-    const matches = styles.fontSize?.match(/^(\d+(\.\d+)?)px/);
-    const MAX_SHADOW = parseFloat(matches?.[1] ?? '0') * 0.166;
-
-    const {
-      thickness = 50,
-      offset = 50,
-      direction = -45,
-      color = styles.color,
-    } = option;
-
-    const offsetVal = (offset / 100) * MAX_SHADOW;
-    const hShadow = (
-      -offsetVal * Math.sin((direction * Math.PI) / 180)
-    ).toFixed(4);
-    const vShadow = (offsetVal * Math.cos((direction * Math.PI) / 180)).toFixed(
-      4,
-    );
-    const shadow = `${color} ${hShadow}px ${vShadow}px 0px`;
-    element.style.textShadow = shadow;
-    this.setTextStrokeEffect(thickness);
-  }
-
-  setOutlineEffect(option: TextOutlineEffectOption) {
-    const element = this.getElement();
-    if (!element) return false;
-    this.outlineEffect = option;
-    const { thickness, color } = option;
-    const clonedElementId = `outline-${this.id}`;
-    let clonedElement = document.getElementById(clonedElementId);
-
-    if (!clonedElement) {
-      clonedElement = element.cloneNode(true) as HTMLElement;
-      element.style.position = 'relative';
-      clonedElement.id = `outline-${this.id}`;
-      clonedElement.style.transform = 'initial';
-      clonedElement.style.webkitTextFillColor = 'unset';
-      clonedElement.style.position = 'absolute';
-      clonedElement.style.top = '0';
-      clonedElement.style.left = '0';
-      clonedElement.style.zIndex = '-1';
-      element.appendChild(clonedElement);
-    }
-
-    // Append the cloned element to the parent element
-    this.setTextStrokeEffect(thickness, 0.0916, color, clonedElement);
-  }
-
-  setEchoEffect(option: MoveableTextShadow) {
-    const element = this.getElement();
-    if (!element) return false;
-    const styles = window.getComputedStyle(element);
-    const matches = styles.fontSize?.match(/^(\d+(\.\d+)?)px/);
-    const MAX_SHADOW = parseFloat(matches?.[1] ?? '0') * 0.166;
-    const { offset = 50, direction = -45, color = styles.color } = option;
-
-    const offsetVal = (offset / 100) * MAX_SHADOW;
-    const hShadow = (
-      -offsetVal * Math.sin((direction * Math.PI) / 180)
-    ).toFixed(4);
-    const vShadow = (offsetVal * Math.cos((direction * Math.PI) / 180)).toFixed(
-      4,
-    );
-    const shadow = `${hexToRgba(
-      color,
-      0.5,
-    )} ${hShadow}px ${vShadow}px 0px, ${hexToRgba(color, 0.3)} ${
-      +hShadow * 2
-    }px ${+vShadow * 2}px 0px`;
-    element.style.textShadow = shadow;
-    this.echoEffect = option;
-  }
-
-  setGlitchEffect(option: MoveableTextShadow) {
-    const element = this.getElement();
-    if (!element) return false;
-    const styles = window.getComputedStyle(element);
-    const isBlueRedColor = option.color === 'blue-red';
-    const firstColor = 'rgb(0, 255, 255)';
-    const secondColor = isBlueRedColor ? 'rgb(255, 0, 255)' : 'rgb(255, 0, 0)';
-    const matches = styles.fontSize?.match(/^(\d+(\.\d+)?)px/);
-    const MAX_SHADOW = parseFloat(matches?.[1] ?? '0') * 0.0833;
-    const { offset = 50, direction = -45 } = option;
-    const offsetVal = (offset / 100) * MAX_SHADOW;
-    const hShadow = (
-      -offsetVal * Math.sin((direction * Math.PI) / 180)
-    ).toFixed(4);
-    const vShadow = (offsetVal * Math.cos((direction * Math.PI) / 180)).toFixed(
-      4,
-    );
-    const shadow = `${firstColor} ${hShadow}px ${vShadow}px 0px, ${secondColor} ${
-      +hShadow * -1
-    }px ${+vShadow * -1}px 0px`;
-
-    element.style.textShadow = shadow;
-    this.glitchEffect = option;
-  }
-
-  setNeonEffect(option: MoveableTextShadow) {
-    const element = this.getElement();
-    if (!element) return false;
-    const styles = window.getComputedStyle(element);
-    const color =
-      element.style.getPropertyValue('--prev-color') || styles.color;
-    const matches = styles.fontSize?.match(/^(\d+(\.\d+)?)px/);
-    const MAX_THICKNESS = parseFloat(matches?.[1] ?? '0') * 0.0166;
-    const { thickness = 1 } = option;
-    const baseVal = (0.061 * thickness + 1.6) * MAX_THICKNESS;
-    const filter = `drop-shadow(0px 0px ${baseVal}px ${hexToRgba(
-      color,
-      0.95,
-    )}) drop-shadow(0px 0px ${baseVal * 5}px ${hexToRgba(
-      color,
-      0.75,
-    )}) drop-shadow(0px 0px ${baseVal * 5 * 3}px ${hexToRgba(color, 0.44)})`;
-    element.style.filter = filter;
-    element.style.setProperty('--prev-color', color);
-    element.style.color = hexToRgba(color, (thickness * 0.55 + 34.45) / 100);
-    this.neonEffect = option;
-  }
-
-  setBackgroundEffect(option: TextBackgroundEffectOption) {
-    this.backgroundEffect = option;
-    this.shapeEffect = 'none';
-    this.curve = undefined;
-    this.onUpdateBackgroundEffect();
-  }
-
-  onUpdateBackgroundEffect() {
-    const element = this.getElement();
-    if (
-      !element ||
-      this.styleEffect !== 'background' ||
-      this.shapeEffect === 'curve'
-    )
-      return false;
-    const bgEffectId = `bg-effect-${this.id}`;
-    const {
-      color = 'FFED00',
-      spread = 50,
-      roundness = 50,
-      transparency = 100,
-    } = this.backgroundEffect ?? {};
-    const textContainer = this.getTextContainer();
-    const firstTextChild = textContainer?.firstElementChild;
-    if (!textContainer || !firstTextChild) return false;
-    const textChildStyles = window.getComputedStyle(firstTextChild);
-    const elHeight = parseFloat(
-      textChildStyles.height.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
-    );
-    const widthContainer = parseFloat(
-      window
-        .getComputedStyle(textContainer)
-        .width.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
-    );
-
-    const bgElement = document.getElementById(bgEffectId);
-    if (bgElement) {
-      element.removeChild(bgElement);
-    }
-    const spreadVal = (spread / 100) * 10;
-    const roundnessVal = (roundness / 100) * 10;
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    element.style.position = 'relative';
-    svg.id = bgEffectId;
-    svg.style.position = 'absolute';
-    svg.style.top = '0';
-    svg.style.left = `${-spreadVal}px`;
-    svg.style.right = `${widthContainer + spreadVal}px`;
-    svg.style.zIndex = '-1';
-    svg.style.height = '100%';
-    element.appendChild(svg);
-    let prevPathWidth = 0;
-    const lengthItems = textContainer.childNodes.length;
-    textContainer.childNodes.forEach((el, index) => {
-      let elWidth = 0;
-      if (!el.textContent) {
-        elWidth = prevPathWidth;
-      } else {
-        elWidth = this.getTextContentWidth(el.textContent) + 2 * spreadVal;
-      }
-
-      const nextEl = textContainer.childNodes[index + 1];
-      const nextPathWidth =
-        nextEl && nextEl.textContent
-          ? this.getTextContentWidth(nextEl.textContent) + 2 * spreadVal
-          : prevPathWidth || elWidth;
-      const isRadiusTop = index === 0 || elWidth > prevPathWidth;
-      const isRadiusBottom =
-        index === lengthItems - 1 || elWidth > nextPathWidth;
-      prevPathWidth = elWidth;
-      const startX = 0;
-      const startY = elHeight * index;
-      const path = document.createElementNS(
-        'http://www.w3.org/2000/svg',
-        'path',
-      ) as SVGPathElement;
-      path.setAttribute(
-        'd',
-        `M ${startX} ${startY} L ${
-          isRadiusTop ? startX + elWidth - roundnessVal : startX + elWidth
-        } ${startY} ${
-          isRadiusTop
-            ? `C ${startX + elWidth - roundnessVal} ${startY}, ${
-                startX + elWidth
-              } ${startY}, ${startX + elWidth} ${startY + roundnessVal}`
-            : ''
-        }L ${startX + elWidth} ${
-          isRadiusBottom ? startY + elHeight - roundnessVal : startY + elHeight
-        }
-        ${
-          isRadiusBottom
-            ? `C ${startX + elWidth} ${startY + elHeight - roundnessVal}, ${
-                startX + elWidth
-              } ${startY + elHeight}, ${startX + elWidth - roundnessVal} ${
-                startY + elHeight
-              }`
-            : ''
-        }
-        L ${index === lengthItems - 1 ? startX + roundnessVal : startX} ${
-          startY + elHeight
-        }
-        ${
-          index === lengthItems - 1
-            ? `C ${startX + roundnessVal} ${startY + elHeight}, ${startX} ${
-                startY + elHeight
-              }, ${startX} ${startY + elHeight - roundnessVal}`
-            : ''
-        }
-        L ${startX} ${index === 0 ? startY + roundnessVal : startY}
-        ${
-          index === 0
-            ? `C ${startX} ${startY + roundnessVal}, ${startX} ${startY}, ${
-                startX + roundnessVal
-              } ${startY}`
-            : ''
-        } z`,
-      );
-      path.setAttribute('fill', color);
-      path.style.fillOpacity = `${transparency / 100}`;
-      svg.appendChild(path);
-    });
-  }
-
-  getTextContentWidth(textContent: string): number {
-    const element = this.getElement();
-    if (!textContent || !element) return 0;
-    const span = document.createElement('span');
-    span.textContent = textContent;
-    span.style.position = 'absolute';
-    span.style.visibility = 'hidden';
-    element.appendChild(span);
-    const styles = window.getComputedStyle(span);
-    const width = parseFloat(
-      styles.width.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
-    );
-    element.removeChild(span);
-    return width;
   }
 
   setShapeEffect(shapeEffect: MoveableTextShapeEffect) {
@@ -886,7 +518,7 @@ export class MoveableTextObject extends MoveableObject implements EditableText {
   render() {
     const element = this.getElement();
     if (!element) return;
-    this.newStyleEffect.apply(element);
+    this.styleEffect.apply(element);
     this.renderTextScale();
   }
 }

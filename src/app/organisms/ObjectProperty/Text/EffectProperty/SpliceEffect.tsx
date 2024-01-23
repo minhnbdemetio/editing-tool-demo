@@ -1,9 +1,14 @@
 import { TextSpliceEffectOption } from '@/app/lib/moveable/text/MoveableText';
-import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
+import {
+  useActiveTextObject,
+  useUpdateTextStyleEffectOptions,
+} from '@/app/hooks/useActiveMoveableObject';
 import { Button, Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 import { EffectPickColor } from './EffectPickColor';
 import { ColorResult } from 'react-color';
+import { TEXT_SPLICE_DEFAULT_VALUE } from '@/app/lib/moveable/constant/text';
+import { TextEffectOptions } from '@/app/lib/moveable/effects/text/TextEffect';
 
 interface SpliceEffectPropertyProps {}
 type TextShadowOptions = 'offset' | 'direction' | 'thickness' | 'color';
@@ -43,28 +48,19 @@ const SHADOW_OPTIONS = [
   },
 ];
 
-const DEFAULT_VALUE = {
-  color: '#808080',
-  offset: 50,
-  direction: -45,
-  thickness: 50,
-};
 export const SpliceEffect: FC<SpliceEffectPropertyProps> = () => {
   const activeText = useActiveTextObject();
-  const [spliceEffect, setSpliceEffect] = useState<
-    TextSpliceEffectOption | undefined
-  >(activeText?.spliceEffect || DEFAULT_VALUE);
+  const [spliceEffect, setSpliceEffect] = useState<TextEffectOptions>(
+    activeText?.styleEffect?.getOptions() || TEXT_SPLICE_DEFAULT_VALUE,
+  );
   const [colorPickerOpen, setOpenColorPicker] = useState<boolean>(false);
-  useEffect(() => {
-    activeText?.setSpliceEffect(activeText?.spliceEffect || DEFAULT_VALUE);
-  }, []);
+  const handleUpdateSpliceEffect = useUpdateTextStyleEffectOptions();
   const handleChangeColor = (color: ColorResult) => {
     const value = {
       ...spliceEffect,
       color: color.hex,
     };
-    setSpliceEffect(value);
-    activeText?.setSpliceEffect(value);
+    handleUpdateSpliceEffect(value, () => setSpliceEffect(value));
   };
   return (
     <>
@@ -127,8 +123,9 @@ export const SpliceEffect: FC<SpliceEffectPropertyProps> = () => {
                             ...spliceEffect,
                             [option.target]: v,
                           };
-                          setSpliceEffect(value);
-                          activeText?.setSpliceEffect(value);
+                          handleUpdateSpliceEffect(value, () =>
+                            setSpliceEffect(value),
+                          );
                         }}
                       />
                     </Tooltip>
@@ -144,8 +141,7 @@ export const SpliceEffect: FC<SpliceEffectPropertyProps> = () => {
                       ...spliceEffect,
                       [option.target]: value,
                     };
-                    setSpliceEffect(val);
-                    activeText?.setSpliceEffect(val);
+                    handleUpdateSpliceEffect(val, () => setSpliceEffect(val));
                   }
                 }}
               />
