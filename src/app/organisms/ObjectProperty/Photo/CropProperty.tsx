@@ -1,5 +1,5 @@
 import { Button } from '@/app/atoms/Button';
-import { PhotoPosition } from '@/app/lib/moveable/MoveablePhoto';
+import { PhotoPosition } from '@/app/lib/moveable/editable/EditablePhoto';
 import {
   useActivePhotoObject,
   useUpdatePhotoPosition,

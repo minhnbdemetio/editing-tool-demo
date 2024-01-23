@@ -1,11 +1,24 @@
-import { PhotoFilter } from '@/app/types';
 import { v4 as uuid } from 'uuid';
+
+export const PHOTO_INNER_ELEMENTS = {
+  SVG: 'svg-container',
+  DEFS: 'defs',
+  CONTRAST_MASK: 'contrast-mask',
+  BRIGHTNESS_MASK: 'brightness-mask',
+  TEMPERATURE_MASK: 'temperature-mask',
+  SATURATION_MASK: 'saturation-mask',
+  BLUR_FILTER: 'blur-filter',
+  VIGNETTE_RESULT: 'vignette-result',
+  HUE_MASK: 'hue-mask',
+};
+
+export const SOURCE_GRAPHIC = 'SourceGraphic';
 
 export declare type Filter = {
   id: string;
   name: string;
   thumbnail: string;
-  setup: PhotoFilter;
+  setup: any;
 };
 const NONE_FILTER: Filter = {
   id: uuid(),

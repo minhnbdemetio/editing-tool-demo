@@ -6,7 +6,7 @@ import {
   useActivePhotoObject,
   useUpdateGradientMask,
 } from '@/app/hooks/useActiveMoveableObject';
-import { GradientMask } from '@/app/lib/moveable/MoveablePhoto';
+import { GradientMask } from '@/app/lib/moveable/editable/EditablePhoto';
 import { DEFAULT_GRADIENT_MASK } from '.';
 import { Line } from '@/app/icons/Line';
 import { Circle } from '@/app/icons/Circle';

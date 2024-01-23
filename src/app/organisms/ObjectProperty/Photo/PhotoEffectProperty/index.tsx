@@ -8,7 +8,7 @@ import {
   useActiveMoveablePhotoObject,
   useUpdateGradientMask,
 } from '@/app/hooks/useActiveMoveableObject';
-import { GradientMask } from '@/app/lib/moveable/MoveablePhoto';
+import { GradientMask } from '@/app/lib/moveable/editable/EditablePhoto';
 
 enum EffectType {
   Common = 'common',

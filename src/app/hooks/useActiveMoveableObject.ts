@@ -12,7 +12,10 @@ import { isLine, isPhoto, isText } from '../utilities/moveable';
 import { MoveableObject } from '../lib/moveable/MoveableObject';
 import { useDesign } from '../store/design-objects';
 import { isNumber } from 'lodash';
-import { GradientMask, PhotoPosition } from '../lib/moveable/MoveablePhoto';
+import {
+  GradientMask,
+  PhotoPosition,
+} from '../lib/moveable/editable/EditablePhoto';
 
 export const useActiveTextObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
