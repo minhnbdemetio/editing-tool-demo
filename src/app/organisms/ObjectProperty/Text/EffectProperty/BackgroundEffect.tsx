@@ -1,9 +1,13 @@
 import { TextBackgroundEffectOption } from '@/app/lib/moveable/text/MoveableText';
-import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
+import {
+  useActiveTextObject,
+  useUpdateTextStyleEffectOptions,
+} from '@/app/hooks/useActiveMoveableObject';
 import { Button, Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 import { EffectPickColor } from './EffectPickColor';
 import { ColorResult } from 'react-color';
+import { TEXT_BACKGROUND_DEFAULT_VALUE } from '@/app/lib/moveable/constant/text';
 
 type TextBackgroundOptions = 'roundness' | 'spread' | 'transparency' | 'color';
 const SHADOW_OPTIONS = [
@@ -42,30 +46,19 @@ const SHADOW_OPTIONS = [
   },
 ];
 
-const DEFAULT_VALUE = {
-  color: '#ffed00',
-  spread: 50,
-  transparency: 100,
-  roundness: 50,
-};
 export const BackGroundEffect: FC = () => {
   const activeText = useActiveTextObject();
-  const [backgroud, setBackground] = useState<TextBackgroundEffectOption>(
-    activeText?.backgroundEffect || DEFAULT_VALUE,
+  const [backgroud, setBackground] = useState(
+    activeText?.styleEffect?.getOptions() || TEXT_BACKGROUND_DEFAULT_VALUE,
   );
   const [colorPickerOpen, setOpenColorPicker] = useState<boolean>(false);
-  useEffect(() => {
-    activeText?.setBackgroundEffect(
-      activeText?.backgroundEffect || DEFAULT_VALUE,
-    );
-  }, []);
+  const handleUpdateStyleEffect = useUpdateTextStyleEffectOptions();
   const handleChangeColor = (color: ColorResult) => {
     const value = {
       ...backgroud,
       color: color.hex,
     };
-    setBackground(value);
-    activeText?.setBackgroundEffect(value);
+    handleUpdateStyleEffect(value, () => setBackground(value));
   };
   return (
     <>
@@ -128,8 +121,9 @@ export const BackGroundEffect: FC = () => {
                             ...backgroud,
                             [option.target]: v,
                           };
-                          setBackground(value);
-                          activeText?.setBackgroundEffect(value);
+                          handleUpdateStyleEffect(value, () =>
+                            setBackground(value),
+                          );
                         }}
                       />
                     </Tooltip>
@@ -145,8 +139,7 @@ export const BackGroundEffect: FC = () => {
                       ...backgroud,
                       [option.target]: value,
                     };
-                    setBackground(val);
-                    activeText?.setBackgroundEffect(val);
+                    handleUpdateStyleEffect(val, () => setBackground(val));
                   }
                 }}
               />

@@ -1,22 +1,19 @@
-import { MoveableTextShadow } from '@/app/lib/moveable/text/MoveableText';
-import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
+import {
+  useActiveTextObject,
+  useUpdateTextStyleEffectOptions,
+} from '@/app/hooks/useActiveMoveableObject';
 import { Slider, Tooltip } from '@nextui-org/react';
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
+import { TEXT_NEON_DEFAULT_VALUE } from '@/app/lib/moveable/constant/text';
 
 interface NeonEffectProps {}
 
-const THICKNESS_DEFAULT = 50;
-
 export const NeonEffect: FC<NeonEffectProps> = () => {
   const activeText = useActiveTextObject();
-  const [neonEffect, setNeonEffect] = useState<MoveableTextShadow>(
-    activeText?.neonEffect || { thickness: THICKNESS_DEFAULT },
+  const [neonEffect, setNeonEffect] = useState(
+    activeText?.styleEffect?.getOptions() || TEXT_NEON_DEFAULT_VALUE,
   );
-  useEffect(() => {
-    activeText?.setNeonEffect(
-      activeText?.neonEffect || { thickness: THICKNESS_DEFAULT },
-    );
-  }, []);
+  const handleUpdateStyleEffect = useUpdateTextStyleEffectOptions();
   return (
     <Slider
       label="Thickness"
@@ -43,8 +40,9 @@ export const NeonEffect: FC<NeonEffectProps> = () => {
               onChange={e => {
                 const v = +e.target.value;
                 if (isNaN(v)) return;
-                setNeonEffect({ thickness: v });
-                activeText?.setNeonEffect({ thickness: v });
+                handleUpdateStyleEffect({ thickness: v }, () =>
+                  setNeonEffect({ thickness: v }),
+                );
               }}
             />
           </Tooltip>
@@ -53,8 +51,9 @@ export const NeonEffect: FC<NeonEffectProps> = () => {
       value={neonEffect.thickness}
       onChange={value => {
         if (typeof value === 'number') {
-          setNeonEffect({ thickness: value });
-          activeText?.setNeonEffect({ thickness: value });
+          handleUpdateStyleEffect({ thickness: value }, () =>
+            setNeonEffect({ thickness: value }),
+          );
         }
       }}
     />

@@ -1,7 +1,11 @@
 import { MoveableTextShadow } from '@/app/lib/moveable/text/MoveableText';
-import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
+import {
+  useActiveTextObject,
+  useUpdateTextStyleEffectOptions,
+} from '@/app/hooks/useActiveMoveableObject';
 import { Button, Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
+import { TEXT_GLITCH_DEFAULT_VALUE } from '@/app/lib/moveable/constant/text';
 
 interface GlitchEffectPropertyProps {}
 type TextShadowOptions = 'offset' | 'direction' | 'color';
@@ -32,27 +36,19 @@ const SHADOW_OPTIONS = [
   },
 ];
 
-const DEFAULT_VALUE = {
-  color: 'blue-pink',
-  direction: -45,
-  offset: 50,
-};
 export const GlitchEffect: FC<GlitchEffectPropertyProps> = () => {
   const activeText = useActiveTextObject();
-  const [glitch, setGlitch] = useState<MoveableTextShadow>(
-    activeText?.glitchEffect || DEFAULT_VALUE,
+  const [glitch, setGlitch] = useState(
+    activeText?.styleEffect?.getOptions() || TEXT_GLITCH_DEFAULT_VALUE,
   );
-  useEffect(() => {
-    activeText?.setGlitchEffect(activeText?.glitchEffect || DEFAULT_VALUE);
-  }, []);
 
+  const handleUpdateGlitchEffect = useUpdateTextStyleEffectOptions();
   const handleChangeColor = (color: string) => {
     const value = {
       ...glitch,
       color,
     };
-    setGlitch(value);
-    activeText?.setGlitchEffect(value);
+    handleUpdateGlitchEffect(value, () => setGlitch(value));
   };
   return (
     <>
@@ -132,8 +128,9 @@ export const GlitchEffect: FC<GlitchEffectPropertyProps> = () => {
                             ...glitch,
                             [option.target]: v,
                           };
-                          setGlitch(value);
-                          activeText?.setGlitchEffect(value);
+                          handleUpdateGlitchEffect(value, () =>
+                            setGlitch(value),
+                          );
                         }}
                       />
                     </Tooltip>
@@ -149,8 +146,7 @@ export const GlitchEffect: FC<GlitchEffectPropertyProps> = () => {
                       ...glitch,
                       [option.target]: value,
                     };
-                    setGlitch(val);
-                    activeText?.setGlitchEffect(val);
+                    handleUpdateGlitchEffect(val, () => setGlitch(val));
                   }
                 }}
               />

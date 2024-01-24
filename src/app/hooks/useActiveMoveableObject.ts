@@ -13,6 +13,8 @@ import { MoveableObject } from '../lib/moveable/MoveableObject';
 import { useDesign } from '../store/design-objects';
 import { isNumber } from 'lodash';
 import { GradientMask, PhotoPosition } from '../lib/moveable/MoveablePhoto';
+import { TextStyleEffect } from '../lib/moveable/effects/text/StyleEffect';
+import { TextEffect, TextEffectOptions } from '../lib/moveable/effects/text/TextEffect';
 
 export const useActiveTextObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
@@ -82,6 +84,7 @@ export const useUpdateTextColor = () => {
 
   return (color: string) => {
     activeText?.setTextColor(color);
+    activeText?.render();
   };
 };
 
@@ -491,45 +494,6 @@ export const useToggleLock = () => {
   return toggleLock;
 };
 
-export const useUpdateActiveMoveableObjectTextStyleEffect = () => {
-  const activeText = useActiveTextObject();
-  const handleChangeTextEffect = (
-    effect: MoveableTextStyleEffect,
-    cb: Function,
-  ) => {
-    // Reset effect before apply new effect
-    const el = activeText?.getElement();
-    if (!el) return false;
-    el.style.textShadow = 'none';
-    el.style.webkitTextFillColor = 'currentcolor';
-    el.style.caretColor = 'unset';
-    el.style.webkitTextStroke = 'unset';
-    el.style.webkitTextFillColor = 'unset';
-    el.style.filter = 'unset';
-    const outlineElement = document.getElementById(`outline-${activeText?.id}`);
-    const backgroundElement = document.getElementById(
-      `bg-effect-${activeText?.id}`,
-    );
-    if (outlineElement) {
-      el.removeChild(outlineElement);
-    }
-    if (backgroundElement) {
-      el.removeChild(backgroundElement);
-    }
-    const preColor = el.style.getPropertyValue('--prev-color');
-    if (preColor) {
-      el.style.color = preColor;
-      el.style.removeProperty('--prev-color');
-    }
-
-    // Set style effect id
-    activeText?.setStyleEffect(effect);
-    cb();
-    return true;
-  };
-  return handleChangeTextEffect;
-};
-
 export const useUpdateActiveTextShapeEffect = () => {
   const activeText = useActiveTextObject();
   const handleChangeTextEffect = (
@@ -705,4 +669,36 @@ export const useUpdateTextStretchFont = () => {
     return true;
   };
   return updateTextStretchFont;
+};
+
+export const useUpdateTextStyleEffect = () => {
+  const activeText = useActiveTextObject();
+  const updateTextStyleEffect = (
+    styleEffect: TextEffect,
+    callback?: Function,
+  ) => {
+    const element = activeText?.getElement();
+    if (!activeText || !element) return false;
+    activeText.styleEffect.reset(element);
+    activeText.setStyleEffect(styleEffect);
+    activeText.render();
+    callback && callback();
+    return true;
+  };
+  return updateTextStyleEffect;
+};
+
+export const useUpdateTextStyleEffectOptions = () => {
+  const activeText = useActiveTextObject();
+  const updateTextStyleEffectOptions = (
+    styleEffectOption: TextEffectOptions,
+    callback?: Function,
+  ) => {
+    if (!activeText) return false;
+    activeText.updateStyleEffectOption(styleEffectOption);
+    activeText.render();
+    callback && callback();
+    return true;
+  };
+  return updateTextStyleEffectOptions;
 };

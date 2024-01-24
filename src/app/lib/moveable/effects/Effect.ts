@@ -1,4 +1,5 @@
 export abstract class Effect {
   constructor() {}
-  apply() {}
+  apply(el: HTMLElement) {}
+  reset(el: HTMLElement) {}
 }

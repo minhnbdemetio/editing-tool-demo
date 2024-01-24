@@ -1,4 +1,7 @@
-import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
+import {
+  useActiveTextObject,
+  useUpdateTextStyleEffectOptions,
+} from '@/app/hooks/useActiveMoveableObject';
 import { Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 
@@ -9,13 +12,9 @@ const THICKNESS_DEFAULT = 50;
 export const HollowEffect: FC<HollowEffectProps> = () => {
   const activeText = useActiveTextObject();
   const [thickness, setThickness] = useState<number | undefined>(
-    activeText?.thicknessHollowEffect || THICKNESS_DEFAULT,
+    activeText?.styleEffect?.getOptions()?.thickness || THICKNESS_DEFAULT,
   );
-  useEffect(() => {
-    activeText?.setThicknessHollowEffect(
-      activeText?.thicknessHollowEffect || THICKNESS_DEFAULT,
-    );
-  }, []);
+  const handleUpdateHollowEffect = useUpdateTextStyleEffectOptions();
   return (
     <Slider
       label="Thickness"
@@ -42,18 +41,18 @@ export const HollowEffect: FC<HollowEffectProps> = () => {
               onChange={e => {
                 const v = +e.target.value;
                 if (isNaN(v)) return;
-                setThickness(v);
-                activeText?.setThicknessHollowEffect(v);
+                handleUpdateHollowEffect({ thickness: v }, () =>
+                  setThickness(v),
+                );
               }}
             />
           </Tooltip>
         </output>
       )}
       value={thickness}
-      onChange={value => {
-        if (typeof value === 'number') {
-          setThickness(value);
-          activeText?.setThicknessHollowEffect(value);
+      onChange={v => {
+        if (typeof v === 'number') {
+          handleUpdateHollowEffect({ thickness: v }, () => setThickness(v));
         }
       }}
     />
