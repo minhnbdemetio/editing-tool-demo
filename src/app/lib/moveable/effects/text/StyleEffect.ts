@@ -389,13 +389,14 @@ export class TextNeonEffect extends StyleEffect {
 }
 
 export class TextBackgroundEffect extends StyleEffect {
+  isRegisterEventListener: boolean = false;
+  boundOnInput: (this: HTMLElement, ev: Event) => void = () => {};
   constructor(option: TextEffectOptions = TEXT_BACKGROUND_DEFAULT_VALUE) {
     super(option);
     this.varient = TextStyleEffect.BACKGROUND;
   }
 
   apply(element: HTMLElement): void {
-    element.removeEventListener('input', this.onInput.bind(this, element));
     const bgEffectId = `${BACKGROUND_EFFECT_CONTAINER}-${element.id}`;
     const {
       color = TEXT_BACKGROUND_DEFAULT_VALUE.color,
@@ -504,11 +505,16 @@ export class TextBackgroundEffect extends StyleEffect {
       path.style.fillOpacity = `${transparency / 100}`;
       svg.appendChild(path);
     });
-    element.addEventListener('input', this.onInput.bind(this, element));
+    if (!this.isRegisterEventListener) {
+      this.boundOnInput = this.onInput.bind(this, element);
+      element.addEventListener('input', this.boundOnInput);
+      this.isRegisterEventListener = true;
+    }
   }
 
   reset(el: HTMLElement): void {
-    el.removeEventListener('input', this.onInput.bind(this, el));
+    el.removeEventListener('input', this.boundOnInput);
+    this.isRegisterEventListener = false;
     const backgroundElement = document.getElementById(
       `${BACKGROUND_EFFECT_CONTAINER}-${el.id}`,
     );
@@ -533,7 +539,6 @@ export class TextBackgroundEffect extends StyleEffect {
   }
 
   onInput(element: HTMLElement) {
-    this.reset(element);
     this.apply(element);
   }
 }
