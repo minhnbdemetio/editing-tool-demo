@@ -1,9 +1,10 @@
+import { SVG } from '@svgdotjs/svg.js';
 import { MoveableObject, ObjectType } from '../MoveableObject';
 import { MoveableShapeType } from '../editable/EditableShape';
-import { Square } from '../svg/Square';
+import { Pentagon } from '../svg/Pentagon';
 import { MoveableShape } from './MoveableShape';
 
-export class MoveableSquare extends MoveableShape {
+export class MoveablePentagon extends MoveableShape {
   constructor(options?: {
     id: string;
     type?: ObjectType;
@@ -15,7 +16,7 @@ export class MoveableSquare extends MoveableShape {
   }
 
   getShape() {
-    return new Square({ width: this.width, height: this.height });
+    return new Pentagon({ width: this.width, height: this.height });
   }
 
   clone(
@@ -23,7 +24,7 @@ export class MoveableSquare extends MoveableShape {
   ): MoveableObject {
     const clonedData = this.cloneData();
 
-    return new MoveableSquare({
+    return new MoveablePentagon({
       ...this.toJSON(),
       id: clonedData.cloneObjectId,
     });

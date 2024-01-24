@@ -1,3 +1,4 @@
+import { SvgShape } from '../svg/SvgShape';
 import { Editable } from './Editable';
 
 export enum MoveableShapeType {
@@ -20,5 +21,5 @@ export interface EditableShape extends Editable {
   shapeOutline: string;
   shapeShadow: string;
   shapeText: undefined;
-  getShape(): string;
+  getShape(): SvgShape;
 }

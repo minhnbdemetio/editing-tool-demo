@@ -1,9 +1,10 @@
 import { MoveableObject, ObjectType } from '../MoveableObject';
 import { MoveableShapeType } from '../editable/EditableShape';
-import { Square } from '../svg/Square';
+import { FivePointStar } from '../svg/FivePointStar';
+import { Hexagon } from '../svg/Hexagon';
 import { MoveableShape } from './MoveableShape';
 
-export class MoveableSquare extends MoveableShape {
+export class MoveableFivePointStar extends MoveableShape {
   constructor(options?: {
     id: string;
     type?: ObjectType;
@@ -15,7 +16,7 @@ export class MoveableSquare extends MoveableShape {
   }
 
   getShape() {
-    return new Square({ width: this.width, height: this.height });
+    return new FivePointStar({ width: this.width, height: this.height });
   }
 
   clone(
@@ -23,7 +24,7 @@ export class MoveableSquare extends MoveableShape {
   ): MoveableObject {
     const clonedData = this.cloneData();
 
-    return new MoveableSquare({
+    return new MoveableFivePointStar({
       ...this.toJSON(),
       id: clonedData.cloneObjectId,
     });

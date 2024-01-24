@@ -8,6 +8,7 @@ import {
   SettingTypeEnum,
 } from '@/app/molecules/SearchInput/searchInput';
 import { Lines } from '@/app/molecules/Lines';
+import { Shapes } from '@/app/molecules/Shapes';
 
 const recommendedKeywords = [
   'Xuân',
@@ -93,6 +94,7 @@ export const ElementsMenuContent: FC = () => {
         />
 
         <Lines />
+        <Shapes />
       </div>
     </div>
   );

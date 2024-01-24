@@ -11,12 +11,14 @@ import {
   isLine,
   isNormalText,
   isPhoto,
+  isShape,
   isSubheading,
 } from '@/app/utilities/moveable';
 import { MoveableSubheadingTextElement } from './text/MoveableSubheadingTextElement';
 import { MoveableBodyTextElement } from './text/MoveableBodyTextElement';
 import { MoveablePhotoElement } from './MoveablePhotoElement';
 import { OBJECT_CONTAINER } from '@/app/lib/moveable/constant/object';
+import { MoveableShapeElement } from './MoveableShapeElement';
 
 export interface MoveableObjectProps {
   object: MoveableObject;
@@ -55,6 +57,9 @@ export const MoveableObjectElement: FC<MoveableObjectProps> = props => {
     }
     if (isPhoto(object)) {
       return <MoveablePhotoElement object={object} />;
+    }
+    if (isShape(object)) {
+      return <MoveableShapeElement object={object} />;
     }
 
     return null;
