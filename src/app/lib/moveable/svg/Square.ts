@@ -9,6 +9,7 @@ export class Square extends SvgShape {
   ) {
     super(options);
 
+    this.rounded = options.rounded || 0;
     this.reverseRounded = options.reverseRounded || false;
     if (this.reverseRounded) this.rounded = 20;
   }
@@ -57,10 +58,10 @@ export class Square extends SvgShape {
     actions.push(`H${padding + this.rounded}`);
 
     if (this.rounded) {
-      if (!this.reverseRounded) {
+      if (this.reverseRounded) {
         actions.push(`q0,${this.rounded},-${this.rounded},${this.rounded}`);
       } else {
-        actions.push(`q${this.rounded},0,-${this.rounded},${this.rounded}`);
+        actions.push(`q-${this.rounded},0,-${this.rounded},${this.rounded}`);
       }
     }
 
