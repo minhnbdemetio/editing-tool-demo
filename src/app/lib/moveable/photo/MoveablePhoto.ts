@@ -1,15 +1,19 @@
 import axios from 'axios';
-import { MoveableObject } from './MoveableObject';
+import { MoveableObject } from '../MoveableObject';
 import {
   PhotoPosition,
   GradientMask,
   EditablePhoto,
-} from './editable/EditablePhoto';
-import { PHOTO_INNER_ELEMENTS } from './constant/photo';
-import { PhotoFilter } from '../filters/PhotoFilter';
-import { NoneFilter } from '../filters/NoneFilter';
+} from '../editable/EditablePhoto';
+import { PHOTO_INNER_ELEMENTS } from '../constant/photo';
+import { PhotoFilter } from './filters/PhotoFilter';
+import { NoneFilter } from './filters/NoneFilter';
+import { Croppable } from './Croppable';
 
-export class MoveablePhoto extends MoveableObject implements EditablePhoto {
+export class MoveablePhoto
+  extends MoveableObject
+  implements EditablePhoto, Croppable
+{
   loaded: boolean = false;
   filter: PhotoFilter = new NoneFilter();
   dragStartPoint?: { x: number; y: number };
@@ -98,7 +102,70 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
     return this.filter.getVignette() > 0;
   }
 
-  
+  public renderFilter() {
+    this.filter.render(this);
+  }
+
+  public changeContrast(contrast: number) {
+    this.filter.setContrast(contrast);
+
+    this.renderFilter();
+  }
+
+  public changeBrightness(brightness: number) {
+    this.filter.setBrightness(brightness);
+
+    this.renderFilter();
+  }
+  public changeSaturation(saturation: number) {
+    this.filter.setSaturation(saturation);
+
+    this.renderFilter();
+  }
+  public changeHue(hue: { r: number; g: number; b: number }) {
+    this.filter.setHue(hue);
+
+    this.renderFilter();
+  }
+  public changeTemperature(temp: number) {
+    this.filter.setTemperature(temp);
+
+    this.renderFilter();
+  }
+  public changeBlur(blur: number) {
+    this.filter.setBlur(blur);
+
+    this.renderFilter();
+  }
+  public changeVignette(vignette: number) {
+    this.filter.setVignette(vignette);
+
+    this.renderFilter();
+  }
+
+  public setFilter(filter: PhotoFilter) {
+    this.filter.setHue(filter.hue);
+    this.filter.setBrightness(filter.brightness);
+    this.filter.setBlur(filter.blur);
+    this.filter.setVignette(filter.vignette);
+    this.filter.setContrast(filter.contrast);
+    this.filter.setSaturation(filter.saturation);
+    this.filter.setTemperature(filter.temperature);
+
+    this.renderFilter();
+  }
+  public getFilterParam() {
+    return {
+      hue: this.filter.hue,
+      brightness: this.filter.brightness,
+      blur: this.filter.blur,
+      vignette: this.filter.vignette,
+      contrast: this.filter.contrast,
+      saturation: this.filter.saturation,
+      temperature: this.filter.temperature,
+    };
+  }
+
   getImagePosition(): PhotoPosition | undefined {
     const element = this.getElement();
     if (!element) return;
@@ -126,7 +193,7 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
   ) {
     const element = this.getElement();
     const imageLayerContainer = document.getElementById(
-      `image-layer-${this.id}`,
+      `${PHOTO_INNER_ELEMENTS.IMAGE_LAYER}-${this.id}`,
     );
     const imagePosition = this.getImagePosition();
     const activePageElement = document.getElementById(activePageId);

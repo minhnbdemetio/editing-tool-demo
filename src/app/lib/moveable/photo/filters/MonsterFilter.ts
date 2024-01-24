@@ -11,7 +11,7 @@ export class MonsterFilter extends PhotoFilter {
     this.temperature = -62;
     this.blur = -9;
     this.vignette = 0;
-    this.thumbnail = '/filter_thumbnails/monster.png';
+    this.thumbnail = '/filter_thumbnails/monsters.png';
   }
 
   createFilter() {}

@@ -1,4 +1,4 @@
-import { PhotoFilter } from '../../filters/PhotoFilter';
+import { PhotoFilter } from '../photo/filters/PhotoFilter';
 import { Editable } from './Editable';
 
 export type PhotoPosition = {

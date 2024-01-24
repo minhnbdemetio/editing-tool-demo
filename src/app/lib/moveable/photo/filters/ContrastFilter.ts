@@ -1,7 +1,4 @@
-import {
-  PHOTO_INNER_ELEMENTS,
-  SOURCE_GRAPHIC,
-} from '../moveable/constant/photo';
+import { PHOTO_INNER_ELEMENTS, SOURCE_GRAPHIC } from '../../constant/photo';
 import { PhotoFilter, PhotoFilterType } from './PhotoFilter';
 
 export class ContrastFilter extends PhotoFilter {

@@ -1,8 +1,6 @@
 import { v4 } from 'uuid';
-import {
-  PHOTO_INNER_ELEMENTS,
-  SOURCE_GRAPHIC,
-} from '../moveable/constant/photo';
+import { PHOTO_INNER_ELEMENTS, SOURCE_GRAPHIC } from '../../constant/photo';
+import { MoveablePhoto } from '../MoveablePhoto';
 
 export enum PhotoFilterType {
   None = 'None',
@@ -371,105 +369,47 @@ export abstract class PhotoFilter {
     };
   }
 
-  public renderFilter() {
-    // this.removeAllDefs();
-    // const { id: contrastMaskId, html: contrastFilter } =
-    //   this.filter.getContrastFilter();
-    // const { id: brightnessMaskId, html: brightnessFilter } =
-    //   this.filter.getBrightnessFilter(contrastMaskId);
-    // const { id: temperatureMaskId, html: temperatureFilter } =
-    //   this.filter.getTemperatureFilter(brightnessMaskId);
-    // const { id: blurFilterId, html: blurFilter } =
-    //   this.filter.getBlurFilter(temperatureMaskId);
-    // const { id: saturationMaskId, html: saturationFilter } =
-    //   this.filter.getSaturationFilter(blurFilterId);
-    // const { id: hueMaskId, html: hueFilter } =
-    //   this.filter.getHueFilter(saturationMaskId);
-    // const { html: vignetteFilter } = this.filter.getVignetteFilter(
-    //   hueMaskId,
-    //   this.width,
-    //   this.height,
-    // );
-    // const filters: (string | null)[] = [
-    //   contrastFilter,
-    //   brightnessFilter,
-    //   temperatureFilter,
-    //   blurFilter,
-    //   saturationFilter,
-    //   hueFilter,
-    //   vignetteFilter,
-    // ];
-    // const appliedFilters: string[] = filters.filter(f => !!f) as string[];
-    // const imageElement = document.getElementById(`g-${this.id}`);
-    // const element = this.getFilterContainer();
-    // if (element && imageElement) {
-    //   if (appliedFilters.length) {
-    //     imageElement.setAttribute('filter', `url(#${this.filter.filterId})`);
-    //     element.innerHTML = appliedFilters.join(' ');
-    //   } else {
-    //     element.innerHTML = '';
-    //     imageElement.setAttribute('filter', ``);
-    //   }
-    // }
-  }
-
-  public changeContrast(contrast: number) {
-    this.contrast = contrast;
-
-    this.renderFilter();
-  }
-
-  public changeBrightness(brightness: number) {
-    this.brightness = brightness;
-
-    this.renderFilter();
-  }
-  public changeSaturation(saturation: number) {
-    this.saturation = saturation;
-
-    this.renderFilter();
-  }
-  public changeHue(hue: { r: number; g: number; b: number }) {
-    this.hue = hue;
-
-    this.renderFilter();
-  }
-  public changeTemperature(temp: number) {
-    this.temperature = temp;
-
-    this.renderFilter();
-  }
-  public changeBlur(blur: number) {
-    this.blur = blur;
-
-    this.renderFilter();
-  }
-  public changeVignette(vignette: number) {
-    this.vignette = vignette;
-
-    this.renderFilter();
-  }
-
-  public setFilter(filter: PhotoFilter) {
-    this.hue = filter.hue;
-    this.brightness = filter.brightness;
-    this.blur = filter.blur;
-    this.vignette = filter.vignette;
-    this.contrast = filter.contrast;
-    this.saturation = filter.saturation;
-    this.temperature = filter.temperature;
-
-    this.renderFilter();
-  }
-  public getFilterParam() {
-    return {
-      hue: this.hue,
-      brightness: this.brightness,
-      blur: this.blur,
-      vignette: this.vignette,
-      contrast: this.contrast,
-      saturation: this.saturation,
-      temperature: this.temperature,
-    };
+  public render(photo: MoveablePhoto) {
+    photo.removeAllDefs();
+    const { id: contrastMaskId, html: contrastFilter } =
+      this.getContrastFilter();
+    const { id: brightnessMaskId, html: brightnessFilter } =
+      this.getBrightnessFilter(contrastMaskId);
+    const { id: temperatureMaskId, html: temperatureFilter } =
+      this.getTemperatureFilter(brightnessMaskId);
+    const { id: blurFilterId, html: blurFilter } =
+      this.getBlurFilter(temperatureMaskId);
+    const { id: saturationMaskId, html: saturationFilter } =
+      this.getSaturationFilter(blurFilterId);
+    const { id: hueMaskId, html: hueFilter } =
+      this.getHueFilter(saturationMaskId);
+    const { html: vignetteFilter } = this.getVignetteFilter(
+      hueMaskId,
+      photo.getWidth(),
+      photo.getHeight(),
+    );
+    const filters: (string | null)[] = [
+      contrastFilter,
+      brightnessFilter,
+      temperatureFilter,
+      blurFilter,
+      saturationFilter,
+      hueFilter,
+      vignetteFilter,
+    ];
+    const appliedFilters: string[] = filters.filter(f => !!f) as string[];
+    const gElement = document.getElementById(
+      `${PHOTO_INNER_ELEMENTS.G}-${photo.id}`,
+    );
+    const filterElement = photo.getFilterContainer();
+    if (filterElement && gElement) {
+      if (appliedFilters.length) {
+        gElement.setAttribute('filter', `url(#${this.filterId})`);
+        filterElement.innerHTML = appliedFilters.join(' ');
+      } else {
+        filterElement.innerHTML = '';
+        gElement.setAttribute('filter', ``);
+      }
+    }
   }
 }

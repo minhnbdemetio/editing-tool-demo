@@ -1,5 +1,6 @@
 import { IMAGE_CONTAINER } from "@/app/lib/moveable/constant/image";
-import { MoveablePhoto } from '@/app/lib/moveable/MoveablePhoto';
+import { PHOTO_INNER_ELEMENTS } from "@/app/lib/moveable/constant/photo";
+import { MoveablePhoto } from '@/app/lib/moveable/photo/MoveablePhoto';
 import { FC } from 'react';
 
 interface MoveablePhotoProps {
@@ -17,20 +18,20 @@ export const MoveablePhotoElement: FC<MoveablePhotoProps> = ({ object }) => {
       }}
       className={`hidden absolute w-fit overflow-hidden`}
     >
-      <div id={`image-layer-${object.id}`} className="w-full h-full">
+      <div id={`${PHOTO_INNER_ELEMENTS.IMAGE_LAYER}-${object.id}`} className="w-full h-full">
         <svg
-          id={`svg-container-${object.id}`}
+          id={`${PHOTO_INNER_ELEMENTS.SVG}-${object.id}`}
           width={'100%'}
           height={'100%'}
           className="w-full h-full"
         >
-          <defs id={`defs-${object.id}`}>
+          <defs id={`${PHOTO_INNER_ELEMENTS.DEFS}-${object.id}`}>
             <filter
               colorInterpolationFilters="sRGB"
-              id={object.filterId}
+              id={object.filter.filterId}
             ></filter>
           </defs>
-          <g id={`g-${object.id}`}>
+          <g id={`${PHOTO_INNER_ELEMENTS.G}-${object.id}`}>
             <image
               id={`${IMAGE_CONTAINER}-${object.id}`}
               className="w-full h-full"

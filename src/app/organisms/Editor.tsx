@@ -10,7 +10,7 @@ import { MoveableConfig } from '../atoms/moveables/MoveableConfig';
 import { useAddPage, useClonePage, usePages } from '../hooks/usePage';
 import { useActivePage } from '../store/active-page';
 import { twMerge } from '../utilities/tailwind';
-import { MoveablePhoto } from '../lib/moveable/MoveablePhoto';
+import { MoveablePhoto } from '../lib/moveable/photo/MoveablePhoto';
 import { useAddObjectToActivePage } from '../hooks/usePageObjects';
 
 export const SELECTO_ID = 'editor-selecto';
