@@ -12,7 +12,9 @@ export abstract class Polygon extends SvgShape {
 
     const beginPath = points.shift();
 
-    return `<path d="M${beginPath?.x},${beginPath?.y} L ${points
+    return `<path stroke-width="${this.strokeWidth}" stroke="${
+      this.stroke
+    }" d="M${beginPath?.x},${beginPath?.y} L ${points
       .map(({ x, y }) => `${x},${y}`)
       .join(' ')} Z" fill="currentColor"  isInit="true"></path>`;
   }

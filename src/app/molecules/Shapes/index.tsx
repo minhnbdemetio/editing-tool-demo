@@ -6,6 +6,7 @@ import { MoveableHeart } from '@/app/lib/moveable/shape/MoveableHeart';
 import { MoveableHexagon } from '@/app/lib/moveable/shape/MoveableHexagon';
 import { MoveablePentagon } from '@/app/lib/moveable/shape/MoveablePentagon';
 import { MoveablePlus } from '@/app/lib/moveable/shape/MoveablePlus';
+import { MoveableQuadrangle } from '@/app/lib/moveable/shape/MoveableQuadrangle';
 import { MoveableShape } from '@/app/lib/moveable/shape/MoveableShape';
 import { MoveableSquare } from '@/app/lib/moveable/shape/MoveableSquare';
 import { MoveableSquaredTriangle } from '@/app/lib/moveable/shape/MoveableSquaredTriangle';
@@ -97,6 +98,15 @@ export const Shapes: React.FC = () => {
         }}
       >
         Arrow
+      </div>
+      <div
+        onClick={() => {
+          const shape = new MoveableQuadrangle();
+
+          addObjectToActivePage(shape);
+        }}
+      >
+        Quadrangle
       </div>
     </div>
   );
