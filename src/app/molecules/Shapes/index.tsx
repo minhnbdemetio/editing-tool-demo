@@ -1,5 +1,6 @@
 import { useAddObjectToActivePage } from '@/app/hooks/usePageObjects';
 import { MoveableShapeType } from '@/app/lib/moveable/editable/EditableShape';
+import { MoveableArrow } from '@/app/lib/moveable/shape/MoveableArrow';
 import { MoveableFivePointStar } from '@/app/lib/moveable/shape/MoveableFivePointStar';
 import { MoveableHeart } from '@/app/lib/moveable/shape/MoveableHeart';
 import { MoveableHexagon } from '@/app/lib/moveable/shape/MoveableHexagon';
@@ -87,6 +88,15 @@ export const Shapes: React.FC = () => {
         }}
       >
         plus
+      </div>
+      <div
+        onClick={() => {
+          const shape = new MoveableArrow();
+
+          addObjectToActivePage(shape);
+        }}
+      >
+        Arrow
       </div>
     </div>
   );
