@@ -1,10 +1,9 @@
 import { MoveableObject, ObjectType } from '../MoveableObject';
 import { MoveableShapeType } from '../editable/EditableShape';
-import { Pentagon } from '../svg/Pentagon';
-import { Quadrangle } from '../svg/Quadrangle';
+import { Parallelogram } from '../svg/Parallelogram';
 import { MoveableShape } from './MoveableShape';
 
-export class MoveableQuadrangle extends MoveableShape {
+export class MoveableParallelogram extends MoveableShape {
   constructor(options?: {
     id: string;
     type?: ObjectType;
@@ -16,7 +15,7 @@ export class MoveableQuadrangle extends MoveableShape {
   }
 
   getShape() {
-    return new Quadrangle({ width: this.width, height: this.height });
+    return new Parallelogram({ width: this.width, height: this.height });
   }
 
   clone(
@@ -24,7 +23,7 @@ export class MoveableQuadrangle extends MoveableShape {
   ): MoveableObject {
     const clonedData = this.cloneData();
 
-    return new MoveableQuadrangle({
+    return new MoveableParallelogram({
       ...this.toJSON(),
       id: clonedData.cloneObjectId,
     });

@@ -4,6 +4,7 @@ import { MoveableArrow } from '@/app/lib/moveable/shape/MoveableArrow';
 import { MoveableFivePointStar } from '@/app/lib/moveable/shape/MoveableFivePointStar';
 import { MoveableHeart } from '@/app/lib/moveable/shape/MoveableHeart';
 import { MoveableHexagon } from '@/app/lib/moveable/shape/MoveableHexagon';
+import { MoveableParallelogram } from '@/app/lib/moveable/shape/MoveableParallelogram';
 import { MoveablePentagon } from '@/app/lib/moveable/shape/MoveablePentagon';
 import { MoveablePlus } from '@/app/lib/moveable/shape/MoveablePlus';
 import { MoveableQuadrangle } from '@/app/lib/moveable/shape/MoveableQuadrangle';
@@ -107,6 +108,15 @@ export const Shapes: React.FC = () => {
         }}
       >
         Quadrangle
+      </div>
+      <div
+        onClick={() => {
+          const shape = new MoveableParallelogram();
+
+          addObjectToActivePage(shape);
+        }}
+      >
+        Parallelogram
       </div>
     </div>
   );
