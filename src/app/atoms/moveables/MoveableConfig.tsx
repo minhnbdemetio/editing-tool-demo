@@ -67,8 +67,9 @@ export const MoveableConfig: FC = () => {
         }}
         draggable
         resizable
+        throttleResize={1}
         snappable
-        keepRatio
+        // keepRatio
         rotatable
         snapGridWidth={50}
         onDragStart={e => {

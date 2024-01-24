@@ -1,6 +1,6 @@
 import { Polygon } from './Polygon';
 
-export class Pentagon extends Polygon {
+export class Octagon extends Polygon {
   getCoordinates() {
     const centerPoint = this.getCenterPoint();
     const topX = this.getTopX();
@@ -8,7 +8,6 @@ export class Pentagon extends Polygon {
     const topY = (this.height * 45) / 100;
 
     const bottomX = (this.width * 20) / 100;
-
     return [
       { x: centerPoint, y: 0 },
       { x: centerPoint + topX, y: topY },
