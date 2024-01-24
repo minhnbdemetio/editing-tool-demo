@@ -12,6 +12,7 @@ export enum MoveableShapeType {
   FivePointStar,
   SixPointStar,
   EightPointStart,
+  Plus,
 }
 
 export interface EditableShape extends Editable {
