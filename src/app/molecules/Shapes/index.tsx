@@ -30,6 +30,24 @@ export const Shapes: React.FC = () => {
       </div>
       <div
         onClick={() => {
+          const shape = new MoveableSquare({ reverseRounded: true } as any);
+
+          addObjectToActivePage(shape);
+        }}
+      >
+        add rounded square
+      </div>
+      <div
+        onClick={() => {
+          const shape = new MoveableSquare({ reverseRounded: true } as any);
+
+          addObjectToActivePage(shape);
+        }}
+      >
+        add reverse rounded corners square
+      </div>
+      <div
+        onClick={() => {
           const shape = new MoveableTriangle();
 
           addObjectToActivePage(shape);
