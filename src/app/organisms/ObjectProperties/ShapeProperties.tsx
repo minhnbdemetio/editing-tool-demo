@@ -1,9 +1,9 @@
 import {
+  useActiveMoveableShapeObject,
   useActivePhotoObject,
   useSetBackgroundImage,
 } from '@/app/hooks/useActiveMoveableObject';
 import { MoveableObject } from '@/app/lib/moveable/MoveableObject';
-import { MoveablePhoto } from '@/app/lib/moveable/MoveablePhoto';
 import {
   SelectedProperty,
   useSelectedProperty,
@@ -14,40 +14,25 @@ import { FC, useState } from 'react';
 const checkLockedObject = (activeObject: MoveableObject) =>
   !activeObject.isLocked;
 
-const PHOTO_MENU_PROPERTIES = [
+const SHAPE_PROPERTIES = [
   {
     label: 'Nudge',
-    value: SelectedProperty.PhotoNudge,
+    value: SelectedProperty.ShapeNudge,
     isShowButton: checkLockedObject,
   },
   {
-    label: 'Filter',
-    value: SelectedProperty.PhotoFilter,
+    label: 'Color',
+    value: SelectedProperty.ShapeColor,
     isShowButton: checkLockedObject,
   },
   {
-    label: 'ManualFilter',
-    value: SelectedProperty.PhotoManualFilter,
-    isShowButton: checkLockedObject,
-  },
-  {
-    label: 'Effect',
-    value: SelectedProperty.PhotoEffect,
-    isShowButton: checkLockedObject,
-  },
-  {
-    label: 'Crop',
-    value: SelectedProperty.PhotoCrop,
-    isShowButton: checkLockedObject,
-  },
-  {
-    label: 'Opacity',
-    value: SelectedProperty.PhotoOpacity,
+    label: 'Border',
+    value: SelectedProperty.ShapeBorder,
     isShowButton: checkLockedObject,
   },
   {
     label: 'Align',
-    value: SelectedProperty.PhotoAlign,
+    value: SelectedProperty.ShapeAlign,
     isShowButton: checkLockedObject,
   },
   {
@@ -56,50 +41,77 @@ const PHOTO_MENU_PROPERTIES = [
     isShowButton: () => true,
   },
   {
-    label: 'Flip',
-    value: SelectedProperty.PhotoFlip,
+    label: 'Layer',
+    value: SelectedProperty.ShapeLayer,
+    isShowButton: () => true,
+  },
+  {
+    label: 'Opacity',
+    value: SelectedProperty.ShapeOpacity,
     isShowButton: checkLockedObject,
   },
   {
-    label: 'Layer',
-    value: SelectedProperty.PhotoLayer,
-    isShowButton: () => true,
-  },
-  {
-    label: 'Set as background',
-    value: SelectedProperty.PhotoBackground,
-    isShowButton: (activeObject: MoveablePhoto) =>
-      checkLockedObject(activeObject) && !activeObject.isBackground,
-  },
-  {
-    label: 'Reset background',
-    value: SelectedProperty.PhotoBackground,
-    isShowButton: (activeObject: MoveablePhoto) => {
-      console.log('checkshowbutton', activeObject.isBackground);
-      return checkLockedObject(activeObject) && activeObject.isBackground;
-    },
-  },
-  {
     label: 'More',
-    value: SelectedProperty.PhotoMore,
+    value: SelectedProperty.ShapeMore,
     isShowButton: () => true,
   },
+  // {
+  //   label: 'Filter',
+  //   value: SelectedProperty.ShapeFilter,
+  //   isShowButton: checkLockedObject,
+  // },
+  // {
+  //   label: 'ManualFilter',
+  //   value: SelectedProperty.ShapeManualFilter,
+  //   isShowButton: checkLockedObject,
+  // },
+
+  // {
+  //   label: 'Crop',
+  //   value: SelectedProperty.ShapeCrop,
+  //   isShowButton: checkLockedObject,
+  // },
+  // {
+  //   label: 'Opacity',
+  //   value: SelectedProperty.ShapeOpacity,
+  //   isShowButton: checkLockedObject,
+  // },
+  // {
+  //   label: 'Align',
+  //   value: SelectedProperty.ShapeAlign,
+  //   isShowButton: checkLockedObject,
+  // },
+  // {
+  //   label: 'Order',
+  //   value: SelectedProperty.Position,
+  //   isShowButton: () => true,
+  // },
+  // {
+  //   label: 'Flip',
+  //   value: SelectedProperty.ShapeFlip,
+  //   isShowButton: checkLockedObject,
+  // },
+  // {
+  //   label: 'More',
+  //   value: SelectedProperty.ShapeMore,
+  //   isShowButton: () => true,
+  // },
 ];
 
-export const PhotoMenuProperties: FC = () => {
+export const ShapeProperties: FC = () => {
   const { setSelectedProperty } = useSelectedProperty();
-  const activePhotoObject = useActivePhotoObject();
+  const activePhotoObject = useActiveMoveableShapeObject();
 
   console.log('activePhotoObject', activePhotoObject);
   console.log(
     'proooo',
-    PHOTO_MENU_PROPERTIES.filter(
+    SHAPE_PROPERTIES.filter(
       item => activePhotoObject && item.isShowButton(activePhotoObject),
     ),
   );
 
   const [photoProperties, setPhotoProperties] = useState(
-    PHOTO_MENU_PROPERTIES.filter(
+    SHAPE_PROPERTIES.filter(
       item => activePhotoObject && item.isShowButton(activePhotoObject),
     ),
   );
@@ -112,12 +124,12 @@ export const PhotoMenuProperties: FC = () => {
           <Button
             key={item.label}
             onClick={() => {
-              if (item.value !== SelectedProperty.PhotoBackground) {
+              if (item.value !== SelectedProperty.ShapeBackground) {
                 setSelectedProperty(item.value);
               } else {
                 setBackgroundImage();
                 setPhotoProperties(
-                  PHOTO_MENU_PROPERTIES.filter(
+                  SHAPE_PROPERTIES.filter(
                     item =>
                       activePhotoObject && item.isShowButton(activePhotoObject),
                   ),

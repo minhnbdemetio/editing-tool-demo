@@ -20,6 +20,6 @@ export interface EditableShape extends Editable {
   shapeColor: string;
   shapeOutline: string;
   shapeShadow: string;
-  shapeText: undefined;
+  shapeText: string;
   getShape(): SvgShape;
 }

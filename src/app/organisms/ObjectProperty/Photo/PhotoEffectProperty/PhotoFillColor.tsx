@@ -39,6 +39,7 @@ export const PhotoFillColor: FC<PhotoFillColorProps> = ({
       if (fillColorElement) fillColorElement.style.backgroundColor = color.hex;
     }
   };
+
   const onChangeOpacity = (_opacity: number | number[]) => {
     let newOpacity = Number(_opacity);
     if (newOpacity < 0) newOpacity = 0;

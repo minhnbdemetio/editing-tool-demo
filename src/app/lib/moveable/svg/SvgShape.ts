@@ -9,7 +9,7 @@ export declare type SvgShapeOptions = {
 export abstract class SvgShape {
   protected width: number;
   protected height: number;
-  protected fill: string | undefined;
+  public fill: string | undefined;
   protected stroke: string | undefined;
   protected strokeWidth: number | undefined;
 
@@ -18,7 +18,7 @@ export abstract class SvgShape {
     this.height = options.height || 0;
   }
 
-  abstract getPath(): string;
+  abstract getPath(fill?: any): string;
 
   public getWidth() {
     return this.width;
