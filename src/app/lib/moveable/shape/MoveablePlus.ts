@@ -1,33 +1,21 @@
 import { MoveableObject, ObjectType } from '../MoveableObject';
 import { MoveableShapeType } from '../editable/EditableShape';
-import { Square } from '../svg/Square';
+import { Plus } from '../svg/Plus';
 import { MoveableShape } from './MoveableShape';
 
-export class MoveableSquare extends MoveableShape {
-  public rounded: number = 0;
-  public reverseRounded?: boolean = false;
+export class MoveablePlus extends MoveableShape {
   constructor(options?: {
     id: string;
     type?: ObjectType;
     pageId: string | null;
     htmlString?: string;
-    rounded?: number;
-    reverseRounded?: boolean;
   }) {
     super(options);
-    this.shapeType = MoveableShapeType.Square;
-
-    this.rounded = options?.rounded || 0;
-    this.reverseRounded = options?.reverseRounded || false;
+    this.shapeType = MoveableShapeType.Plus;
   }
 
   getShape() {
-    return new Square({
-      width: this.width,
-      height: this.height,
-      rounded: this.rounded,
-      reverseRounded: this.reverseRounded,
-    });
+    return new Plus({ width: this.width, height: this.height });
   }
 
   clone(
@@ -35,7 +23,7 @@ export class MoveableSquare extends MoveableShape {
   ): MoveableObject {
     const clonedData = this.cloneData();
 
-    return new MoveableSquare({
+    return new MoveablePlus({
       ...this.toJSON(),
       id: clonedData.cloneObjectId,
     });

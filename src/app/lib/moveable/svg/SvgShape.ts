@@ -9,9 +9,9 @@ export declare type SvgShapeOptions = {
 export abstract class SvgShape {
   protected width: number;
   protected height: number;
-  protected fill: string | undefined;
-  protected stroke: string | undefined;
-  protected strokeWidth: number | undefined;
+  protected fill: string = '#000';
+  protected stroke: string = '#000';
+  protected strokeWidth: number = 5;
 
   constructor(options: SvgShapeOptions) {
     this.width = options.width || 0;
