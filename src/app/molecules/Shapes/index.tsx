@@ -12,6 +12,7 @@ import { MoveableShape } from '@/app/lib/moveable/shape/MoveableShape';
 import { MoveableSquare } from '@/app/lib/moveable/shape/MoveableSquare';
 import { MoveableSquaredTriangle } from '@/app/lib/moveable/shape/MoveableSquaredTriangle';
 import { MoveableTriangle } from '@/app/lib/moveable/shape/MoveableTriangle';
+import { CornerType } from '@/app/lib/moveable/svg/Square';
 import React, { useCallback } from 'react';
 
 export const Shapes: React.FC = () => {
@@ -30,7 +31,9 @@ export const Shapes: React.FC = () => {
       </div>
       <div
         onClick={() => {
-          const shape = new MoveableSquare({ rounded: 20 } as any);
+          const shape = new MoveableSquare({
+            corners: { all: { size: 20, type: CornerType.Rounded } },
+          });
 
           addObjectToActivePage(shape);
         }}
@@ -39,12 +42,28 @@ export const Shapes: React.FC = () => {
       </div>
       <div
         onClick={() => {
-          const shape = new MoveableSquare({ reverseRounded: true } as any);
+          const shape = new MoveableSquare({
+            corners: { all: { size: 20, type: CornerType.InvertedRound } },
+          });
 
           addObjectToActivePage(shape);
         }}
       >
         add reverse rounded corners square
+      </div>
+      <div
+        onClick={() => {
+          const shape = new MoveableSquare({
+            corners: {
+              tl: { size: 20, type: CornerType.Cut },
+              tr: { size: 20, type: CornerType.Cut },
+            },
+          });
+
+          addObjectToActivePage(shape);
+        }}
+      >
+        Cut corner square
       </div>
       <div
         onClick={() => {
