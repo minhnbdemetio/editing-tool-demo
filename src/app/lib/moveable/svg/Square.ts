@@ -70,7 +70,7 @@ export class Square extends SvgShape {
 
     switch (corner.type) {
       case CornerType.Rounded:
-        return `q${corner},0,${corner},-${corner}`;
+        return `q${corner.size},0,${corner.size},-${corner.size}`;
       case CornerType.Cut:
         return `l ${corner.size},-${corner.size}`;
       case CornerType.InvertedRound:

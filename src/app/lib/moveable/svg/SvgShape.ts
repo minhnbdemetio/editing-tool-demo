@@ -27,7 +27,7 @@ export abstract class SvgShape {
     this.width = width;
   }
   public getHeight() {
-    return this.width;
+    return this.height;
   }
   public setHeight(height: number) {
     this.height = height;
@@ -49,6 +49,16 @@ export abstract class SvgShape {
   }
   public setStrokeWidth(strokeWidth: number) {
     this.strokeWidth = strokeWidth;
+  }
+
+  public getPadding() {
+    return this.strokeWidth / 2;
+  }
+  public getRelativeWidth() {
+    return this.getWidth() - this.strokeWidth / 2;
+  }
+  public getRelativeHeight() {
+    return this.getHeight() - this.strokeWidth / 2;
   }
 
   public getCenterPoint() {

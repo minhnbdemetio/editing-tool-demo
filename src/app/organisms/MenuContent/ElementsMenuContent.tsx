@@ -80,7 +80,7 @@ export const ElementsMenuContent: FC = () => {
     setTemplateSettingFormat(defaultTemplateSetting);
   };
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full overflow-auto">
       <div className="p-6 w-full h-fit">
         <SearchInput
           recommendedKeywords={recommendedKeywords}

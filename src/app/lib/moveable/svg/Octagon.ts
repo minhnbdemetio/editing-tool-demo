@@ -2,18 +2,20 @@ import { Polygon } from './Polygon';
 
 export class Octagon extends Polygon {
   getCoordinates() {
-    const centerPoint = this.getCenterPoint();
-    const topX = this.getTopX();
+    const padding = this.getPadding();
+    const octagonCut = padding + this.getWidth() / 4;
+    const height = this.getRelativeHeight();
+    const width = this.getRelativeWidth();
 
-    const topY = (this.height * 45) / 100;
-
-    const bottomX = (this.width * 20) / 100;
     return [
-      { x: centerPoint, y: 0 },
-      { x: centerPoint + topX, y: topY },
-      { x: this.width - bottomX, y: this.height },
-      { x: bottomX, y: this.height },
-      { x: centerPoint - topX, y: topY },
+      { x: octagonCut, y: padding },
+      { x: width - octagonCut, y: padding },
+      { x: width, y: octagonCut },
+      { x: width, y: height - octagonCut },
+      { x: width - octagonCut, y: height },
+      { x: octagonCut, y: height },
+      { x: padding, y: height - octagonCut },
+      { x: padding, y: octagonCut },
     ];
   }
 }
