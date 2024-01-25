@@ -6,6 +6,7 @@ import { DEFAULT_TEXT_SCALE, TEXT_INNER_ELEMENTS } from '../constant/text';
 import { EditableText } from '../editable/EditableText';
 import { StyleEffect } from '../effects/text/StyleEffect';
 import { TextEffect, TextEffectOptions } from '../effects/text/TextEffect';
+import { ShapeEffect } from '../effects/text/ShapeEffect';
 
 export type MoveableTextShadow = {
   color?: string;
@@ -53,19 +54,20 @@ export type MoveableTextShapeEffect = 'none' | 'curve';
 
 export class MoveableTextObject extends MoveableObject implements EditableText {
   variant?: MoveableTextVariant;
-  shapeEffect?: MoveableTextShapeEffect;
   gradientStops?: GradientStop[];
   transformDirection: string;
   curve?: number;
   scaleY: number = DEFAULT_TEXT_SCALE;
   scaleX: number = DEFAULT_TEXT_SCALE;
   styleEffect: StyleEffect;
+  shapeEffect: ShapeEffect;
   constructor(options?: { id: string; htmlString: string }) {
     super(options);
     this.type = 'text';
     this.variant = 'normal';
     this.transformDirection = 'bottom';
     this.styleEffect = new StyleEffect();
+    this.shapeEffect = new ShapeEffect();
   }
 
   clone(options?: { htmlString: string; id: string }): MoveableTextObject {
@@ -298,205 +300,12 @@ export class MoveableTextObject extends MoveableObject implements EditableText {
     element.style.webkitTextFillColor = 'transparent';
   }
 
-  setShapeEffect(shapeEffect: MoveableTextShapeEffect) {
+  setShapeEffect(shapeEffect: ShapeEffect) {
     this.shapeEffect = shapeEffect;
   }
 
-  setShapeNone() {
-    const ul = this.getTextContainer();
-    const curveContainerId = `curve-effect-${this.id}`;
-    const curveContainer = document.getElementById(curveContainerId);
-    if (!curveContainer || !ul) return;
-    curveContainer.parentElement?.removeChild(curveContainer);
-    ul.style.visibility = 'unset';
-    if (ul.parentElement) {
-      ul.parentElement.style.position = 'unset';
-    }
-    document.removeEventListener(
-      'mousedown',
-      this.onClickOutsideCurveContainerElement.bind(this),
-    );
-  }
-
-  onInput(e: Event) {
-    const curveContainerId = `curve-effect-${this.id}`;
-    const curveContainer = document.getElementById(curveContainerId);
-    const ul = this.getTextContainer();
-    if (!curveContainer || !ul) return;
-    const target = e.target as HTMLInputElement;
-    const textContent = target.textContent?.trim() || '';
-    ul.textContent = textContent;
-    this.generateCurveElement();
-  }
-
-  onClickOutsideCurveContainerElement(e: Event) {
-    const curveContainerId = `curve-effect-${this.id}`;
-    const curveContainer = document.getElementById(curveContainerId);
-    if (!curveContainer) return;
-    const text = document.getElementById(
-      `text-layer-${this.id}`,
-    ) as HTMLElement;
-    const target = e.target as HTMLElement;
-    if (
-      target !== curveContainer &&
-      target?.parentElement !== curveContainer &&
-      text !== e.target
-    ) {
-      curveContainer.style.opacity = '1';
-      if (text) {
-        text.removeEventListener('input', this.onInput.bind(this));
-        document.body.removeChild(text);
-      }
-      document.removeEventListener(
-        'mousedown',
-        this.onClickOutsideCurveContainerElement.bind(this),
-      );
-    }
-  }
-
-  setCurveEffect(curve: number) {
-    const element = this.getElement();
-    if (!element) return false;
-    document.removeEventListener(
-      'mousedown',
-      this.onClickOutsideCurveContainerElement.bind(this),
-    );
-    // Save state
-    this.curve = curve;
-    const elId = this.id;
-    const ul = this.getTextContainer();
-    if (!ul) return false;
-    element.style.position = 'relative';
-    element.style.zIndex = '1';
-    ul.style.visibility = 'hidden';
-    this.generateCurveElement();
-    const curveContainer = document.getElementById(
-      `curve-effect-${elId}`,
-    ) as HTMLElement;
-
-    // Add event listener
-    curveContainer?.addEventListener(
-      'click',
-      this.onClickToCurveContainerElement.bind(this),
-    );
-  }
-
-  generateCurveElement() {
-    const element = this.getElement();
-    if (!element) return false;
-    const elId = this.id;
-    const ul = this.getTextContainer();
-    if (!ul) return false;
-    let curveContainer = document.getElementById(`curve-effect-${elId}`);
-    if (!curveContainer) {
-      curveContainer = document.createElement('div');
-      curveContainer.id = `curve-effect-${elId}`;
-      curveContainer.style.position = 'absolute';
-      curveContainer.style.top = '0';
-      curveContainer.style.left = '0';
-      curveContainer.style.zIndex = '1';
-      element.appendChild(curveContainer);
-    } else {
-      // Remove all child elements
-      while (curveContainer.firstChild) {
-        curveContainer.removeChild(curveContainer.firstChild);
-      }
-    }
-    // Logic calculate curve
-    const styles = window.getComputedStyle(element);
-    const text = ul.textContent?.trim() || '';
-    const fontSize = parseFloat(
-      styles.fontSize?.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
-    );
-    const width = parseFloat(
-      styles.width?.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
-    );
-    const Wi = width / text.length;
-    const R = (3.2 * fontSize) / Math.sin((Math.PI * (this.curve ?? 50)) / 180);
-    const dx = R - 3.2 * fontSize;
-    const alpha = this.calculateAlphaCurve((180 * width) / (Math.PI * R));
-    const delta = (180 * Wi) / (Math.PI * R);
-    let nextAlpha = alpha;
-    for (let i = 0; i < text.length; i++) {
-      const letter = text[i];
-      const span = document.createElement('span');
-      span.innerText = letter;
-      span.style.position = 'absolute';
-      const { x, y } = this.calculateCurveTranslate(nextAlpha, R, dx);
-      span.style.transform = `translate(${x}px, ${y}px) rotate(${
-        nextAlpha - 90
-      }deg)`;
-      nextAlpha = alpha + (i + 1) * delta;
-      if (nextAlpha > 360) {
-        nextAlpha -= 360;
-      }
-      curveContainer.appendChild(span);
-    }
-  }
-
-  calculateAlphaCurve(deg: number) {
-    let a = deg;
-    while (a > 360) {
-      a -= 360;
-    }
-    a = a / 2;
-    if (a <= 90) {
-      return 90 - a;
-    } else {
-      return 450 - a;
-    }
-  }
-  calculateCurveTranslate(
-    deg: number,
-    R: number,
-    dx: number,
-  ): { x: number; y: number } {
-    let x: number, y: number;
-    if (deg <= 90) {
-      x = R - R * Math.cos((deg * Math.PI) / 180);
-      y = R - R * Math.sin((deg * Math.PI) / 180);
-    } else if (deg <= 180) {
-      x = R + R * Math.sin(((deg - 90) * Math.PI) / 180);
-      y = R - R * Math.cos(((deg - 90) * Math.PI) / 180);
-    } else if (deg <= 270) {
-      x = R + R * Math.cos(((deg - 180) * Math.PI) / 180);
-      y = R + R * Math.sin(((deg - 180) * Math.PI) / 180);
-    } else {
-      x = R - R * Math.cos(((360 - deg) * Math.PI) / 180);
-      y = R + R * Math.sin(((360 - deg) * Math.PI) / 180);
-    }
-    return { x: x - dx, y };
-  }
-  onClickToCurveContainerElement(e: Event) {
-    const curveContainerId = `curve-effect-${this.id}`;
-    const curveContainer = document.getElementById(curveContainerId);
-    const element = this.getElement();
-    const ul = this.getTextContainer();
-    if (!curveContainer || !element || !ul) return;
-    const elementStyles = window.getComputedStyle(element);
-    const { x, y } = element.getBoundingClientRect();
-    let text = document.getElementById(`text-layer-${this.id}`) as HTMLElement;
-    if (!text) {
-      text = document.createElement('div');
-      text.id = `text-layer-${this.id}`;
-      text.contentEditable = 'true';
-      text.textContent = ul.textContent?.trim() || '';
-      text.style.fontSize = elementStyles.fontSize;
-      text.style.color = elementStyles.color;
-      text.style.fontFamily = elementStyles.fontFamily;
-      text.style.position = 'fixed';
-      text.style.top = `${y}px`;
-      text.style.left = `${x}px`;
-      text.style.minWidth = '20px';
-      text.style.minHeight = '20px';
-    }
-    curveContainer.style.opacity = '0.3';
-    document.body.appendChild(text);
-    document.addEventListener(
-      'mousedown',
-      this.onClickOutsideCurveContainerElement.bind(this),
-    );
-    text.addEventListener('input', this.onInput.bind(this));
+  updateShapeEffectOption(shapeEffectOption: TextEffectOptions) {
+    this.shapeEffect.setOption(shapeEffectOption);
   }
 
   setTextScale({ scaleX, scaleY }: { scaleX?: number; scaleY?: number }) {
@@ -519,6 +328,7 @@ export class MoveableTextObject extends MoveableObject implements EditableText {
     const element = this.getElement();
     if (!element) return;
     this.styleEffect.apply(element);
+    this.shapeEffect.apply(element);
     this.renderTextScale();
   }
 }

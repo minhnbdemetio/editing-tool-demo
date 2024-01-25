@@ -411,10 +411,10 @@ export class TextBackgroundEffect extends StyleEffect {
     const elHeight = parseFloat(
       textChildStyles.height.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
     );
-    const widthContainer = parseFloat(
+    const textContainerHeight = parseFloat(
       window
         .getComputedStyle(textContainer)
-        .width.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
+        .height.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
     );
 
     const bgElement = document.getElementById(bgEffectId);
@@ -429,9 +429,9 @@ export class TextBackgroundEffect extends StyleEffect {
     svg.style.position = 'absolute';
     svg.style.top = '0';
     svg.style.left = `${-spreadVal}px`;
-    svg.style.right = `${widthContainer + spreadVal}px`;
+    svg.style.width = `calc(100% + ${2 * spreadVal}px)`;
     svg.style.zIndex = '-1';
-    svg.style.height = '100%';
+    svg.style.height = `${textContainerHeight}px`;
     element.appendChild(svg);
     let prevPathWidth = 0;
     const lengthItems = textContainer.childNodes.length;
