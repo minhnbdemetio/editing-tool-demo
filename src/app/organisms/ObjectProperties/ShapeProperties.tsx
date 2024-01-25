@@ -26,7 +26,7 @@ const SHAPE_PROPERTIES = [
     isShowButton: checkLockedObject,
   },
   {
-    label: 'Border',
+    label: 'Outline',
     value: SelectedProperty.ShapeBorder,
     isShowButton: checkLockedObject,
   },

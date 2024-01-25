@@ -56,7 +56,7 @@ export abstract class MoveableShape
     console.log('elementttt', element);
 
     if (!element) return false;
-    element.style.border = `${width}px solid ${color}`;
+    element.style.outline = `${width}px solid ${color}`;
     this.shapeBorderColor = color;
   }
 
