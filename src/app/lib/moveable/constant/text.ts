@@ -58,6 +58,10 @@ export const TEXT_BACKGROUND_DEFAULT_VALUE = {
   roundness: 50,
 };
 
+export const TEXT_CURVE_DEFAULT_VALUE = {
+  curve: 50,
+};
+
 export const TEXT_SHADOW_EFFECT_CSS_VARIABLES = '--text-shadow-effect';
 export const TEXT_LIFT_EFFECT_CSS_VARIABLES = '--text-lift-effect';
 export const TEXT_HOLLOW_EFFECT_CSS_VARIABLES = '--text-lift-effect';
@@ -71,3 +75,5 @@ export const TEXT_PREVIOUS_COLOR_CSS_VARIABLE = '--prev-color';
 
 export const OUTLINE_EFFECT_CONTAINER = 'outline-effect-container';
 export const BACKGROUND_EFFECT_CONTAINER = 'background-effect-container';
+export const CURVE_EFFECT_CONTAINER = 'curve-effect-container';
+export const TEXT_CURVE_INPUT_LAYER_CONTAINER = 'text-layer-container';

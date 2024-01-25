@@ -10,6 +10,7 @@ export type TextEffectOptions = {
   thickness?: number;
   spread?: number;
   roundness?: number;
+  curve?: number;
 };
 
 export abstract class TextEffect extends Effect {
