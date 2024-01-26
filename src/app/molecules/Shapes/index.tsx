@@ -35,6 +35,7 @@ const shapes: { key: string; src: string }[] = [
   { src: 'square-cut-t.png', key: 'square-cut-t' },
   { src: 'square-cut-tr-bl.png', key: 'square-cut-tr-bl' },
   { src: 'square-r-t.png', key: 'square-r-t' },
+  { src: 'minus.png', key: 'minus' },
 ];
 export const Shapes: React.FC = () => {
   const addObjectToActivePage = useAddObjectToActivePage();
@@ -118,6 +119,14 @@ export const Shapes: React.FC = () => {
               tr: { type: CornerType.Rounded, size: 20 },
               tl: { type: CornerType.Rounded, size: 20 },
             },
+          }),
+        );
+        return;
+      case 'minus':
+        addObjectToActivePage(
+          new MoveableSquare({
+            width: 100,
+            height: 30,
           }),
         );
         return;

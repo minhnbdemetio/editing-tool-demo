@@ -17,6 +17,8 @@ export class MoveableSquare extends MoveableShape {
     type?: ObjectType;
     pageId?: string | null;
     htmlString?: string;
+    width?: number;
+    height?: number;
     corners?: {
       tl?: Corner;
       tr?: Corner;
