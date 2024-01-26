@@ -39,6 +39,7 @@ export type TextBackgroundEffectOption = {
 
 export type TextFontStyle = 'italic' | 'normal';
 export type TextTransform = 'none' | 'uppercase';
+export type TextListStyle = 'none' | 'number' | 'disc';
 export type TextDecoration = {
   underline: boolean;
   lineThrough: boolean;
@@ -50,7 +51,7 @@ export type TextFormat = {
   textTransform: TextTransform;
   fontWeight: string;
   fontStyle: TextFontStyle;
-  textListStyle: 'none' | 'numeric' | 'dots';
+  textListStyle: TextListStyle;
   textDecoration: TextDecoration;
 
   setFontStyle: (fontStyle: TextFontStyle) => void;
@@ -72,11 +73,16 @@ export type TextFormat = {
   setTextDecoration: (key: keyof TextDecoration, state: boolean) => void;
   isTextDecorationEnable: (key: keyof TextDecoration) => boolean;
 
+  getTextListStyle: () => TextListStyle;
+  setTextListStyle: (listStyle: TextListStyle) => void;
+  isTextListStyle: (listStyle: TextListStyle) => boolean;
+
   setFontFamily: (fontFamily: string) => void;
   getFontFamily: () => string;
 
   applyFontEffect: () => void;
   applyTextDecorationEffect: () => void;
+  applyTextListStyle: () => void;
 };
 
 export type MoveableTextStyleEffect =
@@ -116,7 +122,7 @@ export class MoveableTextObject
     lineThrough: false,
     underline: false,
   };
-  textListStyle: 'none' | 'numeric' | 'dots' = 'none';
+  textListStyle: TextListStyle = 'none';
 
   constructor(options?: { id: string; htmlString: string }) {
     super(options);
@@ -420,6 +426,15 @@ export class MoveableTextObject
     return this.getTextAlign() === textAlign;
   };
 
+  getTextListStyle: () => TextListStyle = () => this.textListStyle;
+  setTextListStyle: (listStyle: TextListStyle) => void = listStyle => {
+    console.debug({ listStyle });
+    this.textListStyle = listStyle;
+  };
+  isTextListStyle: (listStyle: TextListStyle) => boolean = listStyle => {
+    return this.getTextListStyle() === listStyle;
+  };
+
   getTextDecoration: () => TextDecoration = () => this.textDecoration;
   setTextDecoration: (key: keyof TextDecoration, state: boolean) => void = (
     key,
@@ -449,6 +464,19 @@ export class MoveableTextObject
     }
   };
 
+  applyTextListStyle: () => void = () => {
+    const listElement = this.getElement()?.querySelector('ul');
+    if (!listElement) return false;
+
+    if (this.isTextListStyle('none')) {
+      listElement.style.paddingLeft = '0';
+      listElement.style.listStyleType = 'none';
+    } else {
+      listElement.style.paddingLeft = '20px';
+      listElement.style.listStyleType = this.getTextListStyle();
+    }
+  };
+
   applyFontEffect: () => void = () => {
     const element = this.getElement();
 
@@ -469,5 +497,6 @@ export class MoveableTextObject
     this.renderTextScale();
     this.applyFontEffect();
     this.applyTextDecorationEffect();
+    this.applyTextListStyle();
   }
 }

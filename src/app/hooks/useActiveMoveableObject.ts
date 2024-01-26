@@ -269,16 +269,11 @@ export const useToggleListTypeDiscText = () => {
   const activeText = useActiveTextObject();
 
   const toggleListTypeDiscText = (callback?: Function) => {
-    const listElement = activeText?.getElement()?.querySelector('ul');
-    if (!listElement) return false;
-    const isListTypeDisc = listElement.style.listStyleType === 'disc';
-    if (isListTypeDisc) {
-      listElement.style.paddingLeft = '0';
-      listElement.style.listStyleType = 'none';
-    } else {
-      listElement.style.paddingLeft = '20px';
-      listElement.style.listStyleType = 'disc';
-    }
+    activeText?.setTextListStyle(
+      activeText?.isTextListStyle('disc') ? 'none' : 'disc',
+    );
+
+    activeText?.render();
     callback && callback();
     return true;
   };
@@ -290,17 +285,11 @@ export const useToggleListTypeNumberText = () => {
   const activeText = useActiveTextObject();
 
   const toggleListTypeText = (callback?: Function) => {
-    const listElement = activeText?.getElement()?.querySelector('ul');
-    if (!listElement) return false;
-    const isNumberType = listElement.style.listStyleType === 'number';
+    activeText?.setTextListStyle(
+      activeText?.isTextListStyle('number') ? 'none' : 'number',
+    );
+    activeText?.render();
 
-    if (isNumberType) {
-      listElement.style.paddingLeft = '0';
-      listElement.style.listStyleType = 'none';
-    } else {
-      listElement.style.paddingLeft = '20px';
-      listElement.style.listStyleType = 'number';
-    }
     callback && callback();
     return true;
   };
