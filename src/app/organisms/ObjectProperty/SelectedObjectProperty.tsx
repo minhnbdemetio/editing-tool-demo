@@ -37,6 +37,7 @@ import { PhotoMoreProperty } from './Photo/More';
 import { ShapeFillColor } from './Shape/ShapeColorProperty';
 import { ShapeOutline } from './Shape/ShapeBorderProperty';
 
+import { ShapeTextFontProperty } from './Shape/ShapeTextFontProperty';
 import { ShapeTextColorProperty } from './Shape/ShapeTextColorProperty';
 
 export const SelectedObjectProperty: FC = () => {
@@ -167,6 +168,9 @@ export const SelectedObjectProperty: FC = () => {
       }
       case SelectedProperty.ShapeTextColor: {
         return <ShapeTextColorProperty />;
+      }
+      case SelectedProperty.ShapeTextFont: {
+        return <ShapeTextFontProperty />;
       }
       // case SelectedProperty.ShapeFlip: {
       //   return <PhotoFlipProperty />;
