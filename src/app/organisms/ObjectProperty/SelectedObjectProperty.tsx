@@ -34,6 +34,8 @@ import { PhotoEffectProperty } from './Photo/PhotoEffectProperty';
 import { PhotoFlipProperty } from './Photo/PhotoFlipProperty';
 import { PhotoCropProperty } from './Photo/CropProperty';
 import { PhotoMoreProperty } from './Photo/More';
+import { ShapeFillColor } from './Shape/ShapeColorProperty';
+import { ShapeOutline } from './Shape/ShapeBorderProperty';
 
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
@@ -115,9 +117,6 @@ export const SelectedObjectProperty: FC = () => {
       case SelectedProperty.PhotoNudge: {
         return <NudgeProperty />;
       }
-      case SelectedProperty.PhotoNudge: {
-        return <NudgeProperty />;
-      }
       case SelectedProperty.PhotoLayer: {
         return <LayerProperty />;
       }
@@ -143,6 +142,40 @@ export const SelectedObjectProperty: FC = () => {
       case SelectedProperty.PhotoMore: {
         return <PhotoMoreProperty />;
       }
+      // case SelectedProperty.ShapeNudge: {
+      //   return <NudgeProperty />;
+      // }
+      // case SelectedProperty.ShapeLayer: {
+      //   return <LayerProperty />;
+      // }
+      // case SelectedProperty.ShapeManualFilter: {
+      //   return <ManuallyFilterProperty />;
+      // }
+      // case SelectedProperty.ShapeOpacity: {
+      //   return <OpacityProperty />;
+      // }
+      // case SelectedProperty.ShapeFilter: {
+      //   return <FiltersProperty />;
+      // }
+      case SelectedProperty.ShapeColor: {
+        return <ShapeFillColor />;
+      }
+      case SelectedProperty.ShapeOutline: {
+        return <ShapeOutline />;
+      }
+      // case SelectedProperty.ShapeFlip: {
+      //   return <PhotoFlipProperty />;
+      // }
+      // case SelectedProperty.ShapeAlign: {
+      //   return <PhotoAlignProperty />;
+      // }
+
+      // case SelectedProperty.ShapeCrop: {
+      //   return <PhotoCropProperty />;
+      // }
+      // case SelectedProperty.ShapeMore: {
+      //   return <PhotoMoreProperty />;
+      // }
       default: {
         return null;
       }
