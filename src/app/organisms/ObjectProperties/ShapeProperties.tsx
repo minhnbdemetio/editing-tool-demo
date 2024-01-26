@@ -25,6 +25,11 @@ const SHAPE_PROPERTIES = [
     value: SelectedProperty.ShapeOutline,
     isShowButton: checkLockedObject,
   },
+  {
+    label: 'Text color',
+    value: SelectedProperty.ShapeTextColor,
+    isShowButton: checkLockedObject,
+  },
 ];
 
 export const ShapeProperties: FC = () => {
