@@ -204,20 +204,12 @@ export const useToggleUnderlineText = () => {
   const activeText = useActiveTextObject();
 
   const toggleUnderlineText = (callback?: Function) => {
-    const element = activeText?.getElement();
-    if (!element) return false;
-    const textDecoration = activeText?.getElementCss('textDecoration') || '';
-    const isUnderlined = textDecoration.includes('underline');
-    if (isUnderlined) {
-      element.style.textDecoration =
-        textDecoration === 'underline'
-          ? 'none'
-          : textDecoration.replace(/underline/g, '');
-    } else if (textDecoration.includes('none')) {
-      element.style.textDecoration = 'underline';
-    } else {
-      element.style.textDecoration += ' underline';
-    }
+    activeText?.setTextDecoration(
+      'underline',
+      !activeText.isTextDecorationEnable('underline'),
+    );
+    activeText?.render();
+
     callback && callback();
     return true;
   };
@@ -229,20 +221,12 @@ export const useToggleLineThroughText = () => {
   const activeText = useActiveTextObject();
 
   const toggleLineThroughText = (callback?: Function) => {
-    const element = activeText?.getElement();
-    if (!element) return false;
-    const textDecoration = activeText?.getElementCss('textDecoration') || '';
-    const hasLineThrough = textDecoration.includes('line-through');
-    if (hasLineThrough) {
-      element.style.textDecoration =
-        textDecoration === 'line-through'
-          ? 'none'
-          : textDecoration.replace(/line-through/g, '');
-    } else if (textDecoration.includes('none')) {
-      element.style.textDecoration = 'line-through';
-    } else {
-      element.style.textDecoration += ' line-through';
-    }
+    activeText?.setTextDecoration(
+      'lineThrough',
+      !activeText.isTextDecorationEnable('lineThrough'),
+    );
+    activeText?.render();
+
     callback && callback();
     return true;
   };
@@ -273,10 +257,8 @@ export const useChangeTextAlign = () => {
   const activeText = useActiveTextObject();
 
   const changeTextAlign = (textAlign: string, callback?: Function) => {
-    const element = activeText?.getElement();
-    if (!element) return false;
-    element.style.textAlign = textAlign;
-    callback && callback();
+    activeText?.setTextAlign(textAlign);
+    activeText?.render();
     return true;
   };
 

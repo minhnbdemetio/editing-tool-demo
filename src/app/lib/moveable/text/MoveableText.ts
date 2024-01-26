@@ -38,16 +38,20 @@ export type TextBackgroundEffectOption = {
 };
 
 export type TextFontStyle = 'italic' | 'normal';
-export type TextAlign = 'left' | 'center' | 'right';
 export type TextTransform = 'none' | 'uppercase';
+export type TextDecoration = {
+  underline: boolean;
+  lineThrough: boolean;
+};
 
 export type TextFormat = {
   fontFamily: string;
-  textAlign: TextAlign;
+  textAlign: string;
   textTransform: TextTransform;
   fontWeight: string;
   fontStyle: TextFontStyle;
   textListStyle: 'none' | 'numeric' | 'dots';
+  textDecoration: TextDecoration;
 
   setFontStyle: (fontStyle: TextFontStyle) => void;
   getFontStyle: () => TextFontStyle;
@@ -57,13 +61,22 @@ export type TextFormat = {
   getTextTransform: () => TextTransform;
   isTextTransform: (textTransform: TextTransform) => boolean;
 
+  getTextAlign: () => string;
+  setTextAlign: (textAlign: string) => void;
+  isTextAlign: (textAlign: string) => boolean;
+
   setFontWeight: (fontWeight: string) => void;
   getFontWeight: () => string;
+
+  getTextDecoration: () => TextDecoration;
+  setTextDecoration: (key: keyof TextDecoration, state: boolean) => void;
+  isTextDecorationEnable: (key: keyof TextDecoration) => boolean;
 
   setFontFamily: (fontFamily: string) => void;
   getFontFamily: () => string;
 
   applyFontEffect: () => void;
+  applyTextDecorationEffect: () => void;
 };
 
 export type MoveableTextStyleEffect =
@@ -97,8 +110,12 @@ export class MoveableTextObject
   fontFamily: string = 'Arial';
   fontWeight: string = '400';
   fontStyle: TextFontStyle = 'normal';
-  textTransform: TextTransform = 'normal';
-  textAlign: TextAlign = 'left';
+  textTransform: TextTransform = 'none';
+  textAlign: string = 'left';
+  textDecoration: TextDecoration = {
+    lineThrough: false,
+    underline: false,
+  };
   textListStyle: 'none' | 'numeric' | 'dots' = 'none';
 
   constructor(options?: { id: string; htmlString: string }) {
@@ -395,8 +412,41 @@ export class MoveableTextObject
     return this.fontStyle;
   };
 
+  getTextAlign: () => string = () => this.textAlign;
+  setTextAlign: (textAlign: string) => void = textAlign => {
+    this.textAlign = textAlign;
+  };
+  isTextAlign: (textAlign: string) => boolean = textAlign => {
+    return this.getTextAlign() === textAlign;
+  };
+
+  getTextDecoration: () => TextDecoration = () => this.textDecoration;
+  setTextDecoration: (key: keyof TextDecoration, state: boolean) => void = (
+    key,
+    state,
+  ) => {
+    this.textDecoration[key] = state;
+  };
+  isTextDecorationEnable: (key: keyof TextDecoration) => boolean = key =>
+    this.textDecoration[key];
+
   setFontStyle: (fontStyle: TextFontStyle) => void = fontStyle => {
     this.fontStyle = fontStyle;
+  };
+
+  applyTextDecorationEffect: () => void = () => {
+    const element = this.getElement();
+
+    if (element) {
+      const textDecorations: string[] = [];
+      if (this.getTextDecoration()['underline'])
+        textDecorations.push('underline');
+
+      if (this.getTextDecoration()['lineThrough'])
+        textDecorations.push('line-through');
+
+      element.style.textDecoration = textDecorations.join(' ');
+    }
   };
 
   applyFontEffect: () => void = () => {
@@ -407,6 +457,7 @@ export class MoveableTextObject
       element.style.fontWeight = this.getFontWeight();
       element.style.fontStyle = this.getFontStyle();
       element.style.textTransform = this.getTextTransform();
+      element.style.textAlign = this.getTextAlign();
     }
   };
 
@@ -417,5 +468,6 @@ export class MoveableTextObject
     this.shapeEffect.apply(element);
     this.renderTextScale();
     this.applyFontEffect();
+    this.applyTextDecorationEffect();
   }
 }
