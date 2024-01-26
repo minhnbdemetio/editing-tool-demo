@@ -1,32 +1,43 @@
 import { MoveableObject, ObjectType } from '../MoveableObject';
 import { MoveableShapeType } from '../editable/EditableShape';
-import { Square } from '../svg/Square';
+import { Corner, Square } from '../svg/Square';
 import { MoveableShape } from './MoveableShape';
 
 export class MoveableSquare extends MoveableShape {
-  public rounded: number = 0;
-  public reverseRounded?: boolean = false;
+  public corners?: {
+    tl?: Corner;
+    tr?: Corner;
+    bl?: Corner;
+    br?: Corner;
+    all?: Corner;
+  };
+
   constructor(options?: {
-    id: string;
+    id?: string;
     type?: ObjectType;
-    pageId: string | null;
+    pageId?: string | null;
     htmlString?: string;
-    rounded?: number;
-    reverseRounded?: boolean;
+    width?: number;
+    height?: number;
+    corners?: {
+      tl?: Corner;
+      tr?: Corner;
+      bl?: Corner;
+      br?: Corner;
+      all?: Corner;
+    };
   }) {
-    super(options);
+    super(options as any);
     this.shapeType = MoveableShapeType.Square;
 
-    this.rounded = options?.rounded || 0;
-    this.reverseRounded = options?.reverseRounded || false;
+    this.corners = options?.corners;
   }
 
   getShape() {
     return new Square({
       width: this.width,
       height: this.height,
-      rounded: this.rounded,
-      reverseRounded: this.reverseRounded,
+      corners: this.corners,
     });
   }
 
