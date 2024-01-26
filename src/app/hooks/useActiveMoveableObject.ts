@@ -14,7 +14,11 @@ import { useDesign } from '../store/design-objects';
 import { isNumber } from 'lodash';
 import { GradientMask, PhotoPosition } from '../lib/moveable/MoveablePhoto';
 import { TextStyleEffect } from '../lib/moveable/effects/text/StyleEffect';
-import { TextEffect, TextEffectOptions } from '../lib/moveable/effects/text/TextEffect';
+import {
+  TextEffect,
+  TextEffectOptions,
+} from '../lib/moveable/effects/text/TextEffect';
+import { ShapeEffect } from '../lib/moveable/effects/text/ShapeEffect';
 
 export const useActiveTextObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
@@ -496,26 +500,33 @@ export const useToggleLock = () => {
 
 export const useUpdateActiveTextShapeEffect = () => {
   const activeText = useActiveTextObject();
-  const handleChangeTextEffect = (
-    effect: MoveableTextShapeEffect,
-    cb: Function,
-  ) => {
-    if (!activeText) return false;
+  const handleChangeTextEffect = (effect: ShapeEffect, cb: Function) => {
     const element = activeText?.getElement();
+    if (!activeText || !element) return false;
     if (!element) return false;
-    const isCurveEffect = activeText?.shapeEffect === 'curve';
-    activeText?.setShapeEffect(effect);
-
-    if (isCurveEffect) {
-      activeText.setShapeNone();
-    } else {
-      activeText.setShapeEffect(effect);
-    }
+    activeText.shapeEffect.reset(element);
+    activeText.setShapeEffect(effect);
+    activeText.render();
 
     cb();
     return true;
   };
   return handleChangeTextEffect;
+};
+
+export const useUpdateTextShapeEffectOptions = () => {
+  const activeText = useActiveTextObject();
+  const updateTextStyleEffectOptions = (
+    shapeEffectOption: TextEffectOptions,
+    callback?: Function,
+  ) => {
+    if (!activeText) return false;
+    activeText.updateShapeEffectOption(shapeEffectOption);
+    activeText.render();
+    callback && callback();
+    return true;
+  };
+  return updateTextStyleEffectOptions;
 };
 
 export const useUpdateOpacity = () => {
