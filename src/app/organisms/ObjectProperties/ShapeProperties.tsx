@@ -25,6 +25,21 @@ const SHAPE_PROPERTIES = [
     value: SelectedProperty.ShapeOutline,
     isShowButton: checkLockedObject,
   },
+  {
+    label: 'Nudge',
+    value: SelectedProperty.ShapeNudge,
+    isShowButton: checkLockedObject,
+  },
+  {
+    label: 'Align',
+    value: SelectedProperty.ShapeAlign,
+    isShowButton: checkLockedObject,
+  },
+  {
+    label: 'Order',
+    value: SelectedProperty.Position,
+    isShowButton: checkLockedObject,
+  },
 ];
 
 export const ShapeProperties: FC = () => {

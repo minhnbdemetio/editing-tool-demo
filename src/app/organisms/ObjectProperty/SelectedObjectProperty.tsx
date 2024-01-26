@@ -142,9 +142,9 @@ export const SelectedObjectProperty: FC = () => {
       case SelectedProperty.PhotoMore: {
         return <PhotoMoreProperty />;
       }
-      // case SelectedProperty.ShapeNudge: {
-      //   return <NudgeProperty />;
-      // }
+      case SelectedProperty.ShapeNudge: {
+        return <NudgeProperty />;
+      }
       // case SelectedProperty.ShapeLayer: {
       //   return <LayerProperty />;
       // }
@@ -166,9 +166,9 @@ export const SelectedObjectProperty: FC = () => {
       // case SelectedProperty.ShapeFlip: {
       //   return <PhotoFlipProperty />;
       // }
-      // case SelectedProperty.ShapeAlign: {
-      //   return <PhotoAlignProperty />;
-      // }
+      case SelectedProperty.ShapeAlign: {
+        return <PhotoAlignProperty />;
+      }
 
       // case SelectedProperty.ShapeCrop: {
       //   return <PhotoCropProperty />;
