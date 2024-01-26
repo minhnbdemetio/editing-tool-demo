@@ -9,7 +9,7 @@ export abstract class MoveableShape
 {
   shapeCornerRounding: number = 0;
   shapeColor: string = '#e8e8e8';
-  shapeBorderColor: string = '';
+  shapeOutlineColor: string = '';
   shapeOutline: string = '#000';
   shapeShadow: string = '#000';
   shapeText: string = '';
@@ -32,7 +32,7 @@ export abstract class MoveableShape
     return {
       ...super.toJSON(),
       shapeColor: this.shapeColor,
-      shapeBorderColor: this.shapeColor,
+      shapeOutlineColor: this.shapeOutlineColor,
       shapeCornerRounding: this.shapeCornerRounding,
       shapeOutline: this.shapeOutline,
       shapeShadow: this.shapeShadow,
@@ -49,12 +49,15 @@ export abstract class MoveableShape
     this.shapeColor = color;
   }
 
-  setBorder(color: string, width: number = 1) {
-    const element = this.getElement();
+  setOutLine(color: string, width: number = 1) {
+    const element: any = this.getElement();
+
+    const pathEl = element.querySelector('svg path');
 
     if (!element) return false;
-    element.style.outline = `${width}px solid ${color}`;
-    this.shapeBorderColor = color;
+    pathEl.setAttribute('stroke-width', width.toString());
+    pathEl.setAttribute('stroke', color);
+    this.shapeOutlineColor = color;
   }
 
   toSVG() {
