@@ -37,22 +37,53 @@ export type TextBackgroundEffectOption = {
   transparency?: number;
 };
 
-export type FontStyle = {
-  value: string;
-  style: Partial<CSSProperties>;
+export type TextFontStyle = 'italic' | 'normal';
+export type TextTransform = 'none' | 'uppercase';
+export type TextListStyle = 'none' | 'number' | 'disc';
+export type TextDecoration = {
+  underline: boolean;
+  lineThrough: boolean;
 };
 
-export interface Font {
+export type TextFormat = {
   fontFamily: string;
-  fontStyle: FontStyle;
+  textAlign: string;
+  textTransform: TextTransform;
+  fontWeight: string;
+  fontStyle: TextFontStyle;
+  textListStyle: TextListStyle;
+  textDecoration: TextDecoration;
+
+  setFontStyle: (fontStyle: TextFontStyle) => void;
+  getFontStyle: () => TextFontStyle;
+  isFontStyle: (style: TextFontStyle) => boolean;
+
+  setTextTransform: (textTransform: TextTransform) => void;
+  getTextTransform: () => TextTransform;
+  isTextTransform: (textTransform: TextTransform) => boolean;
+
+  getTextAlign: () => string;
+  setTextAlign: (textAlign: string) => void;
+  isTextAlign: (textAlign: string) => boolean;
+
+  setFontWeight: (fontWeight: string) => void;
+  getFontWeight: () => string;
+
+  getTextDecoration: () => TextDecoration;
+  setTextDecoration: (key: keyof TextDecoration, state: boolean) => void;
+  isTextDecorationEnable: (key: keyof TextDecoration) => boolean;
+
+  getTextListStyle: () => TextListStyle;
+  setTextListStyle: (listStyle: TextListStyle) => void;
+  isTextListStyle: (listStyle: TextListStyle) => boolean;
 
   setFontFamily: (fontFamily: string) => void;
-  setFontStyle: (fontStyle: FontStyle) => void;
   getFontFamily: () => string;
-  getFontStyle: () => FontStyle;
 
   applyFontEffect: () => void;
-}
+  applyTextDecorationEffect: () => void;
+  applyTextListStyle: () => void;
+};
 
 export type MoveableTextStyleEffect =
   | 'none'
@@ -72,7 +103,7 @@ export type MoveableTextShapeEffect = 'none' | 'curve';
 
 export class MoveableTextObject
   extends MoveableObject
-  implements EditableText, Font
+  implements EditableText, TextFormat
 {
   variant?: MoveableTextVariant;
   gradientStops?: GradientStop[];
@@ -83,10 +114,15 @@ export class MoveableTextObject
   styleEffect: StyleEffect;
   shapeEffect: ShapeEffect;
   fontFamily: string = 'Arial';
-  fontStyle: FontStyle = {
-    value: 'Regular',
-    style: { fontWeight: '400', fontStyle: 'normal' },
+  fontWeight: string = '400';
+  fontStyle: TextFontStyle = 'normal';
+  textTransform: TextTransform = 'none';
+  textAlign: string = 'left';
+  textDecoration: TextDecoration = {
+    lineThrough: false,
+    underline: false,
   };
+  textListStyle: TextListStyle = 'none';
 
   constructor(options?: { id: string; htmlString: string }) {
     super(options);
@@ -359,12 +395,86 @@ export class MoveableTextObject
     this.fontFamily = fontFamily;
   };
 
-  getFontStyle: () => FontStyle = () => {
+  setTextTransform: (textTransform: TextTransform) => void = textTransform => {
+    this.textTransform = textTransform;
+  };
+  getTextTransform: () => TextTransform = () => {
+    return this.textTransform;
+  };
+  isTextTransform: (textTransform: TextTransform) => boolean =
+    textTransform => {
+      return this.getTextTransform() === textTransform;
+    };
+  setFontWeight: (fontWeight: string) => void = fontWeight => {
+    this.fontWeight = fontWeight;
+  };
+  getFontWeight: () => string = () => {
+    return this.fontWeight;
+  };
+  isFontStyle: (style: TextFontStyle) => boolean = style => {
+    return this.getFontStyle() === style;
+  };
+  getFontStyle: () => TextFontStyle = () => {
     return this.fontStyle;
   };
 
-  setFontStyle: (fontStyle: FontStyle) => void = fontStyle => {
+  getTextAlign: () => string = () => this.textAlign;
+  setTextAlign: (textAlign: string) => void = textAlign => {
+    this.textAlign = textAlign;
+  };
+  isTextAlign: (textAlign: string) => boolean = textAlign => {
+    return this.getTextAlign() === textAlign;
+  };
+
+  getTextListStyle: () => TextListStyle = () => this.textListStyle;
+  setTextListStyle: (listStyle: TextListStyle) => void = listStyle => {
+    console.debug({ listStyle });
+    this.textListStyle = listStyle;
+  };
+  isTextListStyle: (listStyle: TextListStyle) => boolean = listStyle => {
+    return this.getTextListStyle() === listStyle;
+  };
+
+  getTextDecoration: () => TextDecoration = () => this.textDecoration;
+  setTextDecoration: (key: keyof TextDecoration, state: boolean) => void = (
+    key,
+    state,
+  ) => {
+    this.textDecoration[key] = state;
+  };
+  isTextDecorationEnable: (key: keyof TextDecoration) => boolean = key =>
+    this.textDecoration[key];
+
+  setFontStyle: (fontStyle: TextFontStyle) => void = fontStyle => {
     this.fontStyle = fontStyle;
+  };
+
+  applyTextDecorationEffect: () => void = () => {
+    const element = this.getElement();
+
+    if (element) {
+      const textDecorations: string[] = [];
+      if (this.getTextDecoration()['underline'])
+        textDecorations.push('underline');
+
+      if (this.getTextDecoration()['lineThrough'])
+        textDecorations.push('line-through');
+
+      element.style.textDecoration = textDecorations.join(' ');
+    }
+  };
+
+  applyTextListStyle: () => void = () => {
+    const listElement = this.getElement()?.querySelector('ul');
+    if (!listElement) return false;
+
+    if (this.isTextListStyle('none')) {
+      listElement.style.paddingLeft = '0';
+      listElement.style.listStyleType = 'none';
+    } else {
+      listElement.style.paddingLeft = '20px';
+      listElement.style.listStyleType = this.getTextListStyle();
+    }
   };
 
   applyFontEffect: () => void = () => {
@@ -372,9 +482,10 @@ export class MoveableTextObject
 
     if (element) {
       element.style.fontFamily = this.getFontFamily();
-      for (const [key, value] of Object.entries(this.getFontStyle().style)) {
-        (element.style as { [key: string]: any })[key] = `${value}`;
-      }
+      element.style.fontWeight = this.getFontWeight();
+      element.style.fontStyle = this.getFontStyle();
+      element.style.textTransform = this.getTextTransform();
+      element.style.textAlign = this.getTextAlign();
     }
   };
 
@@ -385,5 +496,7 @@ export class MoveableTextObject
     this.shapeEffect.apply(element);
     this.renderTextScale();
     this.applyFontEffect();
+    this.applyTextDecorationEffect();
+    this.applyTextListStyle();
   }
 }

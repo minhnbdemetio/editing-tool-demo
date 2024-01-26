@@ -1,4 +1,4 @@
-import { CSSProperties, useCallback } from 'react';
+import { CSSProperties, useCallback, useState } from 'react';
 import {
   MoveableTextShapeEffect,
   MoveableTextStyleEffect,
@@ -168,33 +168,33 @@ export const useCloneObject = () => {
 
 export const useToggleMoveableBoldText = () => {
   const activeText = useActiveTextObject();
+
   return (callback?: Function) => {
-    const element = activeText?.getElement();
-    if (!element) return false;
-    const fontWeight = activeText?.getElementCss('fontWeight');
+    const fontWeight = activeText?.getFontWeight();
     const isBold = fontWeight === 'bold' || fontWeight === '700';
     if (isBold) {
-      element.style.fontWeight = 'normal';
+      activeText?.setFontWeight('400');
     } else {
-      element.style.fontWeight = 'bold';
+      activeText?.setFontWeight('bold');
     }
+    activeText?.render();
     callback && callback();
     return true;
   };
 };
 
 export const useToggleItalicText = () => {
+  const textObject = useActiveTextObject();
+  const [isItalic, setIsItalic] = useState<boolean>(
+    textObject?.isFontStyle('italic') || false,
+  );
   const activeText = useActiveTextObject();
 
   return (callback?: Function) => {
-    const element = activeText?.getElement();
-    if (!element) return false;
-    const isItalic = activeText?.getElementCss('fontStyle') === 'italic';
-    if (isItalic) {
-      element.style.fontStyle = 'normal';
-    } else {
-      element.style.fontStyle = 'italic';
-    }
+    activeText?.setFontStyle(isItalic ? 'normal' : 'italic');
+    activeText?.render();
+    setIsItalic(!isItalic);
+
     callback && callback();
     return true;
   };
@@ -204,20 +204,12 @@ export const useToggleUnderlineText = () => {
   const activeText = useActiveTextObject();
 
   const toggleUnderlineText = (callback?: Function) => {
-    const element = activeText?.getElement();
-    if (!element) return false;
-    const textDecoration = activeText?.getElementCss('textDecoration') || '';
-    const isUnderlined = textDecoration.includes('underline');
-    if (isUnderlined) {
-      element.style.textDecoration =
-        textDecoration === 'underline'
-          ? 'none'
-          : textDecoration.replace(/underline/g, '');
-    } else if (textDecoration.includes('none')) {
-      element.style.textDecoration = 'underline';
-    } else {
-      element.style.textDecoration += ' underline';
-    }
+    activeText?.setTextDecoration(
+      'underline',
+      !activeText.isTextDecorationEnable('underline'),
+    );
+    activeText?.render();
+
     callback && callback();
     return true;
   };
@@ -229,20 +221,12 @@ export const useToggleLineThroughText = () => {
   const activeText = useActiveTextObject();
 
   const toggleLineThroughText = (callback?: Function) => {
-    const element = activeText?.getElement();
-    if (!element) return false;
-    const textDecoration = activeText?.getElementCss('textDecoration') || '';
-    const hasLineThrough = textDecoration.includes('line-through');
-    if (hasLineThrough) {
-      element.style.textDecoration =
-        textDecoration === 'line-through'
-          ? 'none'
-          : textDecoration.replace(/line-through/g, '');
-    } else if (textDecoration.includes('none')) {
-      element.style.textDecoration = 'line-through';
-    } else {
-      element.style.textDecoration += ' line-through';
-    }
+    activeText?.setTextDecoration(
+      'lineThrough',
+      !activeText.isTextDecorationEnable('lineThrough'),
+    );
+    activeText?.render();
+
     callback && callback();
     return true;
   };
@@ -254,16 +238,14 @@ export const useToggleUppercaseText = () => {
   const activeText = useActiveTextObject();
 
   const toggleUppercaseText = (callback?: Function) => {
-    const element = activeText?.getElement();
-    if (!element) return false;
-    const isUppercase =
-      activeText?.getElementCss('textTransform') === 'uppercase';
+    const isUppercase = activeText?.isTextTransform('uppercase');
 
     if (isUppercase) {
-      element.style.textTransform = 'none';
+      activeText?.setTextTransform('none');
     } else {
-      element.style.textTransform = 'uppercase';
+      activeText?.setTextTransform('uppercase');
     }
+    activeText?.render();
     callback && callback();
     return true;
   };
@@ -275,10 +257,8 @@ export const useChangeTextAlign = () => {
   const activeText = useActiveTextObject();
 
   const changeTextAlign = (textAlign: string, callback?: Function) => {
-    const element = activeText?.getElement();
-    if (!element) return false;
-    element.style.textAlign = textAlign;
-    callback && callback();
+    activeText?.setTextAlign(textAlign);
+    activeText?.render();
     return true;
   };
 
@@ -289,16 +269,11 @@ export const useToggleListTypeDiscText = () => {
   const activeText = useActiveTextObject();
 
   const toggleListTypeDiscText = (callback?: Function) => {
-    const listElement = activeText?.getElement()?.querySelector('ul');
-    if (!listElement) return false;
-    const isListTypeDisc = listElement.style.listStyleType === 'disc';
-    if (isListTypeDisc) {
-      listElement.style.paddingLeft = '0';
-      listElement.style.listStyleType = 'none';
-    } else {
-      listElement.style.paddingLeft = '20px';
-      listElement.style.listStyleType = 'disc';
-    }
+    activeText?.setTextListStyle(
+      activeText?.isTextListStyle('disc') ? 'none' : 'disc',
+    );
+
+    activeText?.render();
     callback && callback();
     return true;
   };
@@ -310,17 +285,11 @@ export const useToggleListTypeNumberText = () => {
   const activeText = useActiveTextObject();
 
   const toggleListTypeText = (callback?: Function) => {
-    const listElement = activeText?.getElement()?.querySelector('ul');
-    if (!listElement) return false;
-    const isNumberType = listElement.style.listStyleType === 'number';
+    activeText?.setTextListStyle(
+      activeText?.isTextListStyle('number') ? 'none' : 'number',
+    );
+    activeText?.render();
 
-    if (isNumberType) {
-      listElement.style.paddingLeft = '0';
-      listElement.style.listStyleType = 'none';
-    } else {
-      listElement.style.paddingLeft = '20px';
-      listElement.style.listStyleType = 'number';
-    }
     callback && callback();
     return true;
   };
