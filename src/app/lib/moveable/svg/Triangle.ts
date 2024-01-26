@@ -1,7 +1,7 @@
 import { SvgShape } from './SvgShape';
 
 export class Triangle extends SvgShape {
-  getPath(fill: any = 'currentColor'): string {
+  getPath(fill: string = 'currentColor'): string {
     const centerPoint = this.getCenterPoint();
 
     return `<path d="M0,${

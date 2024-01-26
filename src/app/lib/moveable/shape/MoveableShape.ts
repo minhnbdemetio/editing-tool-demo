@@ -44,7 +44,6 @@ export abstract class MoveableShape
 
   setColor(color: string) {
     const element = this.getElement();
-    console.log('elementttt', element);
 
     if (!element) return false;
     element.style.color = color;
@@ -53,7 +52,6 @@ export abstract class MoveableShape
 
   setBorder(color: string, width: number = 1) {
     const element = this.getElement();
-    console.log('elementttt', element);
 
     if (!element) return false;
     element.style.outline = `${width}px solid ${color}`;

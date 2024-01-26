@@ -65,8 +65,6 @@ export const Shapes: React.FC = () => {
         onClick={() => {
           const shape = new MoveableFivePointStar();
           shape.shapeColor = '#ff0000';
-          console.log('shape', shape);
-
           addObjectToActivePage(shape);
         }}
       >

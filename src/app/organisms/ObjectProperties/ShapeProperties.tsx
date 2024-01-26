@@ -102,14 +102,6 @@ export const ShapeProperties: FC = () => {
   const { setSelectedProperty } = useSelectedProperty();
   const activePhotoObject = useActiveMoveableShapeObject();
 
-  console.log('activePhotoObject', activePhotoObject);
-  console.log(
-    'proooo',
-    SHAPE_PROPERTIES.filter(
-      item => activePhotoObject && item.isShowButton(activePhotoObject),
-    ),
-  );
-
   const [photoProperties, setPhotoProperties] = useState(
     SHAPE_PROPERTIES.filter(
       item => activePhotoObject && item.isShowButton(activePhotoObject),

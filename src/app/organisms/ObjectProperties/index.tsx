@@ -11,12 +11,6 @@ interface ObjectPropertiesProps {}
 export const ObjectProperties: FC<ObjectPropertiesProps> = ({}) => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
-  console.log(
-    'activeMoveableObject',
-    activeMoveableObject,
-    isShape(activeMoveableObject),
-  );
-
   if (isText(activeMoveableObject)) return <TextProperties />;
   if (isLine(activeMoveableObject)) return <LineProperties />;
   if (isShape(activeMoveableObject)) {

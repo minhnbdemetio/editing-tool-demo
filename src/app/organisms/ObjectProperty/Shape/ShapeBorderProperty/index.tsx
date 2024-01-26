@@ -26,16 +26,8 @@ export const ShapeBorder = () => {
   }, [activeElement]);
 
   const handleChangeBorderColor = (color: any) => {
-    console.log('color', color);
     changeBorderColorShape(color.hex, borderWidth);
     setBorderColor(color.hex);
-    // setShowBorderColorPicker(false);
-    // if (activeElement instanceof HTMLElement) {
-    //   const fillColorElement: HTMLDivElement | null =
-    //     activeElement.querySelector('.fill-color');
-    //   setColor(color.hex);
-    //   if (fillColorElement) fillColorElement.style.backgroundColor = color.hex;
-    // }
   };
 
   const onChangeBorderWidth = (width: number) => {
@@ -43,9 +35,6 @@ export const ShapeBorder = () => {
     changeBorderColorShape(borderColor, width);
   };
 
-  // const handleChangeColor = (value: any) => {
-  //   console.log('valueee', valuee);
-  // };
   return (
     <div className="w-full h-full">
       <>

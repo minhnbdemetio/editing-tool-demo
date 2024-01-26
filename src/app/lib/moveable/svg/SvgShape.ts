@@ -18,7 +18,7 @@ export abstract class SvgShape {
     this.height = options.height || 0;
   }
 
-  abstract getPath(fill?: any): string;
+  abstract getPath(fill?: string): string;
 
   public getWidth() {
     return this.width;

@@ -33,7 +33,6 @@ export const ShapeFillColor = () => {
   }, [activeElement]);
 
   const handleChangeColor = (color: any) => {
-    console.log('color', color);
     changeColorShape(color.hex);
     setColor(color.hex);
   };

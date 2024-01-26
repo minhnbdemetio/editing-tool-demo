@@ -99,7 +99,6 @@ export const useUpdateTextColor = () => {
 
 export const useUpdateShapeColor = () => {
   const activeShape = useActiveMoveableShapeObject();
-  console.log('activeShape', activeShape);
 
   return (color: string) => {
     activeShape?.setColor(color);
@@ -109,7 +108,6 @@ export const useUpdateShapeColor = () => {
 
 export const useUpdateShapeBorderColor = () => {
   const activeShape = useActiveMoveableShapeObject();
-  console.log('activeShape', activeShape);
 
   return (color: string, borderWidth: number) => {
     activeShape?.setBorder(color, borderWidth);
