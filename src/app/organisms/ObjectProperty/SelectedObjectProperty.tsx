@@ -35,7 +35,7 @@ import { PhotoFlipProperty } from './Photo/PhotoFlipProperty';
 import { PhotoCropProperty } from './Photo/CropProperty';
 import { PhotoMoreProperty } from './Photo/More';
 import { ShapeFillColor } from './Shape/ShapeColorProperty';
-import { ShapeBorder } from './Shape/ShapeBorderProperty';
+import { ShapeOutline } from './Shape/ShapeBorderProperty';
 
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
@@ -142,40 +142,40 @@ export const SelectedObjectProperty: FC = () => {
       case SelectedProperty.PhotoMore: {
         return <PhotoMoreProperty />;
       }
-      case SelectedProperty.ShapeNudge: {
-        return <NudgeProperty />;
-      }
-      case SelectedProperty.ShapeLayer: {
-        return <LayerProperty />;
-      }
-      case SelectedProperty.ShapeManualFilter: {
-        return <ManuallyFilterProperty />;
-      }
-      case SelectedProperty.ShapeOpacity: {
-        return <OpacityProperty />;
-      }
-      case SelectedProperty.ShapeFilter: {
-        return <FiltersProperty />;
-      }
+      // case SelectedProperty.ShapeNudge: {
+      //   return <NudgeProperty />;
+      // }
+      // case SelectedProperty.ShapeLayer: {
+      //   return <LayerProperty />;
+      // }
+      // case SelectedProperty.ShapeManualFilter: {
+      //   return <ManuallyFilterProperty />;
+      // }
+      // case SelectedProperty.ShapeOpacity: {
+      //   return <OpacityProperty />;
+      // }
+      // case SelectedProperty.ShapeFilter: {
+      //   return <FiltersProperty />;
+      // }
       case SelectedProperty.ShapeColor: {
         return <ShapeFillColor />;
       }
-      case SelectedProperty.ShapeBorder: {
-        return <ShapeBorder />;
+      case SelectedProperty.ShapeOutline: {
+        return <ShapeOutline />;
       }
-      case SelectedProperty.ShapeFlip: {
-        return <PhotoFlipProperty />;
-      }
-      case SelectedProperty.ShapeAlign: {
-        return <PhotoAlignProperty />;
-      }
+      // case SelectedProperty.ShapeFlip: {
+      //   return <PhotoFlipProperty />;
+      // }
+      // case SelectedProperty.ShapeAlign: {
+      //   return <PhotoAlignProperty />;
+      // }
 
-      case SelectedProperty.ShapeCrop: {
-        return <PhotoCropProperty />;
-      }
-      case SelectedProperty.ShapeMore: {
-        return <PhotoMoreProperty />;
-      }
+      // case SelectedProperty.ShapeCrop: {
+      //   return <PhotoCropProperty />;
+      // }
+      // case SelectedProperty.ShapeMore: {
+      //   return <PhotoMoreProperty />;
+      // }
       default: {
         return null;
       }

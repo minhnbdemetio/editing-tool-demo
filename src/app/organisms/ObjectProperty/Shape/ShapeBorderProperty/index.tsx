@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
 import { useUpdateShapeBorderColor } from '@/app/hooks/useActiveMoveableObject';
 
-export const ShapeBorder = () => {
+export const ShapeOutline = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
   const activeElement = activeMoveableObject?.getElement();
   const [color, setColor] = useState<string | undefined>(undefined);

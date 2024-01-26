@@ -20,8 +20,6 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   const { setActivePage, activePage } = useActivePage();
   const { workingWidthPixels, workingHeightPixels } = usePageSize();
 
-  console.log('pageObjects', pageObjects);
-
   useEffect(() => {
     setActivePage(pageId);
   }, [pageId, setActivePage]);

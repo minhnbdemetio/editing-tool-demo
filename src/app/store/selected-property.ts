@@ -41,7 +41,7 @@ export enum SelectedProperty {
   ShapeFilter,
   ShapeManualFilter,
   ShapeColor,
-  ShapeBorder,
+  ShapeOutline,
   ShapeCrop,
   ShapeOpacity,
   ShapeAlign,

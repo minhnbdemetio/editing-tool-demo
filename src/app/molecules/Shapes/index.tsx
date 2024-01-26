@@ -18,7 +18,6 @@ export const Shapes: React.FC = () => {
       <div
         onClick={() => {
           const shape = new MoveableSquare();
-
           addObjectToActivePage(shape);
         }}
       >
@@ -27,8 +26,6 @@ export const Shapes: React.FC = () => {
       <div
         onClick={() => {
           const shape = new MoveableTriangle();
-          shape.shapeColor = '#ff0000';
-          shape.shapeText = '123333';
           addObjectToActivePage(shape);
         }}
       >
@@ -37,7 +34,6 @@ export const Shapes: React.FC = () => {
       <div
         onClick={() => {
           const shape = new MoveableSquaredTriangle();
-
           addObjectToActivePage(shape);
         }}
       >
@@ -46,7 +42,6 @@ export const Shapes: React.FC = () => {
       <div
         onClick={() => {
           const shape = new MoveablePentagon();
-
           addObjectToActivePage(shape);
         }}
       >
@@ -64,7 +59,6 @@ export const Shapes: React.FC = () => {
       <div
         onClick={() => {
           const shape = new MoveableFivePointStar();
-          shape.shapeColor = '#ff0000';
           addObjectToActivePage(shape);
         }}
       >
@@ -73,7 +67,6 @@ export const Shapes: React.FC = () => {
       <div
         onClick={() => {
           const shape = new MoveableHeart();
-
           addObjectToActivePage(shape);
         }}
       >
