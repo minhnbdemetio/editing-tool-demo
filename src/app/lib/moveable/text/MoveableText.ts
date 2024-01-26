@@ -7,6 +7,7 @@ import { EditableText } from '../editable/EditableText';
 import { StyleEffect } from '../effects/text/StyleEffect';
 import { TextEffect, TextEffectOptions } from '../effects/text/TextEffect';
 import { ShapeEffect } from '../effects/text/ShapeEffect';
+import { CSSProperties } from 'react';
 
 export type MoveableTextShadow = {
   color?: string;
@@ -36,6 +37,23 @@ export type TextBackgroundEffectOption = {
   transparency?: number;
 };
 
+export type FontStyle = {
+  value: string;
+  style: Partial<CSSProperties>;
+};
+
+export interface Font {
+  fontFamily: string;
+  fontStyle: FontStyle;
+
+  setFontFamily: (fontFamily: string) => void;
+  setFontStyle: (fontStyle: FontStyle) => void;
+  getFontFamily: () => string;
+  getFontStyle: () => FontStyle;
+
+  applyFontEffect: () => void;
+}
+
 export type MoveableTextStyleEffect =
   | 'none'
   | 'shadow'
@@ -52,7 +70,10 @@ export type TransformDirection = 'bottom' | 'center' | 'top';
 
 export type MoveableTextShapeEffect = 'none' | 'curve';
 
-export class MoveableTextObject extends MoveableObject implements EditableText {
+export class MoveableTextObject
+  extends MoveableObject
+  implements EditableText, Font
+{
   variant?: MoveableTextVariant;
   gradientStops?: GradientStop[];
   transformDirection: string;
@@ -61,6 +82,12 @@ export class MoveableTextObject extends MoveableObject implements EditableText {
   scaleX: number = DEFAULT_TEXT_SCALE;
   styleEffect: StyleEffect;
   shapeEffect: ShapeEffect;
+  fontFamily: string = 'Arial';
+  fontStyle: FontStyle = {
+    value: 'Regular',
+    style: { fontWeight: '400', fontStyle: 'normal' },
+  };
+
   constructor(options?: { id: string; htmlString: string }) {
     super(options);
     this.type = 'text';
@@ -324,11 +351,39 @@ export class MoveableTextObject extends MoveableObject implements EditableText {
       ) + ` scale(${this.scaleX}, ${this.scaleY})`;
   }
 
+  getFontFamily: () => string = () => {
+    return this.fontFamily;
+  };
+
+  setFontFamily: (fontFamily: string) => void = fontFamily => {
+    this.fontFamily = fontFamily;
+  };
+
+  getFontStyle: () => FontStyle = () => {
+    return this.fontStyle;
+  };
+
+  setFontStyle: (fontStyle: FontStyle) => void = fontStyle => {
+    this.fontStyle = fontStyle;
+  };
+
+  applyFontEffect: () => void = () => {
+    const element = this.getElement();
+
+    if (element) {
+      element.style.fontFamily = this.getFontFamily();
+      for (const [key, value] of Object.entries(this.getFontStyle().style)) {
+        (element.style as { [key: string]: any })[key] = `${value}`;
+      }
+    }
+  };
+
   render() {
     const element = this.getElement();
     if (!element) return;
     this.styleEffect.apply(element);
     this.shapeEffect.apply(element);
     this.renderTextScale();
+    this.applyFontEffect();
   }
 }
