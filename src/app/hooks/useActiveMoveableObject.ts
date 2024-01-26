@@ -1,4 +1,4 @@
-import { CSSProperties, useCallback } from 'react';
+import { CSSProperties, useCallback, useState } from 'react';
 import {
   MoveableTextShapeEffect,
   MoveableTextStyleEffect,
@@ -168,33 +168,33 @@ export const useCloneObject = () => {
 
 export const useToggleMoveableBoldText = () => {
   const activeText = useActiveTextObject();
+
   return (callback?: Function) => {
-    const element = activeText?.getElement();
-    if (!element) return false;
-    const fontWeight = activeText?.getElementCss('fontWeight');
+    const fontWeight = activeText?.getFontWeight();
     const isBold = fontWeight === 'bold' || fontWeight === '700';
     if (isBold) {
-      element.style.fontWeight = 'normal';
+      activeText?.setFontWeight('400');
     } else {
-      element.style.fontWeight = 'bold';
+      activeText?.setFontWeight('bold');
     }
+    activeText?.render();
     callback && callback();
     return true;
   };
 };
 
 export const useToggleItalicText = () => {
+  const textObject = useActiveTextObject();
+  const [isItalic, setIsItalic] = useState<boolean>(
+    textObject?.isFontStyle('italic') || false,
+  );
   const activeText = useActiveTextObject();
 
   return (callback?: Function) => {
-    const element = activeText?.getElement();
-    if (!element) return false;
-    const isItalic = activeText?.getElementCss('fontStyle') === 'italic';
-    if (isItalic) {
-      element.style.fontStyle = 'normal';
-    } else {
-      element.style.fontStyle = 'italic';
-    }
+    activeText?.setFontStyle(isItalic ? 'normal' : 'italic');
+    activeText?.render();
+    setIsItalic(!isItalic);
+
     callback && callback();
     return true;
   };
@@ -254,16 +254,14 @@ export const useToggleUppercaseText = () => {
   const activeText = useActiveTextObject();
 
   const toggleUppercaseText = (callback?: Function) => {
-    const element = activeText?.getElement();
-    if (!element) return false;
-    const isUppercase =
-      activeText?.getElementCss('textTransform') === 'uppercase';
+    const isUppercase = activeText?.isTextTransform('uppercase');
 
     if (isUppercase) {
-      element.style.textTransform = 'none';
+      activeText?.setTextTransform('none');
     } else {
-      element.style.textTransform = 'uppercase';
+      activeText?.setTextTransform('uppercase');
     }
+    activeText?.render();
     callback && callback();
     return true;
   };

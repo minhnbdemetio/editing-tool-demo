@@ -37,22 +37,34 @@ export type TextBackgroundEffectOption = {
   transparency?: number;
 };
 
-export type FontStyle = {
-  value: string;
-  style: Partial<CSSProperties>;
-};
+export type TextFontStyle = 'italic' | 'normal';
+export type TextAlign = 'left' | 'center' | 'right';
+export type TextTransform = 'none' | 'uppercase';
 
-export interface Font {
+export type TextFormat = {
   fontFamily: string;
-  fontStyle: FontStyle;
+  textAlign: TextAlign;
+  textTransform: TextTransform;
+  fontWeight: string;
+  fontStyle: TextFontStyle;
+  textListStyle: 'none' | 'numeric' | 'dots';
+
+  setFontStyle: (fontStyle: TextFontStyle) => void;
+  getFontStyle: () => TextFontStyle;
+  isFontStyle: (style: TextFontStyle) => boolean;
+
+  setTextTransform: (textTransform: TextTransform) => void;
+  getTextTransform: () => TextTransform;
+  isTextTransform: (textTransform: TextTransform) => boolean;
+
+  setFontWeight: (fontWeight: string) => void;
+  getFontWeight: () => string;
 
   setFontFamily: (fontFamily: string) => void;
-  setFontStyle: (fontStyle: FontStyle) => void;
   getFontFamily: () => string;
-  getFontStyle: () => FontStyle;
 
   applyFontEffect: () => void;
-}
+};
 
 export type MoveableTextStyleEffect =
   | 'none'
@@ -72,7 +84,7 @@ export type MoveableTextShapeEffect = 'none' | 'curve';
 
 export class MoveableTextObject
   extends MoveableObject
-  implements EditableText, Font
+  implements EditableText, TextFormat
 {
   variant?: MoveableTextVariant;
   gradientStops?: GradientStop[];
@@ -83,10 +95,11 @@ export class MoveableTextObject
   styleEffect: StyleEffect;
   shapeEffect: ShapeEffect;
   fontFamily: string = 'Arial';
-  fontStyle: FontStyle = {
-    value: 'Regular',
-    style: { fontWeight: '400', fontStyle: 'normal' },
-  };
+  fontWeight: string = '400';
+  fontStyle: TextFontStyle = 'normal';
+  textTransform: TextTransform = 'normal';
+  textAlign: TextAlign = 'left';
+  textListStyle: 'none' | 'numeric' | 'dots' = 'none';
 
   constructor(options?: { id: string; htmlString: string }) {
     super(options);
@@ -359,11 +372,30 @@ export class MoveableTextObject
     this.fontFamily = fontFamily;
   };
 
-  getFontStyle: () => FontStyle = () => {
+  setTextTransform: (textTransform: TextTransform) => void = textTransform => {
+    this.textTransform = textTransform;
+  };
+  getTextTransform: () => TextTransform = () => {
+    return this.textTransform;
+  };
+  isTextTransform: (textTransform: TextTransform) => boolean =
+    textTransform => {
+      return this.getTextTransform() === textTransform;
+    };
+  setFontWeight: (fontWeight: string) => void = fontWeight => {
+    this.fontWeight = fontWeight;
+  };
+  getFontWeight: () => string = () => {
+    return this.fontWeight;
+  };
+  isFontStyle: (style: TextFontStyle) => boolean = style => {
+    return this.getFontStyle() === style;
+  };
+  getFontStyle: () => TextFontStyle = () => {
     return this.fontStyle;
   };
 
-  setFontStyle: (fontStyle: FontStyle) => void = fontStyle => {
+  setFontStyle: (fontStyle: TextFontStyle) => void = fontStyle => {
     this.fontStyle = fontStyle;
   };
 
@@ -372,9 +404,9 @@ export class MoveableTextObject
 
     if (element) {
       element.style.fontFamily = this.getFontFamily();
-      for (const [key, value] of Object.entries(this.getFontStyle().style)) {
-        (element.style as { [key: string]: any })[key] = `${value}`;
-      }
+      element.style.fontWeight = this.getFontWeight();
+      element.style.fontStyle = this.getFontStyle();
+      element.style.textTransform = this.getTextTransform();
     }
   };
 
