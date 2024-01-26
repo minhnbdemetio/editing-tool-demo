@@ -37,6 +37,19 @@ export enum SelectedProperty {
   PhotoMore,
   PhotoLayer,
   PhotoBackground,
+  ShapeNudge,
+  ShapeFilter,
+  ShapeManualFilter,
+  ShapeColor,
+  ShapeOutline,
+  ShapeCrop,
+  ShapeOpacity,
+  ShapeAlign,
+  ShapeOrder,
+  ShapeFlip,
+  ShapeMore,
+  ShapeLayer,
+  ShapeBackground,
 }
 
 interface SelectedPropertyState {

@@ -9,9 +9,10 @@ export abstract class MoveableShape
 {
   shapeCornerRounding: number = 0;
   shapeColor: string = '#e8e8e8';
+  shapeBorderColor: string = '';
   shapeOutline: string = '#000';
   shapeShadow: string = '#000';
-  shapeText: undefined;
+  shapeText: string = '';
   shapeType: MoveableShapeType = MoveableShapeType.Square;
 
   constructor(options?: {
@@ -31,12 +32,29 @@ export abstract class MoveableShape
     return {
       ...super.toJSON(),
       shapeColor: this.shapeColor,
+      shapeBorderColor: this.shapeColor,
       shapeCornerRounding: this.shapeCornerRounding,
       shapeOutline: this.shapeOutline,
       shapeShadow: this.shapeShadow,
       shapeText: this.shapeText,
       shapeType: this.shapeType,
     };
+  }
+
+  setColor(color: string) {
+    const element = this.getElement();
+
+    if (!element) return false;
+    element.style.color = color;
+    this.shapeColor = color;
+  }
+
+  setBorder(color: string, width: number = 1) {
+    const element = this.getElement();
+
+    if (!element) return false;
+    element.style.outline = `${width}px solid ${color}`;
+    this.shapeBorderColor = color;
   }
 
   toSVG() {
@@ -47,7 +65,7 @@ export abstract class MoveableShape
       this.height
     }">
       <g>
-        ${shape.getPath()}
+        ${shape.getPath(this.shapeColor)}
       </g>
     </svg>
     `;
@@ -62,7 +80,7 @@ export abstract class MoveableShape
     }
   }
 
-  // setup(properties: Partial<IMoveableShapeProperties>): void {
+  // setup(properties: Partial<any>): void {
   //   this.shapeColor = properties.shapeColor || '#000';
   //   this.shapeCornerRounding = properties.shapeCornerRounding || 0;
   //   this.shapeOutline = properties.shapeOutline || '#000';

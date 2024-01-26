@@ -8,13 +8,16 @@ import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { useActivePage } from '../store/active-page';
 import { GradientStop } from '../utilities/color.type';
 import { parseTransformString } from '../utilities/utils';
-import { isLine, isPhoto, isText } from '../utilities/moveable';
+import { isLine, isPhoto, isShape, isText } from '../utilities/moveable';
 import { MoveableObject } from '../lib/moveable/MoveableObject';
 import { useDesign } from '../store/design-objects';
 import { isNumber } from 'lodash';
 import { GradientMask, PhotoPosition } from '../lib/moveable/MoveablePhoto';
 import { TextStyleEffect } from '../lib/moveable/effects/text/StyleEffect';
-import { TextEffect, TextEffectOptions } from '../lib/moveable/effects/text/TextEffect';
+import {
+  TextEffect,
+  TextEffectOptions,
+} from '../lib/moveable/effects/text/TextEffect';
 
 export const useActiveTextObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
@@ -31,6 +34,12 @@ export const useActiveMoveableLineObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
   return isLine(activeMoveableObject) ? activeMoveableObject : null;
+};
+
+export const useActiveMoveableShapeObject = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+
+  return isShape(activeMoveableObject) ? activeMoveableObject : null;
 };
 export const useActiveMoveablePhotoObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
@@ -85,6 +94,24 @@ export const useUpdateTextColor = () => {
   return (color: string) => {
     activeText?.setTextColor(color);
     activeText?.render();
+  };
+};
+
+export const useUpdateShapeColor = () => {
+  const activeShape = useActiveMoveableShapeObject();
+
+  return (color: string) => {
+    activeShape?.setColor(color);
+    activeShape?.render();
+  };
+};
+
+export const useUpdateShapeBorderColor = () => {
+  const activeShape = useActiveMoveableShapeObject();
+
+  return (color: string, borderWidth: number) => {
+    activeShape?.setBorder(color, borderWidth);
+    // activeShape?.render();
   };
 };
 
