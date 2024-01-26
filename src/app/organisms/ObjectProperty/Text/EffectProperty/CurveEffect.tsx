@@ -1,17 +1,18 @@
-import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
+import {
+  useActiveTextObject,
+  useUpdateTextShapeEffectOptions,
+} from '@/app/hooks/useActiveMoveableObject';
+import { TEXT_CURVE_DEFAULT_VALUE } from '@/app/lib/moveable/constant/text';
 import { Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
-
-const CURVE_DEFAULT = 50;
 
 export const CurveEffect: FC = () => {
   const activeText = useActiveTextObject();
   const [curve, setCurve] = useState<number | undefined>(
-    activeText?.curve || CURVE_DEFAULT,
+    activeText?.shapeEffect?.getOptions()?.curve ||
+      TEXT_CURVE_DEFAULT_VALUE.curve,
   );
-  useEffect(() => {
-    activeText?.setCurveEffect(activeText?.curve || CURVE_DEFAULT);
-  }, []);
+  const updateTextShapeEffectOptions = useUpdateTextShapeEffectOptions();
   return (
     <Slider
       label="Thickness"
@@ -38,8 +39,7 @@ export const CurveEffect: FC = () => {
               onChange={e => {
                 const v = +e.target.value;
                 if (isNaN(v)) return;
-                setCurve(v);
-                activeText?.setCurveEffect(v);
+                updateTextShapeEffectOptions({ curve: v }, () => setCurve(v));
               }}
             />
           </Tooltip>
@@ -48,8 +48,7 @@ export const CurveEffect: FC = () => {
       value={curve}
       onChange={value => {
         if (typeof value === 'number') {
-          setCurve(value);
-          activeText?.setCurveEffect(value);
+          updateTextShapeEffectOptions({ curve: value }, () => setCurve(value));
         }
       }}
     />
