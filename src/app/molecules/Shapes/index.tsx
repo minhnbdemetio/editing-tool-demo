@@ -1,77 +1,149 @@
 import { useAddObjectToActivePage } from '@/app/hooks/usePageObjects';
 import { MoveableShapeType } from '@/app/lib/moveable/editable/EditableShape';
+import { MoveableArrow } from '@/app/lib/moveable/shape/MoveableArrow';
 import { MoveableFivePointStar } from '@/app/lib/moveable/shape/MoveableFivePointStar';
 import { MoveableHeart } from '@/app/lib/moveable/shape/MoveableHeart';
 import { MoveableHexagon } from '@/app/lib/moveable/shape/MoveableHexagon';
+import { MoveableOctagon } from '@/app/lib/moveable/shape/MoveableOctagon';
+import { MoveableParallelogram } from '@/app/lib/moveable/shape/MoveableParallelogram';
 import { MoveablePentagon } from '@/app/lib/moveable/shape/MoveablePentagon';
+import { MoveablePlus } from '@/app/lib/moveable/shape/MoveablePlus';
+import { MoveableQuadrangle } from '@/app/lib/moveable/shape/MoveableQuadrangle';
 import { MoveableShape } from '@/app/lib/moveable/shape/MoveableShape';
 import { MoveableSquare } from '@/app/lib/moveable/shape/MoveableSquare';
 import { MoveableSquaredTriangle } from '@/app/lib/moveable/shape/MoveableSquaredTriangle';
 import { MoveableTriangle } from '@/app/lib/moveable/shape/MoveableTriangle';
+import { CornerType } from '@/app/lib/moveable/svg/Square';
+import Image from 'next/image';
 import React, { useCallback } from 'react';
 
+const shapes: { key: string; src: string }[] = [
+  { src: 'square', key: 'square' },
+  // { src: 'circle', key: 'circle' },
+  { src: 'triangle.svg', key: 'triangle' },
+  { src: 'squared-triangle', key: 'squared-triangle' },
+  { src: 'rounded-square.png', key: 'rounded-square' },
+  { src: 'pentagon', key: 'pentagon' },
+  { src: 'hexagon', key: 'hexagon' },
+  { src: 'octagon', key: 'octagon' },
+  { src: 'parallelogram', key: 'parallelogram' },
+  { src: 'quadrangle', key: 'quadrangle' },
+  { src: 'arrow', key: 'arrow' },
+  { src: 'plus', key: 'plus' },
+  { src: 'inverted-round-square', key: 'inverted-round-square' },
+  { src: 'square-cut-tr.png', key: 'square-cut-tr' },
+  { src: 'square-cut-t.png', key: 'square-cut-t' },
+  { src: 'square-cut-tr-bl.png', key: 'square-cut-tr-bl' },
+  { src: 'square-r-t.png', key: 'square-r-t' },
+  { src: 'minus.png', key: 'minus' },
+];
 export const Shapes: React.FC = () => {
   const addObjectToActivePage = useAddObjectToActivePage();
 
-  return (
-    <div>
-      <div
-        onClick={() => {
-          const shape = new MoveableSquare();
-          addObjectToActivePage(shape);
-        }}
-      >
-        add square
-      </div>
-      <div
-        onClick={() => {
-          const shape = new MoveableTriangle();
-          addObjectToActivePage(shape);
-        }}
-      >
-        add triangle
-      </div>
-      <div
-        onClick={() => {
-          const shape = new MoveableSquaredTriangle();
-          addObjectToActivePage(shape);
-        }}
-      >
-        add squared triangle
-      </div>
-      <div
-        onClick={() => {
-          const shape = new MoveablePentagon();
-          addObjectToActivePage(shape);
-        }}
-      >
-        add pentagon
-      </div>
-      <div
-        onClick={() => {
-          const shape = new MoveableHexagon();
+  const addShape = (key: string) => {
+    switch (key) {
+      case 'square':
+        addObjectToActivePage(new MoveableSquare());
+        return;
+      case 'triangle':
+        addObjectToActivePage(new MoveableTriangle());
+        return;
+      case 'squared-triangle':
+        addObjectToActivePage(new MoveableSquaredTriangle());
+        return;
+      case 'rounded-square':
+        addObjectToActivePage(
+          new MoveableSquare({
+            corners: { all: { type: CornerType.Rounded, size: 20 } },
+          }),
+        );
+      case 'pentagon':
+        addObjectToActivePage(new MoveablePentagon());
+        return;
+      case 'hexagon':
+        addObjectToActivePage(new MoveableHexagon());
+        return;
+      case 'octagon':
+        addObjectToActivePage(new MoveableOctagon());
+        return;
+      case 'parallelogram':
+        addObjectToActivePage(new MoveableParallelogram());
+        return;
+      case 'quadrangle':
+        addObjectToActivePage(new MoveableQuadrangle());
+        return;
+      case 'arrow':
+        addObjectToActivePage(new MoveableArrow());
+        return;
+      case 'plus':
+        addObjectToActivePage(new MoveablePlus());
+        return;
+      case 'inverted-round-square':
+        addObjectToActivePage(
+          new MoveableSquare({
+            corners: { all: { type: CornerType.InvertedRound, size: 20 } },
+          }),
+        );
+        return;
+      case 'square-cut-tr':
+        addObjectToActivePage(
+          new MoveableSquare({
+            corners: { tr: { type: CornerType.Cut, size: 20 } },
+          }),
+        );
+        return;
+      case 'square-cut-t':
+        addObjectToActivePage(
+          new MoveableSquare({
+            corners: {
+              tr: { type: CornerType.Cut, size: 20 },
+              tl: { type: CornerType.Cut, size: 20 },
+            },
+          }),
+        );
+        return;
+      case 'square-cut-tr-bl':
+        addObjectToActivePage(
+          new MoveableSquare({
+            corners: {
+              tr: { type: CornerType.Cut, size: 20 },
+              bl: { type: CornerType.Cut, size: 20 },
+            },
+          }),
+        );
+        return;
+      case 'square-r-t':
+        addObjectToActivePage(
+          new MoveableSquare({
+            corners: {
+              tr: { type: CornerType.Rounded, size: 20 },
+              tl: { type: CornerType.Rounded, size: 20 },
+            },
+          }),
+        );
+        return;
+      case 'minus':
+        addObjectToActivePage(
+          new MoveableSquare({
+            width: 100,
+            height: 30,
+          }),
+        );
+        return;
+    }
+  };
 
-          addObjectToActivePage(shape);
-        }}
-      >
-        add hexagon
-      </div>{' '}
-      <div
-        onClick={() => {
-          const shape = new MoveableFivePointStar();
-          addObjectToActivePage(shape);
-        }}
-      >
-        five point start
-      </div>
-      <div
-        onClick={() => {
-          const shape = new MoveableHeart();
-          addObjectToActivePage(shape);
-        }}
-      >
-        heart
-      </div>
+  return (
+    <div className="grid grid-cols-3 gap-2">
+      {shapes.map(({ src, key }) => (
+        <div
+          onClick={() => addShape(key)}
+          className="w-full relative aspect-square h-auto"
+          key={key}
+        >
+          <Image src={'/shapes/' + src} fill alt={src} />
+        </div>
+      ))}
     </div>
   );
 };

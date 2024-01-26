@@ -15,14 +15,13 @@ export abstract class MoveableShape
   shapeText: string = '';
   shapeType: MoveableShapeType = MoveableShapeType.Square;
 
-  width: number = 100;
-  height: number = 100;
-
   constructor(options?: {
     id: string;
     type?: ObjectType;
     pageId: string | null;
     htmlString?: string;
+    width?: number;
+    height?: number;
   }) {
     super(options);
     this.type = 'shape';
