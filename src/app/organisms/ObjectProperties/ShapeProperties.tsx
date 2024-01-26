@@ -1,6 +1,5 @@
 import {
   useActiveMoveableShapeObject,
-  useActivePhotoObject,
   useSetBackgroundImage,
 } from '@/app/hooks/useActiveMoveableObject';
 import { MoveableObject } from '@/app/lib/moveable/MoveableObject';
@@ -33,6 +32,11 @@ const SHAPE_PROPERTIES = [
   {
     label: 'Font',
     value: SelectedProperty.ShapeTextFont,
+    isShowButton: checkLockedObject,
+  },
+  {
+    label: 'Font size',
+    value: SelectedProperty.ShapeTextFontSize,
     isShowButton: checkLockedObject,
   },
 ];

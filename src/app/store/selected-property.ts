@@ -52,6 +52,7 @@ export enum SelectedProperty {
   ShapeBackground,
   ShapeTextColor,
   ShapeTextFont,
+  ShapeTextFontSize,
 }
 
 interface SelectedPropertyState {

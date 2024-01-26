@@ -39,6 +39,7 @@ import { ShapeOutline } from './Shape/ShapeBorderProperty';
 
 import { ShapeTextFontProperty } from './Shape/ShapeTextFontProperty';
 import { ShapeTextColorProperty } from './Shape/ShapeTextColorProperty';
+import { ShapeFontSizeProperty } from './Shape/ShapeFontSizeProperty';
 
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
@@ -171,6 +172,9 @@ export const SelectedObjectProperty: FC = () => {
       }
       case SelectedProperty.ShapeTextFont: {
         return <ShapeTextFontProperty />;
+      }
+      case SelectedProperty.ShapeTextFontSize: {
+        return <ShapeFontSizeProperty />;
       }
       // case SelectedProperty.ShapeFlip: {
       //   return <PhotoFlipProperty />;
