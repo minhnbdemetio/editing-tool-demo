@@ -15,11 +15,11 @@ const checkLockedObject = (activeObject: MoveableObject) =>
   !activeObject.isLocked;
 
 const SHAPE_PROPERTIES = [
-  {
-    label: 'Nudge',
-    value: SelectedProperty.ShapeNudge,
-    isShowButton: checkLockedObject,
-  },
+  // {
+  //   label: 'Nudge',
+  //   value: SelectedProperty.ShapeNudge,
+  //   isShowButton: checkLockedObject,
+  // },
   {
     label: 'Color',
     value: SelectedProperty.ShapeColor,
@@ -30,31 +30,31 @@ const SHAPE_PROPERTIES = [
     value: SelectedProperty.ShapeBorder,
     isShowButton: checkLockedObject,
   },
-  {
-    label: 'Align',
-    value: SelectedProperty.ShapeAlign,
-    isShowButton: checkLockedObject,
-  },
-  {
-    label: 'Order',
-    value: SelectedProperty.Position,
-    isShowButton: () => true,
-  },
-  {
-    label: 'Layer',
-    value: SelectedProperty.ShapeLayer,
-    isShowButton: () => true,
-  },
-  {
-    label: 'Opacity',
-    value: SelectedProperty.ShapeOpacity,
-    isShowButton: checkLockedObject,
-  },
-  {
-    label: 'More',
-    value: SelectedProperty.ShapeMore,
-    isShowButton: () => true,
-  },
+  // {
+  //   label: 'Align',
+  //   value: SelectedProperty.ShapeAlign,
+  //   isShowButton: checkLockedObject,
+  // },
+  // {
+  //   label: 'Order',
+  //   value: SelectedProperty.Position,
+  //   isShowButton: () => true,
+  // },
+  // {
+  //   label: 'Layer',
+  //   value: SelectedProperty.ShapeLayer,
+  //   isShowButton: () => true,
+  // },
+  // {
+  //   label: 'Opacity',
+  //   value: SelectedProperty.ShapeOpacity,
+  //   isShowButton: checkLockedObject,
+  // },
+  // {
+  //   label: 'More',
+  //   value: SelectedProperty.ShapeMore,
+  //   isShowButton: () => true,
+  // },
   // {
   //   label: 'Filter',
   //   value: SelectedProperty.ShapeFilter,
