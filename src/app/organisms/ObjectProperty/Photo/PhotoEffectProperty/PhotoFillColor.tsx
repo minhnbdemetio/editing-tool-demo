@@ -1,55 +1,41 @@
 import { ChevronLeft } from '@/app/icons';
-import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
 import { Button, Checkbox } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
 import { Slider } from '@nextui-org/react';
+import { useActiveMoveablePhotoObject } from '@/app/hooks/useActiveMoveableObject';
 
 interface PhotoFillColorProps {
   onBack: () => void;
-  changeFillColor: () => void;
+  toggleFillColor: () => void;
   checkFillColor: boolean;
 }
 
 export const PhotoFillColor: FC<PhotoFillColorProps> = ({
   onBack,
-  changeFillColor,
+  toggleFillColor,
   checkFillColor,
 }) => {
-  const { activeMoveableObject } = useActiveMoveableObject();
-  const activeElement = activeMoveableObject?.getElement();
+  const activePhoto = useActiveMoveablePhotoObject();
   const [color, setColor] = useState<string | undefined>(undefined);
   const [showColorPicker, setShowColorPicker] = useState<Boolean>(false);
   const [opacity, setOpacity] = useState<number>(100);
 
   useEffect(() => {
-    if (activeElement instanceof HTMLElement) {
-      const fillColorElement: HTMLDivElement | null =
-        activeElement.querySelector('.fill-color');
-      setColor(fillColorElement?.style.backgroundColor || '#000000');
-      setOpacity(Number(fillColorElement?.style.opacity || 1) * 100);
-    }
-  }, [activeElement]);
+    setColor(activePhoto?.fillColor);
+    setOpacity(Number(activePhoto?.fillOpacity));
+  }, [activePhoto]);
 
   const handleChangeColor = (color: any) => {
-    if (activeElement instanceof HTMLElement) {
-      const fillColorElement: HTMLDivElement | null =
-        activeElement.querySelector('.fill-color');
-      setColor(color.hex);
-      if (fillColorElement) fillColorElement.style.backgroundColor = color.hex;
-    }
+    activePhoto?.setFillColor(color.hex);
+    setColor(color.hex);
   };
-  const onChangeOpacity = (_opacity: number | number[]) => {
-    let newOpacity = Number(_opacity);
+  const onChangeOpacity = (opacity: number | number[]) => {
+    let newOpacity = Number(opacity);
     if (newOpacity < 0) newOpacity = 0;
     if (newOpacity > 100) newOpacity = 100;
-    if (activeElement instanceof HTMLElement) {
-      const fillColorElement: HTMLDivElement | null =
-        activeElement.querySelector('.fill-color');
-      setOpacity(newOpacity);
-      if (fillColorElement)
-        fillColorElement.style.opacity = `${newOpacity / 100}`;
-    }
+    activePhoto?.setFillOpacity(newOpacity / 100);
+    setOpacity(newOpacity);
   };
   return (
     <div className="w-full h-full">
@@ -84,7 +70,7 @@ export const PhotoFillColor: FC<PhotoFillColorProps> = ({
                 }}
                 isSelected={checkFillColor}
                 size="lg"
-                onClick={changeFillColor}
+                onClick={toggleFillColor}
               >
                 Fill Color
               </Checkbox>

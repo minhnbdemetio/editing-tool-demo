@@ -4,13 +4,10 @@ import { EditablePhoto } from '../editable/EditablePhoto';
 import { PHOTO_INNER_ELEMENTS } from '../constant/photo';
 import { PhotoFilter } from './filters/PhotoFilter';
 import { NoneFilter } from './filters/NoneFilter';
-import { Croppable, PhotoPosition } from './Croppable';
+import { PhotoPosition } from './Croppable';
 import { GradientMask } from './gradient-mask/GradientMask';
 
-export class MoveablePhoto
-  extends MoveableObject
-  implements EditablePhoto, Croppable
-{
+export class MoveablePhoto extends MoveableObject implements EditablePhoto {
   loaded: boolean = false;
   filter: PhotoFilter = new NoneFilter();
   dragStartPoint?: { x: number; y: number };
@@ -19,6 +16,8 @@ export class MoveablePhoto
   isBackground: boolean = false;
   backgroundStartPosition?: PhotoPosition;
   src: string;
+  fillOpacity? = 100;
+  fillColor?: string | undefined = 'transparent';
   clone(
     options?: { htmlString: string; id: string } | undefined,
   ): MoveableObject {
@@ -141,19 +140,18 @@ export class MoveablePhoto
   }
 
   public setFilter(filter: PhotoFilter) {
-    this.filter = filter;
+    this.filter.setHue(filter.hue);
+    this.filter.setBrightness(filter.brightness);
+    this.filter.setBlur(filter.blur);
+    this.filter.setVignette(filter.vignette);
+    this.filter.setContrast(filter.contrast);
+    this.filter.setSaturation(filter.saturation);
+    this.filter.setTemperature(filter.temperature);
+
     this.renderFilter();
   }
   public getFilterParam() {
-    return {
-      hue: this.filter.hue,
-      brightness: this.filter.brightness,
-      blur: this.filter.blur,
-      vignette: this.filter.vignette,
-      contrast: this.filter.contrast,
-      saturation: this.filter.saturation,
-      temperature: this.filter.temperature,
-    };
+    return this.filter.getParams();
   }
 
   getImagePosition(): PhotoPosition | undefined {
@@ -311,5 +309,54 @@ export class MoveablePhoto
       width,
       height,
     };
+  }
+
+  fill() {
+    const activeElement = this.getElement();
+    if (!activeElement) return;
+    const fillColorElement = this.getFillElement();
+    if (fillColorElement) {
+      fillColorElement.style.backgroundColor = this.fillColor || 'transparent';
+      fillColorElement.style.opacity = this.fillOpacity?.toString() || '1';
+    } else {
+      const newFillColorElement = document.createElement('div');
+      newFillColorElement.id = `fill-color-${this.id}`;
+      newFillColorElement.style.content = '';
+      newFillColorElement.style.position = 'absolute';
+      newFillColorElement.style.top = '0';
+      newFillColorElement.style.left = '0';
+      newFillColorElement.style.width = '100%';
+      newFillColorElement.style.height = '100%';
+      newFillColorElement.style.backgroundColor =
+        this.fillColor || 'transparent';
+      newFillColorElement.style.opacity = this.fillOpacity?.toString() || '1';
+      newFillColorElement.style.zIndex = '1';
+      activeElement.appendChild(newFillColorElement);
+      return true;
+    }
+  }
+  hideFillColor() {
+    const fillElement = this.getFillElement();
+    if (!fillElement) return;
+    fillElement.style.display = 'none';
+  }
+  showFillColor() {
+    const fillElement = this.getFillElement();
+    if (!fillElement) return;
+    fillElement.style.display = 'block';
+  }
+  getFillElement() {
+    return document.getElementById(`fill-color-${this.id}`);
+  }
+  setFillColor(color?: string) {
+    this.fillColor = color;
+    this.fill();
+  }
+  setFillOpacity(opacity?: number) {
+    this.fillOpacity = opacity;
+    this.fill();
+  }
+  hasFillColor() {
+    return this.getFillElement()?.style.display === 'block';
   }
 }

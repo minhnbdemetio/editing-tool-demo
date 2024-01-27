@@ -655,11 +655,7 @@ export const useUpdatePhotoPosition = () => {
     callback?: Function,
   ) => {
     if (!activePhotoObject || !activePage) return false;
-    activePhotoObject.setPhotoObjectPosition(
-      position,
-      originPosition,
-      activePage,
-    );
+    activePhotoObject.setPhotoPosition(position, originPosition, activePage);
 
     callback && callback();
     return true;

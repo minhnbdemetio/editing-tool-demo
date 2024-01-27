@@ -428,4 +428,15 @@ export abstract class PhotoFilter {
       }
     }
   }
+  getParams() {
+    return {
+      hue: this.hue,
+      brightness: this.brightness,
+      blur: this.blur,
+      vignette: this.vignette,
+      contrast: this.contrast,
+      saturation: this.saturation,
+      temperature: this.temperature,
+    };
+  }
 }

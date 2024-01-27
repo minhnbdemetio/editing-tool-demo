@@ -1,14 +1,14 @@
 import { Button } from '@/app/atoms/Button';
-import { PhotoPosition } from '@/app/lib/moveable/editable/EditablePhoto';
 import {
   useActivePhotoObject,
   useUpdatePhotoPosition,
 } from '@/app/hooks/useActiveMoveableObject';
+import { PhotoPosition } from '@/app/lib/moveable/photo/Croppable';
 import { useSelectedProperty } from '@/app/store/selected-property';
 import clsx from 'clsx';
-import { FC, MouseEventHandler, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import Moveable from 'react-moveable';
+
 type CropIconProps = {
   className?: string;
   onMouseDown?: Function;
@@ -116,13 +116,13 @@ export const PhotoCropProperty: FC = () => {
       if (
         newPosition &&
         photoPosition &&
-        !isCropPositionIsOutOfBound(newPosition, photoPosition)
+        !isCropPositionOutOfBound(newPosition, photoPosition)
       ) {
         setCropPosition(newPosition);
       }
     };
 
-    const isCropPositionIsOutOfBound = (
+    const isCropPositionOutOfBound = (
       position: PhotoPosition,
       photoPosition: PhotoPosition,
     ) => {
