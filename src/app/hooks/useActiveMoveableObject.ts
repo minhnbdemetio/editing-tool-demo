@@ -98,6 +98,7 @@ export const useUpdateTextGradientColor = () => {
 
   return (gradientStops: GradientStop[]) => {
     activeText?.setTextGradient(gradientStops);
+    activeText?.render();
   };
 };
 

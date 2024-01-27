@@ -2,9 +2,14 @@ import { MAX_FIND_ELEMENT_ATTEMPTS, MoveableObject } from '../MoveableObject';
 import { GradientStop } from '../../../utilities/color.type';
 
 export type MoveableTextVariant = 'normal' | 'heading' | 'subheading' | 'body';
-import { DEFAULT_TEXT_SCALE, TEXT_INNER_ELEMENTS } from '../constant/text';
+import {
+  DEFAULT_TEXT_SCALE,
+  GRADIENT_BACKGROUND_CSS_VARIABLE,
+  GRADIENT_WEBKIT_TEXT_FILL_CSS_VARIABLE,
+  TEXT_INNER_ELEMENTS,
+} from '../constant/text';
 import { EditableText } from '../editable/EditableText';
-import { StyleEffect } from '../effects/text/StyleEffect';
+import { StyleEffect, TextStyleEffect } from '../effects/text/StyleEffect';
 import { TextEffect, TextEffectOptions } from '../effects/text/TextEffect';
 import { ShapeEffect, TextShapeEffect } from '../effects/text/ShapeEffect';
 import { CSSProperties } from 'react';
@@ -186,6 +191,12 @@ export class MoveableTextObject
   getSvgElement() {
     return document.getElementById(`${TEXT_INNER_ELEMENTS.SVG}-${this.id}`);
   }
+  getContentEditable() {
+    const element = this.getElement();
+    if (!element) return null;
+    return (element.querySelector('[contenteditable]') ||
+      element.firstChild) as HTMLElement;
+  }
   setOpacity(opacity: number) {
     const element = this.getElement();
     if (!element) return false;
@@ -203,71 +214,32 @@ export class MoveableTextObject
     this.gradientStops = undefined;
   }
   setTextGradient(stops: GradientStop[]) {
-    const currentSvgElement = this.getSvgElement();
-    const element = this.getElement();
-    const textContainer = this.getTextContainer();
-    if (!element || !textContainer) return false;
-    if (currentSvgElement) {
-      currentSvgElement.remove();
-      textContainer.style.display = 'block';
-    }
-    const svgElement = document.createElementNS(
-      'http://www.w3.org/2000/svg',
-      'svg',
-    );
-    svgElement.setAttribute('width', textContainer.offsetWidth.toString());
-    svgElement.setAttribute('height', textContainer.offsetHeight.toString());
-
-    svgElement.setAttribute('id', `${TEXT_INNER_ELEMENTS.SVG}-${this.id}`);
-    var textElement = document.createElementNS(
-      'http://www.w3.org/2000/svg',
-      'text',
-    );
-    const textCssProperties = window.getComputedStyle(textContainer);
-    const textLineHeight = parseFloat(textCssProperties['lineHeight']);
-    const textFontSize = parseFloat(textCssProperties['fontSize']);
-    const distanceBetweenBaselineAndBox = (textLineHeight - textFontSize) / 2;
-
-    const textElementY =
-      textContainer.offsetHeight - distanceBetweenBaselineAndBox;
-
-    textElement.setAttribute('x', '0');
-    textElement.setAttribute('y', textElementY.toString());
-    const computedStyles = window.getComputedStyle(textContainer);
-    for (let i = 0; i < computedStyles.length; i++) {
-      const styleName = computedStyles[i];
-      const styleValue = computedStyles.getPropertyValue(styleName);
-      textElement.style[styleName as any] = styleValue;
-    }
-
-    textElement.textContent = textContainer.textContent;
-    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-    const gradientElement = document.createElementNS(
-      'http://www.w3.org/2000/svg',
-      'linearGradient',
-    );
-    gradientElement.setAttribute('id', 'textGradient');
-    gradientElement.setAttribute('x1', '0%');
-    gradientElement.setAttribute('y1', '0%');
-    gradientElement.setAttribute('x2', '0%');
-    gradientElement.setAttribute('y2', '100%');
-
-    for (let i = 0; i < stops.length; i++) {
-      const stop = document.createElementNS(
-        'http://www.w3.org/2000/svg',
-        'stop',
-      );
-      stop.setAttribute('offset', `${stops[i].offset * 100}%`);
-      stop.style.stopColor = stops[i].color;
-      gradientElement.appendChild(stop);
-    }
-    textElement.style.fill = 'url(#textGradient)';
-    defs.appendChild(gradientElement);
-    svgElement.appendChild(defs);
-    svgElement.appendChild(textElement);
-    textContainer.style.display = 'none';
-    element.appendChild(svgElement);
     this.gradientStops = stops;
+  }
+
+  applyTextGradient(element: HTMLElement) {
+    if (!this.gradientStops) {
+      element.style.setProperty(GRADIENT_BACKGROUND_CSS_VARIABLE, '');
+      element.style.setProperty(GRADIENT_WEBKIT_TEXT_FILL_CSS_VARIABLE, '');
+      element.style.background = '';
+      element.style.backgroundClip = '';
+      element.style.webkitTextFillColor = '';
+      return;
+    }
+    const linearGradient = this.gradientStops
+      .map(({ offset, color }) => `${color} ${offset * 100}%`)
+      .join(', ');
+    element.style.setProperty(
+      GRADIENT_BACKGROUND_CSS_VARIABLE,
+      `linear-gradient(0deg, ${linearGradient})`,
+    );
+    element.style.setProperty(
+      GRADIENT_WEBKIT_TEXT_FILL_CSS_VARIABLE,
+      'transparent',
+    );
+    element.style.background = `var(${GRADIENT_BACKGROUND_CSS_VARIABLE})`;
+    element.style.backgroundClip = 'text';
+    element.style.webkitTextFillColor = `var(${GRADIENT_WEBKIT_TEXT_FILL_CSS_VARIABLE})`;
   }
   getTextContainer() {
     let attempt = 0;
@@ -491,12 +463,21 @@ export class MoveableTextObject
 
   render() {
     const element = this.getElement();
-    if (!element) return;
+    const contenteditable = this.getContentEditable();
+    if (!element || !contenteditable) return;
+
+    if (this.styleEffect.varient === TextStyleEffect.OUTLINE) {
+      this.applyTextGradient(contenteditable);
+    } else {
+      this.applyTextGradient(element);
+    }
+
     if (this.shapeEffect.varient !== TextShapeEffect.NONE) {
       this.shapeEffect.styleEffect = this.styleEffect;
     }
     this.styleEffect.apply(element);
     this.shapeEffect.apply(element);
+    
     this.renderTextScale();
     this.applyFontEffect();
     this.applyTextDecorationEffect();

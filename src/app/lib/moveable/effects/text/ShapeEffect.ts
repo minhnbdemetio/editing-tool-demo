@@ -1,5 +1,10 @@
 import {
+  CURVE_BACKGROUND_EFFECT_CONTAINER,
   CURVE_EFFECT_CONTAINER,
+  GLITCH_CURVE_EFFECT_CONTAINER,
+  GLITCH_EFFECT_CONTAINER,
+  GRADIENT_BACKGROUND_CSS_VARIABLE,
+  GRADIENT_WEBKIT_TEXT_FILL_CSS_VARIABLE,
   TEXT_BACKGROUND_DEFAULT_VALUE,
   TEXT_CURVE_DEFAULT_VALUE,
   TEXT_CURVE_INPUT_LAYER_CONTAINER,
@@ -56,6 +61,7 @@ export class TextCurveEffect extends ShapeEffect {
   apply(element: HTMLElement): void {
     this.id = element.id;
     const ul = this.getTextContainer();
+    this.removeGlitchContainer();
     if (
       this.styleEffect?.varient === TextStyleEffect.BACKGROUND &&
       this.options.curve !== 0
@@ -83,6 +89,24 @@ export class TextCurveEffect extends ShapeEffect {
         this.boundOnClickToCurveElement,
       );
     }
+  }
+
+  applyGlitchEffect() {
+    let glitchContainer = document.getElementById(
+      `${GLITCH_EFFECT_CONTAINER}-${this.id}`,
+    );
+    if (glitchContainer) {
+      glitchContainer.remove();
+    }
+    const element = this.getElement();
+    const curveContainer = this.getCurveContainer();
+    if (!curveContainer || !element) return;
+    glitchContainer = curveContainer.cloneNode(true) as HTMLElement;
+    glitchContainer.id = `${GLITCH_CURVE_EFFECT_CONTAINER}-${this.id}`;
+    glitchContainer.style.textShadow = 'none';
+    glitchContainer.style.zIndex = '10';
+
+    element.appendChild(glitchContainer);
   }
 
   generateCurveElement(element: HTMLElement) {
@@ -128,6 +152,10 @@ export class TextCurveEffect extends ShapeEffect {
       const span = document.createElement('span');
       span.innerText = letter;
       span.style.position = 'absolute';
+      span.style.display = 'block';
+      span.style.background = `var(${GRADIENT_BACKGROUND_CSS_VARIABLE})`;
+      span.style.backgroundClip = 'text';
+      span.style.webkitTextFillColor = `var(${GRADIENT_WEBKIT_TEXT_FILL_CSS_VARIABLE})`;
       const { x, y } = this.calculateCurveTranslate(nextAlpha, R, dx);
       points.push({ x, y });
       span.style.transform = `translate(${x}px, ${y}px) rotate(${
@@ -158,6 +186,8 @@ export class TextCurveEffect extends ShapeEffect {
       if (svg) {
         curveContainer.appendChild(svg);
       }
+    } else if (this.styleEffect?.varient === TextStyleEffect.GLITCH) {
+      this.applyGlitchEffect();
     }
   }
 
@@ -186,6 +216,7 @@ export class TextCurveEffect extends ShapeEffect {
     const spreadVal = (spread / 100) * 10;
     const roundnessVal = (roundness / 100) * 5;
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.id = `${CURVE_BACKGROUND_EFFECT_CONTAINER}-${this.id}`;
     svg.style.position = 'absolute';
     if (curve >= 0) {
       svg.style.top = `${-1 * (fontSize - 8 < 4 ? 4 : fontSize - 8)}px`;
@@ -354,6 +385,7 @@ export class TextCurveEffect extends ShapeEffect {
     ) {
       this.styleEffect.apply(el);
     }
+    this.removeGlitchContainer();
     const ul = this.getTextContainer();
     const curveContainer = this.getCurveContainer();
     const textLayerContainer = this.getTextCureLayerContainer();
@@ -370,5 +402,14 @@ export class TextCurveEffect extends ShapeEffect {
     }
     this.isRegisterClickToCurveEvent = false;
     document.removeEventListener('mousedown', this.boundOnClickToCurveElement);
+  }
+
+  removeGlitchContainer() {
+    const glitchContainer = document.getElementById(
+      `${GLITCH_CURVE_EFFECT_CONTAINER}-${this.id}`,
+    );
+    if (glitchContainer) {
+      glitchContainer.remove();
+    }
   }
 }
