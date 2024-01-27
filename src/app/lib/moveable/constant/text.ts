@@ -72,8 +72,15 @@ export const TEXT_GLITCH_EFFECT_CSS_VARIABLES = '--text-glitch-effect';
 export const TEXT_NEON_EFFECT_CSS_VARIABLES = '--text-neon-effect';
 export const TEXT_BACKGROUND_EFFECT_CSS_VARIABLES = '--text-background-effect';
 export const TEXT_PREVIOUS_COLOR_CSS_VARIABLE = '--prev-color';
+export const GRADIENT_BACKGROUND_CSS_VARIABLE = '--gradient-background';
+export const GRADIENT_WEBKIT_TEXT_FILL_CSS_VARIABLE =
+  '--gradient-webkit-text-fill';
 
 export const OUTLINE_EFFECT_CONTAINER = 'outline-effect-container';
 export const BACKGROUND_EFFECT_CONTAINER = 'background-effect-container';
 export const CURVE_EFFECT_CONTAINER = 'curve-effect-container';
 export const TEXT_CURVE_INPUT_LAYER_CONTAINER = 'text-layer-container';
+export const GLITCH_EFFECT_CONTAINER = 'glitch-effect-container';
+export const GLITCH_CURVE_EFFECT_CONTAINER = 'glitch-curve-effect-container';
+export const CURVE_BACKGROUND_EFFECT_CONTAINER =
+  'curve-background-effect-container';
