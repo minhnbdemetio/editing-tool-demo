@@ -6,7 +6,7 @@ import { DEFAULT_TEXT_SCALE, TEXT_INNER_ELEMENTS } from '../constant/text';
 import { EditableText } from '../editable/EditableText';
 import { StyleEffect } from '../effects/text/StyleEffect';
 import { TextEffect, TextEffectOptions } from '../effects/text/TextEffect';
-import { ShapeEffect } from '../effects/text/ShapeEffect';
+import { ShapeEffect, TextShapeEffect } from '../effects/text/ShapeEffect';
 import { CSSProperties } from 'react';
 
 export type MoveableTextShadow = {
@@ -492,6 +492,9 @@ export class MoveableTextObject
   render() {
     const element = this.getElement();
     if (!element) return;
+    if (this.shapeEffect.varient !== TextShapeEffect.NONE) {
+      this.shapeEffect.styleEffect = this.styleEffect;
+    }
     this.styleEffect.apply(element);
     this.shapeEffect.apply(element);
     this.renderTextScale();

@@ -80,6 +80,7 @@ export const useUpdateFontSize = () => {
 
   return (fontSize: number) => {
     activeText?.setFontSize(fontSize);
+    activeText?.render();
   };
 };
 
