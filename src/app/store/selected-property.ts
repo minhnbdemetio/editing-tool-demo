@@ -45,6 +45,7 @@ export enum SelectedProperty {
   ShapeCrop,
   ShapeOpacity,
   ShapeAlign,
+  ShapePosition,
   ShapeOrder,
   ShapeFlip,
   ShapeMore,
