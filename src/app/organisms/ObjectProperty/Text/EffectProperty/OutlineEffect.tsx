@@ -1,9 +1,13 @@
-import { TextOutlineEffectOption } from '@/app/lib/moveable/text/MoveableText';
-import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
+import {
+  useActiveTextObject,
+  useUpdateTextStyleEffectOptions,
+} from '@/app/hooks/useActiveMoveableObject';
 import { Button, Slider, Tooltip } from '@nextui-org/react';
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import { EffectPickColor } from './EffectPickColor';
 import { ColorResult } from 'react-color';
+import { TextEffectOptions } from '@/app/lib/moveable/effects/text/TextEffect';
+import { TEXT_OUTLINE_DEFAULT_VALUE } from '@/app/lib/moveable/constant/text';
 
 interface SpliceEffectPropertyProps {}
 type TextShadowOptions = 'thickness' | 'color';
@@ -25,26 +29,19 @@ const SHADOW_OPTIONS = [
   },
 ];
 
-const DEFAULT_VALUE = {
-  color: '#bfbfbf',
-  thickness: 100,
-};
 export const OutlineEffect: FC<SpliceEffectPropertyProps> = () => {
   const activeText = useActiveTextObject();
-  const [outline, setOutline] = useState<TextOutlineEffectOption>(
-    activeText?.outlineEffect || DEFAULT_VALUE,
+  const [outline, setOutline] = useState<TextEffectOptions>(
+    activeText?.styleEffect?.getOptions() || TEXT_OUTLINE_DEFAULT_VALUE,
   );
   const [colorPickerOpen, setOpenColorPicker] = useState<boolean>(false);
-  useEffect(() => {
-    activeText?.setOutlineEffect(activeText?.outlineEffect || DEFAULT_VALUE);
-  }, []);
+  const handleUpdateSpliceEffect = useUpdateTextStyleEffectOptions();
   const handleChangeColor = (color: ColorResult) => {
     const value = {
       ...outline,
       color: color.hex,
     };
-    setOutline(value);
-    activeText?.setOutlineEffect(value);
+    handleUpdateSpliceEffect(value, () => setOutline(value));
   };
   return (
     <>
@@ -106,8 +103,9 @@ export const OutlineEffect: FC<SpliceEffectPropertyProps> = () => {
                             ...outline,
                             [option.target]: v,
                           };
-                          setOutline(value);
-                          activeText?.setOutlineEffect(value);
+                          handleUpdateSpliceEffect(value, () =>
+                            setOutline(value),
+                          );
                         }}
                       />
                     </Tooltip>
@@ -123,8 +121,7 @@ export const OutlineEffect: FC<SpliceEffectPropertyProps> = () => {
                       ...outline,
                       [option.target]: value,
                     };
-                    setOutline(val);
-                    activeText?.setOutlineEffect(val);
+                    handleUpdateSpliceEffect(val, () => setOutline(val));
                   }
                 }}
               />

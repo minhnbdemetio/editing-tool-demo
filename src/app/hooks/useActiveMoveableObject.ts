@@ -1,9 +1,5 @@
-import { CSSProperties, useCallback } from 'react';
-import {
-  MoveableTextShapeEffect,
-  MoveableTextStyleEffect,
-  TransformDirection,
-} from '../lib/moveable/text/MoveableText';
+import { CSSProperties, useCallback, useState } from 'react';
+import { TransformDirection } from '../lib/moveable/text/MoveableText';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { useActivePage } from '../store/active-page';
 import { GradientStop } from '../utilities/color.type';
@@ -14,6 +10,11 @@ import { useDesign } from '../store/design-objects';
 import { isNumber } from 'lodash';
 import { GradientMask } from '../lib/moveable/photo/gradient-mask/GradientMask';
 import { PhotoPosition } from '../lib/moveable/photo/Croppable';
+import {
+  TextEffect,
+  TextEffectOptions,
+} from '../lib/moveable/effects/text/TextEffect';
+import { ShapeEffect } from '../lib/moveable/effects/text/ShapeEffect';
 
 export const useActiveTextObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
@@ -83,6 +84,7 @@ export const useUpdateTextColor = () => {
 
   return (color: string) => {
     activeText?.setTextColor(color);
+    activeText?.render();
   };
 };
 
@@ -162,33 +164,33 @@ export const useCloneObject = () => {
 
 export const useToggleMoveableBoldText = () => {
   const activeText = useActiveTextObject();
+
   return (callback?: Function) => {
-    const element = activeText?.getElement();
-    if (!element) return false;
-    const fontWeight = activeText?.getElementCss('fontWeight');
+    const fontWeight = activeText?.getFontWeight();
     const isBold = fontWeight === 'bold' || fontWeight === '700';
     if (isBold) {
-      element.style.fontWeight = 'normal';
+      activeText?.setFontWeight('400');
     } else {
-      element.style.fontWeight = 'bold';
+      activeText?.setFontWeight('bold');
     }
+    activeText?.render();
     callback && callback();
     return true;
   };
 };
 
 export const useToggleItalicText = () => {
+  const textObject = useActiveTextObject();
+  const [isItalic, setIsItalic] = useState<boolean>(
+    textObject?.isFontStyle('italic') || false,
+  );
   const activeText = useActiveTextObject();
 
   return (callback?: Function) => {
-    const element = activeText?.getElement();
-    if (!element) return false;
-    const isItalic = activeText?.getElementCss('fontStyle') === 'italic';
-    if (isItalic) {
-      element.style.fontStyle = 'normal';
-    } else {
-      element.style.fontStyle = 'italic';
-    }
+    activeText?.setFontStyle(isItalic ? 'normal' : 'italic');
+    activeText?.render();
+    setIsItalic(!isItalic);
+
     callback && callback();
     return true;
   };
@@ -198,20 +200,12 @@ export const useToggleUnderlineText = () => {
   const activeText = useActiveTextObject();
 
   const toggleUnderlineText = (callback?: Function) => {
-    const element = activeText?.getElement();
-    if (!element) return false;
-    const textDecoration = activeText?.getElementCss('textDecoration') || '';
-    const isUnderlined = textDecoration.includes('underline');
-    if (isUnderlined) {
-      element.style.textDecoration =
-        textDecoration === 'underline'
-          ? 'none'
-          : textDecoration.replace(/underline/g, '');
-    } else if (textDecoration.includes('none')) {
-      element.style.textDecoration = 'underline';
-    } else {
-      element.style.textDecoration += ' underline';
-    }
+    activeText?.setTextDecoration(
+      'underline',
+      !activeText.isTextDecorationEnable('underline'),
+    );
+    activeText?.render();
+
     callback && callback();
     return true;
   };
@@ -223,20 +217,12 @@ export const useToggleLineThroughText = () => {
   const activeText = useActiveTextObject();
 
   const toggleLineThroughText = (callback?: Function) => {
-    const element = activeText?.getElement();
-    if (!element) return false;
-    const textDecoration = activeText?.getElementCss('textDecoration') || '';
-    const hasLineThrough = textDecoration.includes('line-through');
-    if (hasLineThrough) {
-      element.style.textDecoration =
-        textDecoration === 'line-through'
-          ? 'none'
-          : textDecoration.replace(/line-through/g, '');
-    } else if (textDecoration.includes('none')) {
-      element.style.textDecoration = 'line-through';
-    } else {
-      element.style.textDecoration += ' line-through';
-    }
+    activeText?.setTextDecoration(
+      'lineThrough',
+      !activeText.isTextDecorationEnable('lineThrough'),
+    );
+    activeText?.render();
+
     callback && callback();
     return true;
   };
@@ -248,16 +234,14 @@ export const useToggleUppercaseText = () => {
   const activeText = useActiveTextObject();
 
   const toggleUppercaseText = (callback?: Function) => {
-    const element = activeText?.getElement();
-    if (!element) return false;
-    const isUppercase =
-      activeText?.getElementCss('textTransform') === 'uppercase';
+    const isUppercase = activeText?.isTextTransform('uppercase');
 
     if (isUppercase) {
-      element.style.textTransform = 'none';
+      activeText?.setTextTransform('none');
     } else {
-      element.style.textTransform = 'uppercase';
+      activeText?.setTextTransform('uppercase');
     }
+    activeText?.render();
     callback && callback();
     return true;
   };
@@ -269,10 +253,8 @@ export const useChangeTextAlign = () => {
   const activeText = useActiveTextObject();
 
   const changeTextAlign = (textAlign: string, callback?: Function) => {
-    const element = activeText?.getElement();
-    if (!element) return false;
-    element.style.textAlign = textAlign;
-    callback && callback();
+    activeText?.setTextAlign(textAlign);
+    activeText?.render();
     return true;
   };
 
@@ -283,16 +265,11 @@ export const useToggleListTypeDiscText = () => {
   const activeText = useActiveTextObject();
 
   const toggleListTypeDiscText = (callback?: Function) => {
-    const listElement = activeText?.getElement()?.querySelector('ul');
-    if (!listElement) return false;
-    const isListTypeDisc = listElement.style.listStyleType === 'disc';
-    if (isListTypeDisc) {
-      listElement.style.paddingLeft = '0';
-      listElement.style.listStyleType = 'none';
-    } else {
-      listElement.style.paddingLeft = '20px';
-      listElement.style.listStyleType = 'disc';
-    }
+    activeText?.setTextListStyle(
+      activeText?.isTextListStyle('disc') ? 'none' : 'disc',
+    );
+
+    activeText?.render();
     callback && callback();
     return true;
   };
@@ -304,17 +281,11 @@ export const useToggleListTypeNumberText = () => {
   const activeText = useActiveTextObject();
 
   const toggleListTypeText = (callback?: Function) => {
-    const listElement = activeText?.getElement()?.querySelector('ul');
-    if (!listElement) return false;
-    const isNumberType = listElement.style.listStyleType === 'number';
+    activeText?.setTextListStyle(
+      activeText?.isTextListStyle('number') ? 'none' : 'number',
+    );
+    activeText?.render();
 
-    if (isNumberType) {
-      listElement.style.paddingLeft = '0';
-      listElement.style.listStyleType = 'none';
-    } else {
-      listElement.style.paddingLeft = '20px';
-      listElement.style.listStyleType = 'number';
-    }
     callback && callback();
     return true;
   };
@@ -492,67 +463,35 @@ export const useToggleLock = () => {
   return toggleLock;
 };
 
-export const useUpdateActiveMoveableObjectTextStyleEffect = () => {
+export const useUpdateActiveTextShapeEffect = () => {
   const activeText = useActiveTextObject();
-  const handleChangeTextEffect = (
-    effect: MoveableTextStyleEffect,
-    cb: Function,
-  ) => {
-    // Reset effect before apply new effect
-    const el = activeText?.getElement();
-    if (!el) return false;
-    el.style.textShadow = 'none';
-    el.style.webkitTextFillColor = 'currentcolor';
-    el.style.caretColor = 'unset';
-    el.style.webkitTextStroke = 'unset';
-    el.style.webkitTextFillColor = 'unset';
-    el.style.filter = 'unset';
-    const outlineElement = document.getElementById(`outline-${activeText?.id}`);
-    const backgroundElement = document.getElementById(
-      `bg-effect-${activeText?.id}`,
-    );
-    if (outlineElement) {
-      el.removeChild(outlineElement);
-    }
-    if (backgroundElement) {
-      el.removeChild(backgroundElement);
-    }
-    const preColor = el.style.getPropertyValue('--prev-color');
-    if (preColor) {
-      el.style.color = preColor;
-      el.style.removeProperty('--prev-color');
-    }
+  const handleChangeTextEffect = (effect: ShapeEffect, cb: Function) => {
+    const element = activeText?.getElement();
+    if (!activeText || !element) return false;
+    if (!element) return false;
+    activeText.shapeEffect.reset(element);
+    activeText.setShapeEffect(effect);
+    activeText.render();
 
-    // Set style effect id
-    activeText?.setStyleEffect(effect);
     cb();
     return true;
   };
   return handleChangeTextEffect;
 };
 
-export const useUpdateActiveTextShapeEffect = () => {
+export const useUpdateTextShapeEffectOptions = () => {
   const activeText = useActiveTextObject();
-  const handleChangeTextEffect = (
-    effect: MoveableTextShapeEffect,
-    cb: Function,
+  const updateTextStyleEffectOptions = (
+    shapeEffectOption: TextEffectOptions,
+    callback?: Function,
   ) => {
     if (!activeText) return false;
-    const element = activeText?.getElement();
-    if (!element) return false;
-    const isCurveEffect = activeText?.shapeEffect === 'curve';
-    activeText?.setShapeEffect(effect);
-
-    if (isCurveEffect) {
-      activeText.setShapeNone();
-    } else {
-      activeText.setShapeEffect(effect);
-    }
-
-    cb();
+    activeText.updateShapeEffectOption(shapeEffectOption);
+    activeText.render();
+    callback && callback();
     return true;
   };
-  return handleChangeTextEffect;
+  return updateTextStyleEffectOptions;
 };
 
 export const useUpdateOpacity = () => {
@@ -655,7 +594,11 @@ export const useUpdatePhotoPosition = () => {
     callback?: Function,
   ) => {
     if (!activePhotoObject || !activePage) return false;
-    activePhotoObject.setPhotoPosition(position, originPosition, activePage);
+    activePhotoObject.setPhotoObjectPosition(
+      position,
+      originPosition,
+      activePage,
+    );
 
     callback && callback();
     return true;
@@ -702,4 +645,36 @@ export const useUpdateTextStretchFont = () => {
     return true;
   };
   return updateTextStretchFont;
+};
+
+export const useUpdateTextStyleEffect = () => {
+  const activeText = useActiveTextObject();
+  const updateTextStyleEffect = (
+    styleEffect: TextEffect,
+    callback?: Function,
+  ) => {
+    const element = activeText?.getElement();
+    if (!activeText || !element) return false;
+    activeText.styleEffect.reset(element);
+    activeText.setStyleEffect(styleEffect);
+    activeText.render();
+    callback && callback();
+    return true;
+  };
+  return updateTextStyleEffect;
+};
+
+export const useUpdateTextStyleEffectOptions = () => {
+  const activeText = useActiveTextObject();
+  const updateTextStyleEffectOptions = (
+    styleEffectOption: TextEffectOptions,
+    callback?: Function,
+  ) => {
+    if (!activeText) return false;
+    activeText.updateStyleEffectOption(styleEffectOption);
+    activeText.render();
+    callback && callback();
+    return true;
+  };
+  return updateTextStyleEffectOptions;
 };

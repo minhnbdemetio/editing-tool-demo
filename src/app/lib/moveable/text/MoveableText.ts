@@ -2,8 +2,12 @@ import { MAX_FIND_ELEMENT_ATTEMPTS, MoveableObject } from '../MoveableObject';
 import { GradientStop } from '../../../utilities/color.type';
 
 export type MoveableTextVariant = 'normal' | 'heading' | 'subheading' | 'body';
-import { hexToRgba } from '../../../utilities/color';
 import { DEFAULT_TEXT_SCALE, TEXT_INNER_ELEMENTS } from '../constant/text';
+import { EditableText } from '../editable/EditableText';
+import { StyleEffect } from '../effects/text/StyleEffect';
+import { TextEffect, TextEffectOptions } from '../effects/text/TextEffect';
+import { ShapeEffect } from '../effects/text/ShapeEffect';
+import { CSSProperties } from 'react';
 
 export type MoveableTextShadow = {
   color?: string;
@@ -33,6 +37,54 @@ export type TextBackgroundEffectOption = {
   transparency?: number;
 };
 
+export type TextFontStyle = 'italic' | 'normal';
+export type TextTransform = 'none' | 'uppercase';
+export type TextListStyle = 'none' | 'number' | 'disc';
+export type TextDecoration = {
+  underline: boolean;
+  lineThrough: boolean;
+};
+
+export type TextFormat = {
+  fontFamily: string;
+  textAlign: string;
+  textTransform: TextTransform;
+  fontWeight: string;
+  fontStyle: TextFontStyle;
+  textListStyle: TextListStyle;
+  textDecoration: TextDecoration;
+
+  setFontStyle: (fontStyle: TextFontStyle) => void;
+  getFontStyle: () => TextFontStyle;
+  isFontStyle: (style: TextFontStyle) => boolean;
+
+  setTextTransform: (textTransform: TextTransform) => void;
+  getTextTransform: () => TextTransform;
+  isTextTransform: (textTransform: TextTransform) => boolean;
+
+  getTextAlign: () => string;
+  setTextAlign: (textAlign: string) => void;
+  isTextAlign: (textAlign: string) => boolean;
+
+  setFontWeight: (fontWeight: string) => void;
+  getFontWeight: () => string;
+
+  getTextDecoration: () => TextDecoration;
+  setTextDecoration: (key: keyof TextDecoration, state: boolean) => void;
+  isTextDecorationEnable: (key: keyof TextDecoration) => boolean;
+
+  getTextListStyle: () => TextListStyle;
+  setTextListStyle: (listStyle: TextListStyle) => void;
+  isTextListStyle: (listStyle: TextListStyle) => boolean;
+
+  setFontFamily: (fontFamily: string) => void;
+  getFontFamily: () => string;
+
+  applyFontEffect: () => void;
+  applyTextDecorationEffect: () => void;
+  applyTextListStyle: () => void;
+};
+
 export type MoveableTextStyleEffect =
   | 'none'
   | 'shadow'
@@ -49,30 +101,36 @@ export type TransformDirection = 'bottom' | 'center' | 'top';
 
 export type MoveableTextShapeEffect = 'none' | 'curve';
 
-export class MoveableTextObject extends MoveableObject {
+export class MoveableTextObject
+  extends MoveableObject
+  implements EditableText, TextFormat
+{
   variant?: MoveableTextVariant;
-  styleEffect?: MoveableTextStyleEffect;
-  shapeEffect?: MoveableTextShapeEffect;
-  textShadow?: MoveableTextShadow;
-  textIntensity?: number;
-  thicknessHollowEffect?: number;
-  spliceEffect?: TextSpliceEffectOption;
-  outlineEffect?: TextOutlineEffectOption;
-  echoEffect?: MoveableTextShadow;
-  glitchEffect?: MoveableTextShadow;
-  neonEffect?: MoveableTextShadow;
-  backgroundEffect?: TextBackgroundEffectOption;
-  curve?: number;
   gradientStops?: GradientStop[];
   transformDirection: string;
+  curve?: number;
   scaleY: number = DEFAULT_TEXT_SCALE;
   scaleX: number = DEFAULT_TEXT_SCALE;
+  styleEffect: StyleEffect;
+  shapeEffect: ShapeEffect;
+  fontFamily: string = 'Arial';
+  fontWeight: string = '400';
+  fontStyle: TextFontStyle = 'normal';
+  textTransform: TextTransform = 'none';
+  textAlign: string = 'left';
+  textDecoration: TextDecoration = {
+    lineThrough: false,
+    underline: false,
+  };
+  textListStyle: TextListStyle = 'none';
+
   constructor(options?: { id: string; htmlString: string }) {
     super(options);
     this.type = 'text';
     this.variant = 'normal';
-    this.styleEffect = 'none';
     this.transformDirection = 'bottom';
+    this.styleEffect = new StyleEffect();
+    this.shapeEffect = new ShapeEffect();
   }
 
   clone(options?: { htmlString: string; id: string }): MoveableTextObject {
@@ -115,15 +173,8 @@ export class MoveableTextObject extends MoveableObject {
     }
     return undefined;
   }
-  getTextShadow() {
-    if (this.textShadow) return this.textShadow;
-    return undefined;
-  }
   getTextStyleEffect() {
     return this.styleEffect;
-  }
-  getTextIntensity() {
-    return this.textIntensity;
   }
   getOpacity() {
     const opacity = this.getElementCss('opacity');
@@ -144,7 +195,6 @@ export class MoveableTextObject extends MoveableObject {
     const element = this.getElement();
     if (!element) return false;
     element.style.fontSize = fontSize + 'px';
-    this.onUpdateBackgroundEffect();
   }
   setTextColor(color: string) {
     const element = this.getElement();
@@ -281,70 +331,17 @@ export class MoveableTextObject extends MoveableObject {
     const element = this.getElement();
     if (!element) return false;
     element.style.letterSpacing = letterSpacing + 'px';
-    this.onUpdateBackgroundEffect();
   }
   setLineHeight(lineHeight: number | null) {
     const element = this.getElement();
     if (!element) return false;
     element.style.lineHeight = lineHeight + 'px';
-    this.onUpdateBackgroundEffect();
   }
-  setTextShadow(textShadow?: MoveableTextShadow) {
-    if (!textShadow) {
-      this.textShadow = undefined;
-      return true;
-    }
-    const element = this.getElement();
-    if (!element) return false;
-    const styles = window.getComputedStyle(element);
-    const matches = styles.fontSize?.match(/^(\d+(\.\d+)?)px/);
-    const MAX_VALUE = parseFloat(matches?.[1] ?? '0') * 0.166;
-
-    const {
-      color = styles.color,
-      offset = 50,
-      direction = 45,
-      blur = 0,
-      transparency = 40,
-    } = textShadow;
-    const offsetVal = (offset / 100) * MAX_VALUE;
-    const hShadow = (
-      -offsetVal * Math.sin((direction * Math.PI) / 180)
-    ).toFixed(4);
-    const vShadow = (offsetVal * Math.cos((direction * Math.PI) / 180)).toFixed(
-      4,
-    );
-    const shadow = `${hShadow}px ${vShadow}px ${
-      (blur / 100) * MAX_VALUE
-    }px ${hexToRgba(color, transparency / 100)}`;
-    element.style.textShadow = shadow;
-    this.textShadow = textShadow;
-  }
-  setStyleEffect(styleEffect: MoveableTextStyleEffect) {
+  setStyleEffect(styleEffect: TextEffect) {
     this.styleEffect = styleEffect;
   }
-  setEffectLift(intensity?: number, color: string = '#000') {
-    if (!intensity) {
-      this.textIntensity = undefined;
-      return true;
-    }
-    const element = this.getElement();
-    if (!element) return false;
-    this.textIntensity = intensity;
-    const transparency = ((60 - 5) / 100) * intensity + 5;
-    const blur = ((34.5 - 4.6) / 100) * intensity + 4.6;
-    const shadow = `${hexToRgba(
-      color,
-      transparency / 100,
-    )} 0px 4.6px ${blur}px `;
-    element.style.textShadow = shadow;
-  }
-
-  setThicknessHollowEffect(thickness: number) {
-    const element = this.getElement();
-    if (!element) return false;
-    this.thicknessHollowEffect = thickness;
-    this.setTextStrokeEffect(thickness);
+  updateStyleEffectOption(option: TextEffectOptions) {
+    this.styleEffect.setOption(option);
   }
 
   setTextStrokeEffect(
@@ -366,469 +363,12 @@ export class MoveableTextObject extends MoveableObject {
     element.style.webkitTextFillColor = 'transparent';
   }
 
-  setSpliceEffect(option: TextSpliceEffectOption) {
-    const element = this.getElement();
-    if (!element) return false;
-    this.spliceEffect = option;
-    const styles = window.getComputedStyle(element);
-    const matches = styles.fontSize?.match(/^(\d+(\.\d+)?)px/);
-    const MAX_SHADOW = parseFloat(matches?.[1] ?? '0') * 0.166;
-
-    const {
-      thickness = 50,
-      offset = 50,
-      direction = -45,
-      color = styles.color,
-    } = option;
-
-    const offsetVal = (offset / 100) * MAX_SHADOW;
-    const hShadow = (
-      -offsetVal * Math.sin((direction * Math.PI) / 180)
-    ).toFixed(4);
-    const vShadow = (offsetVal * Math.cos((direction * Math.PI) / 180)).toFixed(
-      4,
-    );
-    const shadow = `${color} ${hShadow}px ${vShadow}px 0px`;
-    element.style.textShadow = shadow;
-    this.setTextStrokeEffect(thickness);
-  }
-
-  setOutlineEffect(option: TextOutlineEffectOption) {
-    const element = this.getElement();
-    if (!element) return false;
-    this.outlineEffect = option;
-    const { thickness, color } = option;
-    const clonedElementId = `outline-${this.id}`;
-    let clonedElement = document.getElementById(clonedElementId);
-
-    if (!clonedElement) {
-      clonedElement = element.cloneNode(true) as HTMLElement;
-      element.style.position = 'relative';
-      clonedElement.id = `outline-${this.id}`;
-      clonedElement.style.transform = 'initial';
-      clonedElement.style.webkitTextFillColor = 'unset';
-      clonedElement.style.position = 'absolute';
-      clonedElement.style.top = '0';
-      clonedElement.style.left = '0';
-      clonedElement.style.zIndex = '-1';
-      element.appendChild(clonedElement);
-    }
-
-    // Append the cloned element to the parent element
-    this.setTextStrokeEffect(thickness, 0.0916, color, clonedElement);
-  }
-
-  setEchoEffect(option: MoveableTextShadow) {
-    const element = this.getElement();
-    if (!element) return false;
-    const styles = window.getComputedStyle(element);
-    const matches = styles.fontSize?.match(/^(\d+(\.\d+)?)px/);
-    const MAX_SHADOW = parseFloat(matches?.[1] ?? '0') * 0.166;
-    const { offset = 50, direction = -45, color = styles.color } = option;
-
-    const offsetVal = (offset / 100) * MAX_SHADOW;
-    const hShadow = (
-      -offsetVal * Math.sin((direction * Math.PI) / 180)
-    ).toFixed(4);
-    const vShadow = (offsetVal * Math.cos((direction * Math.PI) / 180)).toFixed(
-      4,
-    );
-    const shadow = `${hexToRgba(
-      color,
-      0.5,
-    )} ${hShadow}px ${vShadow}px 0px, ${hexToRgba(color, 0.3)} ${
-      +hShadow * 2
-    }px ${+vShadow * 2}px 0px`;
-    element.style.textShadow = shadow;
-    this.echoEffect = option;
-  }
-
-  setGlitchEffect(option: MoveableTextShadow) {
-    const element = this.getElement();
-    if (!element) return false;
-    const styles = window.getComputedStyle(element);
-    const isBlueRedColor = option.color === 'blue-red';
-    const firstColor = 'rgb(0, 255, 255)';
-    const secondColor = isBlueRedColor ? 'rgb(255, 0, 255)' : 'rgb(255, 0, 0)';
-    const matches = styles.fontSize?.match(/^(\d+(\.\d+)?)px/);
-    const MAX_SHADOW = parseFloat(matches?.[1] ?? '0') * 0.0833;
-    const { offset = 50, direction = -45 } = option;
-    const offsetVal = (offset / 100) * MAX_SHADOW;
-    const hShadow = (
-      -offsetVal * Math.sin((direction * Math.PI) / 180)
-    ).toFixed(4);
-    const vShadow = (offsetVal * Math.cos((direction * Math.PI) / 180)).toFixed(
-      4,
-    );
-    const shadow = `${firstColor} ${hShadow}px ${vShadow}px 0px, ${secondColor} ${
-      +hShadow * -1
-    }px ${+vShadow * -1}px 0px`;
-
-    element.style.textShadow = shadow;
-    this.glitchEffect = option;
-  }
-
-  setNeonEffect(option: MoveableTextShadow) {
-    const element = this.getElement();
-    if (!element) return false;
-    const styles = window.getComputedStyle(element);
-    const color =
-      element.style.getPropertyValue('--prev-color') || styles.color;
-    const matches = styles.fontSize?.match(/^(\d+(\.\d+)?)px/);
-    const MAX_THICKNESS = parseFloat(matches?.[1] ?? '0') * 0.0166;
-    const { thickness = 1 } = option;
-    const baseVal = (0.061 * thickness + 1.6) * MAX_THICKNESS;
-    const filter = `drop-shadow(0px 0px ${baseVal}px ${hexToRgba(
-      color,
-      0.95,
-    )}) drop-shadow(0px 0px ${baseVal * 5}px ${hexToRgba(
-      color,
-      0.75,
-    )}) drop-shadow(0px 0px ${baseVal * 5 * 3}px ${hexToRgba(color, 0.44)})`;
-    element.style.filter = filter;
-    element.style.setProperty('--prev-color', color);
-    element.style.color = hexToRgba(color, (thickness * 0.55 + 34.45) / 100);
-    this.neonEffect = option;
-  }
-
-  setBackgroundEffect(option: TextBackgroundEffectOption) {
-    this.backgroundEffect = option;
-    this.shapeEffect = 'none';
-    this.curve = undefined;
-    this.onUpdateBackgroundEffect();
-  }
-
-  onUpdateBackgroundEffect() {
-    const element = this.getElement();
-    if (
-      !element ||
-      this.styleEffect !== 'background' ||
-      this.shapeEffect === 'curve'
-    )
-      return false;
-    const bgEffectId = `bg-effect-${this.id}`;
-    const {
-      color = 'FFED00',
-      spread = 50,
-      roundness = 50,
-      transparency = 100,
-    } = this.backgroundEffect ?? {};
-    const textContainer = this.getTextContainer();
-    const firstTextChild = textContainer?.firstElementChild;
-    if (!textContainer || !firstTextChild) return false;
-    const textChildStyles = window.getComputedStyle(firstTextChild);
-    const elHeight = parseFloat(
-      textChildStyles.height.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
-    );
-    const widthContainer = parseFloat(
-      window
-        .getComputedStyle(textContainer)
-        .width.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
-    );
-
-    const bgElement = document.getElementById(bgEffectId);
-    if (bgElement) {
-      element.removeChild(bgElement);
-    }
-    const spreadVal = (spread / 100) * 10;
-    const roundnessVal = (roundness / 100) * 10;
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    element.style.position = 'relative';
-    svg.id = bgEffectId;
-    svg.style.position = 'absolute';
-    svg.style.top = '0';
-    svg.style.left = `${-spreadVal}px`;
-    svg.style.right = `${widthContainer + spreadVal}px`;
-    svg.style.zIndex = '-1';
-    svg.style.height = '100%';
-    element.appendChild(svg);
-    let prevPathWidth = 0;
-    const lengthItems = textContainer.childNodes.length;
-    textContainer.childNodes.forEach((el, index) => {
-      let elWidth = 0;
-      if (!el.textContent) {
-        elWidth = prevPathWidth;
-      } else {
-        elWidth = this.getTextContentWidth(el.textContent) + 2 * spreadVal;
-      }
-
-      const nextEl = textContainer.childNodes[index + 1];
-      const nextPathWidth =
-        nextEl && nextEl.textContent
-          ? this.getTextContentWidth(nextEl.textContent) + 2 * spreadVal
-          : prevPathWidth || elWidth;
-      const isRadiusTop = index === 0 || elWidth > prevPathWidth;
-      const isRadiusBottom =
-        index === lengthItems - 1 || elWidth > nextPathWidth;
-      prevPathWidth = elWidth;
-      const startX = 0;
-      const startY = elHeight * index;
-      const path = document.createElementNS(
-        'http://www.w3.org/2000/svg',
-        'path',
-      ) as SVGPathElement;
-      path.setAttribute(
-        'd',
-        `M ${startX} ${startY} L ${
-          isRadiusTop ? startX + elWidth - roundnessVal : startX + elWidth
-        } ${startY} ${
-          isRadiusTop
-            ? `C ${startX + elWidth - roundnessVal} ${startY}, ${
-                startX + elWidth
-              } ${startY}, ${startX + elWidth} ${startY + roundnessVal}`
-            : ''
-        }L ${startX + elWidth} ${
-          isRadiusBottom ? startY + elHeight - roundnessVal : startY + elHeight
-        }
-        ${
-          isRadiusBottom
-            ? `C ${startX + elWidth} ${startY + elHeight - roundnessVal}, ${
-                startX + elWidth
-              } ${startY + elHeight}, ${startX + elWidth - roundnessVal} ${
-                startY + elHeight
-              }`
-            : ''
-        }
-        L ${index === lengthItems - 1 ? startX + roundnessVal : startX} ${
-          startY + elHeight
-        }
-        ${
-          index === lengthItems - 1
-            ? `C ${startX + roundnessVal} ${startY + elHeight}, ${startX} ${
-                startY + elHeight
-              }, ${startX} ${startY + elHeight - roundnessVal}`
-            : ''
-        }
-        L ${startX} ${index === 0 ? startY + roundnessVal : startY}
-        ${
-          index === 0
-            ? `C ${startX} ${startY + roundnessVal}, ${startX} ${startY}, ${
-                startX + roundnessVal
-              } ${startY}`
-            : ''
-        } z`,
-      );
-      path.setAttribute('fill', color);
-      path.style.fillOpacity = `${transparency / 100}`;
-      svg.appendChild(path);
-    });
-  }
-
-  getTextContentWidth(textContent: string): number {
-    const element = this.getElement();
-    if (!textContent || !element) return 0;
-    const span = document.createElement('span');
-    span.textContent = textContent;
-    span.style.position = 'absolute';
-    span.style.visibility = 'hidden';
-    element.appendChild(span);
-    const styles = window.getComputedStyle(span);
-    const width = parseFloat(
-      styles.width.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
-    );
-    element.removeChild(span);
-    return width;
-  }
-
-  setShapeEffect(shapeEffect: MoveableTextShapeEffect) {
+  setShapeEffect(shapeEffect: ShapeEffect) {
     this.shapeEffect = shapeEffect;
   }
 
-  setShapeNone() {
-    const ul = this.getTextContainer();
-    const curveContainerId = `curve-effect-${this.id}`;
-    const curveContainer = document.getElementById(curveContainerId);
-    if (!curveContainer || !ul) return;
-    curveContainer.parentElement?.removeChild(curveContainer);
-    ul.style.visibility = 'unset';
-    if (ul.parentElement) {
-      ul.parentElement.style.position = 'unset';
-    }
-    document.removeEventListener(
-      'mousedown',
-      this.onClickOutsideCurveContainerElement.bind(this),
-    );
-  }
-
-  onInput(e: Event) {
-    const curveContainerId = `curve-effect-${this.id}`;
-    const curveContainer = document.getElementById(curveContainerId);
-    const ul = this.getTextContainer();
-    if (!curveContainer || !ul) return;
-    const target = e.target as HTMLInputElement;
-    const textContent = target.textContent?.trim() || '';
-    ul.textContent = textContent;
-    this.generateCurveElement();
-  }
-
-  onClickOutsideCurveContainerElement(e: Event) {
-    const curveContainerId = `curve-effect-${this.id}`;
-    const curveContainer = document.getElementById(curveContainerId);
-    if (!curveContainer) return;
-    const text = document.getElementById(
-      `text-layer-${this.id}`,
-    ) as HTMLElement;
-    const target = e.target as HTMLElement;
-    if (
-      target !== curveContainer &&
-      target?.parentElement !== curveContainer &&
-      text !== e.target
-    ) {
-      curveContainer.style.opacity = '1';
-      if (text) {
-        text.removeEventListener('input', this.onInput.bind(this));
-        document.body.removeChild(text);
-      }
-      document.removeEventListener(
-        'mousedown',
-        this.onClickOutsideCurveContainerElement.bind(this),
-      );
-    }
-  }
-
-  setCurveEffect(curve: number) {
-    const element = this.getElement();
-    if (!element) return false;
-    document.removeEventListener(
-      'mousedown',
-      this.onClickOutsideCurveContainerElement.bind(this),
-    );
-    // Save state
-    this.curve = curve;
-    const elId = this.id;
-    const ul = this.getTextContainer();
-    if (!ul) return false;
-    element.style.position = 'relative';
-    element.style.zIndex = '1';
-    ul.style.visibility = 'hidden';
-    this.generateCurveElement();
-    const curveContainer = document.getElementById(
-      `curve-effect-${elId}`,
-    ) as HTMLElement;
-
-    // Add event listener
-    curveContainer?.addEventListener(
-      'click',
-      this.onClickToCurveContainerElement.bind(this),
-    );
-  }
-
-  generateCurveElement() {
-    const element = this.getElement();
-    if (!element) return false;
-    const elId = this.id;
-    const ul = this.getTextContainer();
-    if (!ul) return false;
-    let curveContainer = document.getElementById(`curve-effect-${elId}`);
-    if (!curveContainer) {
-      curveContainer = document.createElement('div');
-      curveContainer.id = `curve-effect-${elId}`;
-      curveContainer.style.position = 'absolute';
-      curveContainer.style.top = '0';
-      curveContainer.style.left = '0';
-      curveContainer.style.zIndex = '1';
-      element.appendChild(curveContainer);
-    } else {
-      // Remove all child elements
-      while (curveContainer.firstChild) {
-        curveContainer.removeChild(curveContainer.firstChild);
-      }
-    }
-    // Logic calculate curve
-    const styles = window.getComputedStyle(element);
-    const text = ul.textContent?.trim() || '';
-    const fontSize = parseFloat(
-      styles.fontSize?.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
-    );
-    const width = parseFloat(
-      styles.width?.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
-    );
-    const Wi = width / text.length;
-    const R = (3.2 * fontSize) / Math.sin((Math.PI * (this.curve ?? 50)) / 180);
-    const dx = R - 3.2 * fontSize;
-    const alpha = this.calculateAlphaCurve((180 * width) / (Math.PI * R));
-    const delta = (180 * Wi) / (Math.PI * R);
-    let nextAlpha = alpha;
-    for (let i = 0; i < text.length; i++) {
-      const letter = text[i];
-      const span = document.createElement('span');
-      span.innerText = letter;
-      span.style.position = 'absolute';
-      const { x, y } = this.calculateCurveTranslate(nextAlpha, R, dx);
-      span.style.transform = `translate(${x}px, ${y}px) rotate(${
-        nextAlpha - 90
-      }deg)`;
-      nextAlpha = alpha + (i + 1) * delta;
-      if (nextAlpha > 360) {
-        nextAlpha -= 360;
-      }
-      curveContainer.appendChild(span);
-    }
-  }
-
-  calculateAlphaCurve(deg: number) {
-    let a = deg;
-    while (a > 360) {
-      a -= 360;
-    }
-    a = a / 2;
-    if (a <= 90) {
-      return 90 - a;
-    } else {
-      return 450 - a;
-    }
-  }
-  calculateCurveTranslate(
-    deg: number,
-    R: number,
-    dx: number,
-  ): { x: number; y: number } {
-    let x: number, y: number;
-    if (deg <= 90) {
-      x = R - R * Math.cos((deg * Math.PI) / 180);
-      y = R - R * Math.sin((deg * Math.PI) / 180);
-    } else if (deg <= 180) {
-      x = R + R * Math.sin(((deg - 90) * Math.PI) / 180);
-      y = R - R * Math.cos(((deg - 90) * Math.PI) / 180);
-    } else if (deg <= 270) {
-      x = R + R * Math.cos(((deg - 180) * Math.PI) / 180);
-      y = R + R * Math.sin(((deg - 180) * Math.PI) / 180);
-    } else {
-      x = R - R * Math.cos(((360 - deg) * Math.PI) / 180);
-      y = R + R * Math.sin(((360 - deg) * Math.PI) / 180);
-    }
-    return { x: x - dx, y };
-  }
-  onClickToCurveContainerElement(e: Event) {
-    const curveContainerId = `curve-effect-${this.id}`;
-    const curveContainer = document.getElementById(curveContainerId);
-    const element = this.getElement();
-    const ul = this.getTextContainer();
-    if (!curveContainer || !element || !ul) return;
-    const elementStyles = window.getComputedStyle(element);
-    const { x, y } = element.getBoundingClientRect();
-    let text = document.getElementById(`text-layer-${this.id}`) as HTMLElement;
-    if (!text) {
-      text = document.createElement('div');
-      text.id = `text-layer-${this.id}`;
-      text.contentEditable = 'true';
-      text.textContent = ul.textContent?.trim() || '';
-      text.style.fontSize = elementStyles.fontSize;
-      text.style.color = elementStyles.color;
-      text.style.fontFamily = elementStyles.fontFamily;
-      text.style.position = 'fixed';
-      text.style.top = `${y}px`;
-      text.style.left = `${x}px`;
-      text.style.minWidth = '20px';
-      text.style.minHeight = '20px';
-    }
-    curveContainer.style.opacity = '0.3';
-    document.body.appendChild(text);
-    document.addEventListener(
-      'mousedown',
-      this.onClickOutsideCurveContainerElement.bind(this),
-    );
-    text.addEventListener('input', this.onInput.bind(this));
+  updateShapeEffectOption(shapeEffectOption: TextEffectOptions) {
+    this.shapeEffect.setOption(shapeEffectOption);
   }
 
   setTextScale({ scaleX, scaleY }: { scaleX?: number; scaleY?: number }) {
@@ -847,7 +387,116 @@ export class MoveableTextObject extends MoveableObject {
       ) + ` scale(${this.scaleX}, ${this.scaleY})`;
   }
 
+  getFontFamily: () => string = () => {
+    return this.fontFamily;
+  };
+
+  setFontFamily: (fontFamily: string) => void = fontFamily => {
+    this.fontFamily = fontFamily;
+  };
+
+  setTextTransform: (textTransform: TextTransform) => void = textTransform => {
+    this.textTransform = textTransform;
+  };
+  getTextTransform: () => TextTransform = () => {
+    return this.textTransform;
+  };
+  isTextTransform: (textTransform: TextTransform) => boolean =
+    textTransform => {
+      return this.getTextTransform() === textTransform;
+    };
+  setFontWeight: (fontWeight: string) => void = fontWeight => {
+    this.fontWeight = fontWeight;
+  };
+  getFontWeight: () => string = () => {
+    return this.fontWeight;
+  };
+  isFontStyle: (style: TextFontStyle) => boolean = style => {
+    return this.getFontStyle() === style;
+  };
+  getFontStyle: () => TextFontStyle = () => {
+    return this.fontStyle;
+  };
+
+  getTextAlign: () => string = () => this.textAlign;
+  setTextAlign: (textAlign: string) => void = textAlign => {
+    this.textAlign = textAlign;
+  };
+  isTextAlign: (textAlign: string) => boolean = textAlign => {
+    return this.getTextAlign() === textAlign;
+  };
+
+  getTextListStyle: () => TextListStyle = () => this.textListStyle;
+  setTextListStyle: (listStyle: TextListStyle) => void = listStyle => {
+    console.debug({ listStyle });
+    this.textListStyle = listStyle;
+  };
+  isTextListStyle: (listStyle: TextListStyle) => boolean = listStyle => {
+    return this.getTextListStyle() === listStyle;
+  };
+
+  getTextDecoration: () => TextDecoration = () => this.textDecoration;
+  setTextDecoration: (key: keyof TextDecoration, state: boolean) => void = (
+    key,
+    state,
+  ) => {
+    this.textDecoration[key] = state;
+  };
+  isTextDecorationEnable: (key: keyof TextDecoration) => boolean = key =>
+    this.textDecoration[key];
+
+  setFontStyle: (fontStyle: TextFontStyle) => void = fontStyle => {
+    this.fontStyle = fontStyle;
+  };
+
+  applyTextDecorationEffect: () => void = () => {
+    const element = this.getElement();
+
+    if (element) {
+      const textDecorations: string[] = [];
+      if (this.getTextDecoration()['underline'])
+        textDecorations.push('underline');
+
+      if (this.getTextDecoration()['lineThrough'])
+        textDecorations.push('line-through');
+
+      element.style.textDecoration = textDecorations.join(' ');
+    }
+  };
+
+  applyTextListStyle: () => void = () => {
+    const listElement = this.getElement()?.querySelector('ul');
+    if (!listElement) return false;
+
+    if (this.isTextListStyle('none')) {
+      listElement.style.paddingLeft = '0';
+      listElement.style.listStyleType = 'none';
+    } else {
+      listElement.style.paddingLeft = '20px';
+      listElement.style.listStyleType = this.getTextListStyle();
+    }
+  };
+
+  applyFontEffect: () => void = () => {
+    const element = this.getElement();
+
+    if (element) {
+      element.style.fontFamily = this.getFontFamily();
+      element.style.fontWeight = this.getFontWeight();
+      element.style.fontStyle = this.getFontStyle();
+      element.style.textTransform = this.getTextTransform();
+      element.style.textAlign = this.getTextAlign();
+    }
+  };
+
   render() {
+    const element = this.getElement();
+    if (!element) return;
+    this.styleEffect.apply(element);
+    this.shapeEffect.apply(element);
     this.renderTextScale();
+    this.applyFontEffect();
+    this.applyTextDecorationEffect();
+    this.applyTextListStyle();
   }
 }

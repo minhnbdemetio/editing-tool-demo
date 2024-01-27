@@ -8,6 +8,7 @@ import {
   useToggleMoveableStrokeTextCommand,
   useToggleMoveableUnderlineTextCommand,
 } from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
+import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
 import { Bold } from '@/app/icons/Bold';
 import { BulletList } from '@/app/icons/BulletList';
 import { Italic } from '@/app/icons/Italic';
@@ -20,7 +21,7 @@ import { TextAlignRight } from '@/app/icons/TextAlignRight';
 import { ToggleCapital } from '@/app/icons/ToggleCapital';
 import { Underline } from '@/app/icons/Underline';
 import { Button, ButtonGroup } from '@nextui-org/react';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 
 interface FormatPropertyProps {}
 
@@ -29,10 +30,13 @@ export const FormatProperty: FC<FormatPropertyProps> = ({}) => {
   const toggleItalicTextCommand = useToggleMoveableItalicTextCommand();
   const toggleUnderlineTextCommand = useToggleMoveableUnderlineTextCommand();
   const toggleStrokeTextCommand = useToggleMoveableStrokeTextCommand();
+
   const toggleCapitalTextCommand = useToggleMoveableCapitalTextCommand();
   const changeTextAlignCommand = useChangeMoveableTextAligeCommand();
-  const toggleListTypeDiscTextCommand = useToggleMoveableListTypeDiscTextCommand();
-  const toggleListTypeNumberTextCommand = useToggleMoveableListTypeNumberTextCommand();
+  const toggleListTypeDiscTextCommand =
+    useToggleMoveableListTypeDiscTextCommand();
+  const toggleListTypeNumberTextCommand =
+    useToggleMoveableListTypeNumberTextCommand();
 
   return (
     <div className="w-full h-full">

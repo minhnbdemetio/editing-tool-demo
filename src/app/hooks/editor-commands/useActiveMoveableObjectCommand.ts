@@ -16,7 +16,6 @@ import {
   useChangeObjectTransform,
   useDeleteObject,
   useUndoDeleteObject,
-  useUpdateActiveMoveableObjectTextStyleEffect,
   useUpdateActiveTextShapeEffect,
   useUpdateElementOpacity,
 } from '../useActiveMoveableObject';
@@ -94,12 +93,6 @@ export const useChangeMoveableTextFontStyleCommand = () => {
 export const useChangeMoveableElementTransformCommand = () => {
   const changeTransform = useChangeObjectTransform();
   return debounce(changeTransform, 100);
-};
-
-export const useUpdateActiveMoveableObjectTextStyleEffectCommand = () => {
-  const updateActiveMoveableObjectTextStyleEffect =
-    useUpdateActiveMoveableObjectTextStyleEffect();
-  return updateActiveMoveableObjectTextStyleEffect;
 };
 
 export const useDeleteObjetCommand = () => {

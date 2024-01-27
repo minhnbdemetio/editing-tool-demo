@@ -3,11 +3,12 @@ import {
   MoveableTextShapeEffect,
   MoveableTextStyleEffect,
 } from '@/app/lib/moveable/text/MoveableText';
+import { useUpdateActiveTextShapeEffectCommand } from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
 import {
-  useUpdateActiveMoveableObjectTextStyleEffectCommand,
-  useUpdateActiveTextShapeEffectCommand,
-} from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
-import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
+  useActiveTextObject,
+  useUpdateActiveTextShapeEffect,
+  useUpdateTextStyleEffect,
+} from '@/app/hooks/useActiveMoveableObject';
 import { Image } from '@nextui-org/react';
 import clsx from 'clsx';
 import { FC, useState } from 'react';
@@ -21,68 +22,99 @@ import { GlitchEffect } from './GlitchEffect';
 import { NeonEffect } from './NeonEffect';
 import { BackGroundEffect } from './BackgroundEffect';
 import { CurveEffect } from './CurveEffect';
+import {
+  StyleEffect,
+  TextBackgroundEffect,
+  TextEchoEffect,
+  TextGlitchEffect,
+  TextHollowEffect,
+  TextLiftEffect,
+  TextNeonEffect,
+  TextOutlineEffect,
+  TextShadowEffect,
+  TextSpliceEffect,
+  TextStyleEffect,
+} from '@/app/lib/moveable/effects/text/StyleEffect';
+import { TextEffect } from '@/app/lib/moveable/effects/text/TextEffect';
+import {
+  ShapeEffect,
+  TextCurveEffect,
+  TextShapeEffect,
+} from '@/app/lib/moveable/effects/text/ShapeEffect';
 
 const TEXT_EFFECTS_STYLES: {
-  id: MoveableTextStyleEffect;
+  id: TextStyleEffect;
+  createEffect: () => TextEffect;
   name: string;
   imgUrl: string;
   effectComponent?: FC;
 }[] = [
   {
-    id: 'none',
+    id: TextStyleEffect.NONE,
+    createEffect: () => new StyleEffect(),
     name: 'None',
     imgUrl: '/text-effects/styles/none.webp',
   },
   {
-    id: 'shadow',
+    id: TextStyleEffect.SHADOW,
+    createEffect: () => new TextShadowEffect(),
     name: 'Shadow',
     imgUrl: '/text-effects/styles/shadow.webp',
     effectComponent: ShadowEffect,
   },
   {
-    id: 'lift',
+    id: TextStyleEffect.LIFT,
+    createEffect: () => new TextLiftEffect(),
     name: 'Lift',
     imgUrl: '/text-effects/styles/lift.webp',
     effectComponent: LiftEffect,
   },
   {
-    id: 'hollow',
+    id: TextStyleEffect.HOLLOW,
+    createEffect: () => new TextHollowEffect(),
     name: 'Hollow',
     imgUrl: '/text-effects/styles/hollow.webp',
     effectComponent: HollowEffect,
   },
   {
-    id: 'emboss',
+    id: TextStyleEffect.SPLICE,
+    createEffect: () => new TextSpliceEffect(),
     name: 'Splice',
     imgUrl: '/text-effects/styles/splice.webp',
     effectComponent: SpliceEffect,
   },
   {
-    id: 'outline',
+    id: TextStyleEffect.OUTLINE,
+    createEffect: () => new TextOutlineEffect(),
     name: 'Outline',
     imgUrl: '/text-effects/styles/outline.webp',
     effectComponent: OutlineEffect,
   },
+
   {
-    id: 'echo',
+    id: TextStyleEffect.ECHO,
+    createEffect: () => new TextEchoEffect(),
     name: 'Echo',
     imgUrl: '/text-effects/styles/echo.webp',
     effectComponent: EchoEffect,
   },
   {
-    id: 'glitch',
+    id: TextStyleEffect.GLITCH,
+    createEffect: () => new TextGlitchEffect(),
     name: 'Glitch',
     imgUrl: '/text-effects/styles/glitch.webp',
     effectComponent: GlitchEffect,
   },
   {
-    id: 'neon',
+    id: TextStyleEffect.NEON,
+    createEffect: () => new TextNeonEffect(),
     name: 'Neon',
     imgUrl: '/text-effects/styles/neon.webp',
     effectComponent: NeonEffect,
   },
   {
-    id: 'background',
+    id: TextStyleEffect.BACKGROUND,
+    createEffect: () => new TextBackgroundEffect(),
     name: 'Background',
     imgUrl: '/text-effects/styles/background.webp',
     effectComponent: BackGroundEffect,
@@ -90,18 +122,21 @@ const TEXT_EFFECTS_STYLES: {
 ];
 
 const TEXT_EFFECTS_SHAPES: {
-  id: MoveableTextShapeEffect;
+  id: TextShapeEffect;
+  createEffect: () => TextEffect;
   name: string;
   imgUrl: string;
   effectComponent?: FC;
 }[] = [
   {
-    id: 'none',
+    id: TextShapeEffect.NONE,
+    createEffect: () => new ShapeEffect(),
     name: 'None',
     imgUrl: '/text-effects/shapes/none.webp',
   },
   {
-    id: 'curve',
+    id: TextShapeEffect.CURVE,
+    createEffect: () => new TextCurveEffect(),
     name: 'Curve',
     imgUrl: '/text-effects/shapes/curve.webp',
     effectComponent: CurveEffect,
@@ -112,17 +147,17 @@ interface SpacingPropertyProps {}
 
 export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
   const activeText = useActiveTextObject();
-  const [effectStyle, setEffectStyle] = useState<MoveableTextStyleEffect>(
-    activeText?.getTextStyleEffect() || 'none',
+  const [newEffectStyle, setNewEffectStyle] = useState(
+    activeText?.styleEffect?.varient || TextStyleEffect.NONE,
   );
 
-  const [effectShape, setEffectShape] = useState<MoveableTextShapeEffect>(
-    activeText?.shapeEffect || 'none',
+  const [effectShape, setEffectShape] = useState(
+    activeText?.shapeEffect?.varient || TextShapeEffect.NONE,
   );
 
-  const renderEffectComponent = () => {
+  const renderNewEffectComponent = () => {
     const EffectOptions = TEXT_EFFECTS_STYLES.find(
-      style => style.id === effectStyle,
+      style => style.id === newEffectStyle,
     )?.effectComponent;
     if (!EffectOptions) return <></>;
     return <EffectOptions />;
@@ -135,9 +170,8 @@ export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
     if (!EffectOptions) return <></>;
     return <EffectOptions />;
   };
-
-  const updateActiveMoveableObjectTextStyleEffect = useUpdateActiveMoveableObjectTextStyleEffectCommand();
-  const updateActiveTextShapeEffect = useUpdateActiveTextShapeEffectCommand();
+  const updateNewTextStyleEffect = useUpdateTextStyleEffect();
+  const updateActiveTextShapeEffect = useUpdateActiveTextShapeEffect();
   return (
     <div className="w-full h-full">
       <div className="text-center mb-3">
@@ -150,15 +184,15 @@ export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
             <div
               className="group flex flex-col flex-1 gap-1 items-center w-[60px] cursor-pointer"
               onClick={e => {
-                updateActiveMoveableObjectTextStyleEffect(style.id, () =>
-                  setEffectStyle(style.id),
+                updateNewTextStyleEffect(style.createEffect(), () =>
+                  setNewEffectStyle(style.id),
                 );
               }}
             >
               <Image
                 className={clsx('border', {
-                  'border-gray-300': effectStyle !== style.id,
-                  'border-blue-500': effectStyle === style.id,
+                  'border-gray-300': newEffectStyle !== style.id,
+                  'border-blue-500': newEffectStyle === style.id,
                 })}
                 width={60}
                 alt={style.name}
@@ -174,7 +208,7 @@ export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
         ))}
       </div>
       <div className="effect-options font-light text-[14px]">
-        {renderEffectComponent()}
+        {renderNewEffectComponent()}
       </div>
       <p className="mb-[12px]">Shape</p>
       <div className="flex gap-2 items-center flex-wrap">
@@ -183,7 +217,7 @@ export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
             <div
               className="group flex flex-col flex-1 gap-1 items-center w-[60px] cursor-pointer"
               onClick={() => {
-                updateActiveTextShapeEffect(style.id, () =>
+                updateActiveTextShapeEffect(style.createEffect(), () =>
                   setEffectShape(style.id),
                 );
               }}
