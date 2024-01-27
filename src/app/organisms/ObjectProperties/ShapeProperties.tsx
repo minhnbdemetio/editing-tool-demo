@@ -37,7 +37,7 @@ const SHAPE_PROPERTIES = [
   },
   {
     label: 'Order',
-    value: SelectedProperty.Position,
+    value: SelectedProperty.ShapePosition,
     isShowButton: checkLockedObject,
   },
 ];
