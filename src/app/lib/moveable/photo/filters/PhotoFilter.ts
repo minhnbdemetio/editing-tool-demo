@@ -109,17 +109,33 @@ export abstract class PhotoFilter {
   public setThumbnail(thumbnail: string) {
     this.thumbnail = thumbnail;
   }
-  constructor() {
+  constructor(options?: {
+    name?: PhotoFilterType;
+    contrast?: number;
+    brightness?: number;
+    saturation?: number;
+    blur?: number;
+    temperature?: number;
+    hue?:
+      | {
+          r: number;
+          g: number;
+          b: number;
+        }
+      | undefined;
+    vignette?: number;
+    thumbnail?: string;
+  }) {
     this.filterId = v4();
-    this.name = PhotoFilterType.None;
-    this.contrast = 0;
-    this.brightness = 0;
-    this.saturation = 0;
-    this.blur = 0;
-    this.temperature = 0;
-    this.hue = undefined;
-    this.vignette = 0;
-    this.thumbnail = '/filter_thumbnails/none.png';
+    this.name = options?.name || PhotoFilterType.None;
+    this.contrast = options?.contrast || 0;
+    this.brightness = options?.brightness || 0;
+    this.saturation = options?.saturation || 0;
+    this.blur = options?.blur || 0;
+    this.temperature = options?.temperature || 0;
+    this.hue = options?.hue || undefined;
+    this.vignette = options?.vignette || 0;
+    this.thumbnail = options?.thumbnail || '/filter_thumbnails/none.png';
   }
 
   createFilter() {}

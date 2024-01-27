@@ -6,10 +6,13 @@ import {
   useActivePhotoObject,
   useUpdateGradientMask,
 } from '@/app/hooks/useActiveMoveableObject';
-import { GradientMask } from '@/app/lib/moveable/editable/EditablePhoto';
 import { DEFAULT_GRADIENT_MASK } from '.';
 import { Line } from '@/app/icons/Line';
 import { Circle } from '@/app/icons/Circle';
+import { GradientMask } from '@/app/lib/moveable/photo/gradient-mask/GradientMask';
+import { RectGradientMask } from '@/app/lib/moveable/photo/gradient-mask/RectGradientMask';
+import { CircleGradientMask } from '@/app/lib/moveable/photo/gradient-mask/CircleGradientMask';
+import { LinearGradientMask } from '@/app/lib/moveable/photo/gradient-mask/LinearGradientMask';
 
 interface PhotoGradientMaskProps {
   onBack: () => void;
@@ -65,10 +68,8 @@ export const PhotoGradientMask: FC<PhotoGradientMaskProps> = ({
             style={{ borderRadius: 0, borderRight: `1px solid #fff` }}
             isIconOnly
             onClick={() => {
-              const newGradientMask: GradientMask = {
-                ...gradientMask,
-                type: 'rect',
-              };
+
+              const newGradientMask = new RectGradientMask({direction: gradientMask.direction, range: gradientMask.range})
               handleUpdateGradientMask(newGradientMask);
               setGradientMask(newGradientMask);
             }}
@@ -80,10 +81,8 @@ export const PhotoGradientMask: FC<PhotoGradientMaskProps> = ({
             style={{ borderRadius: 0, borderRight: `1px solid #fff` }}
             isIconOnly
             onClick={() => {
-              const newGradientMask: GradientMask = {
-                ...gradientMask,
-                type: 'circle',
-              };
+
+              const newGradientMask = new CircleGradientMask({direction: gradientMask.direction, range: gradientMask.range})
               handleUpdateGradientMask(newGradientMask);
               setGradientMask(newGradientMask);
             }}
@@ -95,10 +94,8 @@ export const PhotoGradientMask: FC<PhotoGradientMaskProps> = ({
             style={{ borderRadius: 0 }}
             isIconOnly
             onClick={() => {
-              const newGradientMask: GradientMask = {
-                ...gradientMask,
-                type: 'linear',
-              };
+            
+              const newGradientMask = new LinearGradientMask({direction: gradientMask.direction, range: gradientMask.range})
               handleUpdateGradientMask(newGradientMask);
               setGradientMask(newGradientMask);
             }}
@@ -122,12 +119,9 @@ export const PhotoGradientMask: FC<PhotoGradientMaskProps> = ({
               value={gradientMask.direction}
               onChange={val => {
                 if (!isNaN(+val)) {
-                  const newGradientMask: GradientMask = {
-                    ...gradientMask,
-                    direction: +val,
-                  };
-                  handleUpdateGradientMask(newGradientMask);
-                  setGradientMask(newGradientMask);
+                  gradientMask.setDirection(+val)
+                  handleUpdateGradientMask(gradientMask);
+                  setGradientMask(gradientMask);
                 }
               }}
               classNames={{ base: 'w-full !max-w-none' }}
@@ -139,12 +133,9 @@ export const PhotoGradientMask: FC<PhotoGradientMaskProps> = ({
               onChange={e => {
                 const val = +e.target.value as number;
                 if (!isNaN(+val)) {
-                  const newGradientMask: GradientMask = {
-                    ...gradientMask,
-                    direction: +val,
-                  };
-                  handleUpdateGradientMask(newGradientMask);
-                  setGradientMask(newGradientMask);
+                  gradientMask.setDirection(+val)
+                  handleUpdateGradientMask(gradientMask);
+                  setGradientMask(gradientMask);
                 }
               }}
               min={0}
@@ -167,12 +158,9 @@ export const PhotoGradientMask: FC<PhotoGradientMaskProps> = ({
           value={gradientMask.range}
           onChange={val => {
             if (!isNaN(+val)) {
-              const newGradientMask = {
-                ...gradientMask,
-                range: +val,
-              };
-              handleUpdateGradientMask(newGradientMask);
-              setGradientMask(newGradientMask);
+              gradientMask.setRange(+val)
+                  handleUpdateGradientMask(gradientMask);
+                  setGradientMask(gradientMask);
             }
           }}
           classNames={{ base: 'w-full !max-w-none' }}
@@ -184,12 +172,9 @@ export const PhotoGradientMask: FC<PhotoGradientMaskProps> = ({
           onChange={e => {
             const val = e.target.value;
             if (!isNaN(+val)) {
-              const newGradientMask = {
-                ...gradientMask,
-                range: +val,
-              };
-              handleUpdateGradientMask(newGradientMask);
-              setGradientMask(newGradientMask);
+              gradientMask.setRange(+val)
+                  handleUpdateGradientMask(gradientMask);
+                  setGradientMask(gradientMask);
             }
           }}
           min={0}

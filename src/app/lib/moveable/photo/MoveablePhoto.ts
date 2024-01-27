@@ -1,14 +1,11 @@
 import axios from 'axios';
 import { MoveableObject } from '../MoveableObject';
-import {
-  PhotoPosition,
-  GradientMask,
-  EditablePhoto,
-} from '../editable/EditablePhoto';
+import { EditablePhoto } from '../editable/EditablePhoto';
 import { PHOTO_INNER_ELEMENTS } from '../constant/photo';
 import { PhotoFilter } from './filters/PhotoFilter';
 import { NoneFilter } from './filters/NoneFilter';
-import { Croppable } from './Croppable';
+import { Croppable, PhotoPosition } from './Croppable';
+import { GradientMask } from './gradient-mask/GradientMask';
 
 export class MoveablePhoto
   extends MoveableObject
@@ -17,8 +14,8 @@ export class MoveablePhoto
   loaded: boolean = false;
   filter: PhotoFilter = new NoneFilter();
   dragStartPoint?: { x: number; y: number };
-  cropPosition?: PhotoPosition;
   gradientMask?: GradientMask;
+  cropPosition?: PhotoPosition | undefined;
   isBackground: boolean = false;
   backgroundStartPosition?: PhotoPosition;
   src: string;
@@ -144,14 +141,7 @@ export class MoveablePhoto
   }
 
   public setFilter(filter: PhotoFilter) {
-    this.filter.setHue(filter.hue);
-    this.filter.setBrightness(filter.brightness);
-    this.filter.setBlur(filter.blur);
-    this.filter.setVignette(filter.vignette);
-    this.filter.setContrast(filter.contrast);
-    this.filter.setSaturation(filter.saturation);
-    this.filter.setTemperature(filter.temperature);
-
+    this.filter = filter;
     this.renderFilter();
   }
   public getFilterParam() {
@@ -268,168 +258,6 @@ export class MoveablePhoto
     svg.appendChild(cloneImageElement);
   }
 
-  getRectGradientMask() {
-    const elements = [];
-    const { range = 50 } = this.gradientMask || {};
-    for (let i = 0; i < 4; i++) {
-      const linearGradient = document.createElementNS(
-        'http://www.w3.org/2000/svg',
-        'linearGradient',
-      );
-      linearGradient.setAttribute('class', `gradient-def-${this.id}`);
-      linearGradient.setAttribute('id', `gradient-def-${i}-${this.id}`);
-      linearGradient.setAttribute('x1', i === 2 ? '1' : '0');
-      linearGradient.setAttribute('y1', i === 3 ? '1' : '0');
-      linearGradient.setAttribute('x2', i === 1 ? '1' : '0');
-      linearGradient.setAttribute('y2', i === 0 ? '1' : '0');
-      linearGradient.innerHTML = ` <stop offset="0" stop-color="white" stop-opacity="0"></stop>
-      <stop offset="${range / 200}" stop-color="white" stop-opacity="1"></stop>
-      <stop offset="1" stop-color="white" stop-opacity="1"></stop>`;
-      const mask = document.createElementNS(
-        'http://www.w3.org/2000/svg',
-        'mask',
-      );
-      mask.setAttribute('class', `mask-def-${this.id}`);
-      mask.setAttribute('id', `mask-def-${i}-${this.id}`);
-      mask.innerHTML = `<rect x="0" y="0" width="100%" height="100%" fill="url(#${`gradient-def-${i}-${this.id}`})"></rect>`;
-      elements.push(linearGradient);
-      elements.push(mask);
-    }
-    return elements;
-  }
-
-  getCircleGradientMask() {
-    const elements = [];
-    const { range = 50 } = this.gradientMask || {};
-    const radialGradient = document.createElementNS(
-      'http://www.w3.org/2000/svg',
-      'radialGradient',
-    );
-    radialGradient.setAttribute('class', `gradient-def-${this.id}`);
-    radialGradient.setAttribute('id', `radial-gradient-def-${this.id}`);
-    radialGradient.innerHTML = ` <stop offset="0" stop-color="white" stop-opacity="1"></stop>
-    <stop offset="${range / 200}" stop-color="white" stop-opacity="1"></stop>
-    <stop offset="1" stop-color="white" stop-opacity="0"></stop>`;
-    const mask = document.createElementNS('http://www.w3.org/2000/svg', 'mask');
-    mask.setAttribute('class', `mask-def-${this.id}`);
-    mask.setAttribute('id', `mask-def-${this.id}`);
-    mask.innerHTML = `<rect x="0" y="0" width="100%" height="100%" fill="url(#${`radial-gradient-def-${this.id}`})"></rect>`;
-    elements.push(radialGradient);
-    elements.push(mask);
-    return elements;
-  }
-
-  getLinearGradientMask() {
-    const elements = [];
-    const { range = 50, direction = 90 } = this.gradientMask || {};
-    const { x1, y1, x2, y2 } = this.calculateDirectionGradient(direction);
-    const linearGradient = document.createElementNS(
-      'http://www.w3.org/2000/svg',
-      'linearGradient',
-    );
-    linearGradient.setAttribute('class', `gradient-def-${this.id}`);
-    linearGradient.setAttribute('id', `linear-gradient-def-${this.id}`);
-    linearGradient.setAttribute('x1', `${x1}`);
-    linearGradient.setAttribute('y1', `${y1}`);
-    linearGradient.setAttribute('x2', `${x2}`);
-    linearGradient.setAttribute('y2', `${y2}`);
-    linearGradient.innerHTML = ` <stop offset="0" stop-color="white" stop-opacity="0"></stop>
-    <stop offset="${range / 100}" stop-color="white" stop-opacity="1"></stop>
-    <stop offset="1" stop-color="white" stop-opacity="1"></stop>`;
-    const mask = document.createElementNS('http://www.w3.org/2000/svg', 'mask');
-    mask.setAttribute('class', `mask-def-${this.id}`);
-    mask.setAttribute('id', `mask-def-${this.id}`);
-    mask.innerHTML = `<rect x="0" y="0" width="100%" height="100%" fill="url(#${`linear-gradient-def-${this.id}`})"></rect>`;
-    elements.push(linearGradient);
-    elements.push(mask);
-    return elements;
-  }
-
-  updateOffsetGradientElement(range: number, radius: number = 2) {
-    const linearGradients = document.querySelectorAll(
-      `.gradient-def-${this.id}`,
-    );
-    linearGradients.forEach(el => {
-      const offsetEl = el.children[1];
-      if (!offsetEl) return;
-      offsetEl.setAttribute('offset', `${range / (100 * radius)}`);
-    });
-  }
-
-  calculateDirectionGradient(direction: number) {
-    let alpha = direction;
-    if (direction <= 45) {
-      return {
-        x1: Math.sin(alpha * (Math.PI / 180)) / 2,
-        y1: -Math.cos(alpha * (Math.PI / 180)) / 2,
-        x2: -Math.cos(alpha * (Math.PI / 180)) / 2,
-        y2: 1 - Math.sin(alpha * (Math.PI / 180)) / 2,
-      };
-    } else if (direction <= 90) {
-      return {
-        x1: 1 - Math.cos(alpha * (Math.PI / 180)) / 2,
-        y1: -Math.sin(alpha * (Math.PI / 180)) / 2,
-        x2: -Math.sin(alpha * (Math.PI / 180)) / 2,
-        y2: Math.cos(alpha * (Math.PI / 180)) / 2,
-      };
-    } else if (direction <= 135) {
-      return {
-        x1: 1 + Math.sin(alpha * (Math.PI / 180)) / 2,
-        y1: Math.cos(alpha * (Math.PI / 180)) / 2,
-        x2: Math.cos(alpha * (Math.PI / 180)) / 2,
-        y2: -Math.sin(alpha * (Math.PI / 180)) / 2,
-      };
-    } else if (direction <= 180) {
-      return {
-        x1: 1 - Math.cos(alpha * (Math.PI / 180)) / 2,
-        y1: 1 - Math.sin(alpha * (Math.PI / 180)) / 2,
-        x2: 1 - Math.sin(alpha * (Math.PI / 180)) / 2,
-        y2: Math.cos(alpha * (Math.PI / 180)) / 2,
-      };
-    } else if (direction <= 225) {
-      return {
-        x1: 1 + Math.sin(alpha * (Math.PI / 180)) / 2,
-        y1: 1 - Math.cos(alpha * (Math.PI / 180)) / 2,
-        x2: 1 - Math.cos(alpha * (Math.PI / 180)) / 2,
-        y2: -Math.sin(alpha * (Math.PI / 180)) / 2,
-      };
-    } else if (direction <= 270) {
-      return {
-        x1: Math.cos(alpha * (Math.PI / 180)) / 2,
-        y1: 1 - Math.sin(alpha * (Math.PI / 180)) / 2,
-        x2: 1 - Math.sin(alpha * (Math.PI / 180)) / 2,
-        y2: 1 - Math.cos(alpha * (Math.PI / 180)) / 2,
-      };
-    } else if (direction <= 315) {
-      return {
-        x1: Math.sin(alpha * (Math.PI / 180)) / 2,
-        y1: 1 - Math.cos(alpha * (Math.PI / 180)) / 2,
-        x2: 1 - Math.cos(alpha * (Math.PI / 180)) / 2,
-        y2: 1 - Math.sin(alpha * (Math.PI / 180)) / 2,
-      };
-    } else {
-      return {
-        x1: -Math.cos(alpha * (Math.PI / 180)) / 2,
-        y1: Math.sin(alpha * (Math.PI / 180)) / 2,
-        x2: Math.sin(alpha * (Math.PI / 180)) / 2,
-        y2: 1 + Math.cos(alpha * (Math.PI / 180)) / 2,
-      };
-    }
-  }
-
-  updateDirectionGradientElement(direction: number) {
-    const linearGradients = document.querySelectorAll(
-      `.gradient-def-${this.id}`,
-    );
-    const { x1, y1, x2, y2 } = this.calculateDirectionGradient(direction);
-    linearGradients.forEach(el => {
-      el.setAttribute('x1', `${x1}`);
-      el.setAttribute('y1', `${y1}`);
-      el.setAttribute('x2', `${x2}`);
-      el.setAttribute('y2', `${y2}`);
-    });
-  }
-
   updateGradientMask(gradientMask?: GradientMask) {
     const defsContainer = this.getDefsContainer();
     const svg = document.getElementById(`svg-container-${this.id}`);
@@ -440,84 +268,11 @@ export class MoveablePhoto
     }
     const imageElement = document.getElementById(`g-${this.id}`);
     if (!gradientMask || !imageElement) return;
-    switch (gradientMask.type) {
-      case 'rect':
-        if (!document.getElementById(`mask-svg-3-${this.id}`)) {
-          const defElements = this.getRectGradientMask();
-          defElements.forEach(element => defsContainer.appendChild(element));
-          const maskElement = document.createElementNS(
-            'http://www.w3.org/2000/svg',
-            'g',
-          );
-          maskElement.setAttribute('id', `mask-svg-3-${this.id}`);
-          maskElement.setAttribute('class', `mask-svg-${this.id}`);
-          maskElement.setAttribute('mask', `url(#mask-def-3-${this.id})`);
-
-          for (let i = 2; i >= 0; i--) {
-            const maskImage = document.createElementNS(
-              'http://www.w3.org/2000/svg',
-              'g',
-            );
-            maskImage.setAttribute('id', `mask-svg-${i}-${this.id}`);
-            maskImage.setAttribute('mask', `url(#mask-def-${i}-${this.id})`);
-            maskImage.style.maskImage = `url(#mask-def-${i}-${this.id})`;
-            const lastChild = maskElement.querySelector(
-              `#mask-svg-${i + 1}-${this.id}`,
-            );
-            if (!lastChild) {
-              maskElement.appendChild(maskImage);
-            } else {
-              lastChild.appendChild(maskImage);
-            }
-          }
-          const lastChild = maskElement.querySelector(`#mask-svg-0-${this.id}`);
-          if (!lastChild) break;
-          lastChild.appendChild(imageElement);
-          svg.appendChild(maskElement);
-        } else {
-          this.updateOffsetGradientElement(gradientMask.range ?? 50);
-        }
-        break;
-      case 'circle':
-        if (!document.getElementById(`radial-gradient-def-${this.id}`)) {
-          const defElements = this.getCircleGradientMask();
-          defElements.forEach(element => defsContainer.appendChild(element));
-          const maskElement = document.createElementNS(
-            'http://www.w3.org/2000/svg',
-            'g',
-          );
-          maskElement.setAttribute('id', `mask-svg-${this.id}`);
-          maskElement.setAttribute('class', `mask-svg-${this.id}`);
-          maskElement.setAttribute('mask', `url(#mask-def-${this.id})`);
-          maskElement.appendChild(imageElement);
-          svg.appendChild(maskElement);
-        } else {
-          this.updateOffsetGradientElement(gradientMask.range ?? 50);
-        }
-        break;
-      default:
-        if (!document.getElementById(`linear-gradient-def-${this.id}`)) {
-          const defElements = this.getLinearGradientMask();
-          defElements.forEach(element => defsContainer.appendChild(element));
-          const maskElement = document.createElementNS(
-            'http://www.w3.org/2000/svg',
-            'g',
-          );
-          maskElement.setAttribute('id', `mask-svg-${this.id}`);
-          maskElement.setAttribute('class', `mask-svg-${this.id}`);
-          maskElement.setAttribute('mask', `url(#mask-def-${this.id})`);
-          maskElement.appendChild(imageElement);
-          svg.appendChild(maskElement);
-        } else {
-          this.updateOffsetGradientElement(gradientMask.range ?? 50, 1);
-          this.updateDirectionGradientElement(gradientMask.direction ?? 90);
-        }
-        break;
-    }
+    this.gradientMask?.createMask(this.id, defsContainer);
     this.gradientMask = gradientMask;
   }
 
-  setBackground(activePageId: string) {
+  setAsBackground(activePageId: string) {
     this.isBackground = !this.isBackground;
     const activePageElement = document.getElementById(activePageId);
     const element = this.getElement();
@@ -537,7 +292,7 @@ export class MoveablePhoto
       this.backgroundStartPosition = undefined;
       return;
     }
-    const radition = this.width / this.height;
+    const ratio = this.width / this.height;
     const { x, y, width, height } = element.getBoundingClientRect();
     const {
       x: pageX,
@@ -545,7 +300,7 @@ export class MoveablePhoto
       height: pageHeight,
     } = activePageElement.getBoundingClientRect();
 
-    element.style.width = `${(pageHeight * radition) / scale}px`;
+    element.style.width = `${(pageHeight * ratio) / scale}px`;
     element.style.height = `${pageHeight / scale}px`;
     element.style.transform = `translate(0px, 0px)`;
     activePageElement.style.overflow = 'hidden';

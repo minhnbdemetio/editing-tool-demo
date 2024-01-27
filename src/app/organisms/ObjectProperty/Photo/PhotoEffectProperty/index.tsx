@@ -1,5 +1,4 @@
 import { ChevronRight } from '@/app/icons';
-import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
 import { Button, Checkbox } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 import { PhotoFillColor } from './PhotoFillColor';
@@ -8,7 +7,8 @@ import {
   useActiveMoveablePhotoObject,
   useUpdateGradientMask,
 } from '@/app/hooks/useActiveMoveableObject';
-import { GradientMask } from '@/app/lib/moveable/editable/EditablePhoto';
+import { GradientMask } from '@/app/lib/moveable/photo/gradient-mask/GradientMask';
+import { RectGradientMask } from '@/app/lib/moveable/photo/gradient-mask/RectGradientMask';
 
 enum EffectType {
   Common = 'common',
@@ -16,11 +16,10 @@ enum EffectType {
   Shadow = 'shadow',
   GradientMask = 'gradientMask',
 }
-export const DEFAULT_GRADIENT_MASK: GradientMask = {
-  type: 'rect',
+export const DEFAULT_GRADIENT_MASK: GradientMask = new RectGradientMask({
   range: 50,
   direction: 90,
-};
+});
 export const PhotoEffectProperty: FC = () => {
   const activePhotoObject = useActiveMoveablePhotoObject();
   const [checkFillColor, setCheckFillColor] = useState<boolean>(false);
