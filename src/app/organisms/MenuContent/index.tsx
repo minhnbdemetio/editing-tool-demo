@@ -4,6 +4,7 @@ import { PhotosMenuContent } from './PhotosMenuContent';
 import clsx from 'clsx';
 import { ElementsMenuContent } from './ElementsMenuContent';
 import { TextMenuContent } from './TextMenuContent';
+import { UploadMenuContent } from './UploadMenuContent';
 
 interface MenuContentProps {
   section: string;
@@ -18,6 +19,9 @@ export const MenuContent: FC<MenuContentProps> = ({ section, menuExpand }) => {
       }
       case 'photos': {
         return <PhotosMenuContent />;
+      }
+      case 'upload': {
+        return <UploadMenuContent />;
       }
       case 'elements': {
         return <ElementsMenuContent />;
