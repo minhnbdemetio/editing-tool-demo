@@ -61,7 +61,10 @@ export const PageRender: FC<PageRenderProps> = ({ page, index }) => {
             },
           )}
         ></div>
-        <div className="absolute w-full h-full top-0" ref={containerRef}></div>
+        <div
+          className="absolute w-full h-full top-0 overflow-hidden"
+          ref={containerRef}
+        ></div>
       </div>
       <div className="h-6 flex items-center">{index + 1}</div>
     </div>

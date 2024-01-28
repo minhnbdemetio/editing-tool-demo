@@ -16,7 +16,7 @@ export const DotsLineStyle: React.FC<IconProps> = ({ className }) => {
         y2="50%"
         stroke="currentColor"
         stroke-dasharray="2 2"
-        stroke-width="2"
+        strokeWidth="2"
         shape-rendering="crispEdges"
       ></line>
     </svg>
