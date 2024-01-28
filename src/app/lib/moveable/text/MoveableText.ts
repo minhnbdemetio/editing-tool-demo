@@ -17,34 +17,6 @@ import { ShapeEffect, TextShapeEffect } from '../effects/text/ShapeEffect';
 import { CSSProperties } from 'react';
 import { TextDecorationEffect } from '../effects/text/TextDecorationEffect';
 
-export type MoveableTextShadow = {
-  color?: string;
-  offset?: number;
-  direction?: number;
-  blur?: number;
-  transparency?: number;
-  thickness?: number;
-};
-
-export type TextSpliceEffectOption = {
-  thickness?: number;
-  offset?: number;
-  direction?: number;
-  color?: string;
-};
-
-export type TextOutlineEffectOption = {
-  thickness: number;
-  color: string;
-};
-
-export type TextBackgroundEffectOption = {
-  spread?: number;
-  color?: string;
-  roundness?: number;
-  transparency?: number;
-};
-
 export type TextFontStyle = 'italic' | 'normal';
 export type TextTransform = 'none' | 'uppercase';
 export type TextListStyle = 'none' | 'number' | 'disc';
