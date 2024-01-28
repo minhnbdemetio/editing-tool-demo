@@ -1,6 +1,6 @@
 import { Button } from '@/app/atoms/Button';
 import { useAddObjectToActivePage } from '@/app/hooks/usePageObjects';
-import { MoveablePhoto } from '@/app/lib/moveable/MoveablePhoto';
+import { MoveablePhoto } from '@/app/lib/moveable/photo/MoveablePhoto';
 import { FC } from 'react';
 
 export const PhotosMenuContent: FC = () => {

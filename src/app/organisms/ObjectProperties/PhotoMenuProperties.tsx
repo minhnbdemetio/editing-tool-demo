@@ -3,7 +3,7 @@ import {
   useSetBackgroundImage,
 } from '@/app/hooks/useActiveMoveableObject';
 import { MoveableObject } from '@/app/lib/moveable/MoveableObject';
-import { MoveablePhoto } from '@/app/lib/moveable/MoveablePhoto';
+import { MoveablePhoto } from '@/app/lib/moveable/photo/MoveablePhoto';
 import {
   SelectedProperty,
   useSelectedProperty,

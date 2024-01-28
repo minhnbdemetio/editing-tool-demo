@@ -1,20 +1,20 @@
 import { useActiveMoveablePhotoObject } from '@/app/hooks/useActiveMoveableObject';
-import { Button, Slider } from '@nextui-org/react';
+import {  Slider } from '@nextui-org/react';
 import { FC, useState } from 'react';
-import { HuePicker, SliderPicker } from 'react-color';
+import { HuePicker } from 'react-color';
 
 export const ManuallyFilterProperty: FC = () => {
   const photo = useActiveMoveablePhotoObject();
 
-  const [contrast, setContrast] = useState(photo?.contrast || 0);
-  const [brightness, setBrightness] = useState(photo?.brightness || 0);
-  const [saturation, setSaturation] = useState(photo?.saturation || 0);
-  const [temperature, setTemperature] = useState(photo?.temperature || 0);
-  const [vignette, setVignette] = useState(photo?.vignette || 0);
-  const [blur, setBlur] = useState(photo?.blur || 0);
+  const [contrast, setContrast] = useState(photo?.filter.contrast || 0);
+  const [brightness, setBrightness] = useState(photo?.filter.brightness || 0);
+  const [saturation, setSaturation] = useState(photo?.filter.saturation || 0);
+  const [temperature, setTemperature] = useState(photo?.filter.temperature || 0);
+  const [vignette, setVignette] = useState(photo?.filter.vignette || 0);
+  const [blur, setBlur] = useState(photo?.filter.blur || 0);
   const [hue, setHue] = useState<
     { r: number; g: number; b: number } | undefined
-  >(photo?.hue || { r: 255, g: 255, b: 255 });
+  >(photo?.filter.hue || { r: 255, g: 255, b: 255 });
 
   return (
     <div className="">

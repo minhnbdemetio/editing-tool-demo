@@ -8,7 +8,8 @@ import { isLine, isPhoto, isText } from '../utilities/moveable';
 import { MoveableObject } from '../lib/moveable/MoveableObject';
 import { useDesign } from '../store/design-objects';
 import { isNumber } from 'lodash';
-import { GradientMask, PhotoPosition } from '../lib/moveable/MoveablePhoto';
+import { GradientMask } from '../lib/moveable/photo/gradient-mask/GradientMask';
+import { PhotoPosition } from '../lib/moveable/photo/Croppable';
 import {
   TextEffect,
   TextEffectOptions,
@@ -628,7 +629,7 @@ export const useSetBackgroundImage = () => {
   const activePhotoObject = useActivePhotoObject();
   const setBackgroundImage = (callback?: Function) => {
     if (!activePhotoObject || !activePage) return false;
-    activePhotoObject.setBackground(activePage);
+    activePhotoObject.setAsBackground(activePage);
 
     callback && callback();
     return true;

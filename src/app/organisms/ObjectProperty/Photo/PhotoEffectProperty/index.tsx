@@ -1,14 +1,14 @@
 import { ChevronRight } from '@/app/icons';
-import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
 import { Button, Checkbox } from '@nextui-org/react';
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import { PhotoFillColor } from './PhotoFillColor';
 import { PhotoGradientMask } from './PhotoGradientMask';
 import {
   useActiveMoveablePhotoObject,
   useUpdateGradientMask,
 } from '@/app/hooks/useActiveMoveableObject';
-import { GradientMask } from '@/app/lib/moveable/MoveablePhoto';
+import { GradientMask } from '@/app/lib/moveable/photo/gradient-mask/GradientMask';
+import { RectGradientMask } from '@/app/lib/moveable/photo/gradient-mask/RectGradientMask';
 
 enum EffectType {
   Common = 'common',
@@ -16,11 +16,10 @@ enum EffectType {
   Shadow = 'shadow',
   GradientMask = 'gradientMask',
 }
-export const DEFAULT_GRADIENT_MASK: GradientMask = {
-  type: 'rect',
+export const DEFAULT_GRADIENT_MASK: GradientMask = new RectGradientMask({
   range: 50,
   direction: 90,
-};
+});
 export const PhotoEffectProperty: FC = () => {
   const activePhotoObject = useActiveMoveablePhotoObject();
   const [checkFillColor, setCheckFillColor] = useState<boolean>(false);
@@ -29,50 +28,11 @@ export const PhotoEffectProperty: FC = () => {
   );
   const [modeEffect, setModeEffect] = useState<EffectType>(EffectType.Common);
 
-  useEffect(() => {
-    const activeElement = activePhotoObject?.getElement();
-    if (activeElement instanceof HTMLElement) {
-      const fillColorElement: HTMLDivElement | null = activeElement.querySelector(
-        '.fill-color',
-      );
-      if (fillColorElement) {
-        setCheckFillColor(Boolean(fillColorElement?.style.display === 'block'));
-      } else {
-        const newFillColorElement = document.createElement('div');
-        newFillColorElement.className = 'fill-color';
-        newFillColorElement.style.content = '';
-        newFillColorElement.style.position = 'absolute';
-        newFillColorElement.style.top = '0';
-        newFillColorElement.style.left = '0';
-        newFillColorElement.style.width = '100%';
-        newFillColorElement.style.height = '100%';
-        newFillColorElement.style.backgroundColor = '#000000';
-        newFillColorElement.style.opacity = '1';
-        newFillColorElement.style.zIndex = '1';
-        newFillColorElement.style.display = 'none';
-        activeElement.appendChild(newFillColorElement);
-      }
-    }
-  }, [activePhotoObject]);
-
-  const changeFillColor = () => {
-    const activeElement = activePhotoObject?.getElement();
-
-    if (activeElement instanceof HTMLElement) {
-      const fillColorElement: HTMLDivElement | null = activeElement.querySelector(
-        '.fill-color',
-      );
-      if (fillColorElement) {
-        if (fillColorElement?.style.display === 'block') {
-          fillColorElement.style.display = 'none';
-          setCheckFillColor(false);
-        } else {
-          fillColorElement.style.display = 'block';
-          setCheckFillColor(true);
-        }
-        return;
-      }
-    }
+  const toggleFillColor = () => {
+    const hasFillColor = Boolean(activePhotoObject?.hasFillColor());
+    if (hasFillColor) activePhotoObject?.hideFillColor();
+    else activePhotoObject?.showFillColor();
+    setCheckFillColor(!checkFillColor);
   };
 
   const changeGradientMask = useUpdateGradientMask();
@@ -84,7 +44,7 @@ export const PhotoEffectProperty: FC = () => {
           setModeEffect(EffectType.Common);
         }}
         checkFillColor={checkFillColor}
-        changeFillColor={changeFillColor}
+        toggleFillColor={toggleFillColor}
       />
     );
   if (modeEffect === EffectType.GradientMask) {
@@ -118,7 +78,7 @@ export const PhotoEffectProperty: FC = () => {
             }}
             isSelected={checkFillColor}
             size="lg"
-            onClick={changeFillColor}
+            onClick={toggleFillColor}
           >
             Fill Color
           </Checkbox>
