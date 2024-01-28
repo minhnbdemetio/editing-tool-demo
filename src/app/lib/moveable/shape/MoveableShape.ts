@@ -1,7 +1,8 @@
+import { v4 as uuid } from 'uuid';
 import { MoveableObject, ObjectType } from '../MoveableObject';
 import { EditableShape, MoveableShapeType } from '../editable/EditableShape';
-import { Square } from '../svg/Square';
 import { SvgShape } from '../svg/SvgShape';
+import { PluggableText } from '../text/PluggableText';
 
 export abstract class MoveableShape
   extends MoveableObject
@@ -12,8 +13,9 @@ export abstract class MoveableShape
   shapeOutlineColor: string = '';
   shapeOutline: string = '#000';
   shapeShadow: string = '#000';
-  shapeText: string = '';
+  shapeText: PluggableText;
   shapeType: MoveableShapeType = MoveableShapeType.Square;
+  textWrapperId: string;
 
   constructor(options?: {
     id: string;
@@ -25,6 +27,13 @@ export abstract class MoveableShape
   }) {
     super(options);
     this.type = 'shape';
+
+    this.textWrapperId = uuid();
+    this.shapeText = new PluggableText(this.textWrapperId);
+
+    setTimeout(() => {
+      this.shapeText.setTextColor('red');
+    }, 2000);
   }
   abstract getShape(): SvgShape;
 
@@ -76,13 +85,25 @@ export abstract class MoveableShape
 
   render() {
     const svg = this.toSVG();
-    const element = this.getElement();
+
+    const element = document.querySelector(
+      `div[data-id='${this.id}'] .shape-wrapper`,
+    );
 
     if (element) {
       element.innerHTML = svg;
     }
   }
 
+  editShapeText: () => void = () => {
+    const element = this.shapeText.getElement();
+
+    if (element) {
+      (element as any).focus();
+    }
+  };
+
+  // setup(properties: Partial<IMoveableShapeProperties>): void {
   // setup(properties: Partial<any>): void {
   //   this.shapeColor = properties.shapeColor || '#000';
   //   this.shapeCornerRounding = properties.shapeCornerRounding || 0;

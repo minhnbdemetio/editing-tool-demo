@@ -39,6 +39,11 @@ import { ShapeOutline } from './Shape/ShapeBorderProperty';
 import { ShapeAlignProperty } from './Shape/ShapeAlignProperty';
 import { ShapePositionProperty } from './Shape/ShapePositionProperty';
 
+import { ShapeTextFontProperty } from './Shape/ShapeTextFontProperty';
+import { ShapeTextColorProperty } from './Shape/ShapeTextColorProperty';
+import { ShapeFontSizeProperty } from './Shape/ShapeFontSizeProperty';
+import { ShapeFormatProperty } from './Shape/ShapeFormatProperty';
+
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
 
@@ -171,6 +176,24 @@ export const SelectedObjectProperty: FC = () => {
       // case SelectedProperty.ShapeFilter: {
       //   return <FiltersProperty />;
       // }
+      case SelectedProperty.ShapeColor: {
+        return <ShapeFillColor />;
+      }
+      case SelectedProperty.ShapeOutline: {
+        return <ShapeOutline />;
+      }
+      case SelectedProperty.ShapeTextColor: {
+        return <ShapeTextColorProperty />;
+      }
+      case SelectedProperty.ShapeTextFont: {
+        return <ShapeTextFontProperty />;
+      }
+      case SelectedProperty.ShapeTextFontSize: {
+        return <ShapeFontSizeProperty />;
+      }
+      case SelectedProperty.ShapeTextFormat: {
+        return <ShapeFormatProperty />;
+      }
       // case SelectedProperty.ShapeFlip: {
       //   return <PhotoFlipProperty />;
       // }

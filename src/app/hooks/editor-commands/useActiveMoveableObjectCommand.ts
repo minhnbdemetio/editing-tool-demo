@@ -23,47 +23,6 @@ import { debounce } from 'lodash';
 import { DeleteCommand } from '@/app/lib/command/DeleteCommand';
 import { useExecuteCommand } from './useCommand';
 
-// TODO: Add logic excute command
-export const useToggleMoveableBoldTextCommand = () => {
-  const toggleBoldText = useToggleMoveableBoldText();
-  return toggleBoldText;
-};
-
-export const useToggleMoveableItalicTextCommand = () => {
-  const toggleItalicText = useToggleItalicText();
-  return toggleItalicText;
-};
-
-export const useToggleMoveableUnderlineTextCommand = () => {
-  const toggleUnderlineText = useToggleUnderlineText();
-  return toggleUnderlineText;
-};
-
-export const useToggleMoveableStrokeTextCommand = () => {
-  const toggleStrokeText = useToggleLineThroughText();
-  return toggleStrokeText;
-};
-
-export const useToggleMoveableCapitalTextCommand = () => {
-  const toggleCapitalText = useToggleUppercaseText();
-  return toggleCapitalText;
-};
-
-export const useChangeMoveableTextAligeCommand = () => {
-  const changeTextAlige = useChangeTextAlign();
-  return changeTextAlige;
-};
-
-export const useToggleMoveableListTypeDiscTextCommand = () => {
-  const toggleListTypeDiscText = useToggleListTypeDiscText();
-  return toggleListTypeDiscText;
-};
-
-export const useToggleMoveableListTypeNumberTextCommand = () => {
-  const toggleListTypeNumberText = useToggleListTypeNumberText();
-  return toggleListTypeNumberText;
-};
-
 export const useChangeMoveableTextSpacingCommand = () => {
   const changeLetterSpacing = useChangeTextSpacing();
   // TODO: Using excute command

@@ -1,6 +1,4 @@
-import { SVG } from '@svgdotjs/svg.js';
 import { SvgShape } from './SvgShape';
-const draw = SVG().size(300, 300);
 
 export class Plus extends SvgShape {
   getPath(): string {
