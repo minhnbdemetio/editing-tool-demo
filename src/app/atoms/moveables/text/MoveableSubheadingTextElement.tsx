@@ -38,7 +38,7 @@ export const MoveableSubheadingTextElement: FC<MoveableTextProps> = ({
   return (
     <div
       id={object.id}
-      className={clsx('absolute w-fit hidden text-md', className)}
+      className={clsx('absolute w-fit hidden text-[18px]', className)}
       style={{ writingMode: 'horizontal-tb' }}
     >
       <ul

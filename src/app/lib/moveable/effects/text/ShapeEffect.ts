@@ -10,6 +10,7 @@ import {
   TEXT_CURVE_INPUT_LAYER_CONTAINER,
 } from '../../constant/text';
 import { StyleEffect, TextStyleEffect } from './StyleEffect';
+import { TextDecorationEffect } from './TextDecorationEffect';
 import { TextEffect, TextEffectOptions } from './TextEffect';
 
 export enum TextShapeEffect {
@@ -19,6 +20,7 @@ export enum TextShapeEffect {
 
 export class ShapeEffect extends TextEffect {
   styleEffect?: StyleEffect;
+  textDecoration?: TextDecorationEffect;
   constructor(option?: TextEffectOptions) {
     super(option);
   }
@@ -166,6 +168,7 @@ export class TextCurveEffect extends ShapeEffect {
         nextAlpha -= 360;
       }
       curveContainer.appendChild(span);
+      this.textDecoration?.apply(span);
       height = this.caculateHeightOfElement(span);
     }
 

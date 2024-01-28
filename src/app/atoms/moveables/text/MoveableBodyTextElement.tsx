@@ -38,7 +38,7 @@ export const MoveableBodyTextElement: FC<MoveableTextProps> = ({
   return (
     <div
       id={object.id}
-      className={clsx('absolute w-fit hidden text-sm', className)}
+      className={clsx('absolute w-fit hidden text-[12px]', className)}
       style={{ writingMode: 'horizontal-tb' }}
     >
       <ul
