@@ -62,7 +62,9 @@ import { Edit } from './Edit';
 import { Book } from './Book';
 import { Open } from './Open';
 import { Archive } from './Archive';
-import { Rule } from './Rule';
+import { Ruler1 } from './Ruler1';
+import { IconLink } from './IconLink';
+import { IconUnLink } from './IconUnLink';
 
 export {
   Home,
@@ -129,5 +131,7 @@ export {
   Book,
   Open,
   Archive,
-  Rule,
+  Ruler1,
+  IconLink,
+  IconUnLink,
 };

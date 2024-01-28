@@ -1,8 +1,6 @@
 import React from 'react';
 
 import { Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
-import { UploadPopoverContent } from './UploadPopoverContent';
-import { DotsHorizontal } from '../icons';
 import { FilePopoverContent } from './FilePopoverContent';
 import clsx from 'clsx';
 

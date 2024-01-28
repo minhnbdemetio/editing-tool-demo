@@ -17,7 +17,7 @@ export const Widget: React.FC<IconProps> = ({ className }) => {
         width="7"
         height="7"
         rx="1"
-        stroke="#2C3340"
+        stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
       />
@@ -27,7 +27,7 @@ export const Widget: React.FC<IconProps> = ({ className }) => {
         width="7"
         height="7"
         rx="1"
-        stroke="#2C3340"
+        stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
       />
@@ -37,7 +37,7 @@ export const Widget: React.FC<IconProps> = ({ className }) => {
         width="7"
         height="7"
         rx="1"
-        stroke="#2C3340"
+        stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
       />
@@ -47,7 +47,7 @@ export const Widget: React.FC<IconProps> = ({ className }) => {
         width="7"
         height="7"
         rx="1"
-        stroke="#2C3340"
+        stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
       />

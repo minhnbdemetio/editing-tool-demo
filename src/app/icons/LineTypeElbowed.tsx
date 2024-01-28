@@ -12,8 +12,8 @@ export const LineTypeElbowed: React.FC<IconProps> = ({ className }) => {
       <path
         d="M18.5 7.5v0a4.25 4.25 0 0 1-4.25 4.25h-4.5A4.25 4.25 0 0 0 5.5 16v0"
         stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
       ></path>
       <rect
         x="16.75"
@@ -23,7 +23,7 @@ export const LineTypeElbowed: React.FC<IconProps> = ({ className }) => {
         rx="1.75"
         fill="#EEEEEF"
         stroke="currentColor"
-        stroke-width="1.5"
+        strokeWidth="1.5"
       ></rect>
       <rect
         x="3.75"
@@ -33,7 +33,7 @@ export const LineTypeElbowed: React.FC<IconProps> = ({ className }) => {
         rx="1.75"
         fill="#EEEEEF"
         stroke="currentColor"
-        stroke-width="1.5"
+        strokeWidth="1.5"
       ></rect>
     </svg>
   );

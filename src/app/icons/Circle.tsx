@@ -11,7 +11,7 @@ export const Circle: React.FC<IconProps> = ({ className }) => {
     >
       <circle
         stroke="currentColor"
-        stroke-width="1"
+        strokeWidth="1"
         fill="none"
         cx="12"
         cy="12"

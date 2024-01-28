@@ -5,6 +5,7 @@ import { PageSizeUnits } from '../types';
 import { usePageSize } from '../store/use-page-size';
 import { ValidationError } from 'yup';
 import * as Yup from 'yup';
+import { Button } from '../atoms/Button';
 
 interface ManuallySettingSizeProps {}
 
@@ -171,9 +172,13 @@ export const ManuallySettingSize: React.FC<ManuallySettingSizeProps> = () => {
           />
         </div>
 
-        <button className="w-full text-md font-normal text-primaryContrast bg-green-500 h-[40px] rounded-sm mt-4">
+        <Button
+          color="secondary"
+          className="w-full mt-4"
+          onClick={handleSubmit}
+        >
           Apply
-        </button>
+        </Button>
       </form>
     </div>
   );
