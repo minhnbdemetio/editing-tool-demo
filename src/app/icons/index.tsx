@@ -52,6 +52,17 @@ import { Document } from './Document';
 import { ArrowToLeft } from './ArrowToLeft';
 import { GoToTop } from './GoToTop';
 import { MoveOn } from './MoveOn';
+import { Add } from './Add';
+import { Widget } from './Widget';
+import { AddPage } from './AddPage';
+import { Duplicate2 } from './Duplicate2';
+import { Delete } from './Delete';
+import { EyeSlash } from './EyeSlash';
+import { Edit } from './Edit';
+import { Book } from './Book';
+import { Open } from './Open';
+import { Archive } from './Archive';
+import { Rule } from './Rule';
 
 export {
   Home,
@@ -108,4 +119,15 @@ export {
   ArrowToLeft,
   GoToTop,
   MoveOn,
+  Add,
+  Widget,
+  AddPage,
+  Duplicate2,
+  Delete,
+  EyeSlash,
+  Edit,
+  Book,
+  Open,
+  Archive,
+  Rule,
 };

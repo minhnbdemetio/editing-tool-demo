@@ -14,13 +14,13 @@ export default function DesignDetailLayout({
   useEffect(() => {
     console.log({ commandHistory, undoneCommandHistory });
   }, [commandHistory, undoneCommandHistory]);
-  
+
   return (
-    <div className="flex flex-col h-screen">
+    <div className=" flex flex-col w-full h-[calc(100dvh)] min-h-0">
       <div className={clsx('z-10', 'desktop:z-50')}>
         <Header />
       </div>
-      <div className="h-full min-h-0">{children}</div>
+      <div className={clsx('flex-1 overflow-y-auto w-full')}>{children}</div>
     </div>
   );
 }

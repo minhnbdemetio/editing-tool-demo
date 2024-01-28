@@ -76,6 +76,7 @@ export const useUpdateFontSize = () => {
 
   return (fontSize: number) => {
     activeText?.setFontSize(fontSize);
+    activeText?.render();
   };
 };
 
@@ -93,6 +94,7 @@ export const useUpdateTextGradientColor = () => {
 
   return (gradientStops: GradientStop[]) => {
     activeText?.setTextGradient(gradientStops);
+    activeText?.render();
   };
 };
 
