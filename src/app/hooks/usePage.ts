@@ -41,3 +41,16 @@ export const useClonePage = () => {
     [addPage, getPageObjects],
   );
 };
+
+export const useDeletePage = () => {
+  const { getDesignObjects, setDesignObjects } = useDesign();
+  return useCallback(
+    (pageId: string) => {
+      const designObjects = getDesignObjects();
+      const newPages = { ...designObjects };
+      delete newPages[pageId];
+      setDesignObjects(newPages);
+    },
+    [getDesignObjects, setDesignObjects],
+  );
+};

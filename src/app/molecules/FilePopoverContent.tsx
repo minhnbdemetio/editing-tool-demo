@@ -1,121 +1,103 @@
-import React from 'react';
-import {
-  ArchiveBoxArrowDown,
-  Clock,
-  Download,
-  Duplicate,
-  File,
-  Help,
-  Pencil,
-  Play,
-  Ruler,
-  Search,
-  Setting,
-  Share,
-  ShoppingCart,
-  User,
-} from '@/app/icons';
+import React, { useState } from 'react';
+import { Archive, Book, Download, Open, Rule } from '@/app/icons';
 import { EditableTextField } from '../atoms/EditableTextField';
 import { MenuGroup } from '../atoms/MenuGroup';
 import { MenuItem } from '../atoms/MenuItem';
+import { Button } from '../atoms/Button';
+import { Switch, Textarea } from '@nextui-org/react';
 
 export const FilePopoverContent: React.FC = () => {
+  const [isPreview, setIsPreview] = useState<boolean>(true);
+
   return (
     <div className=" h-full overflow-auto w-full">
       <MenuGroup>
         <MenuItem hover={false}>
-          <div className="flex items-center gap-[11px]">
-            <div>
-              <User className="w-[40px] h-[40px] " />
-            </div>
-            <div>
-              <EditableTextField fallbackValue="Please enter a title" />
-              <p className="text-gray-200 text-[13px]">1080px x 1080px</p>
-            </div>
-          </div>
+          <EditableTextField fallbackValue="Please enter a title" />
         </MenuItem>
       </MenuGroup>
 
       <MenuGroup>
         <MenuItem>
-          <File className="w-[20px] h-[20px]" />
-          <p className="text-md font-normal ">Create new design</p>
+          <div className="w-full flex gap-6 items-center justify-between">
+            <div className="text-xs leading-[1.4]">
+              Request a design Go to the design request screen
+            </div>
+            <Button
+              color="secondary"
+              className="min-w-[135px]"
+              startContent={<Book />}
+            >
+              Request
+            </Button>
+          </div>
         </MenuItem>
         <MenuItem>
-          <Duplicate className="w-[20px] h-[20px]" />
-          <p className="text-md font-normal ">Create copy</p>
+          <div className="w-full flex gap-3 items-center justify-between">
+            <div className="text-xs leading-[1.4]">
+              Save your work here! You can load previously worked content and
+              continue working on it
+            </div>
+            <Button
+              color="secondary"
+              className="min-w-[135px]"
+              startContent={<Open />}
+            >
+              Edit on PC
+            </Button>
+          </div>
         </MenuItem>
         <MenuItem>
-          <ArchiveBoxArrowDown className="w-[20px] h-[20px]" />
-          <p className="text-md font-normal ">Save</p>
-        </MenuItem>
-      </MenuGroup>
-
-      <MenuGroup className="hidden desktop:block">
-        <MenuItem>
-          <ShoppingCart className="w-[20px] h-[20px]" />
-          <p className="text-md font-normal ">Print your design</p>
-        </MenuItem>
-        <MenuItem>
-          <Clock className="w-[20px] h-[20px]" />
-          <p className="text-md font-normal ">Work history</p>
+          <div className="w-full flex gap-3 items-center justify-between">
+            <div className="text-xs leading-[1.4]">Open your saved work</div>
+            <Button
+              color="secondary"
+              className="min-w-[135px]"
+              startContent={<Archive />}
+            >
+              Load
+            </Button>
+          </div>
         </MenuItem>
         <MenuItem>
-          <Search className="w-[20px] h-[20px]" />
-          <p className="text-md font-normal ">Find and replace</p>
+          <div className="w-full flex gap-3 items-center justify-between">
+            <div className="text-xs leading-[1.4]">
+              Cutting size: 90mm x 50mm Printing size: 94mm x 54mm
+            </div>
+            <Button
+              color="secondary"
+              className="min-w-[135px]"
+              startContent={<Rule />}
+            >
+              Edit
+            </Button>
+          </div>
         </MenuItem>
         <MenuItem>
-          <Play className="w-[20px] h-[20px]" />
-          <p className="text-md font-normal ">Slide show</p>
-        </MenuItem>
-      </MenuGroup>
-
-      <MenuGroup className="desktop:hidden">
-        <MenuItem>
-          <ShoppingCart className="w-[20px] h-[20px]" />
-          <p className="text-md font-normal ">Print your design</p>
-        </MenuItem>
-        <MenuItem className="desktop:hidden">
-          <Download className="w-[20px] h-[20px]" />
-          <p className="text-md font-normal desktop:hidden">Download</p>
-        </MenuItem>
-        <MenuItem className="desktop:hidden">
-          <Share className="w-[20px] h-[20px]" />
-          <p className="text-md font-normal ">Share</p>
-        </MenuItem>
-      </MenuGroup>
-
-      <MenuGroup className="desktop:hidden">
-        <MenuItem>
-          <Ruler className="w-[20px] h-[20px]" />
-          <p className="text-md font-normal ">Adjust size</p>
+          <div className="w-full flex gap-3 items-center justify-between">
+            <div className="text-xs leading-[1.4]">Preview</div>
+            <Switch
+              isSelected={isPreview}
+              onValueChange={value => {
+                setIsPreview(value);
+              }}
+              classNames={{
+                wrapper: 'group-data-[selected=true]:!bg-green-500 bg-black',
+              }}
+            ></Switch>
+          </div>
         </MenuItem>
         <MenuItem>
-          <Pencil className="w-[20px] h-[20px]" />
-          <p className="text-md font-normal ">Change mode</p>
-        </MenuItem>
-        <MenuItem>
-          <Clock className="w-[20px] h-[20px]" />
-          <p className="text-md font-normal ">Work history</p>
-        </MenuItem>
-        <MenuItem>
-          <Search className="w-[20px] h-[20px]" />
-          <p className="text-md font-normal ">Find and replace</p>
-        </MenuItem>
-        <MenuItem>
-          <Play className="w-[20px] h-[20px]" />
-          <p className="text-md font-normal ">Slide show</p>
-        </MenuItem>
-      </MenuGroup>
-
-      <MenuGroup divider={false}>
-        <MenuItem className="desktop:hidden">
-          <Setting className="w-[20px] h-[20px]" />
-          <p className="text-md font-normal ">Settings</p>
-        </MenuItem>
-        <MenuItem>
-          <Help className="w-[20px] h-[20px] " />
-          <p className="text-md font-normal ">Help</p>
+          <div className="w-full">
+            <div className="text-xs leading-[1.4] w-full mb-3">Guide</div>
+            <Textarea
+              key={'bordered'}
+              variant={'bordered'}
+              placeholder="Placeholder"
+              className="col-span-12 md:col-span-6 mb-6 md:mb-0"
+              minRows={6}
+            />
+          </div>
         </MenuItem>
       </MenuGroup>
     </div>

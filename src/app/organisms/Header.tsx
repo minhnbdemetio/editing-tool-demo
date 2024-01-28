@@ -8,10 +8,9 @@ import {
   ChevronLeft,
   DotsHorizontal,
   Download,
-  Home,
   ShoppingCart,
   UploadIcon,
-} from '../icons';
+} from '@/app/icons';
 import Link from 'next/link';
 import { UploadModal } from '../molecules/UploadModal';
 import { MoreModal } from '../molecules/MoreModal';
@@ -20,6 +19,7 @@ import { UploadPopover } from '../molecules/UploadPopover';
 import clsx from 'clsx';
 import { FilePopover } from '../molecules/FilePopover';
 import { EditableTextField } from '../atoms/EditableTextField';
+import Image from 'next/image';
 
 import { SettingsPopover } from '../molecules/SettingsPopover';
 import { BackgroundSizePopover } from '../molecules/BackgroundSizePopover';
@@ -40,19 +40,19 @@ export const Header: FC = () => {
 
   return (
     <>
-      <header className="flex items-center justify-between px-[10px] h-[48px] desktop:h-[60px]  shadow-sm py-2 desktop:shadow-md">
+      <header className="flex items-center justify-between px-[20px] h-[48px] desktop:h-[60px]  shadow-sm py-2 desktop:shadow-md">
         <div className="flex items-center gap-4 h-full">
           <Link
             href={'/workspace'}
             className={clsx(
-              'flex items-center w-[58px]  justify-center text-icon-gray text-[24px] ',
+              'flex items-center w-fit  justify-center text-icon-gray text-[24px] ',
               'duration-100 hover:text-primary',
             )}
           >
             <ChevronLeft
               className={clsx('hidden   w-[20px] h-[20px] desktop:block')}
             />
-            <Home className={clsx('text-[20px] w-[20px] h-[20px]')} />
+            <Image src={'/AppLogo.png'} width={70} height={23} alt="AppLogo" />
           </Link>
 
           <div className="hidden desktop:flex items-center gap-4 h-full">

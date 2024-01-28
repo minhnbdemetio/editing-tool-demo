@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Pencil } from '../icons';
+import { Edit } from '@/app/icons';
 import clsx from 'clsx';
 import { twMerge } from '../utilities/tailwind';
 
@@ -34,7 +34,7 @@ export const EditableTextField = forwardRef<
   const isEmpty = value === fallbackValue;
 
   return (
-    <div>
+    <div className="w-full">
       <div
         onClick={() => {
           if (!edit) {
@@ -47,11 +47,11 @@ export const EditableTextField = forwardRef<
             }, 0);
           }
         }}
-        className={twMerge('flex items-center gap-2 text-md ')}
+        className={twMerge('flex items-center gap-2 text-md w-full')}
       >
         <div
           className={clsx(
-            'leading-xl max-w-[200px]',
+            'leading-xl w-full',
 
             {
               'hover:border-b-[1px] hover:border-b-solid hover:border-b-gray-300 hover:border-dashed':
@@ -81,7 +81,7 @@ export const EditableTextField = forwardRef<
           />
         </div>
 
-        <Pencil className="w-[18px] h-[18px] text-gray-500" />
+        <Edit className="w-[18px] h-[18px] text-gray-500" />
       </div>
     </div>
   );
