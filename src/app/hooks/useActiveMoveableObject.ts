@@ -1,5 +1,6 @@
 import { CSSProperties, useCallback, useState } from 'react';
 import {
+  MoveableTextObject,
   MoveableTextShapeEffect,
   MoveableTextStyleEffect,
   TransformDirection,
@@ -192,9 +193,9 @@ export const useCloneObject = () => {
   };
 };
 
-export const useToggleMoveableBoldText = () => {
-  const activeText = useActiveTextObject();
-
+export const useToggleMoveableBoldText = (
+  activeText: MoveableTextObject | null,
+) => {
   return (callback?: Function) => {
     const fontWeight = activeText?.getFontWeight();
     const isBold = fontWeight === 'bold' || fontWeight === '700';
@@ -209,12 +210,10 @@ export const useToggleMoveableBoldText = () => {
   };
 };
 
-export const useToggleItalicText = () => {
-  const textObject = useActiveTextObject();
+export const useToggleItalicText = (activeText: MoveableTextObject | null) => {
   const [isItalic, setIsItalic] = useState<boolean>(
-    textObject?.isFontStyle('italic') || false,
+    activeText?.isFontStyle('italic') || false,
   );
-  const activeText = useActiveTextObject();
 
   return (callback?: Function) => {
     activeText?.setFontStyle(isItalic ? 'normal' : 'italic');
@@ -226,9 +225,9 @@ export const useToggleItalicText = () => {
   };
 };
 
-export const useToggleUnderlineText = () => {
-  const activeText = useActiveTextObject();
-
+export const useToggleUnderlineText = (
+  activeText: MoveableTextObject | null,
+) => {
   const toggleUnderlineText = (callback?: Function) => {
     activeText?.setTextDecoration(
       'underline',
@@ -243,9 +242,9 @@ export const useToggleUnderlineText = () => {
   return toggleUnderlineText;
 };
 
-export const useToggleLineThroughText = () => {
-  const activeText = useActiveTextObject();
-
+export const useToggleLineThroughText = (
+  activeText: MoveableTextObject | null,
+) => {
   const toggleLineThroughText = (callback?: Function) => {
     activeText?.setTextDecoration(
       'lineThrough',
@@ -260,9 +259,9 @@ export const useToggleLineThroughText = () => {
   return toggleLineThroughText;
 };
 
-export const useToggleUppercaseText = () => {
-  const activeText = useActiveTextObject();
-
+export const useToggleUppercaseText = (
+  activeText: MoveableTextObject | null,
+) => {
   const toggleUppercaseText = (callback?: Function) => {
     const isUppercase = activeText?.isTextTransform('uppercase');
 
@@ -279,9 +278,7 @@ export const useToggleUppercaseText = () => {
   return toggleUppercaseText;
 };
 
-export const useChangeTextAlign = () => {
-  const activeText = useActiveTextObject();
-
+export const useChangeTextAlign = (activeText: MoveableTextObject | null) => {
   const changeTextAlign = (textAlign: string, callback?: Function) => {
     activeText?.setTextAlign(textAlign);
     activeText?.render();
@@ -291,9 +288,9 @@ export const useChangeTextAlign = () => {
   return changeTextAlign;
 };
 
-export const useToggleListTypeDiscText = () => {
-  const activeText = useActiveTextObject();
-
+export const useToggleListTypeDiscText = (
+  activeText: MoveableTextObject | null,
+) => {
   const toggleListTypeDiscText = (callback?: Function) => {
     activeText?.setTextListStyle(
       activeText?.isTextListStyle('disc') ? 'none' : 'disc',
@@ -307,9 +304,9 @@ export const useToggleListTypeDiscText = () => {
   return toggleListTypeDiscText;
 };
 
-export const useToggleListTypeNumberText = () => {
-  const activeText = useActiveTextObject();
-
+export const useToggleListTypeNumberText = (
+  activeText: MoveableTextObject | null,
+) => {
   const toggleListTypeText = (callback?: Function) => {
     activeText?.setTextListStyle(
       activeText?.isTextListStyle('number') ? 'none' : 'number',

@@ -39,6 +39,11 @@ const SHAPE_PROPERTIES = [
     value: SelectedProperty.ShapeTextFontSize,
     isShowButton: checkLockedObject,
   },
+  {
+    label: 'Format',
+    value: SelectedProperty.ShapeTextFormat,
+    isShowButton: checkLockedObject,
+  },
 ];
 
 export const ShapeProperties: FC = () => {

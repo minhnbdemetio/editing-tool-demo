@@ -19,12 +19,13 @@ export const MoveableShapeElement: FC<MoveableShapeProps> = ({ object }) => {
       className={`hidden absolute w-fit h-fit overflow-hidden`}
       onDoubleClick={object.editShapeText}
     >
-      <div className="text-wrapper absolute w-fit top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2">
-        <span
+      <div className="text-wrapper absolute w-full top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2">
+        <div
+          className="w-full"
           id={object.textWrapperId}
           suppressContentEditableWarning
           contentEditable
-        ></span>
+        ></div>
       </div>
       <div className="shape-wrapper"></div>
     </div>

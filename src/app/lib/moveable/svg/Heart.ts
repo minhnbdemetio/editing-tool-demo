@@ -1,6 +1,4 @@
-import { SVG } from '@svgdotjs/svg.js';
 import { SvgShape } from './SvgShape';
-const draw = SVG().size(300, 300);
 
 export class Heart extends SvgShape {
   beginPath() {
@@ -14,11 +12,6 @@ export class Heart extends SvgShape {
   }
 
   getPath(): string {
-    const round = this.width * 0.25;
-    const side = this.width * 0.55;
-
-    const width = this.width * 0.8;
-
     const squareYLength = this.height * 0.5;
     const squareXLength = this.width * 0.45;
 
