@@ -16,7 +16,7 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
   isBackground: boolean = false;
   backgroundStartPosition?: PhotoPosition;
   src: string;
-  fillOpacity? = 100;
+  fillOpacity? = 1;
   fillColor?: string | undefined = 'transparent';
   clone(
     options?: { htmlString: string; id: string } | undefined,
@@ -59,6 +59,7 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
             document.body.appendChild(image);
 
             process.nextTick(() => {
+              console.log(image.width, image.height);
               this.setHeight(image.height);
               this.setWidth(image.width);
               this.loaded = true;
@@ -320,7 +321,7 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
       fillColorElement.style.opacity = this.fillOpacity?.toString() || '1';
     } else {
       const newFillColorElement = document.createElement('div');
-      newFillColorElement.id = `fill-color-${this.id}`;
+      newFillColorElement.id = `${PHOTO_INNER_ELEMENTS.FILL_COLOR}-${this.id}`;
       newFillColorElement.style.content = '';
       newFillColorElement.style.position = 'absolute';
       newFillColorElement.style.top = '0';
@@ -346,7 +347,9 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
     fillElement.style.display = 'block';
   }
   getFillElement() {
-    return document.getElementById(`fill-color-${this.id}`);
+    return document.getElementById(
+      `${PHOTO_INNER_ELEMENTS.FILL_COLOR}-${this.id}`,
+    );
   }
   setFillColor(color?: string) {
     this.fillColor = color;

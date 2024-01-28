@@ -1,13 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
 import { findIdFromString } from '../../utilities/dom';
 import { MOVEABLE_TARGET_CLASS } from '../../constants/moveable';
-import { DATA_LOCKED } from './constant/object';
+import { DATA_LOCKED, OBJECT_INNER_ELEMENTS } from './constant/object';
 import { Importable } from './Importable';
 import { ClipboardOperation } from './ClipboardOperation';
 import { Exportable } from './Exportable';
 import { Effect } from './effects/Effect';
 import { GradientStop } from '@/app/utilities/color.type';
-import { Editable, FlipDirection } from './editable/Editable';
+import { Editable } from './editable/Editable';
+import { FlipDirection } from './editable/CanFlip';
 
 export const MAX_FIND_ELEMENT_ATTEMPTS = 100;
 export type ObjectType = 'rectangle' | 'text' | 'line' | 'photo' | 'shape';
@@ -190,27 +191,29 @@ export abstract class MoveableObject
     };
   }
 
-  public getSvgTransform(): string {
+  public getFlipTransform(): string {
     const { x, y } = this.getFlipScaleRatio();
 
     return `scale(${x},${y})`;
   }
-  private applySvgTransform() {
-    const element = this.getElement();
-    if (element) {
-      element.style.transform = this.getSvgTransform();
-    }
+
+  getFlipElement() {
+    return document.getElementById(
+      `${OBJECT_INNER_ELEMENTS.FLIPPER}-${this.id}`,
+    );
   }
 
   flip(direction: FlipDirection) {
+    const flipElement = this.getFlipElement();
+    if (flipElement) {
+      flipElement.style.transform = this.getFlipTransform();
+    }
     if (direction === FlipDirection.Horizontal) {
       this.flipDirection.x = !this.flipDirection.x;
     }
     if (direction === FlipDirection.Vertical) {
       this.flipDirection.y = !this.flipDirection.y;
     }
-
-    this.applySvgTransform();
   }
 
   toJSON() {

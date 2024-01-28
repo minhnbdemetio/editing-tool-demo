@@ -14,7 +14,7 @@ import { SepiaFilter } from '../photo/filters/SepiaFilter';
 import { AnalogFilter } from '../photo/filters/AnalogFilter';
 import { MonsterFilter } from '../photo/filters/MonsterFilter';
 import { BlackWhiteFilter } from '../photo/filters/BlackWhiteFilter';
-import { ColorfulFilter } from '../photo/filters/ColorfulFilter';
+import { ColorfulFilter } from '../photo/filters/ColorfulFIlter';
 
 export const PHOTO_INNER_ELEMENTS = {
   SVG: 'svg-container',
@@ -28,6 +28,7 @@ export const PHOTO_INNER_ELEMENTS = {
   BLUR_FILTER: 'blur-filter',
   VIGNETTE_RESULT: 'vignette-result',
   HUE_MASK: 'hue-mask',
+  FILL_COLOR: 'fill-color',
 };
 
 export const SOURCE_GRAPHIC = 'SourceGraphic';

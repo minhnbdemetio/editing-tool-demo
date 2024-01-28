@@ -1,5 +1,6 @@
 import { useActiveMoveablePhotoObject } from '@/app/hooks/useActiveMoveableObject';
-import { FlipDirection } from '@/app/lib/moveable/editable/Editable';
+import { FlipDirection } from '@/app/lib/moveable/editable/CanFlip';
+
 import { twMerge } from '@/app/utilities/tailwind';
 import { FC } from 'react';
 

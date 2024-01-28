@@ -3,6 +3,7 @@ import { FC, useEffect, useRef } from 'react';
 import clsx from 'clsx';
 import { MoveableSubheadingTextObject } from '@/app/lib/moveable/text/MoveableSubheadingText';
 import { TEXT_INNER_ELEMENTS } from '@/app/lib/moveable/constant/text';
+import { OBJECT_INNER_ELEMENTS } from '@/app/lib/moveable/constant/object';
 
 interface MoveableTextProps {
   object: MoveableSubheadingTextObject;
@@ -41,14 +42,19 @@ export const MoveableSubheadingTextElement: FC<MoveableTextProps> = ({
       className={clsx('absolute w-fit hidden text-md', className)}
       style={{ writingMode: 'horizontal-tb' }}
     >
-      <ul
-        ref={textContainerRef}
-        id={`${TEXT_INNER_ELEMENTS.CONTAINER}-${object.id}`}
-        suppressContentEditableWarning
-        contentEditable
+      <div
+        className="w-full h-full"
+        id={`${OBJECT_INNER_ELEMENTS.FLIPPER}-${object.id}`}
       >
-        <li>Add a subheading</li>
-      </ul>
+        <ul
+          ref={textContainerRef}
+          id={`${TEXT_INNER_ELEMENTS.CONTAINER}-${object.id}`}
+          suppressContentEditableWarning
+          contentEditable
+        >
+          <li>Add a subheading</li>
+        </ul>
+      </div>
     </div>
   );
 };
