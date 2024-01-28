@@ -106,3 +106,18 @@ export function calculateActualHeight(element: HTMLElement): number | null {
 
   return actualHeight;
 }
+export function getElementById(
+  element: Element | null,
+  id: string,
+): Element | null {
+  if (!element) return null;
+  if (element.id === id) return element;
+
+  for (let i = 0; i < element.children.length; i++) {
+    const child = element.children[i];
+    const match = getElementById(child, id);
+    if (match) return match;
+  }
+
+  return null;
+}

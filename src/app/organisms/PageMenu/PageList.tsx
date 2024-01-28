@@ -1,8 +1,7 @@
 import { FC } from 'react';
 import { usePages } from '@/app/hooks/usePage';
-import { useActivePage } from '@/app/store/active-page';
-import { twMerge } from '@/app/utilities/tailwind';
 import { Add } from '@/app/icons';
+import { PageRender } from './PageRender';
 
 interface PageListProps {
   addPage: () => void;
@@ -10,31 +9,11 @@ interface PageListProps {
 
 export const PageList: FC<PageListProps> = ({ addPage }) => {
   const pages = usePages();
-  const { setActivePage, activePage } = useActivePage();
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6">
-      {pages.map((page, index) => {
-        return (
-          <div
-            className={twMerge(
-              'flex w-full px-0.5 pb-2 flex-col items-center gap-2 flex-shrink-0 rounded-lg cursor-pointer',
-              { 'bg-[#A8C5FA33]': page === activePage },
-            )}
-            key={page}
-            onClick={() => setActivePage(page)}
-          >
-            <div
-              className={twMerge(
-                'w-full bg-[#EBECF0] pb-[100%] rounded-lg border',
-                {
-                  'border-solid border-primary1': page === activePage,
-                },
-              )}
-            ></div>
-            <div className="h-6 flex items-center">{index + 1}</div>
-          </div>
-        );
+      {pages?.map((page, index) => {
+        return <PageRender key={page} page={page} index={index} />;
       })}
       <div
         className="flex w-full px-0.5 pb-2 flex-col items-center gap-2 flex-shrink-0 rounded-lg relative cursor-pointer"
