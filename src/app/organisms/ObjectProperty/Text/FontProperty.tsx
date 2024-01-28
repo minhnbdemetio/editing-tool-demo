@@ -1,15 +1,20 @@
 import { ListFonts } from '@/app/atoms/ListFonts';
 import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
-import { FontStyle } from '@/app/lib/moveable/text/MoveableText';
+import { TextFontStyle } from '@/app/lib/moveable/text/MoveableText';
 
 interface FontPropertyProps {}
 
 export const FontProperty: React.FC<FontPropertyProps> = ({}) => {
   const textObject = useActiveTextObject();
 
-  const onChangeFontStyle = (fontFamily: string, fontStyle: FontStyle) => {
+  const onChangeFontStyle = (
+    fontFamily: string,
+    fontStyle: TextFontStyle,
+    fontWeight: string,
+  ) => {
     textObject?.setFontFamily(fontFamily);
     textObject?.setFontStyle(fontStyle);
+    textObject?.setFontWeight(fontWeight);
 
     textObject?.render();
   };
@@ -20,6 +25,7 @@ export const FontProperty: React.FC<FontPropertyProps> = ({}) => {
         onChange={onChangeFontStyle}
         fontFamily={textObject?.getFontFamily()}
         fontStyle={textObject?.getFontStyle()}
+        fontWeight={textObject?.getFontWeight()}
       />
     </>
   );

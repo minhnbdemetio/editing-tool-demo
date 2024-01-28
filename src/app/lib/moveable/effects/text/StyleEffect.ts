@@ -2,6 +2,10 @@ import { hexToRgba } from '@/app/utilities/color';
 import { TextEffect, TextEffectOptions } from './TextEffect';
 import {
   BACKGROUND_EFFECT_CONTAINER,
+  CURVE_BACKGROUND_EFFECT_CONTAINER,
+  GLITCH_EFFECT_CONTAINER,
+  GRADIENT_BACKGROUND_CSS_VARIABLE,
+  GRADIENT_WEBKIT_TEXT_FILL_CSS_VARIABLE,
   OUTLINE_EFFECT_CONTAINER,
   TEXT_BACKGROUND_DEFAULT_VALUE,
   TEXT_ECHO_DEFAULT_VALUE,
@@ -228,7 +232,16 @@ export class TextOutlineEffect extends TextHollowEffect {
       clonedElement.style.top = '0';
       clonedElement.style.left = '0';
       clonedElement.style.zIndex = '-1';
+
       element.appendChild(clonedElement);
+    }
+
+    const curveBackgroundContainer = clonedElement.querySelector(
+      `#${CURVE_BACKGROUND_EFFECT_CONTAINER}-${element.id}`,
+    );
+
+    if (curveBackgroundContainer) {
+      curveBackgroundContainer.remove();
     }
 
     super.apply(clonedElement);
@@ -299,6 +312,10 @@ export class TextGlitchEffect extends StyleEffect {
     this.varient = TextStyleEffect.GLITCH;
   }
 
+  getTextContainer(element: HTMLElement): HTMLElement | null {
+    return element.querySelector('[contentEditable]');
+  }
+
   apply(element: HTMLElement): void {
     const styles = window.getComputedStyle(element);
     const isBlueRedColor = this.options.color === 'blue-red';
@@ -306,6 +323,25 @@ export class TextGlitchEffect extends StyleEffect {
     const secondColor = isBlueRedColor ? 'rgb(255, 0, 255)' : 'rgb(255, 0, 0)';
     const matches = styles.fontSize?.match(/^(\d+(\.\d+)?)px/);
     const MAX_SHADOW = parseFloat(matches?.[1] ?? '0') * 0.0833;
+    let glitchContainer = document.getElementById(
+      `${GLITCH_EFFECT_CONTAINER}-${element.id}`,
+    );
+    if (!glitchContainer) {
+      const textContainer = this.getTextContainer(element);
+      glitchContainer = textContainer?.cloneNode(true) as HTMLElement | null;
+      if (glitchContainer && textContainer) {
+        glitchContainer.id = `${GLITCH_EFFECT_CONTAINER}-${element.id}`;
+        glitchContainer.style.background = `var(${GRADIENT_BACKGROUND_CSS_VARIABLE})`;
+        glitchContainer.style.backgroundClip = 'text';
+        glitchContainer.style.webkitTextFillColor = `var(${GRADIENT_WEBKIT_TEXT_FILL_CSS_VARIABLE})`;
+        glitchContainer.style.position = 'absolute';
+        glitchContainer.style.top = '0';
+        glitchContainer.style.zIndex = '10';
+        glitchContainer.style.textShadow = 'none';
+        element.appendChild(glitchContainer);
+      }
+    }
+
     const {
       offset = TEXT_GLITCH_DEFAULT_VALUE.offset,
       direction = TEXT_GLITCH_DEFAULT_VALUE.direction,
@@ -332,6 +368,12 @@ export class TextGlitchEffect extends StyleEffect {
   }
 
   reset(element: HTMLElement): void {
+    const glitchContainer = document.getElementById(
+      `${GLITCH_EFFECT_CONTAINER}-${element.id}`,
+    );
+    if (glitchContainer) {
+      element.removeChild(glitchContainer);
+    }
     element.style.removeProperty(TEXT_GLITCH_EFFECT_CSS_VARIABLES);
     element.style.textShadow = element.style.textShadow.replace(
       /(,.+|.+|)var\(--text-glitch-effect\)/g,

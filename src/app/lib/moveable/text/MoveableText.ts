@@ -2,11 +2,16 @@ import { MAX_FIND_ELEMENT_ATTEMPTS, MoveableObject } from '../MoveableObject';
 import { GradientStop } from '../../../utilities/color.type';
 
 export type MoveableTextVariant = 'normal' | 'heading' | 'subheading' | 'body';
-import { DEFAULT_TEXT_SCALE, TEXT_INNER_ELEMENTS } from '../constant/text';
+import {
+  DEFAULT_TEXT_SCALE,
+  GRADIENT_BACKGROUND_CSS_VARIABLE,
+  GRADIENT_WEBKIT_TEXT_FILL_CSS_VARIABLE,
+  TEXT_INNER_ELEMENTS,
+} from '../constant/text';
 import { EditableText } from '../editable/EditableText';
-import { StyleEffect } from '../effects/text/StyleEffect';
+import { StyleEffect, TextStyleEffect } from '../effects/text/StyleEffect';
 import { TextEffect, TextEffectOptions } from '../effects/text/TextEffect';
-import { ShapeEffect } from '../effects/text/ShapeEffect';
+import { ShapeEffect, TextShapeEffect } from '../effects/text/ShapeEffect';
 import { CSSProperties } from 'react';
 
 export type MoveableTextShadow = {
@@ -37,22 +42,53 @@ export type TextBackgroundEffectOption = {
   transparency?: number;
 };
 
-export type FontStyle = {
-  value: string;
-  style: Partial<CSSProperties>;
+export type TextFontStyle = 'italic' | 'normal';
+export type TextTransform = 'none' | 'uppercase';
+export type TextListStyle = 'none' | 'number' | 'disc';
+export type TextDecoration = {
+  underline: boolean;
+  lineThrough: boolean;
 };
 
-export interface Font {
+export type TextFormat = {
   fontFamily: string;
-  fontStyle: FontStyle;
+  textAlign: string;
+  textTransform: TextTransform;
+  fontWeight: string;
+  fontStyle: TextFontStyle;
+  textListStyle: TextListStyle;
+  textDecoration: TextDecoration;
+
+  setFontStyle: (fontStyle: TextFontStyle) => void;
+  getFontStyle: () => TextFontStyle;
+  isFontStyle: (style: TextFontStyle) => boolean;
+
+  setTextTransform: (textTransform: TextTransform) => void;
+  getTextTransform: () => TextTransform;
+  isTextTransform: (textTransform: TextTransform) => boolean;
+
+  getTextAlign: () => string;
+  setTextAlign: (textAlign: string) => void;
+  isTextAlign: (textAlign: string) => boolean;
+
+  setFontWeight: (fontWeight: string) => void;
+  getFontWeight: () => string;
+
+  getTextDecoration: () => TextDecoration;
+  setTextDecoration: (key: keyof TextDecoration, state: boolean) => void;
+  isTextDecorationEnable: (key: keyof TextDecoration) => boolean;
+
+  getTextListStyle: () => TextListStyle;
+  setTextListStyle: (listStyle: TextListStyle) => void;
+  isTextListStyle: (listStyle: TextListStyle) => boolean;
 
   setFontFamily: (fontFamily: string) => void;
-  setFontStyle: (fontStyle: FontStyle) => void;
   getFontFamily: () => string;
-  getFontStyle: () => FontStyle;
 
   applyFontEffect: () => void;
-}
+  applyTextDecorationEffect: () => void;
+  applyTextListStyle: () => void;
+};
 
 export type MoveableTextStyleEffect =
   | 'none'
@@ -72,7 +108,7 @@ export type MoveableTextShapeEffect = 'none' | 'curve';
 
 export class MoveableTextObject
   extends MoveableObject
-  implements EditableText, Font
+  implements EditableText, TextFormat
 {
   variant?: MoveableTextVariant;
   gradientStops?: GradientStop[];
@@ -83,10 +119,15 @@ export class MoveableTextObject
   styleEffect: StyleEffect;
   shapeEffect: ShapeEffect;
   fontFamily: string = 'Arial';
-  fontStyle: FontStyle = {
-    value: 'Regular',
-    style: { fontWeight: '400', fontStyle: 'normal' },
+  fontWeight: string = '400';
+  fontStyle: TextFontStyle = 'normal';
+  textTransform: TextTransform = 'none';
+  textAlign: string = 'left';
+  textDecoration: TextDecoration = {
+    lineThrough: false,
+    underline: false,
   };
+  textListStyle: TextListStyle = 'none';
 
   constructor(options?: { id: string; htmlString: string }) {
     super(options);
@@ -150,6 +191,12 @@ export class MoveableTextObject
   getSvgElement() {
     return document.getElementById(`${TEXT_INNER_ELEMENTS.SVG}-${this.id}`);
   }
+  getContentEditable() {
+    const element = this.getElement();
+    if (!element) return null;
+    return (element.querySelector('[contenteditable]') ||
+      element.firstChild) as HTMLElement;
+  }
   setOpacity(opacity: number) {
     const element = this.getElement();
     if (!element) return false;
@@ -167,71 +214,32 @@ export class MoveableTextObject
     this.gradientStops = undefined;
   }
   setTextGradient(stops: GradientStop[]) {
-    const currentSvgElement = this.getSvgElement();
-    const element = this.getElement();
-    const textContainer = this.getTextContainer();
-    if (!element || !textContainer) return false;
-    if (currentSvgElement) {
-      currentSvgElement.remove();
-      textContainer.style.display = 'block';
-    }
-    const svgElement = document.createElementNS(
-      'http://www.w3.org/2000/svg',
-      'svg',
-    );
-    svgElement.setAttribute('width', textContainer.offsetWidth.toString());
-    svgElement.setAttribute('height', textContainer.offsetHeight.toString());
-
-    svgElement.setAttribute('id', `${TEXT_INNER_ELEMENTS.SVG}-${this.id}`);
-    var textElement = document.createElementNS(
-      'http://www.w3.org/2000/svg',
-      'text',
-    );
-    const textCssProperties = window.getComputedStyle(textContainer);
-    const textLineHeight = parseFloat(textCssProperties['lineHeight']);
-    const textFontSize = parseFloat(textCssProperties['fontSize']);
-    const distanceBetweenBaselineAndBox = (textLineHeight - textFontSize) / 2;
-
-    const textElementY =
-      textContainer.offsetHeight - distanceBetweenBaselineAndBox;
-
-    textElement.setAttribute('x', '0');
-    textElement.setAttribute('y', textElementY.toString());
-    const computedStyles = window.getComputedStyle(textContainer);
-    for (let i = 0; i < computedStyles.length; i++) {
-      const styleName = computedStyles[i];
-      const styleValue = computedStyles.getPropertyValue(styleName);
-      textElement.style[styleName as any] = styleValue;
-    }
-
-    textElement.textContent = textContainer.textContent;
-    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-    const gradientElement = document.createElementNS(
-      'http://www.w3.org/2000/svg',
-      'linearGradient',
-    );
-    gradientElement.setAttribute('id', 'textGradient');
-    gradientElement.setAttribute('x1', '0%');
-    gradientElement.setAttribute('y1', '0%');
-    gradientElement.setAttribute('x2', '0%');
-    gradientElement.setAttribute('y2', '100%');
-
-    for (let i = 0; i < stops.length; i++) {
-      const stop = document.createElementNS(
-        'http://www.w3.org/2000/svg',
-        'stop',
-      );
-      stop.setAttribute('offset', `${stops[i].offset * 100}%`);
-      stop.style.stopColor = stops[i].color;
-      gradientElement.appendChild(stop);
-    }
-    textElement.style.fill = 'url(#textGradient)';
-    defs.appendChild(gradientElement);
-    svgElement.appendChild(defs);
-    svgElement.appendChild(textElement);
-    textContainer.style.display = 'none';
-    element.appendChild(svgElement);
     this.gradientStops = stops;
+  }
+
+  applyTextGradient(element: HTMLElement) {
+    if (!this.gradientStops) {
+      element.style.setProperty(GRADIENT_BACKGROUND_CSS_VARIABLE, '');
+      element.style.setProperty(GRADIENT_WEBKIT_TEXT_FILL_CSS_VARIABLE, '');
+      element.style.background = '';
+      element.style.backgroundClip = '';
+      element.style.webkitTextFillColor = '';
+      return;
+    }
+    const linearGradient = this.gradientStops
+      .map(({ offset, color }) => `${color} ${offset * 100}%`)
+      .join(', ');
+    element.style.setProperty(
+      GRADIENT_BACKGROUND_CSS_VARIABLE,
+      `linear-gradient(0deg, ${linearGradient})`,
+    );
+    element.style.setProperty(
+      GRADIENT_WEBKIT_TEXT_FILL_CSS_VARIABLE,
+      'transparent',
+    );
+    element.style.background = `var(${GRADIENT_BACKGROUND_CSS_VARIABLE})`;
+    element.style.backgroundClip = 'text';
+    element.style.webkitTextFillColor = `var(${GRADIENT_WEBKIT_TEXT_FILL_CSS_VARIABLE})`;
   }
   getTextContainer() {
     let attempt = 0;
@@ -359,12 +367,86 @@ export class MoveableTextObject
     this.fontFamily = fontFamily;
   };
 
-  getFontStyle: () => FontStyle = () => {
+  setTextTransform: (textTransform: TextTransform) => void = textTransform => {
+    this.textTransform = textTransform;
+  };
+  getTextTransform: () => TextTransform = () => {
+    return this.textTransform;
+  };
+  isTextTransform: (textTransform: TextTransform) => boolean =
+    textTransform => {
+      return this.getTextTransform() === textTransform;
+    };
+  setFontWeight: (fontWeight: string) => void = fontWeight => {
+    this.fontWeight = fontWeight;
+  };
+  getFontWeight: () => string = () => {
+    return this.fontWeight;
+  };
+  isFontStyle: (style: TextFontStyle) => boolean = style => {
+    return this.getFontStyle() === style;
+  };
+  getFontStyle: () => TextFontStyle = () => {
     return this.fontStyle;
   };
 
-  setFontStyle: (fontStyle: FontStyle) => void = fontStyle => {
+  getTextAlign: () => string = () => this.textAlign;
+  setTextAlign: (textAlign: string) => void = textAlign => {
+    this.textAlign = textAlign;
+  };
+  isTextAlign: (textAlign: string) => boolean = textAlign => {
+    return this.getTextAlign() === textAlign;
+  };
+
+  getTextListStyle: () => TextListStyle = () => this.textListStyle;
+  setTextListStyle: (listStyle: TextListStyle) => void = listStyle => {
+    console.debug({ listStyle });
+    this.textListStyle = listStyle;
+  };
+  isTextListStyle: (listStyle: TextListStyle) => boolean = listStyle => {
+    return this.getTextListStyle() === listStyle;
+  };
+
+  getTextDecoration: () => TextDecoration = () => this.textDecoration;
+  setTextDecoration: (key: keyof TextDecoration, state: boolean) => void = (
+    key,
+    state,
+  ) => {
+    this.textDecoration[key] = state;
+  };
+  isTextDecorationEnable: (key: keyof TextDecoration) => boolean = key =>
+    this.textDecoration[key];
+
+  setFontStyle: (fontStyle: TextFontStyle) => void = fontStyle => {
     this.fontStyle = fontStyle;
+  };
+
+  applyTextDecorationEffect: () => void = () => {
+    const element = this.getElement();
+
+    if (element) {
+      const textDecorations: string[] = [];
+      if (this.getTextDecoration()['underline'])
+        textDecorations.push('underline');
+
+      if (this.getTextDecoration()['lineThrough'])
+        textDecorations.push('line-through');
+
+      element.style.textDecoration = textDecorations.join(' ');
+    }
+  };
+
+  applyTextListStyle: () => void = () => {
+    const listElement = this.getElement()?.querySelector('ul');
+    if (!listElement) return false;
+
+    if (this.isTextListStyle('none')) {
+      listElement.style.paddingLeft = '0';
+      listElement.style.listStyleType = 'none';
+    } else {
+      listElement.style.paddingLeft = '20px';
+      listElement.style.listStyleType = this.getTextListStyle();
+    }
   };
 
   applyFontEffect: () => void = () => {
@@ -372,18 +454,33 @@ export class MoveableTextObject
 
     if (element) {
       element.style.fontFamily = this.getFontFamily();
-      for (const [key, value] of Object.entries(this.getFontStyle().style)) {
-        (element.style as { [key: string]: any })[key] = `${value}`;
-      }
+      element.style.fontWeight = this.getFontWeight();
+      element.style.fontStyle = this.getFontStyle();
+      element.style.textTransform = this.getTextTransform();
+      element.style.textAlign = this.getTextAlign();
     }
   };
 
   render() {
     const element = this.getElement();
-    if (!element) return;
+    const contenteditable = this.getContentEditable();
+    if (!element || !contenteditable) return;
+
+    if (this.styleEffect.varient === TextStyleEffect.OUTLINE) {
+      this.applyTextGradient(contenteditable);
+    } else {
+      this.applyTextGradient(element);
+    }
+
+    if (this.shapeEffect.varient !== TextShapeEffect.NONE) {
+      this.shapeEffect.styleEffect = this.styleEffect;
+    }
     this.styleEffect.apply(element);
     this.shapeEffect.apply(element);
+    
     this.renderTextScale();
     this.applyFontEffect();
+    this.applyTextDecorationEffect();
+    this.applyTextListStyle();
   }
 }
