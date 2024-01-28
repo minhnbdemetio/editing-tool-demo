@@ -2,10 +2,17 @@ import { MAX_FIND_ELEMENT_ATTEMPTS, MoveableObject } from '../MoveableObject';
 import { GradientStop } from '../../../utilities/color.type';
 
 export type MoveableTextVariant = 'normal' | 'heading' | 'subheading' | 'body';
-import { DEFAULT_TEXT_SCALE, TEXT_INNER_ELEMENTS } from '../constant/text';
+import {
+  DEFAULT_TEXT_SCALE,
+  GRADIENT_BACKGROUND_CSS_VARIABLE,
+  GRADIENT_WEBKIT_TEXT_FILL_CSS_VARIABLE,
+  TEXT_INNER_ELEMENTS,
+} from '../constant/text';
 import { EditableText } from '../editable/EditableText';
-import { StyleEffect } from '../effects/text/StyleEffect';
+import { StyleEffect, TextStyleEffect } from '../effects/text/StyleEffect';
 import { TextEffect, TextEffectOptions } from '../effects/text/TextEffect';
+import { ShapeEffect, TextShapeEffect } from '../effects/text/ShapeEffect';
+import { CSSProperties } from 'react';
 
 export type MoveableTextShadow = {
   color?: string;
@@ -35,6 +42,54 @@ export type TextBackgroundEffectOption = {
   transparency?: number;
 };
 
+export type TextFontStyle = 'italic' | 'normal';
+export type TextTransform = 'none' | 'uppercase';
+export type TextListStyle = 'none' | 'number' | 'disc';
+export type TextDecoration = {
+  underline: boolean;
+  lineThrough: boolean;
+};
+
+export type TextFormat = {
+  fontFamily: string;
+  textAlign: string;
+  textTransform: TextTransform;
+  fontWeight: string;
+  fontStyle: TextFontStyle;
+  textListStyle: TextListStyle;
+  textDecoration: TextDecoration;
+
+  setFontStyle: (fontStyle: TextFontStyle) => void;
+  getFontStyle: () => TextFontStyle;
+  isFontStyle: (style: TextFontStyle) => boolean;
+
+  setTextTransform: (textTransform: TextTransform) => void;
+  getTextTransform: () => TextTransform;
+  isTextTransform: (textTransform: TextTransform) => boolean;
+
+  getTextAlign: () => string;
+  setTextAlign: (textAlign: string) => void;
+  isTextAlign: (textAlign: string) => boolean;
+
+  setFontWeight: (fontWeight: string) => void;
+  getFontWeight: () => string;
+
+  getTextDecoration: () => TextDecoration;
+  setTextDecoration: (key: keyof TextDecoration, state: boolean) => void;
+  isTextDecorationEnable: (key: keyof TextDecoration) => boolean;
+
+  getTextListStyle: () => TextListStyle;
+  setTextListStyle: (listStyle: TextListStyle) => void;
+  isTextListStyle: (listStyle: TextListStyle) => boolean;
+
+  setFontFamily: (fontFamily: string) => void;
+  getFontFamily: () => string;
+
+  applyFontEffect: () => void;
+  applyTextDecorationEffect: () => void;
+  applyTextListStyle: () => void;
+};
+
 export type MoveableTextStyleEffect =
   | 'none'
   | 'shadow'
@@ -51,21 +106,36 @@ export type TransformDirection = 'bottom' | 'center' | 'top';
 
 export type MoveableTextShapeEffect = 'none' | 'curve';
 
-export class MoveableTextObject extends MoveableObject implements EditableText {
+export class MoveableTextObject
+  extends MoveableObject
+  implements EditableText, TextFormat
+{
   variant?: MoveableTextVariant;
-  shapeEffect?: MoveableTextShapeEffect;
   gradientStops?: GradientStop[];
   transformDirection: string;
   curve?: number;
   scaleY: number = DEFAULT_TEXT_SCALE;
   scaleX: number = DEFAULT_TEXT_SCALE;
   styleEffect: StyleEffect;
+  shapeEffect: ShapeEffect;
+  fontFamily: string = 'Arial';
+  fontWeight: string = '400';
+  fontStyle: TextFontStyle = 'normal';
+  textTransform: TextTransform = 'none';
+  textAlign: string = 'left';
+  textDecoration: TextDecoration = {
+    lineThrough: false,
+    underline: false,
+  };
+  textListStyle: TextListStyle = 'none';
+
   constructor(options?: { id: string; htmlString: string }) {
     super(options);
     this.type = 'text';
     this.variant = 'normal';
     this.transformDirection = 'bottom';
     this.styleEffect = new StyleEffect();
+    this.shapeEffect = new ShapeEffect();
   }
 
   clone(options?: { htmlString: string; id: string }): MoveableTextObject {
@@ -121,6 +191,12 @@ export class MoveableTextObject extends MoveableObject implements EditableText {
   getSvgElement() {
     return document.getElementById(`${TEXT_INNER_ELEMENTS.SVG}-${this.id}`);
   }
+  getContentEditable() {
+    const element = this.getElement();
+    if (!element) return null;
+    return (element.querySelector('[contenteditable]') ||
+      element.firstChild) as HTMLElement;
+  }
   setOpacity(opacity: number) {
     const element = this.getElement();
     if (!element) return false;
@@ -138,71 +214,32 @@ export class MoveableTextObject extends MoveableObject implements EditableText {
     this.gradientStops = undefined;
   }
   setTextGradient(stops: GradientStop[]) {
-    const currentSvgElement = this.getSvgElement();
-    const element = this.getElement();
-    const textContainer = this.getTextContainer();
-    if (!element || !textContainer) return false;
-    if (currentSvgElement) {
-      currentSvgElement.remove();
-      textContainer.style.display = 'block';
-    }
-    const svgElement = document.createElementNS(
-      'http://www.w3.org/2000/svg',
-      'svg',
-    );
-    svgElement.setAttribute('width', textContainer.offsetWidth.toString());
-    svgElement.setAttribute('height', textContainer.offsetHeight.toString());
-
-    svgElement.setAttribute('id', `${TEXT_INNER_ELEMENTS.SVG}-${this.id}`);
-    var textElement = document.createElementNS(
-      'http://www.w3.org/2000/svg',
-      'text',
-    );
-    const textCssProperties = window.getComputedStyle(textContainer);
-    const textLineHeight = parseFloat(textCssProperties['lineHeight']);
-    const textFontSize = parseFloat(textCssProperties['fontSize']);
-    const distanceBetweenBaselineAndBox = (textLineHeight - textFontSize) / 2;
-
-    const textElementY =
-      textContainer.offsetHeight - distanceBetweenBaselineAndBox;
-
-    textElement.setAttribute('x', '0');
-    textElement.setAttribute('y', textElementY.toString());
-    const computedStyles = window.getComputedStyle(textContainer);
-    for (let i = 0; i < computedStyles.length; i++) {
-      const styleName = computedStyles[i];
-      const styleValue = computedStyles.getPropertyValue(styleName);
-      textElement.style[styleName as any] = styleValue;
-    }
-
-    textElement.textContent = textContainer.textContent;
-    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-    const gradientElement = document.createElementNS(
-      'http://www.w3.org/2000/svg',
-      'linearGradient',
-    );
-    gradientElement.setAttribute('id', 'textGradient');
-    gradientElement.setAttribute('x1', '0%');
-    gradientElement.setAttribute('y1', '0%');
-    gradientElement.setAttribute('x2', '0%');
-    gradientElement.setAttribute('y2', '100%');
-
-    for (let i = 0; i < stops.length; i++) {
-      const stop = document.createElementNS(
-        'http://www.w3.org/2000/svg',
-        'stop',
-      );
-      stop.setAttribute('offset', `${stops[i].offset * 100}%`);
-      stop.style.stopColor = stops[i].color;
-      gradientElement.appendChild(stop);
-    }
-    textElement.style.fill = 'url(#textGradient)';
-    defs.appendChild(gradientElement);
-    svgElement.appendChild(defs);
-    svgElement.appendChild(textElement);
-    textContainer.style.display = 'none';
-    element.appendChild(svgElement);
     this.gradientStops = stops;
+  }
+
+  applyTextGradient(element: HTMLElement) {
+    if (!this.gradientStops) {
+      element.style.setProperty(GRADIENT_BACKGROUND_CSS_VARIABLE, '');
+      element.style.setProperty(GRADIENT_WEBKIT_TEXT_FILL_CSS_VARIABLE, '');
+      element.style.background = '';
+      element.style.backgroundClip = '';
+      element.style.webkitTextFillColor = '';
+      return;
+    }
+    const linearGradient = this.gradientStops
+      .map(({ offset, color }) => `${color} ${offset * 100}%`)
+      .join(', ');
+    element.style.setProperty(
+      GRADIENT_BACKGROUND_CSS_VARIABLE,
+      `linear-gradient(0deg, ${linearGradient})`,
+    );
+    element.style.setProperty(
+      GRADIENT_WEBKIT_TEXT_FILL_CSS_VARIABLE,
+      'transparent',
+    );
+    element.style.background = `var(${GRADIENT_BACKGROUND_CSS_VARIABLE})`;
+    element.style.backgroundClip = 'text';
+    element.style.webkitTextFillColor = `var(${GRADIENT_WEBKIT_TEXT_FILL_CSS_VARIABLE})`;
   }
   getTextContainer() {
     let attempt = 0;
@@ -298,205 +335,12 @@ export class MoveableTextObject extends MoveableObject implements EditableText {
     element.style.webkitTextFillColor = 'transparent';
   }
 
-  setShapeEffect(shapeEffect: MoveableTextShapeEffect) {
+  setShapeEffect(shapeEffect: ShapeEffect) {
     this.shapeEffect = shapeEffect;
   }
 
-  setShapeNone() {
-    const ul = this.getTextContainer();
-    const curveContainerId = `curve-effect-${this.id}`;
-    const curveContainer = document.getElementById(curveContainerId);
-    if (!curveContainer || !ul) return;
-    curveContainer.parentElement?.removeChild(curveContainer);
-    ul.style.visibility = 'unset';
-    if (ul.parentElement) {
-      ul.parentElement.style.position = 'unset';
-    }
-    document.removeEventListener(
-      'mousedown',
-      this.onClickOutsideCurveContainerElement.bind(this),
-    );
-  }
-
-  onInput(e: Event) {
-    const curveContainerId = `curve-effect-${this.id}`;
-    const curveContainer = document.getElementById(curveContainerId);
-    const ul = this.getTextContainer();
-    if (!curveContainer || !ul) return;
-    const target = e.target as HTMLInputElement;
-    const textContent = target.textContent?.trim() || '';
-    ul.textContent = textContent;
-    this.generateCurveElement();
-  }
-
-  onClickOutsideCurveContainerElement(e: Event) {
-    const curveContainerId = `curve-effect-${this.id}`;
-    const curveContainer = document.getElementById(curveContainerId);
-    if (!curveContainer) return;
-    const text = document.getElementById(
-      `text-layer-${this.id}`,
-    ) as HTMLElement;
-    const target = e.target as HTMLElement;
-    if (
-      target !== curveContainer &&
-      target?.parentElement !== curveContainer &&
-      text !== e.target
-    ) {
-      curveContainer.style.opacity = '1';
-      if (text) {
-        text.removeEventListener('input', this.onInput.bind(this));
-        document.body.removeChild(text);
-      }
-      document.removeEventListener(
-        'mousedown',
-        this.onClickOutsideCurveContainerElement.bind(this),
-      );
-    }
-  }
-
-  setCurveEffect(curve: number) {
-    const element = this.getElement();
-    if (!element) return false;
-    document.removeEventListener(
-      'mousedown',
-      this.onClickOutsideCurveContainerElement.bind(this),
-    );
-    // Save state
-    this.curve = curve;
-    const elId = this.id;
-    const ul = this.getTextContainer();
-    if (!ul) return false;
-    element.style.position = 'relative';
-    element.style.zIndex = '1';
-    ul.style.visibility = 'hidden';
-    this.generateCurveElement();
-    const curveContainer = document.getElementById(
-      `curve-effect-${elId}`,
-    ) as HTMLElement;
-
-    // Add event listener
-    curveContainer?.addEventListener(
-      'click',
-      this.onClickToCurveContainerElement.bind(this),
-    );
-  }
-
-  generateCurveElement() {
-    const element = this.getElement();
-    if (!element) return false;
-    const elId = this.id;
-    const ul = this.getTextContainer();
-    if (!ul) return false;
-    let curveContainer = document.getElementById(`curve-effect-${elId}`);
-    if (!curveContainer) {
-      curveContainer = document.createElement('div');
-      curveContainer.id = `curve-effect-${elId}`;
-      curveContainer.style.position = 'absolute';
-      curveContainer.style.top = '0';
-      curveContainer.style.left = '0';
-      curveContainer.style.zIndex = '1';
-      element.appendChild(curveContainer);
-    } else {
-      // Remove all child elements
-      while (curveContainer.firstChild) {
-        curveContainer.removeChild(curveContainer.firstChild);
-      }
-    }
-    // Logic calculate curve
-    const styles = window.getComputedStyle(element);
-    const text = ul.textContent?.trim() || '';
-    const fontSize = parseFloat(
-      styles.fontSize?.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
-    );
-    const width = parseFloat(
-      styles.width?.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
-    );
-    const Wi = width / text.length;
-    const R = (3.2 * fontSize) / Math.sin((Math.PI * (this.curve ?? 50)) / 180);
-    const dx = R - 3.2 * fontSize;
-    const alpha = this.calculateAlphaCurve((180 * width) / (Math.PI * R));
-    const delta = (180 * Wi) / (Math.PI * R);
-    let nextAlpha = alpha;
-    for (let i = 0; i < text.length; i++) {
-      const letter = text[i];
-      const span = document.createElement('span');
-      span.innerText = letter;
-      span.style.position = 'absolute';
-      const { x, y } = this.calculateCurveTranslate(nextAlpha, R, dx);
-      span.style.transform = `translate(${x}px, ${y}px) rotate(${
-        nextAlpha - 90
-      }deg)`;
-      nextAlpha = alpha + (i + 1) * delta;
-      if (nextAlpha > 360) {
-        nextAlpha -= 360;
-      }
-      curveContainer.appendChild(span);
-    }
-  }
-
-  calculateAlphaCurve(deg: number) {
-    let a = deg;
-    while (a > 360) {
-      a -= 360;
-    }
-    a = a / 2;
-    if (a <= 90) {
-      return 90 - a;
-    } else {
-      return 450 - a;
-    }
-  }
-  calculateCurveTranslate(
-    deg: number,
-    R: number,
-    dx: number,
-  ): { x: number; y: number } {
-    let x: number, y: number;
-    if (deg <= 90) {
-      x = R - R * Math.cos((deg * Math.PI) / 180);
-      y = R - R * Math.sin((deg * Math.PI) / 180);
-    } else if (deg <= 180) {
-      x = R + R * Math.sin(((deg - 90) * Math.PI) / 180);
-      y = R - R * Math.cos(((deg - 90) * Math.PI) / 180);
-    } else if (deg <= 270) {
-      x = R + R * Math.cos(((deg - 180) * Math.PI) / 180);
-      y = R + R * Math.sin(((deg - 180) * Math.PI) / 180);
-    } else {
-      x = R - R * Math.cos(((360 - deg) * Math.PI) / 180);
-      y = R + R * Math.sin(((360 - deg) * Math.PI) / 180);
-    }
-    return { x: x - dx, y };
-  }
-  onClickToCurveContainerElement(e: Event) {
-    const curveContainerId = `curve-effect-${this.id}`;
-    const curveContainer = document.getElementById(curveContainerId);
-    const element = this.getElement();
-    const ul = this.getTextContainer();
-    if (!curveContainer || !element || !ul) return;
-    const elementStyles = window.getComputedStyle(element);
-    const { x, y } = element.getBoundingClientRect();
-    let text = document.getElementById(`text-layer-${this.id}`) as HTMLElement;
-    if (!text) {
-      text = document.createElement('div');
-      text.id = `text-layer-${this.id}`;
-      text.contentEditable = 'true';
-      text.textContent = ul.textContent?.trim() || '';
-      text.style.fontSize = elementStyles.fontSize;
-      text.style.color = elementStyles.color;
-      text.style.fontFamily = elementStyles.fontFamily;
-      text.style.position = 'fixed';
-      text.style.top = `${y}px`;
-      text.style.left = `${x}px`;
-      text.style.minWidth = '20px';
-      text.style.minHeight = '20px';
-    }
-    curveContainer.style.opacity = '0.3';
-    document.body.appendChild(text);
-    document.addEventListener(
-      'mousedown',
-      this.onClickOutsideCurveContainerElement.bind(this),
-    );
-    text.addEventListener('input', this.onInput.bind(this));
+  updateShapeEffectOption(shapeEffectOption: TextEffectOptions) {
+    this.shapeEffect.setOption(shapeEffectOption);
   }
 
   setTextScale({ scaleX, scaleY }: { scaleX?: number; scaleY?: number }) {
@@ -515,10 +359,128 @@ export class MoveableTextObject extends MoveableObject implements EditableText {
       ) + ` scale(${this.scaleX}, ${this.scaleY})`;
   }
 
+  getFontFamily: () => string = () => {
+    return this.fontFamily;
+  };
+
+  setFontFamily: (fontFamily: string) => void = fontFamily => {
+    this.fontFamily = fontFamily;
+  };
+
+  setTextTransform: (textTransform: TextTransform) => void = textTransform => {
+    this.textTransform = textTransform;
+  };
+  getTextTransform: () => TextTransform = () => {
+    return this.textTransform;
+  };
+  isTextTransform: (textTransform: TextTransform) => boolean =
+    textTransform => {
+      return this.getTextTransform() === textTransform;
+    };
+  setFontWeight: (fontWeight: string) => void = fontWeight => {
+    this.fontWeight = fontWeight;
+  };
+  getFontWeight: () => string = () => {
+    return this.fontWeight;
+  };
+  isFontStyle: (style: TextFontStyle) => boolean = style => {
+    return this.getFontStyle() === style;
+  };
+  getFontStyle: () => TextFontStyle = () => {
+    return this.fontStyle;
+  };
+
+  getTextAlign: () => string = () => this.textAlign;
+  setTextAlign: (textAlign: string) => void = textAlign => {
+    this.textAlign = textAlign;
+  };
+  isTextAlign: (textAlign: string) => boolean = textAlign => {
+    return this.getTextAlign() === textAlign;
+  };
+
+  getTextListStyle: () => TextListStyle = () => this.textListStyle;
+  setTextListStyle: (listStyle: TextListStyle) => void = listStyle => {
+    console.debug({ listStyle });
+    this.textListStyle = listStyle;
+  };
+  isTextListStyle: (listStyle: TextListStyle) => boolean = listStyle => {
+    return this.getTextListStyle() === listStyle;
+  };
+
+  getTextDecoration: () => TextDecoration = () => this.textDecoration;
+  setTextDecoration: (key: keyof TextDecoration, state: boolean) => void = (
+    key,
+    state,
+  ) => {
+    this.textDecoration[key] = state;
+  };
+  isTextDecorationEnable: (key: keyof TextDecoration) => boolean = key =>
+    this.textDecoration[key];
+
+  setFontStyle: (fontStyle: TextFontStyle) => void = fontStyle => {
+    this.fontStyle = fontStyle;
+  };
+
+  applyTextDecorationEffect: () => void = () => {
+    const element = this.getElement();
+
+    if (element) {
+      const textDecorations: string[] = [];
+      if (this.getTextDecoration()['underline'])
+        textDecorations.push('underline');
+
+      if (this.getTextDecoration()['lineThrough'])
+        textDecorations.push('line-through');
+
+      element.style.textDecoration = textDecorations.join(' ');
+    }
+  };
+
+  applyTextListStyle: () => void = () => {
+    const listElement = this.getElement()?.querySelector('ul');
+    if (!listElement) return false;
+
+    if (this.isTextListStyle('none')) {
+      listElement.style.paddingLeft = '0';
+      listElement.style.listStyleType = 'none';
+    } else {
+      listElement.style.paddingLeft = '20px';
+      listElement.style.listStyleType = this.getTextListStyle();
+    }
+  };
+
+  applyFontEffect: () => void = () => {
+    const element = this.getElement();
+
+    if (element) {
+      element.style.fontFamily = this.getFontFamily();
+      element.style.fontWeight = this.getFontWeight();
+      element.style.fontStyle = this.getFontStyle();
+      element.style.textTransform = this.getTextTransform();
+      element.style.textAlign = this.getTextAlign();
+    }
+  };
+
   render() {
     const element = this.getElement();
-    if (!element) return;
+    const contenteditable = this.getContentEditable();
+    if (!element || !contenteditable) return;
+
+    if (this.styleEffect.varient === TextStyleEffect.OUTLINE) {
+      this.applyTextGradient(contenteditable);
+    } else {
+      this.applyTextGradient(element);
+    }
+
+    if (this.shapeEffect.varient !== TextShapeEffect.NONE) {
+      this.shapeEffect.styleEffect = this.styleEffect;
+    }
     this.styleEffect.apply(element);
+    this.shapeEffect.apply(element);
+    
     this.renderTextScale();
+    this.applyFontEffect();
+    this.applyTextDecorationEffect();
+    this.applyTextListStyle();
   }
 }

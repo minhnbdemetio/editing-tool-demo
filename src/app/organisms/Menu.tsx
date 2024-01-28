@@ -5,13 +5,14 @@ import { MenuContent } from './MenuContent';
 import { SideMenu } from './SideMenu';
 import clsx from 'clsx';
 import { twMerge } from '../utilities/tailwind';
-import { Add } from '../icons/Add';
 import { SideMenuItem } from './SideMenu/items';
 import { ObjectProperties } from './ObjectProperties';
 import { TransparentModal } from '../atoms/TransparentModal';
 import { SelectedObjectProperty } from './ObjectProperty/SelectedObjectProperty';
 import { useSelectedProperty } from '../store/selected-property';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
+import { Close, Widget, Add } from '@/app/icons';
+import { PageMenu } from './PageMenu';
 
 export const Menu: FC = () => {
   const [selectedSection, setSelectedSection] =
@@ -19,6 +20,7 @@ export const Menu: FC = () => {
 
   const [menuExpand, setMenuExpand] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
+  const [openPage, setOpenPage] = useState(false);
   const { activeMoveableObject } = useActiveMoveableObject();
   const { selectedProperty } = useSelectedProperty();
 
@@ -59,7 +61,7 @@ export const Menu: FC = () => {
 
       <div
         className={clsx('py-1 flex items-center fixed bottom-0 z-40 w-full', {
-          hidden: Boolean(selectedProperty),
+          hidden: Boolean(selectedProperty) || openPage,
         })}
       >
         <button
@@ -67,7 +69,7 @@ export const Menu: FC = () => {
             setOpen(o => !o);
           }}
           className={twMerge(
-            'bg-green-500 p-3 rounded-[50%] shadow-lg mx-2',
+            'bg-primary1 p-3 rounded-[50%] shadow-lg m-4',
             'desktop:hidden',
           )}
         >
@@ -76,10 +78,37 @@ export const Menu: FC = () => {
         {activeMoveableObject && <ObjectProperties />}
       </div>
 
-      <TransparentModal
-        className={twMerge('z-10 fixed bottom-0 max-h-[30%] h-fit overflow-auto', {
-          hidden: !selectedProperty,
+      <div
+        className={clsx('py-1 flex items-center fixed bottom-0 z-40', {
+          'right-0': !Boolean(openPage),
         })}
+      >
+        <button
+          onClick={() => {
+            setOpenPage(o => !o);
+          }}
+          className={twMerge(
+            'bg-default1 p-3 rounded-[50%] shadow-lg m-4',
+            'desktop:hidden',
+          )}
+        >
+          {openPage ? (
+            <Close className=" w-[24px] h-[24px]" />
+          ) : (
+            <Widget className=" w-[24px] h-[24px]" />
+          )}
+        </button>
+      </div>
+      <div className={twMerge('relative', { hidden: !openPage })}>
+        {openPage && <PageMenu onClose={() => setOpenPage(false)} />}
+      </div>
+      <TransparentModal
+        className={twMerge(
+          'z-10 fixed bottom-0 max-h-[30%] h-fit overflow-auto',
+          {
+            hidden: !selectedProperty,
+          },
+        )}
       >
         <SelectedObjectProperty />
       </TransparentModal>

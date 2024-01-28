@@ -6,6 +6,7 @@ import {
 import { useUpdateActiveTextShapeEffectCommand } from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
 import {
   useActiveTextObject,
+  useUpdateActiveTextShapeEffect,
   useUpdateTextStyleEffect,
 } from '@/app/hooks/useActiveMoveableObject';
 import { Image } from '@nextui-org/react';
@@ -35,8 +36,13 @@ import {
   TextStyleEffect,
 } from '@/app/lib/moveable/effects/text/StyleEffect';
 import { TextEffect } from '@/app/lib/moveable/effects/text/TextEffect';
+import {
+  ShapeEffect,
+  TextCurveEffect,
+  TextShapeEffect,
+} from '@/app/lib/moveable/effects/text/ShapeEffect';
 
-const NEW_TEXT_EFFECTS_STYLES: {
+const TEXT_EFFECTS_STYLES: {
   id: TextStyleEffect;
   createEffect: () => TextEffect;
   name: string;
@@ -116,18 +122,21 @@ const NEW_TEXT_EFFECTS_STYLES: {
 ];
 
 const TEXT_EFFECTS_SHAPES: {
-  id: MoveableTextShapeEffect;
+  id: TextShapeEffect;
+  createEffect: () => TextEffect;
   name: string;
   imgUrl: string;
   effectComponent?: FC;
 }[] = [
   {
-    id: 'none',
+    id: TextShapeEffect.NONE,
+    createEffect: () => new ShapeEffect(),
     name: 'None',
     imgUrl: '/text-effects/shapes/none.webp',
   },
   {
-    id: 'curve',
+    id: TextShapeEffect.CURVE,
+    createEffect: () => new TextCurveEffect(),
     name: 'Curve',
     imgUrl: '/text-effects/shapes/curve.webp',
     effectComponent: CurveEffect,
@@ -139,15 +148,15 @@ interface SpacingPropertyProps {}
 export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
   const activeText = useActiveTextObject();
   const [newEffectStyle, setNewEffectStyle] = useState(
-    activeText?.styleEffect?.varient || 'none',
+    activeText?.styleEffect?.varient || TextStyleEffect.NONE,
   );
 
-  const [effectShape, setEffectShape] = useState<MoveableTextShapeEffect>(
-    activeText?.shapeEffect || 'none',
+  const [effectShape, setEffectShape] = useState(
+    activeText?.shapeEffect?.varient || TextShapeEffect.NONE,
   );
 
   const renderNewEffectComponent = () => {
-    const EffectOptions = NEW_TEXT_EFFECTS_STYLES.find(
+    const EffectOptions = TEXT_EFFECTS_STYLES.find(
       style => style.id === newEffectStyle,
     )?.effectComponent;
     if (!EffectOptions) return <></>;
@@ -161,8 +170,8 @@ export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
     if (!EffectOptions) return <></>;
     return <EffectOptions />;
   };
-  const updateActiveTextShapeEffect = useUpdateActiveTextShapeEffectCommand();
   const updateNewTextStyleEffect = useUpdateTextStyleEffect();
+  const updateActiveTextShapeEffect = useUpdateActiveTextShapeEffect();
   return (
     <div className="w-full h-full">
       <div className="text-center mb-3">
@@ -170,7 +179,7 @@ export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
       </div>
       <p className="mb-[12px]">Style</p>
       <div className="flex gap-2 items-center flex-wrap">
-        {NEW_TEXT_EFFECTS_STYLES.map(style => (
+        {TEXT_EFFECTS_STYLES.map(style => (
           <div className="effect-styles" key={style.id}>
             <div
               className="group flex flex-col flex-1 gap-1 items-center w-[60px] cursor-pointer"
@@ -208,7 +217,7 @@ export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
             <div
               className="group flex flex-col flex-1 gap-1 items-center w-[60px] cursor-pointer"
               onClick={() => {
-                updateActiveTextShapeEffect(style.id, () =>
+                updateActiveTextShapeEffect(style.createEffect(), () =>
                   setEffectShape(style.id),
                 );
               }}
