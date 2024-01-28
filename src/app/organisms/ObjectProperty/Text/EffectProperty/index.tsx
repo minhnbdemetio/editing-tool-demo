@@ -1,9 +1,3 @@
-import { Button } from '@/app/atoms/Button';
-import {
-  MoveableTextShapeEffect,
-  MoveableTextStyleEffect,
-} from '@/app/lib/moveable/text/MoveableText';
-import { useUpdateActiveTextShapeEffectCommand } from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
 import {
   useActiveTextObject,
   useUpdateActiveTextShapeEffect,

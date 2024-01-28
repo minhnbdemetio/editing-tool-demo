@@ -15,6 +15,7 @@ import {
   TextEffectOptions,
 } from '../lib/moveable/effects/text/TextEffect';
 import { ShapeEffect } from '../lib/moveable/effects/text/ShapeEffect';
+import { TextVarient } from '../lib/moveable/constant/text';
 
 export const useActiveTextObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
@@ -202,7 +203,8 @@ export const useToggleUnderlineText = () => {
   const activeText = useActiveTextObject();
 
   const toggleUnderlineText = (callback?: Function) => {
-    activeText?.setTextDecoration(
+    if (!activeText) return false;
+    activeText.textDecoration.setTextDecoration(
       'underline',
       !activeText.isTextDecorationEnable('underline'),
     );
@@ -219,7 +221,8 @@ export const useToggleLineThroughText = () => {
   const activeText = useActiveTextObject();
 
   const toggleLineThroughText = (callback?: Function) => {
-    activeText?.setTextDecoration(
+    if (!activeText) return false;
+    activeText.textDecoration.setTextDecoration(
       'lineThrough',
       !activeText.isTextDecorationEnable('lineThrough'),
     );
@@ -298,10 +301,12 @@ export const useToggleListTypeNumberText = () => {
 export const useChangeTextSpacing = () => {
   const activeText = useActiveTextObject();
 
-  const handleChangeLetterSpacing = (fontSize: number, callback: Function) => {
-    const element = activeText?.getElement();
-    if (!element) return false;
-    element.style.letterSpacing = `${fontSize}px`;
+  const handleChangeLetterSpacing = (
+    letterSpacing: number,
+    callback: Function,
+  ) => {
+    activeText?.setLetterSpacing(letterSpacing);
+    activeText?.render();
     callback();
     return true;
   };
@@ -314,6 +319,7 @@ export const useChangeTextLineHeight = () => {
 
   const handleChangeLineHeight = (lineHeight: number, callback: Function) => {
     activeText?.setLineHeight(lineHeight);
+    activeText?.render();
     callback();
     return true;
   };
@@ -345,17 +351,10 @@ type EditableCSSProperty = keyof Omit<
 export const useChangeTextStyles = () => {
   const activeText = useActiveTextObject();
 
-  const handleChangeStyles = (
-    styles: CSSStyleDeclaration,
-    idStyles: string,
-    callback: Function,
-  ) => {
-    const element = activeText?.getElement();
-    if (!element) return false;
-    for (const [key, value] of Object.entries(styles)) {
-      element.style[key as EditableCSSProperty] = `${value}`;
-    }
-    element.setAttribute('stylesId', idStyles);
+  const handleChangeStyles = (textStyle: TextVarient, callback: Function) => {
+    if (!activeText) return false;
+    activeText.setTextStyle(textStyle);
+    activeText.render();
     callback();
     return true;
   };
@@ -501,6 +500,7 @@ export const useUpdateOpacity = () => {
   const handleChangeTextEffect = (opacity: number, cb: Function) => {
     if (!activeText) return false;
     activeText.setOpacity(opacity);
+    activeText.render();
 
     cb();
     return true;

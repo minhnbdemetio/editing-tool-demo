@@ -1,4 +1,3 @@
-import { MoveableTextShadow } from '@/app/lib/moveable/text/MoveableText';
 import {
   useActiveTextObject,
   useUpdateTextStyleEffectOptions,
@@ -7,10 +6,6 @@ import { Button, Slider, Tooltip } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
 import { EffectPickColor } from './EffectPickColor';
 import { ColorResult } from 'react-color';
-import {
-  TextShadowEffect,
-  TextStyleEffect,
-} from '@/app/lib/moveable/effects/text/StyleEffect';
 import { TEXT_SHADOW_DEFAULT_VALUE } from '@/app/lib/moveable/constant/text';
 import { TextEffectOptions } from '@/app/lib/moveable/effects/text/TextEffect';
 
