@@ -36,6 +36,8 @@ import { PhotoCropProperty } from './Photo/CropProperty';
 import { PhotoMoreProperty } from './Photo/More';
 import { ShapeFillColor } from './Shape/ShapeColorProperty';
 import { ShapeOutline } from './Shape/ShapeBorderProperty';
+import { ShapeAlignProperty } from './Shape/ShapeAlignProperty';
+import { ShapePositionProperty } from './Shape/ShapePositionProperty';
 
 import { ShapeTextFontProperty } from './Shape/ShapeTextFontProperty';
 import { ShapeTextColorProperty } from './Shape/ShapeTextColorProperty';
@@ -147,9 +149,21 @@ export const SelectedObjectProperty: FC = () => {
       case SelectedProperty.PhotoMore: {
         return <PhotoMoreProperty />;
       }
-      // case SelectedProperty.ShapeNudge: {
-      //   return <NudgeProperty />;
-      // }
+      case SelectedProperty.ShapeNudge: {
+        return <NudgeProperty />;
+      }
+      case SelectedProperty.ShapePosition: {
+        return <ShapePositionProperty />;
+      }
+      case SelectedProperty.ShapeColor: {
+        return <ShapeFillColor />;
+      }
+      case SelectedProperty.ShapeOutline: {
+        return <ShapeOutline />;
+      }
+      case SelectedProperty.ShapeAlign: {
+        return <ShapeAlignProperty />;
+      }
       // case SelectedProperty.ShapeLayer: {
       //   return <LayerProperty />;
       // }
@@ -183,10 +197,6 @@ export const SelectedObjectProperty: FC = () => {
       // case SelectedProperty.ShapeFlip: {
       //   return <PhotoFlipProperty />;
       // }
-      // case SelectedProperty.ShapeAlign: {
-      //   return <PhotoAlignProperty />;
-      // }
-
       // case SelectedProperty.ShapeCrop: {
       //   return <PhotoCropProperty />;
       // }

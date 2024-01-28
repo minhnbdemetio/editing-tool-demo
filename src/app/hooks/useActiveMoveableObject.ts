@@ -96,7 +96,6 @@ export const useUpdateTextColor = () => {
 
   return (color: string) => {
     activeText?.setTextColor(color);
-    activeText?.render();
   };
 };
 
@@ -105,7 +104,7 @@ export const useUpdateShapeColor = () => {
 
   return (color: string) => {
     activeShape?.setColor(color);
-    activeShape?.render();
+    // activeShape?.render();
   };
 };
 
@@ -113,8 +112,7 @@ export const useUpdateShapeBorderColor = () => {
   const activeShape = useActiveMoveableShapeObject();
 
   return (color: string, borderWidth: number) => {
-    activeShape?.setBorder(color, borderWidth);
-    // activeShape?.render();
+    activeShape?.setOutLine(color, borderWidth);
   };
 };
 
