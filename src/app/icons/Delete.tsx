@@ -1,4 +1,5 @@
 import { IconProps } from '../types';
+import { twMerge } from '../utilities/tailwind';
 
 export const Delete: React.FC<IconProps> = ({ className }) => {
   return (
@@ -7,6 +8,7 @@ export const Delete: React.FC<IconProps> = ({ className }) => {
       width="24"
       height="24"
       viewBox="0 0 24 24"
+      className={twMerge('w-6 h-6', className)}
     >
       <path
         fill="currentColor"
