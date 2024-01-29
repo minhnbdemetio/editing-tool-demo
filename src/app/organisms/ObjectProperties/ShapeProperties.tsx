@@ -59,6 +59,21 @@ const SHAPE_PROPERTIES = [
     value: SelectedProperty.ShapePosition,
     isShowButton: checkLockedObject,
   },
+  {
+    label: 'Opacity',
+    value: SelectedProperty.ShapeOpacity,
+    isShowButton: checkLockedObject,
+  },
+  {
+    label: 'Layer',
+    value: SelectedProperty.ShapeLayer,
+    isShowButton: () => true,
+  },
+  {
+    label: 'More',
+    value: SelectedProperty.ShapeMore,
+    isShowButton: () => true,
+  },
 ];
 
 export const ShapeProperties: FC = () => {

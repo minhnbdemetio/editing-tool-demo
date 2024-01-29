@@ -43,6 +43,7 @@ import { ShapeTextFontProperty } from './Shape/ShapeTextFontProperty';
 import { ShapeTextColorProperty } from './Shape/ShapeTextColorProperty';
 import { ShapeFontSizeProperty } from './Shape/ShapeFontSizeProperty';
 import { ShapeFormatProperty } from './Shape/ShapeFormatProperty';
+import { ShapeMoreProperty } from './Shape/ShapeMoreProperty';
 
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
@@ -164,18 +165,12 @@ export const SelectedObjectProperty: FC = () => {
       case SelectedProperty.ShapeAlign: {
         return <ShapeAlignProperty />;
       }
-      // case SelectedProperty.ShapeLayer: {
-      //   return <LayerProperty />;
-      // }
-      // case SelectedProperty.ShapeManualFilter: {
-      //   return <ManuallyFilterProperty />;
-      // }
-      // case SelectedProperty.ShapeOpacity: {
-      //   return <OpacityProperty />;
-      // }
-      // case SelectedProperty.ShapeFilter: {
-      //   return <FiltersProperty />;
-      // }
+      case SelectedProperty.ShapeLayer: {
+        return <LayerProperty />;
+      }
+      case SelectedProperty.ShapeOpacity: {
+        return <OpacityProperty />;
+      }
       case SelectedProperty.ShapeColor: {
         return <ShapeFillColor />;
       }
@@ -194,15 +189,9 @@ export const SelectedObjectProperty: FC = () => {
       case SelectedProperty.ShapeTextFormat: {
         return <ShapeFormatProperty />;
       }
-      // case SelectedProperty.ShapeFlip: {
-      //   return <PhotoFlipProperty />;
-      // }
-      // case SelectedProperty.ShapeCrop: {
-      //   return <PhotoCropProperty />;
-      // }
-      // case SelectedProperty.ShapeMore: {
-      //   return <PhotoMoreProperty />;
-      // }
+      case SelectedProperty.ShapeMore: {
+        return <ShapeMoreProperty  />;
+      }
       default: {
         return null;
       }
