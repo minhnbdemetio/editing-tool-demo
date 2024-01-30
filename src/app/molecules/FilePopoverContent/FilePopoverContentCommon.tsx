@@ -1,16 +1,22 @@
 import React, { useState } from 'react';
-import { Archive, Book, Download, Open, Rule } from '@/app/icons';
-import { EditableTextField } from '../atoms/EditableTextField';
-import { MenuGroup } from '../atoms/MenuGroup';
-import { MenuItem } from '../atoms/MenuItem';
-import { Button } from '../atoms/Button';
+import { Archive, Book, Open, Ruler1 } from '@/app/icons';
+import { EditableTextField } from '../../atoms/EditableTextField';
+import { MenuGroup } from '../../atoms/MenuGroup';
+import { MenuItem } from '../../atoms/MenuItem';
+import { Button } from '../../atoms/Button';
 import { Switch, Textarea } from '@nextui-org/react';
+import { FileContentActive } from '.';
 
-export const FilePopoverContent: React.FC = () => {
+interface FilePopoverContentCommonProps {
+  setFileContentActive: (value: FileContentActive) => void;
+}
+
+export const FilePopoverContentCommon: React.FC<
+  FilePopoverContentCommonProps
+> = ({ setFileContentActive }) => {
   const [isPreview, setIsPreview] = useState<boolean>(true);
-
   return (
-    <div className=" h-full overflow-auto w-full">
+    <>
       <MenuGroup>
         <MenuItem hover={false}>
           <EditableTextField fallbackValue="Please enter a title" />
@@ -27,6 +33,7 @@ export const FilePopoverContent: React.FC = () => {
               color="secondary"
               className="min-w-[135px]"
               startContent={<Book />}
+              onClick={() => setFileContentActive('request')}
             >
               Request
             </Button>
@@ -42,6 +49,7 @@ export const FilePopoverContent: React.FC = () => {
               color="secondary"
               className="min-w-[135px]"
               startContent={<Open />}
+              onClick={() => setFileContentActive('editPc')}
             >
               Edit on PC
             </Button>
@@ -54,6 +62,7 @@ export const FilePopoverContent: React.FC = () => {
               color="secondary"
               className="min-w-[135px]"
               startContent={<Archive />}
+              onClick={() => setFileContentActive('load')}
             >
               Load
             </Button>
@@ -67,7 +76,8 @@ export const FilePopoverContent: React.FC = () => {
             <Button
               color="secondary"
               className="min-w-[135px]"
-              startContent={<Rule />}
+              startContent={<Ruler1 />}
+              onClick={() => setFileContentActive('edit')}
             >
               Edit
             </Button>
@@ -100,6 +110,6 @@ export const FilePopoverContent: React.FC = () => {
           </div>
         </MenuItem>
       </MenuGroup>
-    </div>
+    </>
   );
 };

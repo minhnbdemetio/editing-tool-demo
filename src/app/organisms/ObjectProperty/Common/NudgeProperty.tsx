@@ -1,6 +1,7 @@
 import { MobileNudgeButtons } from '@/app/atoms/MobileNudgeButtons';
 import { useChangeMoveableElementTransformCommand } from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
 import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
+import { useDesign } from '@/app/store/design-objects';
 import { parseTranslateString } from '@/app/utilities/utils';
 import { FC } from 'react';
 
@@ -10,6 +11,7 @@ export const NudgeProperty: FC<NudgePropertyProps> = ({}) => {
   const changeTransform = useChangeMoveableElementTransformCommand();
   const { activeMoveableObject } = useActiveMoveableObject();
   const element = activeMoveableObject?.getElement();
+  const { moveable } = useDesign();
   const handleChangeTransform = (translateX: number, translateY: number) => {
     const beforeTransForm = parseTranslateString(
       element?.style?.transform || '0',
@@ -19,6 +21,7 @@ export const NudgeProperty: FC<NudgePropertyProps> = ({}) => {
       translateY + beforeTransForm.translateY,
       () => {},
     );
+    moveable?.updateRect();
   };
 
   return (

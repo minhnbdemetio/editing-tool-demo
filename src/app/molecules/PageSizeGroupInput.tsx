@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { LockClosed, LockOpen } from '../icons';
+import { IconLink, IconUnLink, LockClosed, LockOpen } from '../icons';
 import { UNITS } from '../constants/unit-constants';
 import { PageSizeUnits } from '../types';
 import { convertFrameSize } from '../utilities/units';
@@ -122,57 +122,59 @@ export const PageSizeGroupInput: React.FC<PageSizeGroupInputProps> = ({
 
   return (
     <>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 justify-between">
         {label && (
-          <p className="text-md font-normal text-black-500 flex-auto">
+          <p className="text-[#48505F] text-xs font-normal leading-normal">
             {label}
           </p>
         )}
-        <Tooltip
-          showArrow
-          placement="top"
-          isOpen={!!errors.width}
-          content={errors.width}
-        >
-          <input
-            value={inputWidth}
-            type="number"
-            onChange={handleChangeWidth}
-            className="w-[72px] border-[1px] border-border border-solid text-md rounded-sm font-normal text-black-500  p-2"
-          />
-        </Tooltip>
-        <button type="button" onClick={() => setRatioLocked(!ratioLocked)}>
-          {ratioLocked ? (
-            <LockClosed className="w-[14px] h-[14px]" />
-          ) : (
-            <LockOpen className="w-[14px] h-[14px]" />
-          )}
-        </button>
-        <Tooltip
-          showArrow
-          placement="top"
-          isOpen={!!errors.height}
-          content={errors.height}
-        >
-          <input
-            value={inputHeight}
-            type="number"
-            onChange={handleChangeHeight}
-            className="w-[72px] border-[1px] border-border border-solid text-md rounded-sm font-normal text-black-500  p-2"
-          />
-        </Tooltip>
+        <div className="flex items-center gap-2">
+          <Tooltip
+            showArrow
+            placement="top"
+            isOpen={!!errors.width}
+            content={errors.width}
+          >
+            <input
+              value={inputWidth}
+              type="number"
+              onChange={handleChangeWidth}
+              className="w-14 h-8 border-[1px] border-border border-solid text-sm rounded-lg font-normal text-black-500  p-2"
+            />
+          </Tooltip>
+          <button type="button" onClick={() => setRatioLocked(!ratioLocked)}>
+            {ratioLocked ? (
+              <IconLink className="w-[20px] h-[20px]" />
+            ) : (
+              <IconUnLink className="w-[20px] h-[20px]" />
+            )}
+          </button>
+          <Tooltip
+            showArrow
+            placement="top"
+            isOpen={!!errors.height}
+            content={errors.height}
+          >
+            <input
+              value={inputHeight}
+              type="number"
+              onChange={handleChangeHeight}
+              className="w-14 h-8 border-[1px] border-border border-solid text-sm rounded-lg font-normal text-black-500  p-2"
+            />
+          </Tooltip>
 
-        <select
-          value={unit}
-          onChange={handleChangeUnit}
-          className="w-[72px] border-[1px] border-border border-solid text-md rounded-sm font-normal text-black-500 p-2"
-        >
-          {Object.values(UNITS).map(u => (
-            <option key={u} value={u}>
-              {u}
-            </option>
-          ))}
-        </select>
+          <select
+            value={unit}
+            onChange={handleChangeUnit}
+            className="w-14 h-8 border-[1px] border-border border-solid text-sm rounded-lg font-normal text-black-500  p-2"
+          >
+            {Object.values(UNITS).map(u => (
+              <option key={u} value={u}>
+                {u}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
     </>
   );

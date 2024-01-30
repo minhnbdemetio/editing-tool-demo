@@ -1,14 +1,16 @@
 import { useChangeMoveableTextStylesCommand } from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
+import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
 import { Check } from '@/app/icons';
 import { Document } from '@/app/icons/Document';
+import { TextVarient } from '@/app/lib/moveable/constant/text';
 import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
 import { FC, useEffect, useState } from 'react';
 
 interface FontPropertyProps {}
-const stylesArray = [
+const stylesArray: { id: TextVarient; title: string; style: any }[] = [
   {
     title: 'Tiêu đề',
-    id: 'heading',
+    id: TextVarient.HEADING,
     style: {
       fontWeight: '700',
       fontStyle: 'normal',
@@ -19,7 +21,7 @@ const stylesArray = [
   },
   {
     title: 'Tiêu đề phụ',
-    id: 'heading2',
+    id: TextVarient.SUBHEADING,
     style: {
       fontWeight: '700',
       fontStyle: 'normal',
@@ -30,7 +32,7 @@ const stylesArray = [
   },
   {
     title: 'Nội dung',
-    id: 'content',
+    id: TextVarient.BODY,
     style: {
       fontWeight: '400',
       fontStyle: 'normal',
@@ -43,22 +45,11 @@ const stylesArray = [
 ];
 
 export const StylesProperty: FC<FontPropertyProps> = ({}) => {
-  const { activeMoveableObject } = useActiveMoveableObject();
+  const activeText = useActiveTextObject();
   const handleChangeStyles = useChangeMoveableTextStylesCommand();
-  const [activeStyle, setActiveStyles] = useState<string>('');
-  const activeElement = activeMoveableObject?.getElement();
-
-  useEffect(() => {
-    if (activeElement) {
-      setActiveStyles(activeElement?.getAttribute('stylesId') || '');
-    }
-  }, [activeElement]);
-
-  const handleChangeStyle = (style: CSSStyleDeclaration, id: string) => {
-    handleChangeStyles(style, id, () => {
-      setActiveStyles(id);
-    });
-  };
+  const [activeStyle, setActiveStyles] = useState<TextVarient>(
+    activeText?.getTextStyle() || TextVarient.HEADING,
+  );
 
   return (
     <div className="w-full h-full">
@@ -75,7 +66,7 @@ export const StylesProperty: FC<FontPropertyProps> = ({}) => {
             key={item.id}
             className="my-2 cursor-pointer flex justify-between items-center hover:bg-[#e4e4e4]"
             onClick={() =>
-              handleChangeStyle(item.style as CSSStyleDeclaration, item.id)
+              handleChangeStyles(item.id, () => setActiveStyles(item.id))
             }
           >
             <span style={item.style}>{item.title}</span>

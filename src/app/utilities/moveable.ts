@@ -3,7 +3,7 @@ import { MoveableBodyTextObject } from '../lib/moveable/text/MoveableBodyText';
 import { MoveableHeadingTextObject } from '../lib/moveable/text/MoveableHeadingText';
 import { MoveableLineObject } from '../lib/moveable/MoveableLine';
 import { MoveableObject } from '../lib/moveable/MoveableObject';
-import { MoveablePhoto } from '../lib/moveable/MoveablePhoto';
+import { MoveablePhoto } from '../lib/moveable/photo/MoveablePhoto';
 import { MoveableSubheadingTextObject } from '../lib/moveable/text/MoveableSubheadingText';
 import { MoveableTextObject } from '../lib/moveable/text/MoveableText';
 import { MoveableShape } from '../lib/moveable/shape/MoveableShape';

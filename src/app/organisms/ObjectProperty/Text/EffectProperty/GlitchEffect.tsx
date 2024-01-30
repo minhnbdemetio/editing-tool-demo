@@ -1,4 +1,3 @@
-import { MoveableTextShadow } from '@/app/lib/moveable/text/MoveableText';
 import {
   useActiveTextObject,
   useUpdateTextStyleEffectOptions,

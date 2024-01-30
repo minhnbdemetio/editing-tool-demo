@@ -14,7 +14,7 @@ export const SolidLineStyle: React.FC<IconProps> = ({ className }) => {
         y1="50%"
         y2="50%"
         stroke="currentColor"
-        stroke-width="2"
+        strokeWidth="2"
         shape-rendering="crispEdges"
       ></line>
     </svg>

@@ -1,9 +1,13 @@
+import { TextVarient } from '../constant/text';
 import { MoveableTextObject } from './MoveableText';
 
 export class MoveableHeadingTextObject extends MoveableTextObject {
   constructor(options?: { id: string; htmlString: string }) {
     super(options);
-    this.variant = 'heading';
+    this.variant = TextVarient.HEADING;
+    this.fontSize = 30;
+    this.lineHeight = this.fontSize * 1.5;
+    this.textStyle = TextVarient.HEADING;
   }
   clone(options?: {
     htmlString: string;

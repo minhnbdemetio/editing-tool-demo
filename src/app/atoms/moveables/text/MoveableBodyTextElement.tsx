@@ -3,6 +3,7 @@ import { FC, useEffect, useRef } from 'react';
 import clsx from 'clsx';
 import { MoveableBodyTextObject } from '@/app/lib/moveable/text/MoveableBodyText';
 import { TEXT_INNER_ELEMENTS } from '@/app/lib/moveable/constant/text';
+import { OBJECT_INNER_ELEMENTS } from '@/app/lib/moveable/constant/object';
 
 interface MoveableTextProps {
   object: MoveableBodyTextObject;
@@ -39,17 +40,22 @@ export const MoveableBodyTextElement: FC<MoveableTextProps> = ({
   return (
     <div
       id={object.id}
-      className={clsx('absolute w-fit hidden text-sm', className)}
+      className={clsx('absolute w-fit hidden text-[12px]', className)}
       style={{ writingMode: 'horizontal-tb' }}
     >
-      <ul
-        ref={textContainerRef}
-        id={`${TEXT_INNER_ELEMENTS.CONTAINER}-${object.id}`}
-        suppressContentEditableWarning
-        contentEditable
+      <div
+        className="w-full h-full"
+        id={`${OBJECT_INNER_ELEMENTS.FLIPPER}-${object.id}`}
       >
-        <li>Add a body text</li>
-      </ul>
+        <ul
+          ref={textContainerRef}
+          id={`${TEXT_INNER_ELEMENTS.CONTAINER}-${object.id}`}
+          suppressContentEditableWarning
+          contentEditable
+        >
+          <li>Add a body text</li>
+        </ul>
+      </div>
     </div>
   );
 };

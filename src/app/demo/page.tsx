@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '../atoms/Button';
-import { Setting } from '@/app/icons';
+import { Setting, EyeSlash } from '@/app/icons';
 import * as IconComponents from '../icons';
 
 export default function Demo() {
@@ -27,7 +27,11 @@ export default function Demo() {
         {listButton?.map(button => {
           return (
             <div className="flex gap-1" key={button}>
-              <Button color={button} className="w-40">
+              <Button
+                color={button}
+                className="w-40"
+                startContent={<EyeSlash />}
+              >
                 {button.charAt(0).toUpperCase() + button.slice(1)}
               </Button>
               <Button color={button} className="w-40" isDisabled>

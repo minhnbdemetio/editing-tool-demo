@@ -12,8 +12,8 @@ export const LineTypeStraight: React.FC<IconProps> = ({ className }) => {
       <path
         d="m17.5 6.5-11 11"
         stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
       ></path>
       <rect
         x="16.75"
@@ -22,7 +22,7 @@ export const LineTypeStraight: React.FC<IconProps> = ({ className }) => {
         height="3.5"
         rx="1.75"
         stroke="currentColor"
-        stroke-width="1.5"
+        strokeWidth="1.5"
       ></rect>
       <rect
         x="3.75"
@@ -31,7 +31,7 @@ export const LineTypeStraight: React.FC<IconProps> = ({ className }) => {
         height="3.5"
         rx="1.75"
         stroke="currentColor"
-        stroke-width="1.5"
+        strokeWidth="1.5"
       ></rect>
     </svg>
   );
