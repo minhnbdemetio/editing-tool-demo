@@ -319,9 +319,7 @@ export const useToggleListTypeNumberText = (
   return toggleListTypeText;
 };
 
-export const useChangeTextSpacing = () => {
-  const activeText = useActiveTextObject();
-
+export const useChangeTextSpacing = (activeText: MoveableTextObject | null) => {
   const handleChangeLetterSpacing = (
     letterSpacing: number,
     callback: Function,
@@ -335,9 +333,9 @@ export const useChangeTextSpacing = () => {
   return handleChangeLetterSpacing;
 };
 
-export const useChangeTextLineHeight = () => {
-  const activeText = useActiveTextObject();
-
+export const useChangeTextLineHeight = (
+  activeText: MoveableTextObject | null,
+) => {
   const handleChangeLineHeight = (lineHeight: number, callback: Function) => {
     activeText?.setLineHeight(lineHeight);
     activeText?.render();
@@ -348,9 +346,9 @@ export const useChangeTextLineHeight = () => {
   return handleChangeLineHeight;
 };
 
-export const useChangeTextTransformOrigin = () => {
-  const activeText = useActiveTextObject();
-
+export const useChangeTextTransformOrigin = (
+  activeText: MoveableTextObject | null,
+) => {
   const handleChangeTransformOrigin = (
     transformDirection: TransformDirection,
     callback?: Function,
@@ -658,8 +656,9 @@ export const useSetBackgroundImage = () => {
   return setBackgroundImage;
 };
 
-export const useUpdateTextStretchFont = () => {
-  const activeText = useActiveTextObject();
+export const useUpdateTextStretchFont = (
+  activeText: MoveableTextObject | null,
+) => {
   const updateTextStretchFont = (stretchFont: number, callback?: Function) => {
     if (!activeText) return false;
     activeText.setTextScale({ scaleX: stretchFont / 100 });

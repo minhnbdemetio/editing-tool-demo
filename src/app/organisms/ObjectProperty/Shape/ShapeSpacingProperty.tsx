@@ -1,5 +1,6 @@
 import { Button } from '@/app/atoms/Button';
 import {
+  useActiveMoveableShapeObject,
   useChangeTextLineHeight,
   useChangeTextSpacing,
   useChangeTextTransformOrigin,
@@ -19,7 +20,7 @@ import { Slider, Tooltip } from '@nextui-org/react';
 import { FC, useState } from 'react';
 import { DEFAULT_TEXT_SCALE } from '@/app/lib/moveable/constant/text';
 
-interface SpacingPropertyProps {}
+interface ShapeSpacingPropertyProps {}
 
 const SPACING_STEP = 1;
 const MAX_SPACING = 12;
@@ -28,24 +29,31 @@ const LINE_HEIGHT_STEP = 2;
 const MIN_LINE_HEIGHT = 22;
 const MAX_LINE_HEIGHT = 120;
 
-export const SpacingProperty: FC<SpacingPropertyProps> = ({}) => {
-  const activeText = useActiveTextObject();
+export const ShapeSpacingProperty: FC<ShapeSpacingPropertyProps> = ({}) => {
+  const shape = useActiveMoveableShapeObject();
   const [spacing, setSpacing] = useState<number | undefined>(
-    activeText?.getLetterSpacing() || 0,
+    shape?.shapeText.getLetterSpacing() || 0,
   );
   const [lineHeight, setLineHeight] = useState<number | undefined>(
-    activeText?.getLineHeight(),
+    shape?.shapeText.getLineHeight(),
   );
   const [stretchFont, setStretchFont] = useState<number>(
-    (activeText?.scaleX || DEFAULT_TEXT_SCALE) * 100,
+    (shape?.shapeText.scaleX || DEFAULT_TEXT_SCALE) * 100,
   );
   const { moveable } = useDesign();
 
-  const handleChangeLetterSpacing = useChangeTextSpacing(activeText);
-  const handleChangeLineHeight = useChangeTextLineHeight(activeText);
-  const handleChangeMoveableTextTransformOrigin =
-    useChangeTextTransformOrigin(activeText);
-  const handleUpdateTextStretchFont = useUpdateTextStretchFont(activeText);
+  const handleChangeLetterSpacing = useChangeTextSpacing(
+    shape?.shapeText || null,
+  );
+  const handleChangeLineHeight = useChangeTextLineHeight(
+    shape?.shapeText || null,
+  );
+  const handleChangeMoveableTextTransformOrigin = useChangeTextTransformOrigin(
+    shape?.shapeText || null,
+  );
+  const handleUpdateTextStretchFont = useUpdateTextStretchFont(
+    shape?.shapeText || null,
+  );
   return (
     <div className="w-full h-full">
       <div className="text-center mb-3">
