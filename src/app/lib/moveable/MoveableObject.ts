@@ -42,6 +42,8 @@ export abstract class MoveableObject
 
     this.width = options?.width || 100;
     this.height = options?.height || 100;
+
+    console.log('idddd', this.id);
   }
 
   createElementFromJSON(jsonString: string) {

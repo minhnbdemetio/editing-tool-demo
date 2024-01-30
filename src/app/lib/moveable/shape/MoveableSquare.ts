@@ -2,6 +2,7 @@ import { MoveableObject, ObjectType } from '../MoveableObject';
 import { MoveableShapeType } from '../editable/EditableShape';
 import { Corner, Square } from '../svg/Square';
 import { MoveableShape } from './MoveableShape';
+import { v4 as uuidv4 } from 'uuid';
 
 export class MoveableSquare extends MoveableShape {
   public corners?: {
@@ -44,7 +45,14 @@ export class MoveableSquare extends MoveableShape {
   clone(
     options?: { htmlString: string; id: string } | undefined,
   ): MoveableObject {
+    if (options) {
+      return new MoveableSquare({
+        ...this.toJSON(),
+        id: uuidv4(),
+      });
+    }
     const clonedData = this.cloneData();
+    console.log('idddddd', uuidv4());
 
     return new MoveableSquare({
       ...this.toJSON(),
