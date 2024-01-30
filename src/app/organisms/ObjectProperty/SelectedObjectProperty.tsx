@@ -44,6 +44,7 @@ import { ShapeTextColorProperty } from './Shape/ShapeTextColorProperty';
 import { ShapeFontSizeProperty } from './Shape/ShapeFontSizeProperty';
 import { ShapeFormatProperty } from './Shape/ShapeFormatProperty';
 import { ShapeMoreProperty } from './Shape/ShapeMoreProperty';
+import { ShapeSpacingProperty } from './Shape/ShapeSpacingProperty';
 
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
@@ -190,7 +191,10 @@ export const SelectedObjectProperty: FC = () => {
         return <ShapeFormatProperty />;
       }
       case SelectedProperty.ShapeMore: {
-        return <ShapeMoreProperty  />;
+        return <ShapeMoreProperty />;
+      }
+      case SelectedProperty.ShapeTextSpacing: {
+        return <ShapeSpacingProperty />;
       }
       default: {
         return null;

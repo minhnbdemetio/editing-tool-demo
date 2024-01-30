@@ -45,6 +45,11 @@ const SHAPE_PROPERTIES = [
     isShowButton: checkLockedObject,
   },
   {
+    label: 'Spacing',
+    value: SelectedProperty.ShapeTextSpacing,
+    isShowButton: checkLockedObject,
+  },
+  {
     label: 'Nudge',
     value: SelectedProperty.ShapeNudge,
     isShowButton: checkLockedObject,
