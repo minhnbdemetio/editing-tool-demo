@@ -16,7 +16,6 @@
   "dependencies": {
     "@nextui-org/react": "^2.2.9",
     "@popperjs/core": "^2.11.8",
-    "@svgdotjs/svg.js": "^3.2.0",
     "axios": "^1.6.2",
     "clsx": "^2.0.0",
     "colorthief": "^2.4.0",

@@ -1,11 +1,20 @@
-import React, { useState } from 'react';
-import { FontStyle } from '../lib/moveable/text/MoveableText';
+import React, { CSSProperties, useState } from 'react';
 import { Check, ChevronLeft, ChevronRight } from '../icons';
+import { TextFontStyle } from '../lib/moveable/text/MoveableText';
 
+export type FontStyle = {
+  value: string;
+  style: Partial<CSSProperties>;
+};
 interface ListFontsProps {
   fontFamily: string | undefined;
-  fontStyle: FontStyle | undefined;
-  onChange: (fontFamily: string, fontStyle: FontStyle) => void;
+  fontStyle: TextFontStyle | undefined;
+  fontWeight: string | undefined;
+  onChange: (
+    fontFamily: string,
+    fontStyle: TextFontStyle,
+    fontWeight: string,
+  ) => void;
 }
 
 // Todo: data Test, call api get DB
@@ -128,22 +137,35 @@ type FontFamily = {
   styles: FontStyle[];
 };
 
+const getFontSizeString = (fontWeight?: string, fontSize?: string) => {
+  return `${fontWeight}:${fontSize}`;
+};
+
 export const ListFonts: React.FC<ListFontsProps> = ({
   fontFamily,
   fontStyle,
+  fontWeight,
   onChange,
 }) => {
   const [activeFont, setActiveFont] = useState<string>(fontFamily || '');
+  const [activeFontWeight, setActiveFontWeight] = useState<string>(
+    fontWeight || '',
+  );
   const [activeFontStyle, setActiveFontStyle] = useState<string>(
-    fontStyle?.value || '',
+    fontStyle || '',
   );
   const [showFontStyle, setShowFontStyle] = useState<FontFamily | null>(null);
 
   const onChangeFontStyle = (fontFamily: string, fontStyle: FontStyle) => {
-    setActiveFontStyle(fontStyle.value);
+    setActiveFontStyle(fontStyle.style.fontStyle || '');
+    setActiveFontWeight(fontStyle.style.fontWeight?.toString() || '');
     setActiveFont(fontFamily);
 
-    onChange(fontFamily, fontStyle);
+    onChange(
+      fontFamily,
+      (fontStyle.style.fontStyle || 'normal') as any,
+      fontStyle.style.fontWeight || ('400' as any),
+    );
   };
 
   return (
@@ -173,7 +195,11 @@ export const ListFonts: React.FC<ListFontsProps> = ({
                   }
                 >
                   <div className="w-6 h-6 mr-3">
-                    {activeFontStyle === fontStyle.value && <Check />}
+                    {getFontSizeString(activeFontWeight, activeFontStyle) ===
+                      getFontSizeString(
+                        fontStyle.style.fontWeight as any,
+                        fontStyle.style.fontStyle,
+                      ) && <Check />}
                   </div>
                   <span
                     style={{

@@ -1,4 +1,3 @@
-import { SVG } from '@svgdotjs/svg.js';
 import { MoveableObject, ObjectType } from '../MoveableObject';
 import { MoveableShapeType } from '../editable/EditableShape';
 import { Pentagon } from '../svg/Pentagon';

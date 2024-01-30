@@ -89,6 +89,7 @@ const PHOTO_MENU_PROPERTIES = [
 export const PhotoMenuProperties: FC = () => {
   const { setSelectedProperty } = useSelectedProperty();
   const activePhotoObject = useActivePhotoObject();
+
   const [photoProperties, setPhotoProperties] = useState(
     PHOTO_MENU_PROPERTIES.filter(
       item => activePhotoObject && item.isShowButton(activePhotoObject),

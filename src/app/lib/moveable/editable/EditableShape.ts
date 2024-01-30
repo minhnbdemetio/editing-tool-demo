@@ -1,4 +1,5 @@
 import { SvgShape } from '../svg/SvgShape';
+import { PluggableText } from '../text/PluggableText';
 import { Editable } from './Editable';
 
 export enum MoveableShapeType {
@@ -16,12 +17,19 @@ export enum MoveableShapeType {
   Arrow,
 }
 
-export interface EditableShape extends Editable {
+export interface TextShape {
+  shapeText: PluggableText;
+  textWrapperId: string;
+
+  editShapeText: () => void;
+}
+
+export interface EditableShape extends Editable, TextShape {
   shapeType: MoveableShapeType;
   shapeCornerRounding: number;
   shapeColor: string;
   shapeOutline: string;
   shapeShadow: string;
-  shapeText: undefined;
+
   getShape(): SvgShape;
 }
