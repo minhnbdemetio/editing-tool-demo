@@ -4,6 +4,7 @@ import {
   usePasteObject,
   useToggleLock,
 } from '@/app/hooks/useActiveMoveableObject';
+import { Duplicate } from '@/app/icons';
 import { Copy } from '@/app/icons/Copy';
 import { Delete } from '@/app/icons/Delete';
 import { Lock } from '@/app/icons/Lock';
@@ -13,9 +14,14 @@ import { FC } from 'react';
 
 export const PhotoMoreProperty: FC = () => {
   const handleCopyObject = useCopyActiveObject();
-  const handlePastObject = usePasteObject();
+  const handlePasteObject = usePasteObject();
   const handleLockObject = useToggleLock();
   const deleteObjectCommand = useDeleteObjetCommand();
+
+  const handleDuplicateObject = () => {
+    handleCopyObject();
+    handlePasteObject();
+  };
 
   return (
     <div className="w-full h-full">
@@ -23,10 +29,13 @@ export const PhotoMoreProperty: FC = () => {
         <span>More</span>
       </div>
       <div className="flex items-center gap-2 overflow-x-scroll w-full">
+        <Button onClick={handleDuplicateObject} size="lg" isIconOnly>
+          <Duplicate />
+        </Button>
         <Button onClick={handleCopyObject} size="lg" isIconOnly>
           <Copy />
         </Button>
-        <Button onClick={handlePastObject} size="lg" isIconOnly>
+        <Button onClick={handlePasteObject} size="lg" isIconOnly>
           <Paste />
         </Button>
         <Button onClick={handleLockObject} size="lg" isIconOnly>
