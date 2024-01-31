@@ -47,8 +47,6 @@ export const Shapes: React.FC = () => {
   const addObjectToActivePage = useAddObjectToActivePage();
 
   const addShape = (key: string) => {
-    console.log('keyyyyy', key);
-
     switch (key) {
       case 'square':
         addObjectToActivePage(new MoveableSquare());

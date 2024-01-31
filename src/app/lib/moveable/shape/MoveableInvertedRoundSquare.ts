@@ -52,7 +52,6 @@ export class MoveableInvertedRoundSquare extends MoveableShape {
       });
     }
     const clonedData = this.cloneData();
-    console.log('idddddd', uuidv4());
 
     return new MoveableInvertedRoundSquare({
       ...this.toJSON(),

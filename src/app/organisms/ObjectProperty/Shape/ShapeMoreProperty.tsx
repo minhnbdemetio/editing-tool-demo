@@ -58,7 +58,6 @@ export const ShapeMoreProperty: FC = () => {
     const object: any = await objectCopied();
     if (object?.type) {
       const { width, height, shapeType } = object;
-      console.log('11111111', width, height, shapeType);
 
       switch (shapeType) {
         case MoveableShapeType.Square:

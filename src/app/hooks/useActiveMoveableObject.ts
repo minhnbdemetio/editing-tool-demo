@@ -85,8 +85,6 @@ export const usePasteObject = () => {
     );
 
     if (copiedObject) {
-      console.log('copiedObject', allObjects, copiedObject);
-
       const clonedObject = copiedObject.clone();
       clonedObject.setPageId(copiedObject.pageId);
       setPageObjects(copiedObject?.pageId || '', [...allObjects, clonedObject]);

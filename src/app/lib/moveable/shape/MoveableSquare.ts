@@ -52,7 +52,6 @@ export class MoveableSquare extends MoveableShape {
       });
     }
     const clonedData = this.cloneData();
-    console.log('idddddd', uuidv4());
 
     return new MoveableSquare({
       ...this.toJSON(),

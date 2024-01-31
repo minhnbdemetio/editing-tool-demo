@@ -52,7 +52,6 @@ export class MoveableSquareCutTr extends MoveableShape {
       });
     }
     const clonedData = this.cloneData();
-    console.log('idddddd', uuidv4());
 
     return new MoveableSquareCutTr({
       ...this.toJSON(),

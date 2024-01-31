@@ -54,7 +54,6 @@ export class MoveableSquareMinus extends MoveableShape {
       });
     }
     const clonedData = this.cloneData();
-    console.log('idddddd', uuidv4());
 
     return new MoveableSquareMinus({
       ...this.toJSON(),

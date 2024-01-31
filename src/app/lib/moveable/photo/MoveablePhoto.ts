@@ -22,12 +22,9 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
     options?: { htmlString: string; id: string } | undefined,
   ): MoveableObject {
     if (options) {
-      console.log('11');
-
       return new MoveablePhoto(this.src, options.id, options.htmlString);
     }
     const clonedData = this.cloneData();
-    console.log('22');
     return new MoveablePhoto(
       this.src,
       clonedData.cloneObjectId,
