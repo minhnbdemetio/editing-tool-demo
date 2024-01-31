@@ -6,12 +6,7 @@ import {
   useChangeTextTransformOrigin,
   useUpdateTextStretchFont,
 } from '@/app/hooks/useActiveMoveableObject';
-import {
-  useChangeMoveableTextLineHeightCommand,
-  useChangeMoveableTextSpacingCommand,
-  useChangeMoveableTextTransformOriginCommand,
-} from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
-import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
+
 import { AnchorBottom } from '@/app/icons/AnchorBottom';
 import { AnchorCenter } from '@/app/icons/AnchorCenter';
 import { AnchorTop } from '@/app/icons/AnchorTop';
