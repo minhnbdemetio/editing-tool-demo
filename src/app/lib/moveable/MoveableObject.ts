@@ -31,9 +31,17 @@ export abstract class MoveableObject
   color: string | undefined;
   gradient: GradientStop[] | undefined;
 
-  constructor(options?: { id?: string; htmlString?: string }) {
+  constructor(options?: {
+    id?: string;
+    htmlString?: string;
+    width?: number;
+    height?: number;
+  }) {
     this.id = options?.id || uuidv4();
     this.htmlString = options?.htmlString;
+
+    this.width = options?.width || 100;
+    this.height = options?.height || 100;
   }
 
   createElementFromJSON(jsonString: string) {
@@ -231,4 +239,5 @@ export abstract class MoveableObject
       flipDirection: this.flipDirection,
     };
   }
+  render() {}
 }

@@ -36,6 +36,7 @@ export const MoveableBodyTextElement: FC<MoveableTextProps> = ({
       }
     };
   }, []);
+
   return (
     <div
       id={object.id}

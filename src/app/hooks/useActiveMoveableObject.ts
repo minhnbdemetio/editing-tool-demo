@@ -1,10 +1,13 @@
 import { CSSProperties, useCallback, useState } from 'react';
-import { TransformDirection } from '../lib/moveable/text/MoveableText';
+import {
+  MoveableTextObject,
+  TransformDirection,
+} from '../lib/moveable/text/MoveableText';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { useActivePage } from '../store/active-page';
 import { GradientStop } from '../utilities/color.type';
 import { parseTransformString } from '../utilities/utils';
-import { isLine, isPhoto, isText } from '../utilities/moveable';
+import { isLine, isPhoto, isShape, isText } from '../utilities/moveable';
 import { MoveableObject } from '../lib/moveable/MoveableObject';
 import { useDesign } from '../store/design-objects';
 import { isNumber } from 'lodash';
@@ -32,6 +35,12 @@ export const useActiveMoveableLineObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
   return isLine(activeMoveableObject) ? activeMoveableObject : null;
+};
+
+export const useActiveMoveableShapeObject = () => {
+  const { activeMoveableObject } = useActiveMoveableObject();
+
+  return isShape(activeMoveableObject) ? activeMoveableObject : null;
 };
 export const useActiveMoveablePhotoObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
@@ -86,7 +95,23 @@ export const useUpdateTextColor = () => {
 
   return (color: string) => {
     activeText?.setTextColor(color);
-    activeText?.render();
+  };
+};
+
+export const useUpdateShapeColor = () => {
+  const activeShape = useActiveMoveableShapeObject();
+
+  return (color: string) => {
+    activeShape?.setColor(color);
+    // activeShape?.render();
+  };
+};
+
+export const useUpdateShapeBorderColor = () => {
+  const activeShape = useActiveMoveableShapeObject();
+
+  return (color: string, borderWidth: number) => {
+    activeShape?.setOutLine(color, borderWidth);
   };
 };
 
@@ -165,9 +190,9 @@ export const useCloneObject = () => {
   };
 };
 
-export const useToggleMoveableBoldText = () => {
-  const activeText = useActiveTextObject();
-
+export const useToggleMoveableBoldText = (
+  activeText: MoveableTextObject | null,
+) => {
   return (callback?: Function) => {
     const fontWeight = activeText?.getFontWeight();
     const isBold = fontWeight === 'bold' || fontWeight === '700';
@@ -182,12 +207,10 @@ export const useToggleMoveableBoldText = () => {
   };
 };
 
-export const useToggleItalicText = () => {
-  const textObject = useActiveTextObject();
+export const useToggleItalicText = (activeText: MoveableTextObject | null) => {
   const [isItalic, setIsItalic] = useState<boolean>(
-    textObject?.isFontStyle('italic') || false,
+    activeText?.isFontStyle('italic') || false,
   );
-  const activeText = useActiveTextObject();
 
   return (callback?: Function) => {
     activeText?.setFontStyle(isItalic ? 'normal' : 'italic');
@@ -199,9 +222,9 @@ export const useToggleItalicText = () => {
   };
 };
 
-export const useToggleUnderlineText = () => {
-  const activeText = useActiveTextObject();
-
+export const useToggleUnderlineText = (
+  activeText: MoveableTextObject | null,
+) => {
   const toggleUnderlineText = (callback?: Function) => {
     if (!activeText) return false;
     activeText.textDecoration.setTextDecoration(
@@ -217,9 +240,9 @@ export const useToggleUnderlineText = () => {
   return toggleUnderlineText;
 };
 
-export const useToggleLineThroughText = () => {
-  const activeText = useActiveTextObject();
-
+export const useToggleLineThroughText = (
+  activeText: MoveableTextObject | null,
+) => {
   const toggleLineThroughText = (callback?: Function) => {
     if (!activeText) return false;
     activeText.textDecoration.setTextDecoration(
@@ -235,9 +258,9 @@ export const useToggleLineThroughText = () => {
   return toggleLineThroughText;
 };
 
-export const useToggleUppercaseText = () => {
-  const activeText = useActiveTextObject();
-
+export const useToggleUppercaseText = (
+  activeText: MoveableTextObject | null,
+) => {
   const toggleUppercaseText = (callback?: Function) => {
     const isUppercase = activeText?.isTextTransform('uppercase');
 
@@ -254,9 +277,7 @@ export const useToggleUppercaseText = () => {
   return toggleUppercaseText;
 };
 
-export const useChangeTextAlign = () => {
-  const activeText = useActiveTextObject();
-
+export const useChangeTextAlign = (activeText: MoveableTextObject | null) => {
   const changeTextAlign = (textAlign: string, callback?: Function) => {
     activeText?.setTextAlign(textAlign);
     activeText?.render();
@@ -266,9 +287,9 @@ export const useChangeTextAlign = () => {
   return changeTextAlign;
 };
 
-export const useToggleListTypeDiscText = () => {
-  const activeText = useActiveTextObject();
-
+export const useToggleListTypeDiscText = (
+  activeText: MoveableTextObject | null,
+) => {
   const toggleListTypeDiscText = (callback?: Function) => {
     activeText?.setTextListStyle(
       activeText?.isTextListStyle('disc') ? 'none' : 'disc',
@@ -282,9 +303,9 @@ export const useToggleListTypeDiscText = () => {
   return toggleListTypeDiscText;
 };
 
-export const useToggleListTypeNumberText = () => {
-  const activeText = useActiveTextObject();
-
+export const useToggleListTypeNumberText = (
+  activeText: MoveableTextObject | null,
+) => {
   const toggleListTypeText = (callback?: Function) => {
     activeText?.setTextListStyle(
       activeText?.isTextListStyle('number') ? 'none' : 'number',
@@ -298,9 +319,7 @@ export const useToggleListTypeNumberText = () => {
   return toggleListTypeText;
 };
 
-export const useChangeTextSpacing = () => {
-  const activeText = useActiveTextObject();
-
+export const useChangeTextSpacing = (activeText: MoveableTextObject | null) => {
   const handleChangeLetterSpacing = (
     letterSpacing: number,
     callback: Function,
@@ -314,9 +333,9 @@ export const useChangeTextSpacing = () => {
   return handleChangeLetterSpacing;
 };
 
-export const useChangeTextLineHeight = () => {
-  const activeText = useActiveTextObject();
-
+export const useChangeTextLineHeight = (
+  activeText: MoveableTextObject | null,
+) => {
   const handleChangeLineHeight = (lineHeight: number, callback: Function) => {
     activeText?.setLineHeight(lineHeight);
     activeText?.render();
@@ -327,9 +346,9 @@ export const useChangeTextLineHeight = () => {
   return handleChangeLineHeight;
 };
 
-export const useChangeTextTransformOrigin = () => {
-  const activeText = useActiveTextObject();
-
+export const useChangeTextTransformOrigin = (
+  activeText: MoveableTextObject | null,
+) => {
   const handleChangeTransformOrigin = (
     transformDirection: TransformDirection,
     callback?: Function,
@@ -637,8 +656,9 @@ export const useSetBackgroundImage = () => {
   return setBackgroundImage;
 };
 
-export const useUpdateTextStretchFont = () => {
-  const activeText = useActiveTextObject();
+export const useUpdateTextStretchFont = (
+  activeText: MoveableTextObject | null,
+) => {
   const updateTextStretchFont = (stretchFont: number, callback?: Function) => {
     if (!activeText) return false;
     activeText.setTextScale({ scaleX: stretchFont / 100 });

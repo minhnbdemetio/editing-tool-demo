@@ -41,10 +41,11 @@ export const SpacingProperty: FC<SpacingPropertyProps> = ({}) => {
   );
   const { moveable } = useDesign();
 
-  const handleChangeLetterSpacing = useChangeTextSpacing();
-  const handleChangeLineHeight = useChangeTextLineHeight();
-  const handleChangeMoveableTextTransformOrigin = useChangeTextTransformOrigin();
-  const handleUpdateTextStretchFont = useUpdateTextStretchFont();
+  const handleChangeLetterSpacing = useChangeTextSpacing(activeText);
+  const handleChangeLineHeight = useChangeTextLineHeight(activeText);
+  const handleChangeMoveableTextTransformOrigin =
+    useChangeTextTransformOrigin(activeText);
+  const handleUpdateTextStretchFont = useUpdateTextStretchFont(activeText);
   return (
     <div className="w-full h-full">
       <div className="text-center mb-3">

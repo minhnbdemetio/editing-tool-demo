@@ -1,20 +1,44 @@
 import { MoveableObject, ObjectType } from '../MoveableObject';
 import { MoveableShapeType } from '../editable/EditableShape';
+import { Corner, Square } from '../svg/Square';
 import { MoveableShape } from './MoveableShape';
 
 export class MoveableSquare extends MoveableShape {
+  public corners?: {
+    tl?: Corner;
+    tr?: Corner;
+    bl?: Corner;
+    br?: Corner;
+    all?: Corner;
+  };
+
   constructor(options?: {
-    id: string;
+    id?: string;
     type?: ObjectType;
-    pageId: string | null;
+    pageId?: string | null;
     htmlString?: string;
+    width?: number;
+    height?: number;
+    corners?: {
+      tl?: Corner;
+      tr?: Corner;
+      bl?: Corner;
+      br?: Corner;
+      all?: Corner;
+    };
   }) {
-    super(options);
+    super(options as any);
     this.shapeType = MoveableShapeType.Square;
+
+    this.corners = options?.corners;
   }
 
   getShape() {
-    return '<path d="M0,0V952.2H952.2V0Z" fill="currentColor"  isInit="true"></path>';
+    return new Square({
+      width: this.width,
+      height: this.height,
+      corners: this.corners,
+    });
   }
 
   clone(

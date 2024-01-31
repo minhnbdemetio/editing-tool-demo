@@ -8,6 +8,7 @@ import {
   SettingTypeEnum,
 } from '@/app/molecules/SearchInput/searchInput';
 import { Lines } from '@/app/molecules/Lines';
+import { Shapes } from '@/app/molecules/Shapes';
 
 const recommendedKeywords = [
   'Xuân',
@@ -79,7 +80,7 @@ export const ElementsMenuContent: FC = () => {
     setTemplateSettingFormat(defaultTemplateSetting);
   };
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full overflow-auto">
       <div className="p-6 w-full h-fit">
         <SearchInput
           recommendedKeywords={recommendedKeywords}
@@ -93,6 +94,7 @@ export const ElementsMenuContent: FC = () => {
         />
 
         <Lines />
+        <Shapes />
       </div>
     </div>
   );

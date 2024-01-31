@@ -34,6 +34,17 @@ import { PhotoEffectProperty } from './Photo/PhotoEffectProperty';
 import { PhotoFlipProperty } from './Photo/PhotoFlipProperty';
 import { PhotoCropProperty } from './Photo/CropProperty';
 import { PhotoMoreProperty } from './Photo/More';
+import { ShapeFillColor } from './Shape/ShapeColorProperty';
+import { ShapeOutline } from './Shape/ShapeBorderProperty';
+import { ShapeAlignProperty } from './Shape/ShapeAlignProperty';
+import { ShapePositionProperty } from './Shape/ShapePositionProperty';
+
+import { ShapeTextFontProperty } from './Shape/ShapeTextFontProperty';
+import { ShapeTextColorProperty } from './Shape/ShapeTextColorProperty';
+import { ShapeFontSizeProperty } from './Shape/ShapeFontSizeProperty';
+import { ShapeFormatProperty } from './Shape/ShapeFormatProperty';
+import { ShapeMoreProperty } from './Shape/ShapeMoreProperty';
+import { ShapeSpacingProperty } from './Shape/ShapeSpacingProperty';
 
 export const SelectedObjectProperty: FC = () => {
   const { selectedProperty } = useSelectedProperty();
@@ -115,9 +126,6 @@ export const SelectedObjectProperty: FC = () => {
       case SelectedProperty.PhotoNudge: {
         return <NudgeProperty />;
       }
-      case SelectedProperty.PhotoNudge: {
-        return <NudgeProperty />;
-      }
       case SelectedProperty.PhotoLayer: {
         return <LayerProperty />;
       }
@@ -142,6 +150,51 @@ export const SelectedObjectProperty: FC = () => {
       }
       case SelectedProperty.PhotoMore: {
         return <PhotoMoreProperty />;
+      }
+      case SelectedProperty.ShapeNudge: {
+        return <NudgeProperty />;
+      }
+      case SelectedProperty.ShapePosition: {
+        return <ShapePositionProperty />;
+      }
+      case SelectedProperty.ShapeColor: {
+        return <ShapeFillColor />;
+      }
+      case SelectedProperty.ShapeOutline: {
+        return <ShapeOutline />;
+      }
+      case SelectedProperty.ShapeAlign: {
+        return <ShapeAlignProperty />;
+      }
+      case SelectedProperty.ShapeLayer: {
+        return <LayerProperty />;
+      }
+      case SelectedProperty.ShapeOpacity: {
+        return <OpacityProperty />;
+      }
+      case SelectedProperty.ShapeColor: {
+        return <ShapeFillColor />;
+      }
+      case SelectedProperty.ShapeOutline: {
+        return <ShapeOutline />;
+      }
+      case SelectedProperty.ShapeTextColor: {
+        return <ShapeTextColorProperty />;
+      }
+      case SelectedProperty.ShapeTextFont: {
+        return <ShapeTextFontProperty />;
+      }
+      case SelectedProperty.ShapeTextFontSize: {
+        return <ShapeFontSizeProperty />;
+      }
+      case SelectedProperty.ShapeTextFormat: {
+        return <ShapeFormatProperty />;
+      }
+      case SelectedProperty.ShapeMore: {
+        return <ShapeMoreProperty />;
+      }
+      case SelectedProperty.ShapeTextSpacing: {
+        return <ShapeSpacingProperty />;
       }
       default: {
         return null;
