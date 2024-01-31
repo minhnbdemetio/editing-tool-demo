@@ -24,13 +24,14 @@ export abstract class MoveableShape
     htmlString?: string;
     width?: number;
     height?: number;
+    shapeType?: any;
   }) {
     super(options);
     this.type = 'shape';
 
     this.textWrapperId = uuid();
     this.shapeText = new PluggableText(this.textWrapperId);
-
+    this.shapeType = this.shapeType || MoveableShapeType.Square;
     setTimeout(() => {
       this.shapeText.setTextColor('red');
     }, 2000);

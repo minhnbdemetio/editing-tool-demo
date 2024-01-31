@@ -11,7 +11,7 @@ export class MoveableHexagon extends MoveableShape {
     htmlString?: string;
   }) {
     super(options);
-    this.shapeType = MoveableShapeType.Square;
+    this.shapeType = MoveableShapeType.Hexagon;
   }
 
   getShape() {

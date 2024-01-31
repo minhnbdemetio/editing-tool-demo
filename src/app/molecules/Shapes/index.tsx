@@ -4,6 +4,7 @@ import { MoveableArrow } from '@/app/lib/moveable/shape/MoveableArrow';
 import { MoveableFivePointStar } from '@/app/lib/moveable/shape/MoveableFivePointStar';
 import { MoveableHeart } from '@/app/lib/moveable/shape/MoveableHeart';
 import { MoveableHexagon } from '@/app/lib/moveable/shape/MoveableHexagon';
+import { MoveableInvertedRoundSquare } from '@/app/lib/moveable/shape/MoveableInvertedRoundSquare';
 import { MoveableOctagon } from '@/app/lib/moveable/shape/MoveableOctagon';
 import { MoveableParallelogram } from '@/app/lib/moveable/shape/MoveableParallelogram';
 import { MoveablePentagon } from '@/app/lib/moveable/shape/MoveablePentagon';
@@ -11,6 +12,11 @@ import { MoveablePlus } from '@/app/lib/moveable/shape/MoveablePlus';
 import { MoveableQuadrangle } from '@/app/lib/moveable/shape/MoveableQuadrangle';
 import { MoveableShape } from '@/app/lib/moveable/shape/MoveableShape';
 import { MoveableSquare } from '@/app/lib/moveable/shape/MoveableSquare';
+import { MoveableSquareCutT } from '@/app/lib/moveable/shape/MoveableSquareCutT';
+import { MoveableSquareCutTr } from '@/app/lib/moveable/shape/MoveableSquareCutTr';
+import { MoveableSquareCutTrBl } from '@/app/lib/moveable/shape/MoveableSquareCutTrBl';
+import { MoveableSquareMinus } from '@/app/lib/moveable/shape/MoveableSquareMinus';
+import { MoveableSquareRT } from '@/app/lib/moveable/shape/MoveableSquareRT';
 import { MoveableSquaredTriangle } from '@/app/lib/moveable/shape/MoveableSquaredTriangle';
 import { MoveableTriangle } from '@/app/lib/moveable/shape/MoveableTriangle';
 import { CornerType } from '@/app/lib/moveable/svg/Square';
@@ -41,6 +47,8 @@ export const Shapes: React.FC = () => {
   const addObjectToActivePage = useAddObjectToActivePage();
 
   const addShape = (key: string) => {
+    console.log('keyyyyy', key);
+
     switch (key) {
       case 'square':
         addObjectToActivePage(new MoveableSquare());
@@ -79,56 +87,22 @@ export const Shapes: React.FC = () => {
         addObjectToActivePage(new MoveablePlus());
         return;
       case 'inverted-round-square':
-        addObjectToActivePage(
-          new MoveableSquare({
-            corners: { all: { type: CornerType.InvertedRound, size: 20 } },
-          }),
-        );
+        addObjectToActivePage(new MoveableInvertedRoundSquare());
         return;
       case 'square-cut-tr':
-        addObjectToActivePage(
-          new MoveableSquare({
-            corners: { tr: { type: CornerType.Cut, size: 20 } },
-          }),
-        );
+        addObjectToActivePage(new MoveableSquareCutTr());
         return;
       case 'square-cut-t':
-        addObjectToActivePage(
-          new MoveableSquare({
-            corners: {
-              tr: { type: CornerType.Cut, size: 20 },
-              tl: { type: CornerType.Cut, size: 20 },
-            },
-          }),
-        );
+        addObjectToActivePage(new MoveableSquareCutT());
         return;
       case 'square-cut-tr-bl':
-        addObjectToActivePage(
-          new MoveableSquare({
-            corners: {
-              tr: { type: CornerType.Cut, size: 20 },
-              bl: { type: CornerType.Cut, size: 20 },
-            },
-          }),
-        );
+        addObjectToActivePage(new MoveableSquareCutTrBl());
         return;
       case 'square-r-t':
-        addObjectToActivePage(
-          new MoveableSquare({
-            corners: {
-              tr: { type: CornerType.Rounded, size: 20 },
-              tl: { type: CornerType.Rounded, size: 20 },
-            },
-          }),
-        );
+        addObjectToActivePage(new MoveableSquareRT());
         return;
       case 'minus':
-        addObjectToActivePage(
-          new MoveableSquare({
-            width: 100,
-            height: 30,
-          }),
-        );
+        addObjectToActivePage(new MoveableSquareMinus());
         return;
     }
   };

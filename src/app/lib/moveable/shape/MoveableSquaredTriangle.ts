@@ -12,7 +12,7 @@ export class MoveableSquaredTriangle extends MoveableShape {
     htmlString?: string;
   }) {
     super(options);
-    this.shapeType = MoveableShapeType.Square;
+    this.shapeType = MoveableShapeType.SquaredTriangle;
   }
 
   getShape() {

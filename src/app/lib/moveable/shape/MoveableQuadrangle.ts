@@ -12,7 +12,7 @@ export class MoveableQuadrangle extends MoveableShape {
     htmlString?: string;
   }) {
     super(options);
-    this.shapeType = MoveableShapeType.Square;
+    this.shapeType = MoveableShapeType.Quadrangle;
   }
 
   getShape() {

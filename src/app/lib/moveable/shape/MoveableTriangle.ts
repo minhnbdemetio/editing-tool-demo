@@ -11,7 +11,7 @@ export class MoveableTriangle extends MoveableShape {
     htmlString?: string;
   }) {
     super(options);
-    this.shapeType = MoveableShapeType.Square;
+    this.shapeType = MoveableShapeType.Triangle;
   }
 
   getShape() {

@@ -15,6 +15,15 @@ export enum MoveableShapeType {
   EightPointStart,
   Plus,
   Arrow,
+  RoundedSquare,
+  Parallelogram,
+  Quadrangle,
+  InvertedRoundSquare,
+  SquareCutTr,
+  SquareCutT,
+  SquareCutTrBl,
+  SquareRT,
+  Minus,
 }
 
 export interface TextShape {
