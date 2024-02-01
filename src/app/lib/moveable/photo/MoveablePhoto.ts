@@ -76,9 +76,9 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
   }
 
   public getFilterContainer() {
-    return document.querySelector(
-      `div[data-id='${this.id}'] > div > svg > defs > filter`,
-    );
+    const id = `${PHOTO_INNER_ELEMENTS.DEFS}-${this.id}`;
+
+    return document.getElementById(id)?.querySelector('filter');
   }
 
   public getSvg() {

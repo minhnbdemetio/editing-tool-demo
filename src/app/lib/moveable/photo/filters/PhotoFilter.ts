@@ -417,7 +417,10 @@ export abstract class PhotoFilter {
     const gElement = document.getElementById(
       `${PHOTO_INNER_ELEMENTS.G}-${photo.id}`,
     );
+
     const filterElement = photo.getFilterContainer();
+    console.debug({ filterElement, gElement });
+
     if (filterElement && gElement) {
       if (appliedFilters.length) {
         gElement.setAttribute('filter', `url(#${this.filterId})`);
