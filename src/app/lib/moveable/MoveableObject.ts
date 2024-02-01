@@ -213,14 +213,16 @@ export abstract class MoveableObject
 
   flip(direction: FlipDirection) {
     const flipElement = this.getFlipElement();
-    if (flipElement) {
-      flipElement.style.transform = this.getFlipTransform();
-    }
+
     if (direction === FlipDirection.Horizontal) {
       this.flipDirection.x = !this.flipDirection.x;
     }
     if (direction === FlipDirection.Vertical) {
       this.flipDirection.y = !this.flipDirection.y;
+    }
+
+    if (flipElement) {
+      flipElement.style.transform = this.getFlipTransform();
     }
   }
 
