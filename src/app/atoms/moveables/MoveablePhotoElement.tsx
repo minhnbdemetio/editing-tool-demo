@@ -43,6 +43,7 @@ export const MoveablePhotoElement: FC<MoveablePhotoProps> = ({ object }) => {
               <image
                 id={`${IMAGE_CONTAINER}-${object.id}`}
                 className="w-full h-full"
+                preserveAspectRatio="none"
                 width={'100%'}
                 height={'100%'}
                 href={object.src}

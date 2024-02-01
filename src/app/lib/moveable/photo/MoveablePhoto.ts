@@ -326,8 +326,8 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
       newFillColorElement.style.position = 'absolute';
       newFillColorElement.style.top = '0';
       newFillColorElement.style.left = '0';
-      newFillColorElement.style.width = '100%';
-      newFillColorElement.style.height = '100%';
+      newFillColorElement.style.width = this.width + 'px';
+      newFillColorElement.style.height = this.height + 'px';
       newFillColorElement.style.backgroundColor =
         this.fillColor || 'transparent';
       newFillColorElement.style.opacity = this.fillOpacity?.toString() || '1';
