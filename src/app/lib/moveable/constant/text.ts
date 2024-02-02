@@ -89,3 +89,9 @@ export const GLITCH_EFFECT_CONTAINER = 'glitch-effect-container';
 export const GLITCH_CURVE_EFFECT_CONTAINER = 'glitch-curve-effect-container';
 export const CURVE_BACKGROUND_EFFECT_CONTAINER =
   'curve-background-effect-container';
+export const TEXT_STYLE_FONT_SIZE = {
+  HEADING: 30,
+  SUBHEADING: 20,
+  BODY_TEXT: 10,
+  NORMAL: 15,
+};

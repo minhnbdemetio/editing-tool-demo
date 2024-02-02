@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef } from 'react';
+import { FC, useEffect } from 'react';
 
 import clsx from 'clsx';
 import { MoveableSubheadingTextObject } from '@/app/lib/moveable/text/MoveableSubheadingText';
@@ -14,9 +14,10 @@ export const MoveableSubheadingTextElement: FC<MoveableTextProps> = ({
   object,
   className,
 }) => {
-  const textContainerRef = useRef(null);
   useEffect(() => {
-    const textContainer = textContainerRef.current;
+    const textContainer = document.getElementById(
+      `${TEXT_INNER_ELEMENTS.CONTAINER}-${object.id}`,
+    );
     if (!textContainer) return;
 
     // Create a new ResizeObserver instance
@@ -47,10 +48,8 @@ export const MoveableSubheadingTextElement: FC<MoveableTextProps> = ({
         id={`${OBJECT_INNER_ELEMENTS.FLIPPER}-${object.id}`}
       >
         <ul
-          ref={textContainerRef}
           id={`${TEXT_INNER_ELEMENTS.CONTAINER}-${object.id}`}
           suppressContentEditableWarning
-          contentEditable
         >
           <li>Add a subheading</li>
         </ul>

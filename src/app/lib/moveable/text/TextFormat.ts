@@ -1,4 +1,4 @@
-import { TextStyle } from './text-styles';
+import { TextStyle } from './TextStyle';
 export type TextFontStyle = 'italic' | 'normal';
 export type TextTransform = 'none' | 'uppercase';
 export type TextListStyle = 'none' | 'number' | 'disc';
@@ -16,6 +16,7 @@ export interface TextFormat {
   fontStyle: TextFontStyle;
   textListStyle: TextListStyle;
   textStyle: TextStyle;
+  fontWeight: string;
 
   setTextStyle: (textStyle: TextStyle) => void;
   getTextStyle: () => TextStyle;

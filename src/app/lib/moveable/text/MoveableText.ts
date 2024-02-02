@@ -6,6 +6,7 @@ import {
   GRADIENT_BACKGROUND_CSS_VARIABLE,
   GRADIENT_WEBKIT_TEXT_FILL_CSS_VARIABLE,
   TEXT_INNER_ELEMENTS,
+  TEXT_STYLE_FONT_SIZE,
   TextVariant,
 } from '../constant/text';
 import { EditableText } from '../editable/EditableText';
@@ -21,7 +22,7 @@ import {
   TextTransform,
   TransformDirection,
 } from './TextFormat';
-import { TextStyle } from './text-styles';
+import { TextStyle } from './TextStyle';
 
 export class MoveableTextObject
   extends MoveableObject
@@ -45,6 +46,8 @@ export class MoveableTextObject
   lineHeight: number;
   opacity: number = 1;
   textStyle: TextStyle;
+  fontWeight: string = '400';
+  editable: boolean = false;
 
   constructor(options?: { id: string; htmlString: string }) {
     super(options);
@@ -54,8 +57,7 @@ export class MoveableTextObject
     this.styleEffect = new StyleEffect();
     this.shapeEffect = new ShapeEffect();
     this.textStyle = {
-      fontSize: 18,
-      fontWeight: '400',
+      fontSize: TEXT_STYLE_FONT_SIZE.NORMAL,
     };
     this.lineHeight = this.textStyle.fontSize * 1.5;
   }
@@ -111,7 +113,7 @@ export class MoveableTextObject
   }
   setFontSize(fontSize: number | null) {
     if (!fontSize) return false;
-    this.textStyle.fontSize = fontSize;
+    this.textStyle = { ...this.textStyle, fontSize: fontSize };
   }
   applyFontSize() {
     const element = this.getElement();
@@ -121,7 +123,6 @@ export class MoveableTextObject
   setTextStyle(textStyle: TextStyle) {
     this.textStyle = textStyle;
     this.applyFontSize();
-    this.applyFontWeight();
   }
   setTextColor(color: string) {
     const element = this.getElement();
@@ -131,6 +132,12 @@ export class MoveableTextObject
   }
   setTextGradient(stops: GradientStop[]) {
     this.gradientStops = stops;
+  }
+  setEditable(editable: boolean) {
+    this.editable = editable;
+  }
+  getEditable() {
+    return this.editable;
   }
 
   applyTextGradient(element: HTMLElement) {
@@ -283,15 +290,15 @@ export class MoveableTextObject
       return this.getTextTransform() === textTransform;
     };
   setFontWeight: (fontWeight: string) => void = fontWeight => {
-    this.textStyle.fontWeight = fontWeight;
+    this.fontWeight = fontWeight;
   };
   getFontWeight: () => string = () => {
-    return this.textStyle.fontWeight;
+    return this.fontWeight;
   };
   applyFontWeight() {
     const element = this.getElement();
     if (!element) return;
-    element.style.fontWeight = this.textStyle.fontWeight;
+    element.style.fontWeight = this.fontWeight;
   }
   isFontStyle: (style: TextFontStyle) => boolean = style => {
     return this.getFontStyle() === style;
@@ -375,5 +382,20 @@ export class MoveableTextObject
     this.applyFontEffect();
 
     this.applyTextListStyle();
+  }
+  async setupMoveable(): Promise<void> {
+    super.setupMoveable();
+    const element = this.getElement();
+    const textContainer = this.getTextContainer();
+    if (!element || !textContainer) return;
+    textContainer.addEventListener('dblclick', () => {
+      textContainer.setAttribute('contenteditable', 'true');
+      textContainer.focus();
+      this.setEditable(true);
+    });
+    textContainer.addEventListener('blur', () => {
+      textContainer.setAttribute('contenteditable', 'false');
+      this.setEditable(false);
+    });
   }
 }

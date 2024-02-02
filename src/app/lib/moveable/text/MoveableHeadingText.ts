@@ -1,11 +1,11 @@
-import { TextVariant } from '../constant/text';
+import { TEXT_STYLE_FONT_SIZE, TextVariant } from '../constant/text';
 import { MoveableTextObject } from './MoveableText';
 
 export class MoveableHeadingTextObject extends MoveableTextObject {
   constructor(options?: { id: string; htmlString: string }) {
     super(options);
     this.variant = TextVariant.HEADING;
-    this.textStyle.fontSize = 30;
+    this.textStyle.fontSize = TEXT_STYLE_FONT_SIZE.HEADING;
     this.lineHeight = this.textStyle.fontSize * 1.5;
   }
   clone(options?: {

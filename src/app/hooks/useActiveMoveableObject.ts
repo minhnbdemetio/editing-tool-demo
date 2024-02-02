@@ -15,7 +15,7 @@ import {
   TextEffectOptions,
 } from '../lib/moveable/effects/text/TextEffect';
 import { ShapeEffect } from '../lib/moveable/effects/text/ShapeEffect';
-import { TextStyle } from '../lib/moveable/text/text-styles';
+import { TextStyle } from '../lib/moveable/text/TextStyle';
 import { TransformDirection } from '../lib/moveable/text/TextFormat';
 
 export const useActiveTextObject = () => {
@@ -81,10 +81,12 @@ export const usePasteObject = () => {
 
 export const useUpdateFontSize = () => {
   const activeText = useActiveTextObject();
+  const { moveable } = useDesign();
 
   return (fontSize: number) => {
     activeText?.setFontSize(fontSize);
     activeText?.render();
+    moveable?.updateRect();
   };
 };
 
