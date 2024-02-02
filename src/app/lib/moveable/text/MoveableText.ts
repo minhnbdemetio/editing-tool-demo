@@ -1,97 +1,33 @@
 import { MAX_FIND_ELEMENT_ATTEMPTS, MoveableObject } from '../MoveableObject';
 import { GradientStop } from '../../../utilities/color.type';
 
-export type MoveableTextVariant = 'normal' | 'heading' | 'subheading' | 'body';
 import {
   DEFAULT_TEXT_SCALE,
   GRADIENT_BACKGROUND_CSS_VARIABLE,
   GRADIENT_WEBKIT_TEXT_FILL_CSS_VARIABLE,
   TEXT_INNER_ELEMENTS,
-  TEXT_STYLE_DEFAULT_VALUE,
-  TextVarient,
+  TextVariant,
 } from '../constant/text';
 import { EditableText } from '../editable/EditableText';
 import { StyleEffect, TextStyleEffect } from '../effects/text/StyleEffect';
 import { TextEffect, TextEffectOptions } from '../effects/text/TextEffect';
 import { ShapeEffect, TextShapeEffect } from '../effects/text/ShapeEffect';
-import { CSSProperties } from 'react';
 import { TextDecorationEffect } from '../effects/text/TextDecorationEffect';
-
-export type TextFontStyle = 'italic' | 'normal';
-export type TextTransform = 'none' | 'uppercase';
-export type TextListStyle = 'none' | 'number' | 'disc';
-export type TextDecoration = {
-  underline: boolean;
-  lineThrough: boolean;
-};
-
-export type TextFormat = {
-  fontFamily: string;
-  textAlign: string;
-  textTransform: TextTransform;
-  fontWeight: string;
-  fontStyle: TextFontStyle;
-  textListStyle: TextListStyle;
-  textStyle: TextVarient;
-
-  setFontStyle: (fontStyle: TextFontStyle) => void;
-  getFontStyle: () => TextFontStyle;
-  isFontStyle: (style: TextFontStyle) => boolean;
-
-  setTextTransform: (textTransform: TextTransform) => void;
-  getTextTransform: () => TextTransform;
-  isTextTransform: (textTransform: TextTransform) => boolean;
-
-  getTextAlign: () => string;
-  setTextAlign: (textAlign: string) => void;
-  isTextAlign: (textAlign: string) => boolean;
-
-  setFontWeight: (fontWeight: string) => void;
-  getFontWeight: () => string;
-
-  isTextDecorationEnable: (key: keyof TextDecoration) => boolean;
-
-  getTextListStyle: () => TextListStyle;
-  setTextListStyle: (listStyle: TextListStyle) => void;
-  isTextListStyle: (listStyle: TextListStyle) => boolean;
-
-  setFontFamily: (fontFamily: string) => void;
-  getFontFamily: () => string;
-
-  applyFontEffect: () => void;
-  applyTextListStyle: () => void;
-
-  fontSize: number;
-  getFontSize: () => number;
-  setFontSize: (fontSize: number | null) => void;
-  applyFontSize: () => void;
-
-  letterSpacing: number;
-  getLetterSpacing: () => number;
-  setLetterSpacing: (letterSpacing: number | null) => void;
-  applyLetterSpacing: () => void;
-
-  lineHeight: number;
-  getLineHeight: () => number;
-  setLineHeight: (lineHeight: number | null) => void;
-  applyLineHeight: () => void;
-
-  getTextStyle: () => string;
-  setTextStyle: (textStyle: TextVarient) => void;
-
-  opacity: number;
-  getOpacity: () => number;
-  setOpacity: (opacity: number) => void;
-  applyOpacity: (element: HTMLElement) => void;
-};
-
-export type TransformDirection = 'bottom' | 'center' | 'top';
+import {
+  TextDecoration,
+  TextFontStyle,
+  TextFormat,
+  TextListStyle,
+  TextTransform,
+  TransformDirection,
+} from './TextFormat';
+import { TextStyle } from './text-styles';
 
 export class MoveableTextObject
   extends MoveableObject
   implements EditableText, TextFormat
 {
-  variant?: MoveableTextVariant;
+  variant?: TextVariant;
   gradientStops?: GradientStop[];
   transformDirection: string;
   curve?: number;
@@ -100,26 +36,31 @@ export class MoveableTextObject
   styleEffect: StyleEffect;
   shapeEffect: ShapeEffect;
   fontFamily: string = 'Arial';
-  fontWeight: string = '400';
   fontStyle: TextFontStyle = 'normal';
   textTransform: TextTransform = 'none';
   textAlign: string = 'left';
   textDecoration: TextDecorationEffect = new TextDecorationEffect();
   textListStyle: TextListStyle = 'none';
-  fontSize: number = 18;
   letterSpacing: number = 0;
   lineHeight: number;
-  textStyle: TextVarient = TextVarient.HEADING;
   opacity: number = 1;
+  textStyle: TextStyle;
 
   constructor(options?: { id: string; htmlString: string }) {
     super(options);
     this.type = 'text';
-    this.variant = 'normal';
+    this.variant = TextVariant.NORMAL;
     this.transformDirection = 'bottom';
     this.styleEffect = new StyleEffect();
     this.shapeEffect = new ShapeEffect();
-    this.lineHeight = this.fontSize * 1.5;
+    this.textStyle = {
+      fontSize: 18,
+      fontWeight: '400',
+    };
+    this.lineHeight = this.textStyle.fontSize * 1.5;
+  }
+  getTextStyle() {
+    return this.textStyle;
   }
 
   clone(options?: { htmlString: string; id: string }): MoveableTextObject {
@@ -136,7 +77,7 @@ export class MoveableTextObject
     });
   }
   getFontSize() {
-    return this.fontSize;
+    return this.textStyle.fontSize;
   }
   getLetterSpacing() {
     return this.letterSpacing;
@@ -146,9 +87,6 @@ export class MoveableTextObject
   }
   getTextStyleEffect() {
     return this.styleEffect;
-  }
-  getTextStyle() {
-    return this.textStyle;
   }
   getOpacity() {
     return Math.round(this.opacity * 100);
@@ -173,21 +111,17 @@ export class MoveableTextObject
   }
   setFontSize(fontSize: number | null) {
     if (!fontSize) return false;
-    this.fontSize = fontSize;
+    this.textStyle.fontSize = fontSize;
   }
   applyFontSize() {
     const element = this.getElement();
     if (!element) return false;
-    element.style.fontSize = this.fontSize + 'px';
+    element.style.fontSize = this.textStyle.fontSize + 'px';
   }
-  setTextStyle(textStyle: TextVarient) {
-    const textStyleOption = TEXT_STYLE_DEFAULT_VALUE[textStyle];
-    if (!textStyleOption) return;
-    this.fontSize = textStyleOption.fontSize;
-    this.fontWeight = textStyleOption.fontWeight;
-    this.fontStyle = textStyleOption.fontStyle;
-    this.lineHeight = this.fontSize * 1.5;
+  setTextStyle(textStyle: TextStyle) {
     this.textStyle = textStyle;
+    this.applyFontSize();
+    this.applyFontWeight();
   }
   setTextColor(color: string) {
     const element = this.getElement();
@@ -349,11 +283,16 @@ export class MoveableTextObject
       return this.getTextTransform() === textTransform;
     };
   setFontWeight: (fontWeight: string) => void = fontWeight => {
-    this.fontWeight = fontWeight;
+    this.textStyle.fontWeight = fontWeight;
   };
   getFontWeight: () => string = () => {
-    return this.fontWeight;
+    return this.textStyle.fontWeight;
   };
+  applyFontWeight() {
+    const element = this.getElement();
+    if (!element) return;
+    element.style.fontWeight = this.textStyle.fontWeight;
+  }
   isFontStyle: (style: TextFontStyle) => boolean = style => {
     return this.getFontStyle() === style;
   };
@@ -417,7 +356,7 @@ export class MoveableTextObject
     this.applyLetterSpacing();
     this.applyLineHeight();
     this.textDecoration.apply(element);
-    this.applyOpacity()
+    this.applyOpacity();
 
     if (this.styleEffect.varient === TextStyleEffect.OUTLINE) {
       this.applyTextGradient(contenteditable);

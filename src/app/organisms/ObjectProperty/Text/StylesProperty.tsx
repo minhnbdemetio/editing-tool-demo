@@ -2,54 +2,36 @@ import { useChangeMoveableTextStylesCommand } from '@/app/hooks/editor-commands/
 import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
 import { Check } from '@/app/icons';
 import { Document } from '@/app/icons/Document';
-import { TextVarient } from '@/app/lib/moveable/constant/text';
-import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
-import { FC, useEffect, useState } from 'react';
+import { TextVariant } from '@/app/lib/moveable/constant/text';
+import { MoveableBodyTextObject } from '@/app/lib/moveable/text/MoveableBodyText';
+import { MoveableHeadingTextObject } from '@/app/lib/moveable/text/MoveableHeadingText';
+import { MoveableSubheadingTextObject } from '@/app/lib/moveable/text/MoveableSubheadingText';
+import { MoveableTextObject } from '@/app/lib/moveable/text/MoveableText';
+import { FC, useState } from 'react';
 
 interface FontPropertyProps {}
-const stylesArray: { id: TextVarient; title: string; style: any }[] = [
+const stylesArray: {
+  title: string;
+  style: MoveableTextObject;
+}[] = [
   {
     title: 'Tiêu đề',
-    id: TextVarient.HEADING,
-    style: {
-      fontWeight: '700',
-      fontStyle: 'normal',
-      color: 'rgb(0, 0, 0)',
-      textDecoration: 'none',
-      fontSize: '30px',
-    },
+    style: new MoveableHeadingTextObject(),
   },
   {
     title: 'Tiêu đề phụ',
-    id: TextVarient.SUBHEADING,
-    style: {
-      fontWeight: '700',
-      fontStyle: 'normal',
-      color: 'rgb(0, 0, 0)',
-      textDecoration: 'none',
-      fontSize: '18px',
-    },
+    style: new MoveableSubheadingTextObject(),
   },
   {
     title: 'Nội dung',
-    id: TextVarient.BODY,
-    style: {
-      fontWeight: '400',
-      fontStyle: 'normal',
-      color: 'rgb(0, 0, 0)',
-      textDecoration: 'none',
-      fontSize: '12px',
-      fontFamily: '"YAFdJllHsUM 0"',
-    },
+    style: new MoveableBodyTextObject(),
   },
 ];
 
 export const StylesProperty: FC<FontPropertyProps> = ({}) => {
   const activeText = useActiveTextObject();
   const handleChangeStyles = useChangeMoveableTextStylesCommand();
-  const [activeStyle, setActiveStyles] = useState<TextVarient>(
-    activeText?.getTextStyle() || TextVarient.HEADING,
-  );
+  const [activeStyle, setActiveStyles] = useState<TextVariant | undefined>();
 
   return (
     <div className="w-full h-full">
@@ -58,19 +40,23 @@ export const StylesProperty: FC<FontPropertyProps> = ({}) => {
       </div>
       <div className="flex text-center items-center">
         <Document />
-        <h5 className="pl-1 ml-1">Các kiểu tài liệu</h5>
+        <h5 className="pl-1 ml-1">Text styles</h5>
       </div>
       <ul className="">
         {stylesArray.map(item => (
           <li
-            key={item.id}
+            key={item.style.variant}
             className="my-2 cursor-pointer flex justify-between items-center hover:bg-[#e4e4e4]"
             onClick={() =>
-              handleChangeStyles(item.id, () => setActiveStyles(item.id))
+              handleChangeStyles(item.style.getTextStyle(), () =>
+                setActiveStyles(item.style.variant),
+              )
             }
           >
-            <span style={item.style}>{item.title}</span>
-            <div>{activeStyle === item.id && <Check className="mr-3" />}</div>
+            <span style={item.style.getTextStyle()}>{item.title}</span>
+            <div>
+              {activeStyle === item.style.variant && <Check className="mr-3" />}
+            </div>
           </li>
         ))}
       </ul>

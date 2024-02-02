@@ -12,7 +12,7 @@ export const MoveableNormalTextElement: FC<MoveableTextProps> = ({
   object,
 }) => {
   return (
-    <div id={object.id} className={`w-fit hidden absolute p-5 text-md`}>
+    <div id={object.id} className={`w-fit hidden absolute text-md`}>
       <div
         className="w-full h-full"
         id={`${OBJECT_INNER_ELEMENTS.FLIPPER}-${object.id}`}

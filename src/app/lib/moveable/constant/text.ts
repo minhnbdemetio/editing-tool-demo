@@ -1,10 +1,8 @@
-import { TextEffectOptions } from '../effects/text/TextEffect';
-import { TextFontStyle } from '../text/MoveableText';
-
-export enum TextVarient {
+export enum TextVariant {
   HEADING = 'heading',
   BODY = 'body',
   SUBHEADING = 'subheading',
+  NORMAL = 'normal',
 }
 
 export const TEXT_INNER_ELEMENTS = {
@@ -67,24 +65,6 @@ export const TEXT_BACKGROUND_DEFAULT_VALUE = {
 
 export const TEXT_CURVE_DEFAULT_VALUE = {
   curve: 50,
-};
-
-export const TEXT_STYLE_DEFAULT_VALUE = {
-  [TextVarient.BODY]: {
-    fontWeight: '400',
-    fontStyle: 'normal' as TextFontStyle,
-    fontSize: 12,
-  },
-  [TextVarient.SUBHEADING]: {
-    fontWeight: '700',
-    fontStyle: 'normal' as TextFontStyle,
-    fontSize: 18,
-  },
-  [TextVarient.HEADING]: {
-    fontWeight: '700',
-    fontStyle: 'normal' as TextFontStyle,
-    fontSize: 30,
-  },
 };
 
 export const TEXT_SHADOW_EFFECT_CSS_VARIABLES = '--text-shadow-effect';

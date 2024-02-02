@@ -1,16 +1,5 @@
 import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
 import {
-  useToggleMoveableBoldText,
-  useToggleLineThroughText,
-  useToggleUppercaseText,
-  useToggleUnderlineText,
-  useToggleItalicText,
-  useChangeTextAlign,
-  useToggleListTypeDiscText,
-  useToggleListTypeNumberText,
-  useChangeTextSpacing,
-  useChangeTextLineHeight,
-  useChangeTextTransformOrigin,
   useChangeTextStyles,
   useChangeTextFontStyle,
   useChangeObjectTransform,
