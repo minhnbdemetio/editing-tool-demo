@@ -159,7 +159,7 @@ export class TextHollowEffect extends StyleEffect {
     element.style.caretColor = 'auto'; // initial value is 'auto'
     element.style.webkitTextStrokeWidth = '0'; // initial value is '0'
     element.style.webkitTextStrokeColor = 'transparent'; // initial value is 'transparent'
-    element.style.webkitTextFillColor = 'black'; // initial value is 'black'
+    element.style.webkitTextFillColor = ''; // initial value is 'black'
   }
 }
 

@@ -16,10 +16,16 @@ import Moveable from 'react-moveable';
 import Selecto from 'react-selecto';
 
 export const MoveableConfig: FC = () => {
-  const { moveableTargets, setMoveableTargets, getAllObjects, setMovable } =
-    useDesign();
-  const { activeMoveableObject, setActiveMoveableObject } =
-    useActiveMoveableObject();
+  const {
+    moveableTargets,
+    setMoveableTargets,
+    getAllObjects,
+    setMovable,
+  } = useDesign();
+  const {
+    activeMoveableObject,
+    setActiveMoveableObject,
+  } = useActiveMoveableObject();
   const moveableRef = useRef<Moveable | null>(null);
 
   // TODO: Set global moveable ref if needed
@@ -160,6 +166,16 @@ export const MoveableConfig: FC = () => {
           e.target.style.transform = e.drag.transform;
 
           activeMoveableObject?.render();
+        }}
+        onResizeStart={e => {
+          if (isText(activeMoveableObject)) {
+            activeMoveableObject.setResizing(true)
+          }
+        }}
+        onResizeEnd={e => {
+          if (isText(activeMoveableObject)) {
+            activeMoveableObject.setResizing(false)
+          }
         }}
         onScale={e => {
           if (isElementLocked(e.target)) return;

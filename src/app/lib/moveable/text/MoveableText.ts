@@ -51,6 +51,14 @@ export class MoveableTextObject
   fontWeight: string;
   editable: boolean;
   color: string = 'black';
+  previousSize: {
+    width: number;
+    height: number;
+  } = {
+    width: 0,
+    height: 0,
+  };
+  isResizing: boolean = false;
 
   constructor(options?: Partial<MoveableTextObject>) {
     super(options);
@@ -139,6 +147,20 @@ export class MoveableTextObject
   getEditable() {
     return this.editable;
   }
+  getResizingStatus() {
+    return this.isResizing;
+  }
+  setResizing(isResizing: boolean) {
+    this.isResizing = isResizing;
+  }
+
+  getPreviousSize() {
+    return this.previousSize;
+  }
+
+  setPreviousSize(size: { width: number; height: number }) {
+    this.previousSize = size;
+  }
 
   applyTextGradient(element: HTMLElement) {
     if (!this.gradientStops) {
@@ -192,35 +214,31 @@ export class MoveableTextObject
     this.transformDirection = transformDirection;
   }
   onUpdateTransformDirection() {
-    if (this.transformDirection === 'bottom') return;
+    if (this.transformDirection === 'bottom' && this.isResizing) return;
     const element = this.getElement();
-    const textContainer = this.getTextContainer();
-    const firstItemContainer = textContainer?.firstElementChild;
-    if (!element || !firstItemContainer) return;
+    if (!element) return;
+    const prevHeight = this.getPreviousSize().height;
+    const currentHeight = element.clientHeight;
     const elementStyles = window.getComputedStyle(element);
-    const firstTextStyles = window.getComputedStyle(firstItemContainer);
-    const lineHeight = parseFloat(
-      firstTextStyles.lineHeight?.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
-    );
     const transform = elementStyles.transform;
 
     // Extract the translateX and translateY values
     const match =
-      /matrix\(\d+, \d+, \d+, \d+, (\d+(\.\d+)?), (\d+(\.\d+)?)\)/.exec(
+      /matrix\(\d+, \d+, \d+, \d+, ((-?)\d+(\.\d+)?), ((-?)\d+(\.\d+)?)\)/.exec(
         transform,
       );
     const translateX = match ? parseFloat(match[1]) : 0;
-    const translateY = match ? parseFloat(match[3]) : 0;
+    const translateY = match ? parseFloat(match[4]) : 0;
 
     // Calculate the new transform origin
 
     if (this.transformDirection === 'center') {
       element.style.transform = `translate(${translateX}px, ${
-        translateY - lineHeight / 2
+        translateY - (currentHeight - prevHeight) / 2
       }px)`;
     } else if (this.transformDirection === 'top') {
       element.style.transform = `translate(${translateX}px, ${
-        translateY - lineHeight
+        translateY - (currentHeight - prevHeight)
       }px)`;
     }
   }
@@ -412,6 +430,10 @@ export class MoveableTextObject
     textContainer.addEventListener('blur', () => {
       textContainer.setAttribute('contenteditable', 'false');
       this.setEditable(false);
+    });
+    this.setPreviousSize({
+      width: element.clientWidth,
+      height: element.clientHeight,
     });
   }
   clone(options?: Partial<MoveableTextObject>): MoveableTextObject {
