@@ -15,7 +15,6 @@ export const PageRender: FC<PageRenderProps> = ({ page, index }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const editorContainer = document.getElementById(EDITOR_CONTAINER);
   useEffect(() => {
-    console.log(page, containerRef.current);
     if (page && containerRef.current) {
       if (editorContainer) {
         try {
