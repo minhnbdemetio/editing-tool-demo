@@ -419,7 +419,6 @@ export abstract class PhotoFilter {
     );
 
     const filterElement = photo.getFilterContainer();
-    console.debug({ filterElement, gElement });
 
     if (filterElement && gElement) {
       if (appliedFilters.length) {

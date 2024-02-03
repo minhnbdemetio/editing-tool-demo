@@ -11,6 +11,7 @@ import { useAddPage, usePages } from '../hooks/usePage';
 import { useActivePage } from '../store/active-page';
 import { twMerge } from '../utilities/tailwind';
 import { Add } from '@/app/icons';
+import { useImageCropping } from '../store/image-cropping';
 
 export const SELECTO_ID = 'editor-selecto';
 export const EDITOR_CONTAINER = 'editor-container';
@@ -20,6 +21,8 @@ export const Editor: FC = () => {
   const addPage = useAddPage();
   const { activeMoveableObject } = useActiveMoveableObject();
   const { activePage } = useActivePage();
+
+  const isCropping = useImageCropping(s => s.isCropping);
 
   const handleAddPage = useCallback(() => {
     addPage([]);
@@ -44,6 +47,7 @@ export const Editor: FC = () => {
       ref={drop}
       id={EDITOR_CONTAINER}
       data-active-element-type={activeMoveableObject?.type}
+      data-image-cropping={isCropping}
       className={`bg-[#F1F2F4] p-10 ${EDITOR_CONTAINER} min-h-full`}
     >
       <div className="text-right mb-3">

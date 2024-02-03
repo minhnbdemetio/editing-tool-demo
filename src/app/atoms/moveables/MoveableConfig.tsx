@@ -5,6 +5,7 @@ import { TopToolbar } from '@/app/molecules/ObjectToolbar/TopToolbar';
 import { SELECTO_ID, EDITOR_CONTAINER } from '@/app/organisms/Editor';
 import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
 import { useDesign } from '@/app/store/design-objects';
+import { useImageCropping } from '@/app/store/image-cropping';
 import { isElementLocked, isLine, isPhoto } from '@/app/utilities/moveable';
 import { FC, useEffect, useRef } from 'react';
 import Moveable from 'react-moveable';
@@ -21,6 +22,8 @@ export const MoveableConfig: FC = () => {
   useEffect(() => {
     setMovable(moveableRef.current);
   }, [setMovable, moveableTargets]);
+
+  const isCropping = useImageCropping(s => s.isCropping);
 
   const findAndSetActiveObject = (objectId: string) => {
     const allObjects = getAllObjects();
@@ -62,8 +65,8 @@ export const MoveableConfig: FC = () => {
         target={moveableTargets}
         ables={[BottomToolbar, TopToolbar]}
         props={{
-          topToolbar: true,
-          bottomToolbar: true,
+          topToolbar: !isCropping,
+          bottomToolbar: !isCropping,
         }}
         draggable
         resizable
@@ -109,12 +112,10 @@ export const MoveableConfig: FC = () => {
             activeMoveableObject.updateHeadControl();
             activeMoveableObject.updatePointerControllerUI();
           }
-          if (isPhoto(activeMoveableObject)) {
-            const xChanged =
-              matrix.m41 - activeMoveableObject.dragStartPoint!.x;
-            const yChanged =
-              matrix.m42 - activeMoveableObject.dragStartPoint!.y;
-            activeMoveableObject.updateCropPosition(xChanged, yChanged);
+
+          if (activeMoveableObject) {
+            activeMoveableObject.x = matrix.m41;
+            activeMoveableObject.y = matrix.m42;
           }
         }}
         onDrag={e => {
