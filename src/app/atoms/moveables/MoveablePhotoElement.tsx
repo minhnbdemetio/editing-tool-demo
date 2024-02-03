@@ -17,7 +17,7 @@ export const MoveablePhotoElement: FC<MoveablePhotoProps> = ({ object }) => {
         width: object.width,
         height: object.height,
       }}
-      className={`hidden absolute w-fit overflow-hidden`}
+      className={` absolute w-fit overflow-hidden`}
     >
       <div
         className="w-full h-full"

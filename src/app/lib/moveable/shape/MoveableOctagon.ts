@@ -1,15 +1,11 @@
+import { v4 } from 'uuid';
 import { MoveableObject, ObjectType } from '../MoveableObject';
 import { MoveableShapeType } from '../editable/EditableShape';
 import { Octagon } from '../svg/Octagon';
 import { MoveableShape } from './MoveableShape';
 
 export class MoveableOctagon extends MoveableShape {
-  constructor(options?: {
-    id: string;
-    type?: ObjectType;
-    pageId: string | null;
-    htmlString?: string;
-  }) {
+  constructor(options?: Partial<MoveableOctagon>) {
     super(options);
     this.shapeType = MoveableShapeType.Square;
   }
@@ -18,14 +14,14 @@ export class MoveableOctagon extends MoveableShape {
     return new Octagon({ width: this.width, height: this.height });
   }
 
-  clone(
-    options?: { htmlString: string; id: string } | undefined,
-  ): MoveableObject {
-    const clonedData = this.cloneData();
-
-    return new MoveableOctagon({
-      ...this.toJSON(),
-      id: clonedData.cloneObjectId,
-    });
+  clone(options?: Partial<MoveableOctagon>): MoveableObject {
+    return new MoveableOctagon(
+      options
+        ? options
+        : {
+            ...this.toJSON(),
+            id: v4(),
+          },
+    );
   }
 }

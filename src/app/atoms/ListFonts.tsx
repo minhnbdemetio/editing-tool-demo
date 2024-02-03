@@ -1,6 +1,6 @@
 import React, { CSSProperties, useState } from 'react';
 import { Check, ChevronLeft, ChevronRight } from '../icons';
-import { TextFontStyle } from '../lib/moveable/text/MoveableText';
+import { TextFontStyle } from '../lib/moveable/text/TextFormat';
 
 export type FontStyle = {
   value: string;

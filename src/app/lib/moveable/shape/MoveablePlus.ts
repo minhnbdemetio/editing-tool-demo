@@ -1,15 +1,11 @@
+import { v4 } from 'uuid';
 import { MoveableObject, ObjectType } from '../MoveableObject';
 import { MoveableShapeType } from '../editable/EditableShape';
 import { Plus } from '../svg/Plus';
 import { MoveableShape } from './MoveableShape';
 
 export class MoveablePlus extends MoveableShape {
-  constructor(options?: {
-    id: string;
-    type?: ObjectType;
-    pageId: string | null;
-    htmlString?: string;
-  }) {
+  constructor(options?: Partial<MoveablePlus>) {
     super(options);
     this.shapeType = MoveableShapeType.Plus;
   }
@@ -18,14 +14,14 @@ export class MoveablePlus extends MoveableShape {
     return new Plus({ width: this.width, height: this.height });
   }
 
-  clone(
-    options?: { htmlString: string; id: string } | undefined,
-  ): MoveableObject {
-    const clonedData = this.cloneData();
-
-    return new MoveablePlus({
-      ...this.toJSON(),
-      id: clonedData.cloneObjectId,
-    });
+  clone(options?: Partial<MoveablePlus>): MoveableObject {
+    return new MoveablePlus(
+      options
+        ? options
+        : {
+            ...this.toJSON(),
+            id: v4(),
+          },
+    );
   }
 }

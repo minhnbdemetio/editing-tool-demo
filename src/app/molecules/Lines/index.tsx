@@ -24,7 +24,7 @@ export const Lines: React.FC<LinesProps> = () => {
         }
         case 'arrow-closed': {
           addObjectToActivePage(
-            new MoveableLineObject(undefined, undefined, {
+            new MoveableLineObject({
               svgLineOptions: {
                 startAdornment: SvgLineAdornment.Arrow,
                 endAdornment: SvgLineAdornment.Arrow,
@@ -35,7 +35,7 @@ export const Lines: React.FC<LinesProps> = () => {
         }
         case 'closed': {
           addObjectToActivePage(
-            new MoveableLineObject(undefined, undefined, {
+            new MoveableLineObject({
               svgLineOptions: {
                 startAdornment: SvgLineAdornment.Line,
                 endAdornment: SvgLineAdornment.Line,

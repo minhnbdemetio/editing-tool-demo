@@ -22,18 +22,13 @@ export abstract class MoveableObject
   isLocked;
   x;
   y;
-  width;
-  height;
+  width: number;
+  height: number;
   opacity;
   flipXY;
   color: string | undefined;
 
-  constructor(options?: {
-    id?: string;
-    htmlString?: string;
-    width?: number;
-    height?: number;
-  }) {
+  constructor(options?: Partial<MoveableObject>) {
     this.id = options?.id || uuidv4();
     this.htmlString = options?.htmlString;
     this.width = options?.width || 100;
@@ -242,14 +237,10 @@ export abstract class MoveableObject
     }
   }
 
-  copy() {}
-  abstract clone(options?: { htmlString: string; id: string }): MoveableObject;
-  cloneData() {
-    const outerHtml = this.toHtmlString();
-    const cloneObjectId = uuidv4();
-    const clonedObjectHtml = outerHtml.replaceAll(this.id, cloneObjectId);
-    return { cloneObjectId, clonedObjectHtml };
+  copy() {
+    navigator.clipboard.writeText(this.id);
   }
+  abstract clone(options?: Partial<MoveableObject>): MoveableObject;
   delete() {}
   render() {
     this.setIsLocked(isElementLocked(this.getElement()));

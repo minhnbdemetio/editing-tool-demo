@@ -23,6 +23,7 @@ import {
   TransformDirection,
 } from './TextFormat';
 import { TextStyle } from './TextStyle';
+import { v4 } from 'uuid';
 
 export class MoveableTextObject
   extends MoveableObject
@@ -49,7 +50,7 @@ export class MoveableTextObject
   fontWeight: string;
   editable: boolean;
 
-  constructor(options?: { id: string; htmlString: string }) {
+  constructor(options?: Partial<MoveableTextObject>) {
     super(options);
     this.type = 'text';
     this.variant = TextVariant.NORMAL;
@@ -398,17 +399,9 @@ export class MoveableTextObject
       this.setEditable(false);
     });
   }
-  clone(options?: { htmlString: string; id: string }): MoveableTextObject {
-    if (options) {
-      return new MoveableTextObject({
-        id: options.id,
-        htmlString: options.htmlString,
-      });
-    }
-    const clonedData = this.cloneData();
-    return new MoveableTextObject({
-      id: clonedData.cloneObjectId,
-      htmlString: clonedData.clonedObjectHtml,
-    });
+  clone(options?: Partial<MoveableTextObject>): MoveableTextObject {
+    return new MoveableTextObject(
+      options ? options : { ...this.toJSON(), id: v4() },
+    );
   }
 }

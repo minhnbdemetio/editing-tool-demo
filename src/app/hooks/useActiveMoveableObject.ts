@@ -50,11 +50,7 @@ export const useCopyActiveObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
   return useCallback(() => {
-    if (activeMoveableObject) {
-      navigator.clipboard.writeText(activeMoveableObject?.id);
-      return true;
-    }
-    return false;
+    activeMoveableObject?.copy();
   }, [activeMoveableObject]);
 };
 
@@ -70,7 +66,6 @@ export const usePasteObject = () => {
 
     if (copiedObject) {
       const clonedObject = copiedObject.clone();
-      clonedObject.setPageId(copiedObject.pageId);
       setPageObjects(copiedObject?.pageId || '', [...allObjects, clonedObject]);
       return true;
     }
@@ -160,7 +155,7 @@ export const useUndoDeleteObject = () => {
     (deletedObject: MoveableObject | null) => {
       if (!deletedObject || !deletedObject.pageId) return false;
       const recreatedObject = deletedObject.clone({
-        htmlString: deletedObject.htmlString!,
+        ...deletedObject.toJSON(),
         id: deletedObject.id,
       });
       recreatedObject.setPageId(deletedObject.pageId);
