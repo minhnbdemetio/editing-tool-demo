@@ -24,6 +24,7 @@ import {
 } from './TextFormat';
 import { TextStyle } from './TextStyle';
 import { v4 } from 'uuid';
+import { OBJECT_INNER_ELEMENTS } from '../constant/object';
 
 export class MoveableTextObject
   extends MoveableObject
@@ -49,6 +50,7 @@ export class MoveableTextObject
   textStyle: TextStyle;
   fontWeight: string;
   editable: boolean;
+  color: string = 'black';
 
   constructor(options?: Partial<MoveableTextObject>) {
     super(options);
@@ -60,7 +62,7 @@ export class MoveableTextObject
     this.textStyle = {
       fontSize: TEXT_STYLE_FONT_SIZE.NORMAL,
     };
-    this.lineHeight = this.textStyle.fontSize * 1.5;
+    this.lineHeight = 1.5;
     this.scaleX = DEFAULT_TEXT_SCALE;
     this.scaleY = DEFAULT_TEXT_SCALE;
     this.fontFamily = 'Arial';
@@ -116,11 +118,17 @@ export class MoveableTextObject
   applyTextStyle() {
     this.applyFontSize();
   }
+  getColor() {
+    return this.color;
+  }
   setTextColor(color: string) {
+    this.color = color;
+    this.gradientStops = undefined;
+  }
+  applyColor() {
     const element = this.getElement();
     if (!element) return false;
-    element.style.color = color;
-    this.gradientStops = undefined;
+    element.style.color = this.color;
   }
   setTextGradient(stops: GradientStop[]) {
     this.gradientStops = stops;
@@ -159,12 +167,6 @@ export class MoveableTextObject
   getSvgElement() {
     return document.getElementById(`${TEXT_INNER_ELEMENTS.SVG}-${this.id}`);
   }
-  getContentEditableElement() {
-    const element = this.getElement();
-    if (!element) return null;
-    return (element.querySelector('[contenteditable]') ||
-      element.firstChild) as HTMLElement;
-  }
   getTextContainer() {
     let attempt = 0;
     let element = null;
@@ -180,6 +182,11 @@ export class MoveableTextObject
     }
 
     return element;
+  }
+  getFlipperElement() {
+    return document.getElementById(
+      `${OBJECT_INNER_ELEMENTS.FLIPPER}-${this.id}`,
+    );
   }
   changeTransformOrigin(transformDirection: TransformDirection) {
     this.transformDirection = transformDirection;
@@ -239,10 +246,11 @@ export class MoveableTextObject
   applyLineHeight() {
     const element = this.getElement();
     if (!element) return false;
-    element.style.lineHeight = this.lineHeight + 'px';
+    element.style.lineHeight = `${this.lineHeight}`;
   }
   setStyleEffect(styleEffect: TextEffect) {
     this.styleEffect = styleEffect;
+    this.styleEffect.id = this.id;
   }
   updateStyleEffectOption(option: TextEffectOptions) {
     this.styleEffect.setOption(option);
@@ -250,6 +258,7 @@ export class MoveableTextObject
 
   setShapeEffect(shapeEffect: ShapeEffect) {
     this.shapeEffect = shapeEffect;
+    this.shapeEffect.id = this.id;
   }
 
   updateShapeEffectOption(shapeEffectOption: TextEffectOptions) {
@@ -332,16 +341,18 @@ export class MoveableTextObject
   }
 
   applyTextListStyle: () => void = () => {
-    const listElement = this.getElement()?.querySelector('ul');
-    if (!listElement) return false;
+    const listElements = this.getElement()?.querySelectorAll('ul');
+    if (!listElements?.length) return false;
 
-    if (this.isTextListStyle('none')) {
-      listElement.style.paddingLeft = '0';
-      listElement.style.listStyleType = 'none';
-    } else {
-      listElement.style.paddingLeft = '20px';
-      listElement.style.listStyleType = this.getTextListStyle();
-    }
+    listElements.forEach(listElement => {
+      if (this.isTextListStyle('none')) {
+        listElement.style.paddingLeft = '0';
+        listElement.style.listStyleType = 'none';
+      } else {
+        listElement.style.paddingLeft = '20px';
+        listElement.style.listStyleType = this.getTextListStyle();
+      }
+    });
   };
 
   applyFontEffect: () => void = () => {
@@ -358,13 +369,15 @@ export class MoveableTextObject
 
   render() {
     const element = this.getElement();
-    const contenteditable = this.getContentEditableElement();
+    const contenteditable = this.getTextContainer();
+    const flipperElement = this.getFlipperElement();
     if (!element || !contenteditable) return;
     this.applyFontSize();
     this.applyLetterSpacing();
     this.applyLineHeight();
     this.textDecoration.apply(element);
     this.applyOpacity();
+    this.applyColor();
 
     if (this.styleEffect.variant === TextStyleEffect.OUTLINE) {
       this.applyTextGradient(contenteditable);
@@ -376,8 +389,10 @@ export class MoveableTextObject
       this.shapeEffect.styleEffect = this.styleEffect;
       this.shapeEffect.textDecoration = this.textDecoration;
     }
-    this.styleEffect.apply(element);
-    this.shapeEffect.apply(element);
+    if (flipperElement) {
+      this.styleEffect.apply(flipperElement);
+      this.shapeEffect.apply(flipperElement);
+    }
 
     this.renderTextScale();
     this.applyFontEffect();

@@ -62,4 +62,9 @@ export interface TextFormat {
   getOpacity: () => number;
   setOpacity: (opacity: number) => void;
   applyOpacity: (element: HTMLElement) => void;
+
+  color: string;
+  getColor: () => string;
+  setTextColor: (color: string) => void;
+  applyColor: () => void;
 }

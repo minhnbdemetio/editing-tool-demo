@@ -8,6 +8,7 @@ import {
   TEXT_BACKGROUND_DEFAULT_VALUE,
   TEXT_CURVE_DEFAULT_VALUE,
   TEXT_CURVE_INPUT_LAYER_CONTAINER,
+  TEXT_INNER_ELEMENTS,
 } from '../../constant/text';
 import { StyleEffect, TextStyleEffect } from './StyleEffect';
 import { TextDecorationEffect } from './TextDecorationEffect';
@@ -33,7 +34,7 @@ export class TextCurveEffect extends ShapeEffect {
   boundOnClickOutside: (this: HTMLElement, ev: Event) => void = () => {};
   isRegisterClickToCurveEvent: boolean = false;
   boundOnClickToCurveElement: (this: HTMLElement, ev: Event) => void = () => {};
-  id?: string;
+  isRegisterEventRemoveTextInputElement: boolean = false;
   constructor(option?: TextEffectOptions) {
     super(option);
     this.variant = TextShapeEffect.CURVE;
@@ -42,12 +43,6 @@ export class TextCurveEffect extends ShapeEffect {
   getElement(): HTMLElement | null {
     if (!this.id) return null;
     return document.getElementById(this.id);
-  }
-
-  getTextContainer(): HTMLElement | null {
-    const element = this.getElement();
-    if (!element) return null;
-    return element.querySelector('[contentEditable]');
   }
 
   getCurveContainer(): HTMLElement | null {
@@ -61,7 +56,6 @@ export class TextCurveEffect extends ShapeEffect {
   }
 
   apply(element: HTMLElement): void {
-    this.id = element.id;
     const ul = this.getTextContainer();
     this.removeGlitchContainer();
     if (
@@ -91,6 +85,11 @@ export class TextCurveEffect extends ShapeEffect {
         this.boundOnClickToCurveElement,
       );
     }
+
+    if (!this.isRegisterEventRemoveTextInputElement) {
+      this.isRegisterEventRemoveTextInputElement = true;
+      this.removeTextContainer();
+    }
   }
 
   applyGlitchEffect() {
@@ -112,7 +111,7 @@ export class TextCurveEffect extends ShapeEffect {
   }
 
   generateCurveElement(element: HTMLElement) {
-    const elId = element.id;
+    const elId = this.id;
     const ul = this.getTextContainer();
     if (!ul) return false;
     const { curve = TEXT_CURVE_DEFAULT_VALUE.curve } = this.options;
@@ -214,6 +213,7 @@ export class TextCurveEffect extends ShapeEffect {
       spread = TEXT_BACKGROUND_DEFAULT_VALUE.spread,
       color = TEXT_BACKGROUND_DEFAULT_VALUE.color,
       roundness = TEXT_BACKGROUND_DEFAULT_VALUE.roundness,
+      transparency = TEXT_BACKGROUND_DEFAULT_VALUE.transparency,
     } = this.styleEffect?.options || {};
     const { curve = TEXT_CURVE_DEFAULT_VALUE.curve } = this.options;
     const spreadVal = (spread / 100) * 10;
@@ -235,6 +235,7 @@ export class TextCurveEffect extends ShapeEffect {
     svg.style.width = `${maxX + Kx + 20}px`;
     svg.style.height = `${maxY + Ky + 20}px`;
     svg.style.zIndex = '-2';
+    svg.style.opacity = `${transparency / 100}`;
     const reservePoints = points.slice().reverse();
     const lastPoint = reservePoints[0];
     const path = document.createElementNS(
@@ -353,6 +354,7 @@ export class TextCurveEffect extends ShapeEffect {
       text.style.left = `${x}px`;
       text.style.minWidth = '20px';
       text.style.minHeight = '20px';
+      text.style.outline = 'none';
     }
     curveContainer.style.opacity = '0.3';
     document.body.appendChild(text);
@@ -414,5 +416,29 @@ export class TextCurveEffect extends ShapeEffect {
     if (glitchContainer) {
       glitchContainer.remove();
     }
+  }
+
+  removeTextContainer() {
+    if (!this.id) return;
+    const element = document.getElementById(this.id);
+
+    const observer = new MutationObserver((mutationsList, observer) => {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          // @ts-ignore
+          for (let node of mutation.removedNodes) {
+            if (
+              node?.querySelector &&
+              node.querySelector(`#${TEXT_INNER_ELEMENTS.CONTAINER}-${this.id}`)
+            ) {
+              const textLayerContainer = this.getTextCureLayerContainer();
+              textLayerContainer?.remove();
+            }
+          }
+        }
+      }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
   }
 }
