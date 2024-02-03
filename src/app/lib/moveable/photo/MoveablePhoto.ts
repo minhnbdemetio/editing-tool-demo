@@ -369,9 +369,9 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
       height: pageHeight,
     } = activePageElement.getBoundingClientRect();
 
-    element.style.width = `${(pageHeight * ratio) / scale}px`;
+    element.style.width = `100%`;
     element.style.height = `${pageHeight / scale}px`;
-    element.style.transform = `translate(0px, 0px)`;
+    // element.style.transform = `translate(0px, 0px)`;
     activePageElement.style.overflow = 'hidden';
 
     this.backgroundStartPosition = {
