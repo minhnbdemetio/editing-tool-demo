@@ -133,8 +133,8 @@ export class MoveableTextObject
     this.color = color;
     this.gradientStops = undefined;
   }
-  applyColor() {
-    const element = this.getElement();
+  applyColor(el?: HTMLElement) {
+    const element = el ?? this.getElement();
     if (!element) return false;
     element.style.color = this.color;
   }
@@ -402,6 +402,7 @@ export class MoveableTextObject
       this.shapeEffect.textDecoration = this.textDecoration;
     }
     if (flipperElement) {
+      this.applyColor(flipperElement);
       this.styleEffect.apply(flipperElement);
       this.shapeEffect.apply(flipperElement);
     }
