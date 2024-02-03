@@ -30,9 +30,15 @@ export const MoveableTextElement: FC<MoveableTextProps> = ({
       element.style.width = `${textContainer.clientWidth}px`;
       element.style.height = `${textContainer.clientHeight}px`;
 
-      for (let entry of entries) {
+      if (object.getPreviousSize().height !== textContainer.clientHeight) {
         object.onUpdateTransformDirection();
       }
+
+      object.setPreviousSize({
+        width: textContainer.clientWidth,
+        height: textContainer.clientHeight,
+      });
+
       moveable?.updateRect();
     });
 

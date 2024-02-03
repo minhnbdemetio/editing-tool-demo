@@ -24,6 +24,7 @@ import {
 } from './TextFormat';
 import { TextStyle } from './TextStyle';
 import { v4 } from 'uuid';
+import { OBJECT_INNER_ELEMENTS } from '../constant/object';
 
 export class MoveableTextObject
   extends MoveableObject
@@ -49,6 +50,15 @@ export class MoveableTextObject
   textStyle: TextStyle;
   fontWeight: string;
   editable: boolean;
+  color: string = 'black';
+  previousSize: {
+    width: number;
+    height: number;
+  } = {
+    width: 0,
+    height: 0,
+  };
+  isResizing: boolean = false;
 
   constructor(options?: Partial<MoveableTextObject>) {
     super(options);
@@ -60,7 +70,7 @@ export class MoveableTextObject
     this.textStyle = {
       fontSize: TEXT_STYLE_FONT_SIZE.NORMAL,
     };
-    this.lineHeight = this.textStyle.fontSize * 1.5;
+    this.lineHeight = 1.5;
     this.scaleX = DEFAULT_TEXT_SCALE;
     this.scaleY = DEFAULT_TEXT_SCALE;
     this.fontFamily = 'Arial';
@@ -116,11 +126,17 @@ export class MoveableTextObject
   applyTextStyle() {
     this.applyFontSize();
   }
+  getColor() {
+    return this.color;
+  }
   setTextColor(color: string) {
+    this.color = color;
+    this.gradientStops = undefined;
+  }
+  applyColor() {
     const element = this.getElement();
     if (!element) return false;
-    element.style.color = color;
-    this.gradientStops = undefined;
+    element.style.color = this.color;
   }
   setTextGradient(stops: GradientStop[]) {
     this.gradientStops = stops;
@@ -130,6 +146,20 @@ export class MoveableTextObject
   }
   getEditable() {
     return this.editable;
+  }
+  getResizingStatus() {
+    return this.isResizing;
+  }
+  setResizing(isResizing: boolean) {
+    this.isResizing = isResizing;
+  }
+
+  getPreviousSize() {
+    return this.previousSize;
+  }
+
+  setPreviousSize(size: { width: number; height: number }) {
+    this.previousSize = size;
   }
 
   applyTextGradient(element: HTMLElement) {
@@ -159,12 +189,6 @@ export class MoveableTextObject
   getSvgElement() {
     return document.getElementById(`${TEXT_INNER_ELEMENTS.SVG}-${this.id}`);
   }
-  getContentEditableElement() {
-    const element = this.getElement();
-    if (!element) return null;
-    return (element.querySelector('[contenteditable]') ||
-      element.firstChild) as HTMLElement;
-  }
   getTextContainer() {
     let attempt = 0;
     let element = null;
@@ -181,39 +205,34 @@ export class MoveableTextObject
 
     return element;
   }
+  getFlipperElement() {
+    return document.getElementById(
+      `${OBJECT_INNER_ELEMENTS.FLIPPER}-${this.id}`,
+    );
+  }
   changeTransformOrigin(transformDirection: TransformDirection) {
     this.transformDirection = transformDirection;
   }
   onUpdateTransformDirection() {
-    if (this.transformDirection === 'bottom') return;
+    if (this.transformDirection === 'bottom' && this.isResizing) return;
     const element = this.getElement();
-    const textContainer = this.getTextContainer();
-    const firstItemContainer = textContainer?.firstElementChild;
-    if (!element || !firstItemContainer) return;
+    if (!element) return;
+    const prevHeight = this.getPreviousSize().height;
+    const currentHeight = element.clientHeight;
     const elementStyles = window.getComputedStyle(element);
-    const firstTextStyles = window.getComputedStyle(firstItemContainer);
-    const lineHeight = parseFloat(
-      firstTextStyles.lineHeight?.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
-    );
-    const transform = elementStyles.transform;
-
-    // Extract the translateX and translateY values
-    const match =
-      /matrix\(\d+, \d+, \d+, \d+, (\d+(\.\d+)?), (\d+(\.\d+)?)\)/.exec(
-        transform,
-      );
-    const translateX = match ? parseFloat(match[1]) : 0;
-    const translateY = match ? parseFloat(match[3]) : 0;
+    const matrix = new WebKitCSSMatrix(elementStyles.webkitTransform);
+    const translateX = matrix.e;
+    const translateY = matrix.f;
 
     // Calculate the new transform origin
 
     if (this.transformDirection === 'center') {
       element.style.transform = `translate(${translateX}px, ${
-        translateY - lineHeight / 2
+        translateY - (currentHeight - prevHeight) / 2
       }px)`;
     } else if (this.transformDirection === 'top') {
       element.style.transform = `translate(${translateX}px, ${
-        translateY - lineHeight
+        translateY - (currentHeight - prevHeight)
       }px)`;
     }
   }
@@ -239,10 +258,11 @@ export class MoveableTextObject
   applyLineHeight() {
     const element = this.getElement();
     if (!element) return false;
-    element.style.lineHeight = this.lineHeight + 'px';
+    element.style.lineHeight = `${this.lineHeight}`;
   }
   setStyleEffect(styleEffect: TextEffect) {
     this.styleEffect = styleEffect;
+    this.styleEffect.id = this.id;
   }
   updateStyleEffectOption(option: TextEffectOptions) {
     this.styleEffect.setOption(option);
@@ -250,6 +270,7 @@ export class MoveableTextObject
 
   setShapeEffect(shapeEffect: ShapeEffect) {
     this.shapeEffect = shapeEffect;
+    this.shapeEffect.id = this.id;
   }
 
   updateShapeEffectOption(shapeEffectOption: TextEffectOptions) {
@@ -332,16 +353,18 @@ export class MoveableTextObject
   }
 
   applyTextListStyle: () => void = () => {
-    const listElement = this.getElement()?.querySelector('ul');
-    if (!listElement) return false;
+    const listElements = this.getElement()?.querySelectorAll('ul');
+    if (!listElements?.length) return false;
 
-    if (this.isTextListStyle('none')) {
-      listElement.style.paddingLeft = '0';
-      listElement.style.listStyleType = 'none';
-    } else {
-      listElement.style.paddingLeft = '20px';
-      listElement.style.listStyleType = this.getTextListStyle();
-    }
+    listElements.forEach(listElement => {
+      if (this.isTextListStyle('none')) {
+        listElement.style.paddingLeft = '0';
+        listElement.style.listStyleType = 'none';
+      } else {
+        listElement.style.paddingLeft = '20px';
+        listElement.style.listStyleType = this.getTextListStyle();
+      }
+    });
   };
 
   applyFontEffect: () => void = () => {
@@ -358,13 +381,15 @@ export class MoveableTextObject
 
   render() {
     const element = this.getElement();
-    const contenteditable = this.getContentEditableElement();
+    const contenteditable = this.getTextContainer();
+    const flipperElement = this.getFlipperElement();
     if (!element || !contenteditable) return;
     this.applyFontSize();
     this.applyLetterSpacing();
     this.applyLineHeight();
     this.textDecoration.apply(element);
     this.applyOpacity();
+    this.applyColor();
 
     if (this.styleEffect.variant === TextStyleEffect.OUTLINE) {
       this.applyTextGradient(contenteditable);
@@ -376,8 +401,10 @@ export class MoveableTextObject
       this.shapeEffect.styleEffect = this.styleEffect;
       this.shapeEffect.textDecoration = this.textDecoration;
     }
-    this.styleEffect.apply(element);
-    this.shapeEffect.apply(element);
+    if (flipperElement) {
+      this.styleEffect.apply(flipperElement);
+      this.shapeEffect.apply(flipperElement);
+    }
 
     this.renderTextScale();
     this.applyFontEffect();
@@ -397,6 +424,10 @@ export class MoveableTextObject
     textContainer.addEventListener('blur', () => {
       textContainer.setAttribute('contenteditable', 'false');
       this.setEditable(false);
+    });
+    this.setPreviousSize({
+      width: element.clientWidth,
+      height: element.clientHeight,
     });
   }
   clone(options?: Partial<MoveableTextObject>): MoveableTextObject {

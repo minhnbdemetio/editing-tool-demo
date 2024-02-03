@@ -1,5 +1,6 @@
 import { cloneDeep } from 'lodash';
 import { Effect } from '../Effect';
+import { TEXT_INNER_ELEMENTS } from '../../constant/text';
 
 export type TextEffectOptions = {
   color?: string;
@@ -16,6 +17,7 @@ export type TextEffectOptions = {
 export abstract class TextEffect extends Effect {
   variant: string = 'none';
   options: TextEffectOptions = {};
+  id?: string;
   constructor(options: TextEffectOptions = {}) {
     super();
     this.options = options;
@@ -30,5 +32,10 @@ export abstract class TextEffect extends Effect {
 
   getOptions(): TextEffectOptions {
     return cloneDeep(this.options);
+  }
+
+  getTextContainer(): HTMLElement | null {
+    const contentEditableId = `${TEXT_INNER_ELEMENTS.CONTAINER}-${this.id}`;
+    return document.getElementById(contentEditableId);
   }
 }

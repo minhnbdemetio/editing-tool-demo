@@ -7,7 +7,6 @@ export class MoveableHeadingTextObject extends MoveableTextObject {
     super(options);
     this.variant = TextVariant.HEADING;
     this.textStyle.fontSize = TEXT_STYLE_FONT_SIZE.HEADING;
-    this.lineHeight = this.textStyle.fontSize * 1.5;
   }
   clone(
     options?: Partial<MoveableHeadingTextObject>,

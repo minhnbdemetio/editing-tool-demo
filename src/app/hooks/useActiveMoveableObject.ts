@@ -90,6 +90,7 @@ export const useUpdateTextColor = () => {
 
   return (color: string) => {
     activeText?.setTextColor(color);
+    activeText?.render();
   };
 };
 
@@ -315,12 +316,14 @@ export const useToggleListTypeNumberText = (
 };
 
 export const useChangeTextSpacing = (activeText: MoveableTextObject | null) => {
+  const { moveable } = useDesign();
   const handleChangeLetterSpacing = (
     letterSpacing: number,
     callback: Function,
   ) => {
     activeText?.setLetterSpacing(letterSpacing);
     activeText?.render();
+    moveable?.updateRect();
     callback();
     return true;
   };
@@ -368,7 +371,7 @@ export const useChangeTextStyles = () => {
   const handleChangeStyles = (textStyle: TextStyle, callback: Function) => {
     if (!activeText) return false;
     activeText.setTextStyle(textStyle);
-    activeText.applyTextStyle();
+    activeText.render();
     callback();
     return true;
   };
@@ -480,13 +483,18 @@ export const useToggleLock = () => {
 
 export const useUpdateActiveTextShapeEffect = () => {
   const activeText = useActiveTextObject();
+  const { moveable } = useDesign();
   const handleChangeTextEffect = (effect: ShapeEffect, cb: Function) => {
     const element = activeText?.getElement();
+    const flipperElement = activeText?.getFlipperElement();
     if (!activeText || !element) return false;
     if (!element) return false;
-    activeText.shapeEffect.reset(element);
+    if (flipperElement) {
+      activeText.shapeEffect.reset(flipperElement);
+    }
     activeText.setShapeEffect(effect);
     activeText.render();
+    moveable?.updateRect();
 
     cb();
     return true;
@@ -654,10 +662,12 @@ export const useSetBackgroundImage = () => {
 export const useUpdateTextStretchFont = (
   activeText: MoveableTextObject | null,
 ) => {
+  const { moveable, scale } = useDesign();
   const updateTextStretchFont = (stretchFont: number, callback?: Function) => {
     if (!activeText) return false;
     activeText.setTextScale({ scaleX: stretchFont / 100 });
     activeText.render();
+    moveable?.updateRect();
     callback && callback();
     return true;
   };
@@ -666,15 +676,20 @@ export const useUpdateTextStretchFont = (
 
 export const useUpdateTextStyleEffect = () => {
   const activeText = useActiveTextObject();
+  const { moveable } = useDesign();
   const updateTextStyleEffect = (
     styleEffect: TextEffect,
     callback?: Function,
   ) => {
     const element = activeText?.getElement();
+    const flipperElement = activeText?.getFlipperElement();
     if (!activeText || !element) return false;
-    activeText.styleEffect.reset(element);
+    if (flipperElement) {
+      activeText.styleEffect.reset(flipperElement);
+    }
     activeText.setStyleEffect(styleEffect);
     activeText.render();
+    moveable?.updateRect();
     callback && callback();
     return true;
   };
