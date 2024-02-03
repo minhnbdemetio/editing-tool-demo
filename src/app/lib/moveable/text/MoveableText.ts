@@ -220,15 +220,9 @@ export class MoveableTextObject
     const prevHeight = this.getPreviousSize().height;
     const currentHeight = element.clientHeight;
     const elementStyles = window.getComputedStyle(element);
-    const transform = elementStyles.transform;
-
-    // Extract the translateX and translateY values
-    const match =
-      /matrix\(\d+, \d+, \d+, \d+, ((-?)\d+(\.\d+)?), ((-?)\d+(\.\d+)?)\)/.exec(
-        transform,
-      );
-    const translateX = match ? parseFloat(match[1]) : 0;
-    const translateY = match ? parseFloat(match[4]) : 0;
+    const matrix = new WebKitCSSMatrix(elementStyles.webkitTransform);
+    const translateX = matrix.e;
+    const translateY = matrix.f;
 
     // Calculate the new transform origin
 
