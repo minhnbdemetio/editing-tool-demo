@@ -23,7 +23,6 @@ export const Menu: FC = () => {
   const [openPage, setOpenPage] = useState(false);
   const { activeMoveableObject } = useActiveMoveableObject();
   const { selectedProperty } = useSelectedProperty();
-
   return (
     <>
       <div
@@ -43,7 +42,11 @@ export const Menu: FC = () => {
           selectedSection={selectedSection}
         />
 
-        <MenuContent section={selectedSection} menuExpand={menuExpand} />
+        <MenuContent
+          section={selectedSection}
+          menuExpand={menuExpand}
+          setOpen={setOpen}
+        />
       </div>
 
       <div

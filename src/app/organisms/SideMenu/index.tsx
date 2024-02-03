@@ -45,16 +45,16 @@ export const SideMenu: FC<SideMenuProps> = ({
               onChange(key);
             }}
             className={twMerge(
-              'w-auto items-center flex justify-center flex-col aspect-square h-full text-gray-500 px-[3px] cursor-pointer',
+              'w-[66px] items-center flex justify-center flex-col aspect-square h-[60px] rounded-lg text-default6 mx-2 cursor-pointer',
               'desktop:h-auto desktop:w-full desktop:py-1 desktop:aspect-square',
               {
-                'bg-green-200 text-primary': selectedSection === key,
+                'bg-[#8493AE29] text-default8': selectedSection === key,
               },
             )}
             key={key}
           >
             <Icon className="w-[24px] h-[24px] mx-auto " />
-            <p className="w-full leading-[14px] text-xs font-normal  text-center whitespace-nowrap  overflow-hidden text-ellipsis">
+            <p className="w-full leading-[14px] text-xs font-sm mt-1 text-center whitespace-nowrap  overflow-hidden text-ellipsis">
               {label}
             </p>
           </div>

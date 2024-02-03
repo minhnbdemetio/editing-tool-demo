@@ -1,7 +1,6 @@
 import {
   AdjustmentsHorizontal,
-  ArchiveBox,
-  Background,
+  BackgroundColor,
   Barcode,
   CloudArrowUp,
   Heart,
@@ -9,9 +8,10 @@ import {
   Palette,
   Photo,
   PlayCircle,
+  Template,
   Text,
   UserPlus,
-  ViewColumns,
+  Workspaces,
 } from '@/app/icons';
 
 export declare type SideMenuItem = {
@@ -36,13 +36,18 @@ export declare type SideMenuItem = {
 
 export const SideMenuItems: SideMenuItem[] = [
   {
+    key: 'backgrounds',
+    icon: BackgroundColor,
+    label: 'Background',
+  },
+  {
     key: 'templates',
-    icon: ViewColumns,
+    icon: Template,
     label: 'Templates',
   },
   {
     key: 'workspaces',
-    icon: ArchiveBox,
+    icon: Workspaces,
     label: 'Workspaces',
   },
   {
@@ -84,11 +89,6 @@ export const SideMenuItems: SideMenuItem[] = [
     key: 'color-themes',
     icon: Palette,
     label: 'Color themes',
-  },
-  {
-    key: 'backgrounds',
-    icon: Background,
-    label: 'Backgrounds',
   },
   {
     key: 'my-list',
