@@ -1,8 +1,5 @@
 import { CSSProperties, useCallback, useState } from 'react';
-import {
-  MoveableTextObject,
-  TransformDirection,
-} from '../lib/moveable/text/MoveableText';
+import { MoveableTextObject } from '../lib/moveable/text/MoveableText';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { useActivePage } from '../store/active-page';
 import { GradientStop } from '../utilities/color.type';
@@ -18,7 +15,8 @@ import {
   TextEffectOptions,
 } from '../lib/moveable/effects/text/TextEffect';
 import { ShapeEffect } from '../lib/moveable/effects/text/ShapeEffect';
-import { TextVarient } from '../lib/moveable/constant/text';
+import { TextStyle } from '../lib/moveable/text/TextStyle';
+import { TransformDirection } from '../lib/moveable/text/TextFormat';
 
 export const useActiveTextObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
@@ -83,10 +81,12 @@ export const usePasteObject = () => {
 
 export const useUpdateFontSize = () => {
   const activeText = useActiveTextObject();
+  const { moveable } = useDesign();
 
   return (fontSize: number) => {
     activeText?.setFontSize(fontSize);
     activeText?.render();
+    moveable?.updateRect();
   };
 };
 
@@ -370,7 +370,7 @@ type EditableCSSProperty = keyof Omit<
 export const useChangeTextStyles = () => {
   const activeText = useActiveTextObject();
 
-  const handleChangeStyles = (textStyle: TextVarient, callback: Function) => {
+  const handleChangeStyles = (textStyle: TextStyle, callback: Function) => {
     if (!activeText) return false;
     activeText.setTextStyle(textStyle);
     activeText.render();
