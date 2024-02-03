@@ -4,15 +4,26 @@ import { PhotosMenuContent } from './PhotosMenuContent';
 import clsx from 'clsx';
 import { ElementsMenuContent } from './ElementsMenuContent';
 import { TextMenuContent } from './TextMenuContent';
+import { BackgroundMenuContent } from './BackgroundMenuContent';
+import { WorkspacesMenuContent } from './WorkspacesMenuContent';
+import { SideMenuItem } from '../SideMenu/items';
 
 interface MenuContentProps {
   section: string;
   menuExpand: boolean;
+  setOpen: (val: boolean) => void;
 }
 
-export const MenuContent: FC<MenuContentProps> = ({ section, menuExpand }) => {
+export const MenuContent: FC<MenuContentProps> = ({
+  section,
+  menuExpand,
+  setOpen,
+}) => {
   const renderMenuContentComponent = () => {
     switch (section) {
+      case 'backgrounds': {
+        return <BackgroundMenuContent />;
+      }
       case 'templates': {
         return <TemplatesMenuContent />;
       }
@@ -24,6 +35,9 @@ export const MenuContent: FC<MenuContentProps> = ({ section, menuExpand }) => {
       }
       case 'text': {
         return <TextMenuContent />;
+      }
+      case 'workspaces': {
+        return <WorkspacesMenuContent setOpen={setOpen} />;
       }
       default: {
         return <ElementsMenuContent />;
