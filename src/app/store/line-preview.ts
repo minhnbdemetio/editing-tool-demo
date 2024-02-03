@@ -6,6 +6,6 @@ interface LinePreviewState {
 }
 
 export const useLineEnabled = create<LinePreviewState>(set => ({
-  lineEnabled: true,
+  lineEnabled: false,
   setLineEnabled: (value: boolean) => set(() => ({ lineEnabled: value })),
 }));

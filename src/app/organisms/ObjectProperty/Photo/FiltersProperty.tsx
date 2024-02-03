@@ -1,4 +1,4 @@
-import {  PHOTO_FILTERS } from '@/app/lib/moveable/constant/photo';
+import { PHOTO_FILTERS } from '@/app/lib/moveable/constant/photo';
 import { useActiveMoveablePhotoObject } from '@/app/hooks/useActiveMoveableObject';
 import { twMerge } from '@/app/utilities/tailwind';
 import Image from 'next/image';
@@ -28,7 +28,8 @@ export const FiltersProperty: FC = () => {
             className={twMerge(
               'relative w-full h-auto aspect-square rounded-md overflow-hidden',
               {
-                'border-green-500 border-[3px] border-solid': filter.filterId === selectedFilter?.filterId,
+                'border-green-500 border-[3px] border-solid':
+                  filter.filterId === selectedFilter?.filterId,
               },
             )}
           >

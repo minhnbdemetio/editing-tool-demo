@@ -54,7 +54,7 @@ export const Popover: React.FC<PopoverProps> = ({
                 }}
                 {...attributes.popper}
                 className={twMerge(
-                  'bg-white z-[110] border-[1px] border-border border-solid shadow-lg rounded-md',
+                  'bg-white z-[110] border-px border-border border-solid shadow-lg rounded-md',
                   className,
                 )}
                 key={name}

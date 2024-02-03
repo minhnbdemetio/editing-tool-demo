@@ -17,7 +17,9 @@ export default function DesignDetailLayout({
 
   return (
     <div className=" flex flex-col w-full h-[calc(100dvh)] min-h-0">
-      <div className={clsx('z-10', 'desktop:z-50')}>
+      <div
+        className={clsx('shadow-header z-50', 'desktop:shadow-md desktop:z-50')}
+      >
         <Header />
       </div>
       <div className={clsx('flex-1 overflow-y-auto w-full')}>{children}</div>

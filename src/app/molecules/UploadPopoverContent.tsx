@@ -16,27 +16,27 @@ export const UploadPopoverContent: React.FC<UploadPopoverContentProps> = () => {
     <div className="py-2 w-full">
       <MenuItem>
         <ShoppingCart className="w-[20px] h-[20px]" />
-        <p className="text-[13px] font-normal ">Print your design</p>
+        <p className="text-smd font-normal ">Print your design</p>
       </MenuItem>
       <MenuItem>
         <Download className="w-[20px] h-[20px]" />
-        <p className="text-[13px] font-normal ">Download</p>
+        <p className="text-smd font-normal ">Download</p>
       </MenuItem>
       <MenuItem>
         <Share className="w-[20px] h-[20px]" />
-        <p className="text-[13px] font-normal ">Share</p>
+        <p className="text-smd font-normal ">Share</p>
       </MenuItem>
       <MenuItem>
         <Play className="w-[20px] h-[20px]" />
-        <p className="text-[13px] font-normal ">View slide show</p>
+        <p className="text-smd font-normal ">View slide show</p>
       </MenuItem>
       <MenuItem>
         <CodeBracket className="w-[20px] h-[20px]" />
-        <p className="text-[13px] font-normal ">Insert</p>
+        <p className="text-smd font-normal ">Insert</p>
       </MenuItem>
       <MenuItem>
         <ViewColumns className="w-[20px] h-[20px]" />
-        <p className="text-[13px] font-normal ">Create template</p>
+        <p className="text-smd font-normal ">Create template</p>
       </MenuItem>
     </div>
   );

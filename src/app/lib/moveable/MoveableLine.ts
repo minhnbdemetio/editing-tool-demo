@@ -1,18 +1,9 @@
 import { MoveableObject } from './MoveableObject';
 import { SvgLine, SvgLineOptions } from '../../utilities/svg-line';
 import { LinePoint } from '../../utilities/line-point';
+import { v4 } from 'uuid';
 
 export class MoveableLineObject extends MoveableObject {
-  clone(options?: { htmlString: string; id: string }): MoveableLineObject {
-    if (options) {
-      return new MoveableLineObject(options.id, options.htmlString);
-    }
-    const clonedData = this.cloneData();
-    return new MoveableLineObject(
-      clonedData.cloneObjectId,
-      clonedData.clonedObjectHtml,
-    );
-  }
   line: SvgLine;
   private dragging = false;
   dragStartPoint: { x: number; y: number } = {
@@ -21,13 +12,9 @@ export class MoveableLineObject extends MoveableObject {
   };
 
   constructor(
-    id?: string,
-    htmlString?: string,
-    options?: {
-      svgLineOptions?: SvgLineOptions;
-    },
+    options?: Partial<MoveableLineObject> & { svgLineOptions?: SvgLineOptions },
   ) {
-    super({ id, htmlString });
+    super(options);
     this.line = new SvgLine(options?.svgLineOptions);
     this.type = 'line';
   }
@@ -111,5 +98,13 @@ export class MoveableLineObject extends MoveableObject {
         endElement.style.transform = ` translate(${end?.x}px, ${end?.y}px)`;
       }
     }
+  }
+
+  clone(
+    options?: Partial<MoveableLineObject> & { svgLineOptions?: SvgLineOptions },
+  ): MoveableLineObject {
+    return new MoveableLineObject(
+      options ? options : { ...this.toJSON(), id: v4() },
+    );
   }
 }

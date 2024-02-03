@@ -20,9 +20,9 @@ interface SpacingPropertyProps {}
 const SPACING_STEP = 1;
 const MAX_SPACING = 12;
 const MIN_SPACING = -2;
-const LINE_HEIGHT_STEP = 2;
-const MIN_LINE_HEIGHT = 22;
-const MAX_LINE_HEIGHT = 120;
+const LINE_HEIGHT_STEP = 0.1;
+const MIN_LINE_HEIGHT = 1;
+const MAX_LINE_HEIGHT = 2;
 
 export const SpacingProperty: FC<SpacingPropertyProps> = ({}) => {
   const activeText = useActiveTextObject();

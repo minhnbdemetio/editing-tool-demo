@@ -1,6 +1,6 @@
 import { ListFonts } from '@/app/atoms/ListFonts';
 import { useActiveTextObject } from '@/app/hooks/useActiveMoveableObject';
-import { TextFontStyle } from '@/app/lib/moveable/text/MoveableText';
+import { TextFontStyle } from '@/app/lib/moveable/text/TextFormat';
 
 interface FontPropertyProps {}
 

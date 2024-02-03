@@ -36,25 +36,10 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
   isCropping: boolean = false;
   cropMaskId: string = uuid();
 
-  clone(
-    options?: { htmlString: string; id: string } | undefined,
-  ): MoveableObject {
-    if (options) {
-      return new MoveablePhoto(this.src, options.id, options.htmlString);
-    }
-    const clonedData = this.cloneData();
-
-    return new MoveablePhoto(
-      this.src,
-      clonedData.cloneObjectId,
-      clonedData.clonedObjectHtml,
-    );
-  }
-
-  constructor(src: string, id?: string, htmlString?: string) {
-    super({ id, htmlString });
+  constructor(options?: Partial<MoveablePhoto>) {
+    super(options);
     this.type = 'photo';
-    this.src = src;
+    this.src = options?.src || '';
   }
 
   async setupMoveable() {
@@ -604,5 +589,11 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
       activeElement.style.transform = `translate(${this.x}px,${this.y}px)`;
     }
     this.setImageDimensions();
+  }
+
+  clone(options?: Partial<MoveablePhoto>) {
+    return new MoveablePhoto(
+      options ? options : { ...this.toJSON(), id: uuid() },
+    );
   }
 }

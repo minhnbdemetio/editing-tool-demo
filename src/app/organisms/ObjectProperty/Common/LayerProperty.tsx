@@ -44,7 +44,7 @@ export const LayerProperty: FC<LayerPropertyProps> = ({}) => {
             <LayerRender
               key={pageObject.id}
               pageObject={pageObject}
-              isChoose={isChoose}
+              isChosen={isChoose}
             />
           }
           moveCard={moveCard}

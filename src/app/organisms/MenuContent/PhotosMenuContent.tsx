@@ -7,9 +7,9 @@ export const PhotosMenuContent: FC = () => {
   const addObjectToPage = useAddObjectToActivePage();
   const handleAddPhoto = () => {
     addObjectToPage(
-      new MoveablePhoto(
-        'https://thumbs.dreamstime.com/b/woman-praying-free-birds-to-nature-sunset-background-woman-praying-free-birds-enjoying-nature-sunset-99680945.jpg',
-      ),
+      new MoveablePhoto({
+        src: 'https://iso.500px.com/wp-content/uploads/2015/05/inna_cover.jpeg',
+      }),
     );
   };
 

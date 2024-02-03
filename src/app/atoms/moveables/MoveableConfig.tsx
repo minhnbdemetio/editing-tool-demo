@@ -6,7 +6,12 @@ import { SELECTO_ID, EDITOR_CONTAINER } from '@/app/organisms/Editor';
 import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
 import { useDesign } from '@/app/store/design-objects';
 import { useImageCropping } from '@/app/store/image-cropping';
-import { isElementLocked, isLine, isPhoto } from '@/app/utilities/moveable';
+import {
+  isElementLocked,
+  isLine,
+  isPhoto,
+  isText,
+} from '@/app/utilities/moveable';
 import { FC, useEffect, useRef } from 'react';
 import Moveable from 'react-moveable';
 import Selecto from 'react-selecto';
@@ -72,7 +77,7 @@ export const MoveableConfig: FC = () => {
         resizable
         throttleResize={1}
         snappable
-        // keepRatio
+        keepRatio={isText(activeMoveableObject)}
         rotatable
         snapGridWidth={50}
         onDragStart={e => {
@@ -151,18 +156,28 @@ export const MoveableConfig: FC = () => {
 
           activeMoveableObject?.render();
         }}
+        onResizeStart={e => {
+          if (isText(activeMoveableObject)) {
+            activeMoveableObject.setResizing(true);
+          }
+        }}
+        onResizeEnd={e => {
+          if (isText(activeMoveableObject)) {
+            activeMoveableObject.setResizing(false);
+          }
+        }}
         onScale={e => {
           if (isElementLocked(e.target)) return;
           e.target.style.transform = e.drag.transform;
         }}
         onRender={e => {
           if (isElementLocked(e.target)) return;
-          e.target.style.cssText += e.cssText;
+          // e.target.style.cssText += e.cssText;
         }}
         onRenderGroup={e => {
           e.events.forEach(ev => {
             if (isElementLocked(e.target)) return;
-            ev.target.style.cssText += ev.cssText;
+            // ev.target.style.cssText += ev.cssText;
           });
         }}
         onChangeTargets={e => {

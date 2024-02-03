@@ -5,6 +5,8 @@ import { twMerge } from '@/app/utilities/tailwind';
 import { useAddPage, useClonePage, useDeletePage } from '@/app/hooks/usePage';
 import { useActivePage } from '@/app/store/active-page';
 import { PageList } from './PageList';
+import { Close } from '@/app/icons';
+import { VerticalDivider } from '../VerticalDivider';
 
 interface PageMenuProps {
   onClose: () => void;
@@ -19,7 +21,7 @@ export const PageMenu: FC<PageMenuProps> = ({ onClose }) => {
   const addPage = useAddPage();
   const clonePage = useClonePage();
   const deletePage = useDeletePage();
-  const { activePage } = useActivePage();
+  const { activePage, setActivePage } = useActivePage();
 
   const handleAddPage = useCallback(() => {
     addPage([]);
@@ -40,39 +42,50 @@ export const PageMenu: FC<PageMenuProps> = ({ onClose }) => {
       case 'delete':
         activePage && deletePage(activePage);
         break;
+      case 'select':
+        // TODO: Update action
+        break;
     }
   };
 
   return (
     <div
       className={twMerge(
-        'absolute duration-300 w-screen h-full left-0 z-30 flex flex-col-reverse bottom-0 bg-default1',
+        'fixed top-12 bottom-0 justify-between left-0 duration-300 w-screen z-30 flex flex-col-reverse bg-default1',
         'desktop:hidden',
       )}
     >
       <div
         className={clsx(
-          'w-full h-[76px] bg-white flex flex-row pl-20 items-center',
+          'w-full h-19 bg-white flex flex-row gap-3 px-4 items-center shadow-menu',
           'desktop:hidden',
         )}
       >
-        <div className="h-9 w-0.5 bg-[#E0E0E0]"></div>
+        <button
+          onClick={onClose}
+          className="rounded-full p-3 drop-shadow-button bg-white"
+        >
+          <Close className=" w-[24px] h-[24px]" />
+        </button>
+
+        <VerticalDivider />
+
         <div
           ref={listRef}
           className={twMerge(
-            'h-full overflow-y-auto flex-row flex  w-[calc(100%-100px)] no-scrollbar ',
-            ' desktop:flex-col  desktop:flex-auto desktop:mt-4 desktop:h-[calc(100%-100px)] w-full ',
+            'h-full overflow-y-auto flex-row flex gap-3 flex-1 no-scrollbar',
+            'desktop:flex-col desktop:flex-auto desktop:mt-4 desktop:h-[calc(100%-100px)] w-full ',
           )}
         >
           {PageMenuItems.map(({ icon: Icon, key, label }) => (
-            <div
+            <button
               onClick={e => {
                 e.persist();
                 scrollTo(e);
                 handleClickAction(key);
               }}
               className={twMerge(
-                'w-auto items-center flex justify-center flex-col aspect-square h-full text-gray-500 px-[3px] cursor-pointer',
+                'w-auto items-center flex justify-center flex-col aspect-[66/76] h-full text-primaryGray',
                 'desktop:h-auto desktop:w-full desktop:py-1 desktop:aspect-square',
                 {
                   'bg-green-200 text-primary': false,
@@ -84,11 +97,11 @@ export const PageMenu: FC<PageMenuProps> = ({ onClose }) => {
               <p className="w-full leading-[15px] text-xs font-normal  text-center whitespace-nowrap  overflow-hidden text-ellipsis">
                 {label}
               </p>
-            </div>
+            </button>
           ))}
         </div>
       </div>
-      <div className="w-full h-[calc(100%-76px)] overflow-y-auto">
+      <div className="w-full flex-1 overflow-y-auto">
         <PageList addPage={handleAddPage} />
       </div>
     </div>
