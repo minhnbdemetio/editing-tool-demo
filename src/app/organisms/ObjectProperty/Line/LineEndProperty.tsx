@@ -99,7 +99,7 @@ export const LineEndProperty: FC = () => {
               key={id}
               onClick={() => onChangeStrokeDashArray(id)}
               className={twMerge(
-                'border-[1px] border-solid rotate-180 border-gray-500 rounded-md px-3 py-3',
+                'border-px border-solid rotate-180 border-gray-500 rounded-md px-3 py-3',
                 { 'border-green-400': id === lineStart },
               )}
             >

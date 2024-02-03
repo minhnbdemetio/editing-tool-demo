@@ -9,10 +9,8 @@ import {
   DotsHorizontal,
   Download,
   ShoppingCart,
-  UploadIcon,
 } from '@/app/icons';
 import Link from 'next/link';
-import { UploadModal } from '../molecules/UploadModal';
 import { MoreModal } from '../molecules/MoreModal';
 import useMediaQuery from '../store/useMediaQuery';
 import { UploadPopover } from '../molecules/UploadPopover';
@@ -27,10 +25,11 @@ import {
   useRedoCommand,
   useUndoCommand,
 } from '../hooks/editor-commands/useCommand';
+import { DownloadMenu } from '../molecules/DownloadMenu/DownloadMenu';
 
 export const Header: FC = () => {
   const [openModal, setOpenModal] = useState<
-    null | 'upload-modal' | 'more-modal'
+    null | 'download-modal' | 'more-modal'
   >(null);
 
   const isMobile = useMediaQuery(s => s.device === 'mobile');
@@ -40,8 +39,8 @@ export const Header: FC = () => {
 
   return (
     <>
-      <header className="flex items-center justify-between px-[20px] h-[48px] desktop:h-[60px]  shadow-sm py-2 desktop:shadow-md">
-        <div className="flex items-center gap-4 h-full">
+      <header className="flex items-center justify-between px-[20px] h-[48px] desktop:h-[60px] py-2">
+        <div className="flex items-center gap-3.5 h-full">
           <Link
             href={'/workspace'}
             className={clsx(
@@ -61,25 +60,19 @@ export const Header: FC = () => {
             <BackgroundSizePopover />
           </div>
 
-          <div className="flex items-center">
-            <button
-              onClick={undoCommand}
-              className="p-[4px] h-[40px] w-[40px] flex justify-center items-center"
-            >
+          <div className="flex items-center gap-4">
+            <button onClick={undoCommand}>
               <ArrowUTurnLeft
                 className={clsx(
-                  'w-[20px] h-[20px] text-icon-light-gray',
+                  'text-icon-light-gray',
                   'duration-100 hover:text-primary',
                 )}
               />
             </button>
-            <button
-              onClick={redoCommand}
-              className="p-[4px] h-[40px] w-[40px] flex justify-center items-center"
-            >
+            <button onClick={redoCommand}>
               <ArrowUTurnRight
                 className={clsx(
-                  'w-[20px] h-[20px] text-icon-light-gray scale-y-[-1]',
+                  'text-icon-light-gray',
                   'duration-100 hover:text-primary',
                 )}
               />
@@ -92,7 +85,7 @@ export const Header: FC = () => {
         </div>
         <div className=" flex items-center h-full">
           <div className="hidden desktop:flex h-full items-center gap-2 ">
-            <button className="h-full  px-3 border-[1px] border-border border-solid rounded-md">
+            <button className="h-full px-3 border-px border-border border-solid rounded-md">
               <ArchiveBoxArrowDown
                 className={clsx(
                   'w-[20px] h-[20px] text-black-500',
@@ -100,7 +93,7 @@ export const Header: FC = () => {
                 )}
               />
             </button>
-            <button className="h-full  px-3 text-md font-normal border-green-500 text-primary border-[1px] border-solid rounded-md">
+            <button className="h-full px-3 text-md font-normal border-green-500 text-primary border-px border-solid rounded-md">
               <p>Share</p>
             </button>
             <button className="h-full flex items-center gap-2 bg-gradientBtnLeft  text-md font-normal p-3 rounded-md text-primaryContrast">
@@ -123,18 +116,12 @@ export const Header: FC = () => {
           </div>
 
           {/* Mobile actions */}
-          <div className="flex items-center desktop:hidden">
-            <button
-              onClick={() => setOpenModal('more-modal')}
-              className="w-[40px] h-full flex justify-center items-center"
-            >
-              <DotsHorizontal className="w-[22px] h-[22px] text-icon-bold" />
+          <div className="flex items-center gap-4 desktop:hidden">
+            <button onClick={() => setOpenModal('more-modal')}>
+              <DotsHorizontal className="w-8 h-8" />
             </button>
-            <button
-              onClick={() => setOpenModal('upload-modal')}
-              className="w-[40px] h-full flex justify-center items-center"
-            >
-              <UploadIcon className="w-[22px] h-[22px] text-icon-bold" />
+            <button onClick={() => setOpenModal('download-modal')}>
+              <Download className="w-8 h-8" />
             </button>
           </div>
         </div>
@@ -142,10 +129,11 @@ export const Header: FC = () => {
 
       {isMobile && (
         <>
-          <UploadModal
+          <DownloadMenu
             onClose={() => setOpenModal(null)}
-            isOpen={openModal === 'upload-modal'}
+            isOpen={openModal === 'download-modal'}
           />
+
           <MoreModal
             onClose={() => setOpenModal(null)}
             isOpen={openModal === 'more-modal'}

@@ -42,7 +42,7 @@ export const InputUnit: FC<InputUnitProps> = ({
         onChange={handleChangeInput}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        className="w-full mt-1 border-[1px] border-border border-solid text-md rounded-sm font-normal text-black-500  p-2"
+        className="w-full mt-1 border-px border-border border-solid text-md rounded-sm font-normal text-black-500  p-2"
       />
     </div>
   );

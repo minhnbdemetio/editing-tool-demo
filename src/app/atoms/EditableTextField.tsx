@@ -8,6 +8,7 @@ import React, {
 import { Edit } from '@/app/icons';
 import clsx from 'clsx';
 import { twMerge } from '../utilities/tailwind';
+import { Save } from '../icons/Save';
 
 interface EditableTextFieldProps extends HtmlHTMLAttributes<HTMLInputElement> {
   fallbackValue?: string;
@@ -47,32 +48,38 @@ export const EditableTextField = forwardRef<
             }, 0);
           }
         }}
-        className={twMerge('flex items-center gap-2 text-md w-full')}
+        className={twMerge('flex items-center gap-4 text-md w-full')}
       >
         <div
           className={clsx(
-            'leading-xl w-full',
-
+            'text-md leading-[22px] min-h-6 flex-1',
+            'border-b-[1px] hover:border-b-default9/20 border-dashed',
             {
-              'hover:border-b-[1px] hover:border-b-solid hover:border-b-gray-300 hover:border-dashed':
-                !isEmpty,
-              'border-b-[1px] border-b-solid border-b-gray-300 border-dashed':
-                isEmpty || edit,
+              'border-b-transparent': !edit,
+              'border-b border-b-default9/20': edit,
             },
           )}
         >
           <p
             className={twMerge(
-              'text-black-500  w-full text-ellipsis overflow-hidden ',
-              { hidden: edit },
+              'text-md leading-[22px] text-ellipsis w-full overflow-hidden',
+              {
+                hidden: edit,
+                'font-medium text-default6': isEmpty,
+                'font-bold': !isEmpty,
+              },
             )}
           >
             {value}
           </p>
           <input
-            className={twMerge('hidden outline-none w-[200px]', {
-              block: edit,
-            })}
+            className={twMerge(
+              'hidden outline-none w-[200px] placeholder:text-default6',
+              'text-primaryGray font-bold text-md leading-[22px]',
+              {
+                block: edit,
+              },
+            )}
             value={value}
             ref={inputRef}
             {...rest}
@@ -81,7 +88,7 @@ export const EditableTextField = forwardRef<
           />
         </div>
 
-        <Edit className="w-[18px] h-[18px] text-gray-500" />
+        {edit ? <Save /> : <Edit />}
       </div>
     </div>
   );

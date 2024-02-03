@@ -51,21 +51,23 @@ export const PageRender: FC<PageRenderProps> = ({ page, index }) => {
       key={page}
       onClick={() => setActivePage(page)}
     >
-      <div className="w-full h-fit relative pointer-events-none">
+      <div className="w-full h-fit relative pointer-events-none rounded-lg shadow-page">
         <div
           className={twMerge(
-            'w-full bg-[#EBECF0] pb-[100%] rounded-lg border',
-            {
-              'border-solid border-primary1': page === activePage,
-            },
+            'w-full bg-[#EBECF0] aspect-[153/137] rounded-lg border',
           )}
         ></div>
         <div
-          className="absolute w-full h-full top-0 overflow-hidden"
+          className={twMerge(
+            'absolute w-full h-full top-0 rounded-lg overflow-hidden outline outline-2 border-2 border-white',
+            page === activePage ? 'outline-primary1' : 'outline-transparent',
+          )}
           ref={containerRef}
         ></div>
       </div>
-      <div className="h-6 flex items-center">{index + 1}</div>
+      <div className="h-6 flex items-center text-smd leading-4.5 font-bold">
+        {index + 1}
+      </div>
     </div>
   );
 };
