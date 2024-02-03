@@ -110,7 +110,7 @@ export const PhotoFillColor: FC<PhotoFillColorProps> = ({
               }}
               min={0}
               max={100}
-              className="w-[72px] border-[1px] border-border border-solid text-md rounded-sm font-normal text-black-500 ml-2 p-2"
+              className="w-[72px] border-px border-border border-solid text-md rounded-sm font-normal text-black-500 ml-2 p-2"
             />
             <span className="ml-[-20px] text-md">%</span>
           </div>

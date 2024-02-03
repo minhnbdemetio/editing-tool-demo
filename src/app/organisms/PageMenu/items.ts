@@ -1,6 +1,13 @@
 import { AddPage, Duplicate2, Delete, EyeSlash } from '@/app/icons';
+import { Select } from '@/app/icons/Select';
 
-export type PageMenuAction = 'addPage' | 'duplicate' | 'delete' | 'hide';
+export type PageMenuAction =
+  | 'addPage'
+  | 'duplicate'
+  | 'delete'
+  | 'hide'
+  | 'select';
+
 export declare type PageMenuItem = {
   key: PageMenuAction;
   icon: React.FC<{ className?: string }>;
@@ -24,8 +31,8 @@ export const PageMenuItems: PageMenuItem[] = [
     label: 'Delete',
   },
   {
-    key: 'hide',
-    icon: EyeSlash,
-    label: 'Hide',
+    key: 'select',
+    icon: Select,
+    label: 'Select',
   },
 ];

@@ -1,18 +1,7 @@
-import {
-  AdjustmentsHorizontal,
-  BackgroundColor,
-  Barcode,
-  CloudArrowUp,
-  Heart,
-  MusicalNote,
-  Palette,
-  Photo,
-  PlayCircle,
-  Template,
-  Text,
-  UserPlus,
-  Workspaces,
-} from '@/app/icons';
+import { Barcode, CloudArrowUp, Text } from '@/app/icons';
+import { Elements } from '@/app/icons/Elements';
+import { Workspaces } from '@/app/icons/Workspaces';
+import { BackgroundColor, Template } from '@/app/icons';
 
 export declare type SideMenuItem = {
   key:
@@ -51,18 +40,8 @@ export const SideMenuItems: SideMenuItem[] = [
     label: 'Workspaces',
   },
   {
-    key: 'photos',
-    icon: Photo,
-    label: 'Photos',
-  },
-  {
-    key: 'upload',
-    icon: CloudArrowUp,
-    label: 'Upload',
-  },
-  {
     key: 'elements',
-    icon: AdjustmentsHorizontal,
+    icon: Elements,
     label: 'Elements',
   },
   {
@@ -71,33 +50,43 @@ export const SideMenuItems: SideMenuItem[] = [
     label: 'Text',
   },
   {
-    key: 'creator',
-    icon: UserPlus,
-    label: 'Creator',
-  },
-  {
-    key: 'videos',
-    icon: PlayCircle,
-    label: 'Videos',
-  },
-  {
-    key: 'audio',
-    icon: MusicalNote,
-    label: 'Audio',
-  },
-  {
-    key: 'color-themes',
-    icon: Palette,
-    label: 'Color themes',
-  },
-  {
-    key: 'my-list',
-    icon: Heart,
-    label: 'My list',
+    key: 'upload',
+    icon: CloudArrowUp,
+    label: 'Upload',
   },
   {
     key: 'barcode',
     icon: Barcode,
     label: 'QR/Barcode',
   },
+  // {
+  //   key: 'photos',
+  //   icon: Photo,
+  //   label: 'Photos',
+  // },
+  // {
+  //   key: 'creator',
+  //   icon: UserPlus,
+  //   label: 'Creator',
+  // },
+  // {
+  //   key: 'videos',
+  //   icon: PlayCircle,
+  //   label: 'Videos',
+  // },
+  // {
+  //   key: 'audio',
+  //   icon: MusicalNote,
+  //   label: 'Audio',
+  // },
+  // {
+  //   key: 'color-themes',
+  //   icon: Palette,
+  //   label: 'Color themes',
+  // },
+  // {
+  //   key: 'my-list',
+  //   icon: Heart,
+  //   label: 'My list',
+  // },
 ];

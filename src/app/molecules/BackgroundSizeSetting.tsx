@@ -1,6 +1,6 @@
-import { Accordion, AccordionItem, Divider } from '@nextui-org/react';
+import { Accordion, AccordionItem } from '@nextui-org/react';
 import React, { useEffect, useState } from 'react';
-import { ChevronDown, ChevronLeft, ChevronRight, Ruler1 } from '../icons';
+import { ChevronDown, ChevronRight, Ruler1 } from '../icons';
 import { convertFrameSize } from '../utilities/units';
 import { usePageSize } from '../store/use-page-size';
 import { PageSize } from '../types';
@@ -9,6 +9,7 @@ import { getRecommendedSize } from '../services/page.service';
 import { UNITS } from '../constants/unit-constants';
 import { ManuallySettingSize } from './ManuallySettingSize';
 import { twMerge } from '../utilities/tailwind';
+import clsx from 'clsx';
 
 interface BackgroundSizeSettingProps {}
 
@@ -47,65 +48,60 @@ export const BackgroundSizeSetting: React.FC<
     });
   };
 
+  const backgroundSizeSettingOptions = [
+    {
+      label: 'Enter manually',
+      content: <ManuallySettingSize />,
+    },
+    {
+      label: 'Standard print size',
+      content: (
+        <ListRecommendedSizes
+          onSelect={onSelectRecommendedSize}
+          sizes={sizes}
+        />
+      ),
+    },
+  ];
+
   useFetchPageSizes(setSizes);
 
   return (
     <>
-      <Accordion showDivider={false} className="w-full px-0">
-        <AccordionItem
-          classNames={{
-            trigger: 'py-1 px-4 [&[data-open="true"]>div>span]:!text-primary1',
-            title: '!text-default6',
-            content: 'px-0',
-          }}
-          indicator={({ isOpen }) => (
-            <ChevronRight
-              className={twMerge('w-4 h-4 text-default6', {
-                'text-primary1': isOpen,
-              })}
-            />
-          )}
-          aria-label="Enter manually"
-          title={
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-[10px]">
-                <Ruler1 />
-                <p className="text-md font-normal ">Enter manually</p>
+      <Accordion showDivider={false} className="w-full px-4">
+        {backgroundSizeSettingOptions.map(({ label, content }) => (
+          <AccordionItem
+            key={label}
+            className="data-[open=true]:border-none"
+            classNames={{
+              trigger:
+                'py-3 border-b border-b-[#82828226] data-[open=true]:border-none [&[data-open="true"]>div>span]:text-primary1 [&[data-open="true"]>div>span]:font-bold [&[data-open="true"]>span]:-rotate-180',
+              content:
+                'pt-0 pb-4 data-[open=true]:border-b border-b-[#82828226]',
+            }}
+            indicator={({ isOpen }) => (
+              <ChevronDown
+                className={twMerge(
+                  clsx('w-4 h-4', {
+                    'text-primary1': isOpen,
+                    'text-primaryGray': !isOpen,
+                  }),
+                )}
+              />
+            )}
+            aria-label={label}
+            title={
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <Ruler1 />
+                  <p className="text-smd leading-4.5">{label}</p>
+                </div>
               </div>
-            </div>
-          }
-        >
-          <ManuallySettingSize />
-        </AccordionItem>
-        <AccordionItem
-          classNames={{
-            trigger: 'py-1 px-4 [&[data-open="true"]>div>span]:!text-primary1',
-            title: '!text-default6',
-            content: 'px-0',
-          }}
-          indicator={({ isOpen }) => (
-            <ChevronRight
-              className={twMerge('w-4 h-4 text-default6', {
-                'text-primary1': isOpen,
-              })}
-            />
-          )}
-          title={
-            <div className="flex items-center justify-between ">
-              <div className="flex items-center gap-[10px]">
-                <Ruler1 />
-                <p className="text-md font-normal">Standard print size</p>
-              </div>
-            </div>
-          }
-        >
-          <div className="w-full ">
-            <ListRecommendedSizes
-              onSelect={onSelectRecommendedSize}
-              sizes={sizes}
-            />
-          </div>
-        </AccordionItem>
+            }
+          >
+            {content}
+          </AccordionItem>
+        ))}
       </Accordion>
     </>
   );

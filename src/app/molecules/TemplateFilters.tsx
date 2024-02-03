@@ -26,7 +26,7 @@ export const TemplateFilters: React.FC<TemplateFiltersProps> = () => {
             <button
               onClick={onReset}
               className={twMerge(
-                'leading-[24px] h-[24px] text-[12px] text-gray-500 font-normal border-border border-[1px] border-solid px-2 rounded-[14px] font-[500]',
+                'leading-[24px] h-[24px] text-[12px] text-gray-500 font-normal border-border border-px border-solid px-2 rounded-[14px] font-[500]',
                 'hover:text-black-500',
               )}
             >
