@@ -5,6 +5,7 @@ import { TopToolbar } from '@/app/molecules/ObjectToolbar/TopToolbar';
 import { SELECTO_ID, EDITOR_CONTAINER } from '@/app/organisms/Editor';
 import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
 import { useDesign } from '@/app/store/design-objects';
+import { useImageCropping } from '@/app/store/image-cropping';
 import {
   isElementLocked,
   isLine,
@@ -16,22 +17,18 @@ import Moveable from 'react-moveable';
 import Selecto from 'react-selecto';
 
 export const MoveableConfig: FC = () => {
-  const {
-    moveableTargets,
-    setMoveableTargets,
-    getAllObjects,
-    setMovable,
-  } = useDesign();
-  const {
-    activeMoveableObject,
-    setActiveMoveableObject,
-  } = useActiveMoveableObject();
+  const { moveableTargets, setMoveableTargets, getAllObjects, setMovable } =
+    useDesign();
+  const { activeMoveableObject, setActiveMoveableObject } =
+    useActiveMoveableObject();
   const moveableRef = useRef<Moveable | null>(null);
 
   // TODO: Set global moveable ref if needed
   useEffect(() => {
     setMovable(moveableRef.current);
   }, [setMovable, moveableTargets]);
+
+  const isCropping = useImageCropping(s => s.isCropping);
 
   const findAndSetActiveObject = (objectId: string) => {
     const allObjects = getAllObjects();
@@ -73,8 +70,8 @@ export const MoveableConfig: FC = () => {
         target={moveableTargets}
         ables={[BottomToolbar, TopToolbar]}
         props={{
-          topToolbar: true,
-          bottomToolbar: true,
+          topToolbar: !isCropping,
+          bottomToolbar: !isCropping,
         }}
         draggable
         resizable
@@ -120,12 +117,10 @@ export const MoveableConfig: FC = () => {
             activeMoveableObject.updateHeadControl();
             activeMoveableObject.updatePointerControllerUI();
           }
-          if (isPhoto(activeMoveableObject)) {
-            const xChanged =
-              matrix.m41 - activeMoveableObject.dragStartPoint!.x;
-            const yChanged =
-              matrix.m42 - activeMoveableObject.dragStartPoint!.y;
-            activeMoveableObject.updateCropPosition(xChanged, yChanged);
+
+          if (activeMoveableObject) {
+            activeMoveableObject.x = matrix.m41;
+            activeMoveableObject.y = matrix.m42;
           }
         }}
         onDrag={e => {
@@ -155,12 +150,6 @@ export const MoveableConfig: FC = () => {
           activeMoveableObject?.setX(matrix.m41);
           activeMoveableObject?.setY(matrix.m42);
 
-          // if (isText(activeMoveableObject)) {
-          //   //TODO: Handle multiple line text
-          //   const targetHeight = e.height;
-          //   activeMoveableObject.setFontSize(targetHeight * 0.7);
-          //   activeMoveableObject.setLineHeight(targetHeight);
-          // }
           e.target.style.width = `${e.width}px`;
           e.target.style.height = `${e.height}px`;
           e.target.style.transform = e.drag.transform;
@@ -169,12 +158,12 @@ export const MoveableConfig: FC = () => {
         }}
         onResizeStart={e => {
           if (isText(activeMoveableObject)) {
-            activeMoveableObject.setResizing(true)
+            activeMoveableObject.setResizing(true);
           }
         }}
         onResizeEnd={e => {
           if (isText(activeMoveableObject)) {
-            activeMoveableObject.setResizing(false)
+            activeMoveableObject.setResizing(false);
           }
         }}
         onScale={e => {

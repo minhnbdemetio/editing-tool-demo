@@ -6,8 +6,6 @@ interface MoveableShapeProps {
 }
 
 export const MoveableShapeElement: FC<MoveableShapeProps> = ({ object }) => {
-  console.debug({ w: object.width, h: object.height });
-
   useEffect(() => {
     process.nextTick(() => object.render());
   }, [object]);

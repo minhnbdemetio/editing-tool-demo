@@ -32,7 +32,6 @@ import { OpacityProperty } from './Common/OpacityProperty';
 import { FiltersProperty } from './Photo/FiltersProperty';
 import { PhotoEffectProperty } from './Photo/PhotoEffectProperty';
 import { PhotoFlipProperty } from './Photo/PhotoFlipProperty';
-import { PhotoCropProperty } from './Photo/CropProperty';
 import { PhotoMoreProperty } from './Photo/More';
 import { ShapeFillColor } from './Shape/ShapeColorProperty';
 import { ShapeOutline } from './Shape/ShapeBorderProperty';
@@ -145,9 +144,6 @@ export const SelectedObjectProperty: FC = () => {
         return <PhotoFlipProperty />;
       }
 
-      case SelectedProperty.PhotoCrop: {
-        return <PhotoCropProperty />;
-      }
       case SelectedProperty.PhotoMore: {
         return <PhotoMoreProperty />;
       }

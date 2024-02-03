@@ -29,8 +29,7 @@ export const MoveablePhotoElement: FC<MoveablePhotoProps> = ({ object }) => {
         >
           <svg
             id={`${PHOTO_INNER_ELEMENTS.SVG}-${object.id}`}
-            width={'100%'}
-            height={'100%'}
+            preserveAspectRatio="none"
             className="w-full h-full"
           >
             <defs id={`${PHOTO_INNER_ELEMENTS.DEFS}-${object.id}`}>
@@ -42,9 +41,7 @@ export const MoveablePhotoElement: FC<MoveablePhotoProps> = ({ object }) => {
             <g id={`${PHOTO_INNER_ELEMENTS.G}-${object.id}`}>
               <image
                 id={`${IMAGE_CONTAINER}-${object.id}`}
-                className="w-full h-full"
-                width={'100%'}
-                height={'100%'}
+                preserveAspectRatio="none"
                 href={object.src}
               />
             </g>

@@ -4,6 +4,7 @@ import {
 } from '@/app/hooks/useActiveMoveableObject';
 import { MoveableObject } from '@/app/lib/moveable/MoveableObject';
 import { MoveablePhoto } from '@/app/lib/moveable/photo/MoveablePhoto';
+import { useImageCropping } from '@/app/store/image-cropping';
 import {
   SelectedProperty,
   useSelectedProperty,
@@ -90,6 +91,8 @@ export const PhotoMenuProperties: FC = () => {
   const { setSelectedProperty } = useSelectedProperty();
   const activePhotoObject = useActivePhotoObject();
 
+  const setCropping = useImageCropping(s => s.setCropping);
+
   const [photoProperties, setPhotoProperties] = useState(
     PHOTO_MENU_PROPERTIES.filter(
       item => activePhotoObject && item.isShowButton(activePhotoObject),
@@ -104,7 +107,9 @@ export const PhotoMenuProperties: FC = () => {
           <Button
             key={item.label}
             onClick={() => {
-              if (item.value !== SelectedProperty.PhotoBackground) {
+              if (item.value === SelectedProperty.PhotoCrop) {
+                setCropping(true);
+              } else if (item.value !== SelectedProperty.PhotoBackground) {
                 setSelectedProperty(item.value);
               } else {
                 setBackgroundImage();
