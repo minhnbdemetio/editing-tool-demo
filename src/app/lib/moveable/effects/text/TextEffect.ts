@@ -14,7 +14,7 @@ export type TextEffectOptions = {
 };
 
 export abstract class TextEffect extends Effect {
-  varient: string = 'none';
+  variant: string = 'none';
   options: TextEffectOptions = {};
   constructor(options: TextEffectOptions = {}) {
     super();

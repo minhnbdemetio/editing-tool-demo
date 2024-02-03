@@ -9,6 +9,7 @@ import { Effect } from './effects/Effect';
 import { GradientStop } from '@/app/utilities/color.type';
 import { Editable } from './editable/Editable';
 import { FlipDirection } from './editable/CanFlip';
+import { isElementLocked } from '@/app/utilities/moveable';
 
 export const MAX_FIND_ELEMENT_ATTEMPTS = 100;
 export type ObjectType = 'rectangle' | 'text' | 'line' | 'photo' | 'shape';
@@ -239,5 +240,7 @@ export abstract class MoveableObject
       flipDirection: this.flipDirection,
     };
   }
-  render() {}
+  render() {
+    this.setIsLocked(isElementLocked(this.getElement()));
+  }
 }

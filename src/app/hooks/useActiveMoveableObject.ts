@@ -373,7 +373,7 @@ export const useChangeTextStyles = () => {
   const handleChangeStyles = (textStyle: TextStyle, callback: Function) => {
     if (!activeText) return false;
     activeText.setTextStyle(textStyle);
-    activeText.render();
+    activeText.applyTextStyle();
     callback();
     return true;
   };

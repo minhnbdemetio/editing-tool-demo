@@ -54,7 +54,7 @@ export class TextShadowEffect extends StyleEffect {
       transparency: option.transparency,
       ...option,
     });
-    this.varient = TextStyleEffect.SHADOW;
+    this.variant = TextStyleEffect.SHADOW;
   }
   apply(element: HTMLElement): void {
     const styles = window.getComputedStyle(element);
@@ -102,7 +102,7 @@ export class TextShadowEffect extends StyleEffect {
 export class TextLiftEffect extends StyleEffect {
   constructor(option: TextEffectOptions = TEXT_LIFT_DEFAULT_VALUE) {
     super(option);
-    this.varient = TextStyleEffect.LIFT;
+    this.variant = TextStyleEffect.LIFT;
   }
   apply(element: HTMLElement): void {
     const { offset = TEXT_LIFT_DEFAULT_VALUE.offset } = this.options;
@@ -134,7 +134,7 @@ export class TextLiftEffect extends StyleEffect {
 export class TextHollowEffect extends StyleEffect {
   constructor(option: TextEffectOptions = TEXT_HOLLOW_DEFAULT_VALUE) {
     super(option);
-    this.varient = TextStyleEffect.HOLLOW;
+    this.variant = TextStyleEffect.HOLLOW;
   }
 
   apply(element: HTMLElement): void {
@@ -165,7 +165,7 @@ export class TextHollowEffect extends StyleEffect {
 export class TextSpliceEffect extends TextHollowEffect {
   constructor(option: TextEffectOptions = TEXT_SPLICE_DEFAULT_VALUE) {
     super(option);
-    this.varient = TextStyleEffect.SPLICE;
+    this.variant = TextStyleEffect.SPLICE;
   }
 
   apply(element: HTMLElement): void {
@@ -215,7 +215,7 @@ export class TextSpliceEffect extends TextHollowEffect {
 export class TextOutlineEffect extends TextHollowEffect {
   constructor(option: TextEffectOptions = TEXT_OUTLINE_DEFAULT_VALUE) {
     super(option);
-    this.varient = TextStyleEffect.OUTLINE;
+    this.variant = TextStyleEffect.OUTLINE;
   }
 
   apply(element: HTMLElement): void {
@@ -260,7 +260,7 @@ export class TextOutlineEffect extends TextHollowEffect {
 export class TextEchoEffect extends StyleEffect {
   constructor(option: TextEffectOptions = TEXT_ECHO_DEFAULT_VALUE) {
     super(option);
-    this.varient = TextStyleEffect.ECHO;
+    this.variant = TextStyleEffect.ECHO;
   }
 
   apply(element: HTMLElement): void {
@@ -309,7 +309,7 @@ export class TextEchoEffect extends StyleEffect {
 export class TextGlitchEffect extends StyleEffect {
   constructor(option: TextEffectOptions = TEXT_GLITCH_DEFAULT_VALUE) {
     super(option);
-    this.varient = TextStyleEffect.GLITCH;
+    this.variant = TextStyleEffect.GLITCH;
   }
 
   getTextContainer(element: HTMLElement): HTMLElement | null {
@@ -385,7 +385,7 @@ export class TextGlitchEffect extends StyleEffect {
 export class TextNeonEffect extends StyleEffect {
   constructor(option: TextEffectOptions = TEXT_NEON_DEFAULT_VALUE) {
     super(option);
-    this.varient = TextStyleEffect.NEON;
+    this.variant = TextStyleEffect.NEON;
   }
 
   apply(element: HTMLElement): void {
@@ -435,7 +435,7 @@ export class TextBackgroundEffect extends StyleEffect {
   boundOnInput: (this: HTMLElement, ev: Event) => void = () => {};
   constructor(option: TextEffectOptions = TEXT_BACKGROUND_DEFAULT_VALUE) {
     super(option);
-    this.varient = TextStyleEffect.BACKGROUND;
+    this.variant = TextStyleEffect.BACKGROUND;
   }
 
   apply(element: HTMLElement): void {

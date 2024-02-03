@@ -36,7 +36,7 @@ export class TextCurveEffect extends ShapeEffect {
   id?: string;
   constructor(option?: TextEffectOptions) {
     super(option);
-    this.varient = TextShapeEffect.CURVE;
+    this.variant = TextShapeEffect.CURVE;
   }
 
   getElement(): HTMLElement | null {
@@ -65,7 +65,7 @@ export class TextCurveEffect extends ShapeEffect {
     const ul = this.getTextContainer();
     this.removeGlitchContainer();
     if (
-      this.styleEffect?.varient === TextStyleEffect.BACKGROUND &&
+      this.styleEffect?.variant === TextStyleEffect.BACKGROUND &&
       this.options.curve !== 0
     ) {
       this.styleEffect.reset(element);
@@ -177,7 +177,7 @@ export class TextCurveEffect extends ShapeEffect {
     }
 
     if (
-      this.styleEffect?.varient === TextStyleEffect.BACKGROUND &&
+      this.styleEffect?.variant === TextStyleEffect.BACKGROUND &&
       this.options.curve !== 0
     ) {
       const svg = this.generateBackgroundCurveElement(
@@ -189,7 +189,7 @@ export class TextCurveEffect extends ShapeEffect {
       if (svg) {
         curveContainer.appendChild(svg);
       }
-    } else if (this.styleEffect?.varient === TextStyleEffect.GLITCH) {
+    } else if (this.styleEffect?.variant === TextStyleEffect.GLITCH) {
       this.applyGlitchEffect();
     }
   }
@@ -383,7 +383,7 @@ export class TextCurveEffect extends ShapeEffect {
 
   reset(el: HTMLElement): void {
     if (
-      this.styleEffect?.varient === TextStyleEffect.BACKGROUND &&
+      this.styleEffect?.variant === TextStyleEffect.BACKGROUND &&
       this.options.curve !== 0
     ) {
       this.styleEffect.apply(el);

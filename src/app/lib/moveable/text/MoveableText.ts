@@ -32,22 +32,22 @@ export class MoveableTextObject
   gradientStops?: GradientStop[];
   transformDirection: string;
   curve?: number;
-  scaleY: number = DEFAULT_TEXT_SCALE;
-  scaleX: number = DEFAULT_TEXT_SCALE;
+  scaleY: number;
+  scaleX: number;
   styleEffect: StyleEffect;
   shapeEffect: ShapeEffect;
-  fontFamily: string = 'Arial';
-  fontStyle: TextFontStyle = 'normal';
-  textTransform: TextTransform = 'none';
-  textAlign: string = 'left';
-  textDecoration: TextDecorationEffect = new TextDecorationEffect();
-  textListStyle: TextListStyle = 'none';
-  letterSpacing: number = 0;
+  fontFamily: string;
+  fontStyle: TextFontStyle;
+  textTransform: TextTransform;
+  textAlign: string;
+  textDecoration: TextDecorationEffect;
+  textListStyle: TextListStyle;
+  letterSpacing: number;
   lineHeight: number;
-  opacity: number = 1;
+  opacity: number;
   textStyle: TextStyle;
-  fontWeight: string = '400';
-  editable: boolean = false;
+  fontWeight: string;
+  editable: boolean;
 
   constructor(options?: { id: string; htmlString: string }) {
     super(options);
@@ -60,23 +60,21 @@ export class MoveableTextObject
       fontSize: TEXT_STYLE_FONT_SIZE.NORMAL,
     };
     this.lineHeight = this.textStyle.fontSize * 1.5;
+    this.scaleX = DEFAULT_TEXT_SCALE;
+    this.scaleY = DEFAULT_TEXT_SCALE;
+    this.fontFamily = 'Arial';
+    this.fontStyle = 'normal';
+    this.textTransform = 'none';
+    this.textAlign = 'left';
+    this.textDecoration = new TextDecorationEffect();
+    this.textListStyle = 'none';
+    this.letterSpacing = 0;
+    this.opacity = 1;
+    this.fontWeight = '400';
+    this.editable = false;
   }
   getTextStyle() {
     return this.textStyle;
-  }
-
-  clone(options?: { htmlString: string; id: string }): MoveableTextObject {
-    if (options) {
-      return new MoveableTextObject({
-        id: options.id,
-        htmlString: options.htmlString,
-      });
-    }
-    const clonedData = this.cloneData();
-    return new MoveableTextObject({
-      id: clonedData.cloneObjectId,
-      htmlString: clonedData.clonedObjectHtml,
-    });
   }
   getFontSize() {
     return this.textStyle.fontSize;
@@ -92,15 +90,6 @@ export class MoveableTextObject
   }
   getOpacity() {
     return Math.round(this.opacity * 100);
-  }
-  getSvgElement() {
-    return document.getElementById(`${TEXT_INNER_ELEMENTS.SVG}-${this.id}`);
-  }
-  getContentEditable() {
-    const element = this.getElement();
-    if (!element) return null;
-    return (element.querySelector('[contenteditable]') ||
-      element.firstChild) as HTMLElement;
   }
   setOpacity(opacity: number) {
     if (opacity < 0 || opacity > 100) return false;
@@ -122,6 +111,8 @@ export class MoveableTextObject
   }
   setTextStyle(textStyle: TextStyle) {
     this.textStyle = textStyle;
+  }
+  applyTextStyle() {
     this.applyFontSize();
   }
   setTextColor(color: string) {
@@ -163,6 +154,15 @@ export class MoveableTextObject
     element.style.background = `var(${GRADIENT_BACKGROUND_CSS_VARIABLE})`;
     element.style.backgroundClip = 'text';
     element.style.webkitTextFillColor = `var(${GRADIENT_WEBKIT_TEXT_FILL_CSS_VARIABLE})`;
+  }
+  getSvgElement() {
+    return document.getElementById(`${TEXT_INNER_ELEMENTS.SVG}-${this.id}`);
+  }
+  getContentEditableElement() {
+    const element = this.getElement();
+    if (!element) return null;
+    return (element.querySelector('[contenteditable]') ||
+      element.firstChild) as HTMLElement;
   }
   getTextContainer() {
     let attempt = 0;
@@ -326,9 +326,9 @@ export class MoveableTextObject
   isTextDecorationEnable: (key: keyof TextDecoration) => boolean = key =>
     this.textDecoration.getTextDecoration()[key];
 
-  setFontStyle: (fontStyle: TextFontStyle) => void = fontStyle => {
+  setFontStyle(fontStyle: TextFontStyle) {
     this.fontStyle = fontStyle;
-  };
+  }
 
   applyTextListStyle: () => void = () => {
     const listElement = this.getElement()?.querySelector('ul');
@@ -357,7 +357,7 @@ export class MoveableTextObject
 
   render() {
     const element = this.getElement();
-    const contenteditable = this.getContentEditable();
+    const contenteditable = this.getContentEditableElement();
     if (!element || !contenteditable) return;
     this.applyFontSize();
     this.applyLetterSpacing();
@@ -365,13 +365,13 @@ export class MoveableTextObject
     this.textDecoration.apply(element);
     this.applyOpacity();
 
-    if (this.styleEffect.varient === TextStyleEffect.OUTLINE) {
+    if (this.styleEffect.variant === TextStyleEffect.OUTLINE) {
       this.applyTextGradient(contenteditable);
     } else {
       this.applyTextGradient(element);
     }
 
-    if (this.shapeEffect.varient !== TextShapeEffect.NONE) {
+    if (this.shapeEffect.variant !== TextShapeEffect.NONE) {
       this.shapeEffect.styleEffect = this.styleEffect;
       this.shapeEffect.textDecoration = this.textDecoration;
     }
@@ -396,6 +396,19 @@ export class MoveableTextObject
     textContainer.addEventListener('blur', () => {
       textContainer.setAttribute('contenteditable', 'false');
       this.setEditable(false);
+    });
+  }
+  clone(options?: { htmlString: string; id: string }): MoveableTextObject {
+    if (options) {
+      return new MoveableTextObject({
+        id: options.id,
+        htmlString: options.htmlString,
+      });
+    }
+    const clonedData = this.cloneData();
+    return new MoveableTextObject({
+      id: clonedData.cloneObjectId,
+      htmlString: clonedData.clonedObjectHtml,
     });
   }
 }

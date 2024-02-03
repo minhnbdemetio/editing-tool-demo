@@ -11,7 +11,7 @@ interface MoveableTextProps {
   className?: string;
 }
 
-export const MoveableHeadingTextElement: FC<MoveableTextProps> = ({
+export const MoveableTextElement: FC<MoveableTextProps> = ({
   object,
   className,
 }) => {
@@ -21,7 +21,6 @@ export const MoveableHeadingTextElement: FC<MoveableTextProps> = ({
     const textContainer = document.getElementById(
       `${TEXT_INNER_ELEMENTS.CONTAINER}-${object.id}`,
     );
-    console.log(textContainer);
     if (!textContainer) return;
 
     // Create a new ResizeObserver instance
@@ -47,13 +46,11 @@ export const MoveableHeadingTextElement: FC<MoveableTextProps> = ({
       }
     };
   }, []);
+
   return (
     <div
       id={object.id}
-      className={clsx(
-        'absolute w-fit hidden text-[30px] break-words',
-        className,
-      )}
+      className={clsx('absolute w-fit break-words', className)}
       style={{ writingMode: 'horizontal-tb' }}
     >
       <div
