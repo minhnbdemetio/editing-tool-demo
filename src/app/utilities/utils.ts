@@ -52,6 +52,7 @@ interface TransformResult {
 }
 
 export function parseTransformString(transformString: string): TransformResult {
+  // TODO: use WebkitCSS instead
   const translatePattern = /translate\((-?[\d.]+px),\s*(-?[\d.]+px)\)/;
   const rotatePattern = /rotate\((-?[\d.]+deg)\)/;
 

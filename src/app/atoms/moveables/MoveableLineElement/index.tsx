@@ -12,7 +12,7 @@ export const MoveableLineElement: FC<MoveableLineElementProps> = ({
   return (
     <div
       id={object.id}
-      className={` hidden absolute border-none`}
+      className={` absolute border-none`}
       style={{
         transformOrigin: `${object.line?.padding}px center`,
         transform: `translate(-${object.line?.padding}px, -${object.line?.padding}px)`,

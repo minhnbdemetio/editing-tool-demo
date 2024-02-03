@@ -17,14 +17,7 @@ export abstract class MoveableShape
   shapeType: MoveableShapeType = MoveableShapeType.Square;
   textWrapperId: string;
 
-  constructor(options?: {
-    id: string;
-    type?: ObjectType;
-    pageId: string | null;
-    htmlString?: string;
-    width?: number;
-    height?: number;
-  }) {
+  constructor(options?: Partial<MoveableShape>) {
     super(options);
     this.type = 'shape';
 

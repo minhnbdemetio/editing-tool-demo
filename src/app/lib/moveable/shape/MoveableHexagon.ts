@@ -1,15 +1,11 @@
+import { v4 } from 'uuid';
 import { MoveableObject, ObjectType } from '../MoveableObject';
 import { MoveableShapeType } from '../editable/EditableShape';
 import { Hexagon } from '../svg/Hexagon';
 import { MoveableShape } from './MoveableShape';
 
 export class MoveableHexagon extends MoveableShape {
-  constructor(options?: {
-    id: string;
-    type?: ObjectType;
-    pageId: string | null;
-    htmlString?: string;
-  }) {
+  constructor(options?: Partial<MoveableHexagon>) {
     super(options);
     this.shapeType = MoveableShapeType.Square;
   }
@@ -18,14 +14,14 @@ export class MoveableHexagon extends MoveableShape {
     return new Hexagon({ width: this.width, height: this.height });
   }
 
-  clone(
-    options?: { htmlString: string; id: string } | undefined,
-  ): MoveableObject {
-    const clonedData = this.cloneData();
-
-    return new MoveableHexagon({
-      ...this.toJSON(),
-      id: clonedData.cloneObjectId,
-    });
+  clone(options?: Partial<MoveableHexagon>): MoveableObject {
+    return new MoveableHexagon(
+      options
+        ? options
+        : {
+            ...this.toJSON(),
+            id: v4(),
+          },
+    );
   }
 }

@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { useActiveMoveableShapeObject } from '@/app/hooks/useActiveMoveableObject';
 import { ListFonts } from '@/app/atoms/ListFonts';
-import { TextFontStyle } from '@/app/lib/moveable/text/MoveableText';
+import { TextFontStyle } from '@/app/lib/moveable/text/TextFormat';
 
 export const ShapeTextFontProperty: FC = () => {
   const shapeObject = useActiveMoveableShapeObject();

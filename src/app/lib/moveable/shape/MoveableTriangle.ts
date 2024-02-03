@@ -1,15 +1,11 @@
-import { MoveableObject, ObjectType } from '../MoveableObject';
+import { v4 } from 'uuid';
+import { MoveableObject } from '../MoveableObject';
 import { MoveableShapeType } from '../editable/EditableShape';
 import { Triangle } from '../svg/Triangle';
 import { MoveableShape } from './MoveableShape';
 
 export class MoveableTriangle extends MoveableShape {
-  constructor(options?: {
-    id: string;
-    type?: ObjectType;
-    pageId: string | null;
-    htmlString?: string;
-  }) {
+  constructor(options?: Partial<MoveableTriangle>) {
     super(options);
     this.shapeType = MoveableShapeType.Square;
   }
@@ -18,14 +14,14 @@ export class MoveableTriangle extends MoveableShape {
     return new Triangle({ width: this.width, height: this.height });
   }
 
-  clone(
-    options?: { htmlString: string; id: string } | undefined,
-  ): MoveableObject {
-    const clonedData = this.cloneData();
-
-    return new MoveableTriangle({
-      ...this.toJSON(),
-      id: clonedData.cloneObjectId,
-    });
+  clone(options?: Partial<MoveableTriangle>): MoveableObject {
+    return new MoveableTriangle(
+      options
+        ? options
+        : {
+            ...this.toJSON(),
+            id: v4(),
+          },
+    );
   }
 }

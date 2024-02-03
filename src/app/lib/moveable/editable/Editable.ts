@@ -1,9 +1,6 @@
-import { GradientStop } from '@/app/utilities/color.type';
-import { Effect } from '../effects/Effect';
 import { CanFlip } from './CanFlip';
 
 export interface Editable extends CanFlip {
-  effect: Effect | undefined;
   opacity: number;
   height: number;
   width: number;
@@ -11,7 +8,6 @@ export interface Editable extends CanFlip {
   x: number;
   y: number;
   color?: string;
-  gradient?: GradientStop[];
   toggleLock: () => void;
   setOpacity: (opacity: number) => void;
   getElement: () => HTMLElement | null;

@@ -6,6 +6,7 @@ import { PhotoFilter } from './filters/PhotoFilter';
 import { NoneFilter } from './filters/NoneFilter';
 import { PhotoPosition } from './Croppable';
 import { GradientMask } from './gradient-mask/GradientMask';
+import { v4 } from 'uuid';
 
 export class MoveablePhoto extends MoveableObject implements EditablePhoto {
   loaded: boolean = false;
@@ -18,25 +19,11 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
   src: string;
   fillOpacity? = 1;
   fillColor?: string | undefined = 'transparent';
-  clone(
-    options?: { htmlString: string; id: string } | undefined,
-  ): MoveableObject {
-    if (options) {
-      return new MoveablePhoto(this.src, options.id, options.htmlString);
-    }
-    const clonedData = this.cloneData();
 
-    return new MoveablePhoto(
-      this.src,
-      clonedData.cloneObjectId,
-      clonedData.clonedObjectHtml,
-    );
-  }
-
-  constructor(src: string, id?: string, htmlString?: string) {
-    super({ id, htmlString });
+  constructor(options?: Partial<MoveablePhoto>) {
+    super(options);
     this.type = 'photo';
-    this.src = src;
+    this.src = options?.src || '';
   }
 
   async setupMoveable() {
@@ -361,5 +348,10 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
   }
   hasFillColor() {
     return this.getFillElement()?.style.display === 'block';
+  }
+  clone(options?: Partial<MoveablePhoto>) {
+    return new MoveablePhoto(
+      options ? options : { ...this.toJSON(), id: v4() },
+    );
   }
 }
