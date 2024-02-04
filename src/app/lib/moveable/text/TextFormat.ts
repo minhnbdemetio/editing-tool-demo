@@ -53,9 +53,9 @@ export interface TextFormat {
   setLetterSpacing: (letterSpacing: number | null) => void;
   applyLetterSpacing: () => void;
 
-  lineHeight: number;
-  getLineHeight: () => number;
-  setLineHeight: (lineHeight: number | null) => void;
+  lineHeight: string;
+  getLineHeight: () => string;
+  setLineHeight: (lineHeight: string | null) => void;
   applyLineHeight: () => void;
 
   opacity: number;

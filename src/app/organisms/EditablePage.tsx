@@ -47,9 +47,6 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
     }
   };
 
-  const activeObject = useActiveMoveableObject();
-  console.log(activeObject.activeMoveableObject?.toJSON());
-
   useEffect(() => {
     handleResize();
     window.addEventListener('resize', () => {

@@ -16,6 +16,9 @@ import { FC, useEffect, useRef } from 'react';
 import Moveable from 'react-moveable';
 import Selecto from 'react-selecto';
 
+// kinda magic, but it works
+const FONT_TO_CONTAINER_HEIGHT_RATIO = 0.6;
+
 export const MoveableConfig: FC = () => {
   const { moveableTargets, setMoveableTargets, getAllObjects, setMovable } =
     useDesign();
@@ -74,10 +77,12 @@ export const MoveableConfig: FC = () => {
           bottomToolbar: !isCropping,
         }}
         draggable
-        resizable
+        resizable={{
+          edge: isText(activeMoveableObject) ? ['e', 'w'] : true,
+        }}
         throttleResize={1}
         snappable
-        keepRatio={isText(activeMoveableObject)}
+        // keepRatio={isText(activeMoveableObject)}
         rotatable
         snapGridWidth={50}
         onDragStart={e => {
@@ -103,7 +108,7 @@ export const MoveableConfig: FC = () => {
         }}
         onDragEnd={e => {
           if (isElementLocked(e.target)) return;
-          var matrix = new WebKitCSSMatrix(e.target.style.transform);
+          const matrix = new WebKitCSSMatrix(e.target.style.transform);
 
           if (isLine(activeMoveableObject)) {
             const xChanged = matrix.m41 - activeMoveableObject.dragStartPoint.x;
@@ -150,6 +155,18 @@ export const MoveableConfig: FC = () => {
           activeMoveableObject?.setX(matrix.m41);
           activeMoveableObject?.setY(matrix.m42);
 
+          if (isText(activeMoveableObject)) {
+            const targetHeight = e.height;
+            const textContainer = activeMoveableObject.getTextContainer();
+            if (!textContainer) return;
+            const numberOfLines = textContainer.childNodes.length;
+            activeMoveableObject.setFontSize(
+              (targetHeight / numberOfLines) * FONT_TO_CONTAINER_HEIGHT_RATIO,
+            );
+            activeMoveableObject.setLineHeight(
+              `${targetHeight / numberOfLines}px`,
+            );
+          }
           e.target.style.width = `${e.width}px`;
           e.target.style.height = `${e.height}px`;
           e.target.style.transform = e.drag.transform;

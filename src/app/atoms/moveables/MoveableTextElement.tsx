@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import { TEXT_INNER_ELEMENTS } from '@/app/lib/moveable/constant/text';
 import { OBJECT_INNER_ELEMENTS } from '@/app/lib/moveable/constant/object';
 import { useDesign } from '@/app/store/design-objects';
+import { removeAllChildStyles } from '@/app/utilities/dom';
 
 interface MoveableTextProps {
   object: MoveableTextObject;
@@ -23,12 +24,19 @@ export const MoveableTextElement: FC<MoveableTextProps> = ({
     );
     if (!textContainer) return;
 
+    // remove all auto-generated style from contenteditable
+    textContainer.addEventListener('input', () => {
+      removeAllChildStyles(textContainer);
+    });
+
     // Create a new ResizeObserver instance
     let resizeObserver = new ResizeObserver(entries => {
       const element = object.getElement();
       if (!element) return;
-      element.style.width = `${textContainer.clientWidth}px`;
-      element.style.height = `${textContainer.clientHeight}px`;
+      if (!object.getResizingStatus()) {
+        element.style.width = `${textContainer.clientWidth}px`;
+        element.style.height = `${textContainer.clientHeight}px`;
+      }
 
       if (object.getPreviousSize().height !== textContainer.clientHeight) {
         object.onUpdateTransformDirection();
@@ -56,7 +64,10 @@ export const MoveableTextElement: FC<MoveableTextProps> = ({
   return (
     <div
       id={object.id}
-      className={clsx('absolute w-fit break-words', className)}
+      className={clsx(
+        'absolute w-fit break-words whitespace-nowrap',
+        className,
+      )}
       style={{ writingMode: 'horizontal-tb' }}
     >
       <div
@@ -64,7 +75,6 @@ export const MoveableTextElement: FC<MoveableTextProps> = ({
         id={`${OBJECT_INNER_ELEMENTS.FLIPPER}-${object.id}`}
       >
         <ul
-          className="w-fit"
           id={`${TEXT_INNER_ELEMENTS.CONTAINER}-${object.id}`}
           suppressContentEditableWarning
         >
