@@ -444,17 +444,15 @@ export class TextBackgroundEffect extends StyleEffect {
       transparency = TEXT_BACKGROUND_DEFAULT_VALUE.transparency,
     } = this.options;
     const textContainer = this.getTextContainer();
-    const firstTextChild = textContainer?.firstElementChild;
-    if (!textContainer || !firstTextChild) return;
-    const textChildStyles = window.getComputedStyle(firstTextChild);
-    const elHeight = parseFloat(
-      textChildStyles.height.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
-    );
-    const textContainerHeight = parseFloat(
+    if (!textContainer) return;
+    this.cloneTextContainer(element, textContainer);
+    const textContainerWidth = parseFloat(
       window
         .getComputedStyle(textContainer)
-        .height.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
+        .width.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
     );
+
+    const textAlign = window.getComputedStyle(textContainer).textAlign;
 
     const bgElement = document.getElementById(bgEffectId);
     if (bgElement) {
@@ -470,31 +468,53 @@ export class TextBackgroundEffect extends StyleEffect {
     svg.style.left = `${-spreadVal}px`;
     svg.style.width = `calc(100% + ${2 * spreadVal}px)`;
     svg.style.zIndex = '-1';
-    svg.style.height = `${textContainerHeight}px`;
+    svg.style.height = `100%`;
     element.appendChild(svg);
     let prevPathWidth = 0;
+    let prevPathHeight = 0;
+    let currentPathHeight = 0;
     const lengthItems = textContainer.childNodes.length;
     textContainer.childNodes.forEach((el, index) => {
+      this.resetBackgroundColorElement(el as HTMLElement);
       let elWidth = 0;
+      const elHeight = parseFloat(
+        window
+          .getComputedStyle(el as HTMLElement)
+          .height.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
+      );
       if (!el.textContent) {
         elWidth = prevPathWidth;
       } else {
         elWidth =
-          this.getTextContentWidth(el.textContent, element) + 2 * spreadVal;
+          this.getTextContentWidth(el.textContent, index) + 2 * spreadVal;
       }
 
       const nextEl = textContainer.childNodes[index + 1];
       const nextPathWidth =
         nextEl && nextEl.textContent
-          ? this.getTextContentWidth(nextEl.textContent, element) +
+          ? this.getTextContentWidth(nextEl.textContent, index + 1) +
             2 * spreadVal
           : prevPathWidth || elWidth;
-      const isRadiusTop = index === 0 || elWidth > prevPathWidth;
+      const isRadiusTop =
+        index === 0 || (elWidth > prevPathWidth && textAlign !== 'right');
       const isRadiusBottom =
-        index === lengthItems - 1 || elWidth > nextPathWidth;
+        index === lengthItems - 1 ||
+        (elWidth > nextPathWidth && textAlign !== 'right');
+      const isRadiusBottomRight =
+        index === lengthItems - 1 ||
+        (elWidth > nextPathWidth && ['right', 'center'].includes(textAlign));
+      const isRadiusTopLeft =
+        index === 0 ||
+        (elWidth > nextPathWidth && ['right', 'center'].includes(textAlign));
+      const startX = this.calculateStartPathX(
+        textContainerWidth,
+        elWidth - 2 * spreadVal,
+        textAlign,
+      );
+      const startY = currentPathHeight;
       prevPathWidth = elWidth;
-      const startX = 0;
-      const startY = elHeight * index;
+      prevPathHeight = elHeight;
+      currentPathHeight += prevPathHeight;
       const path = document.createElementNS(
         'http://www.w3.org/2000/svg',
         'path',
@@ -521,19 +541,19 @@ export class TextBackgroundEffect extends StyleEffect {
               }`
             : ''
         }
-        L ${index === lengthItems - 1 ? startX + roundnessVal : startX} ${
+        L ${isRadiusBottomRight ? startX + roundnessVal : startX} ${
           startY + elHeight
         }
         ${
-          index === lengthItems - 1
+          isRadiusBottomRight
             ? `C ${startX + roundnessVal} ${startY + elHeight}, ${startX} ${
                 startY + elHeight
               }, ${startX} ${startY + elHeight - roundnessVal}`
             : ''
         }
-        L ${startX} ${index === 0 ? startY + roundnessVal : startY}
+        L ${startX} ${isRadiusTopLeft ? startY + roundnessVal : startY}
         ${
-          index === 0
+          isRadiusTopLeft
             ? `C ${startX} ${startY + roundnessVal}, ${startX} ${startY}, ${
                 startX + roundnessVal
               } ${startY}`
@@ -544,6 +564,7 @@ export class TextBackgroundEffect extends StyleEffect {
       path.style.fillOpacity = `${transparency / 100}`;
       svg.appendChild(path);
     });
+    this.removeCloneTextContainer();
     if (!this.isRegisterEventListener) {
       this.boundOnInput = this.onInput.bind(this, element);
       element.addEventListener('input', this.boundOnInput);
@@ -562,19 +583,66 @@ export class TextBackgroundEffect extends StyleEffect {
     }
   }
 
-  getTextContentWidth(textContent: string, element: HTMLElement): number {
-    if (!textContent) return 0;
-    const span = document.createElement('span');
-    span.textContent = textContent;
-    span.style.position = 'absolute';
-    span.style.visibility = 'hidden';
-    element.appendChild(span);
-    const styles = window.getComputedStyle(span);
-    const width = parseFloat(
-      styles.width.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
+  getCloneTextContainer(): HTMLElement | null {
+    return document.getElementById(
+      `clone-${TEXT_INNER_ELEMENTS.CONTAINER}-${this.id}`,
     );
-    element.removeChild(span);
-    return width;
+  }
+
+  cloneTextContainer(element: HTMLElement, editableElement: HTMLElement) {
+    const ul = editableElement.cloneNode(true) as HTMLElement;
+    ul.id = `clone-${TEXT_INNER_ELEMENTS.CONTAINER}-${this.id}`;
+    ul.style.visibility = 'hidden';
+    ul.style.position = 'absolute';
+    ul.childNodes.forEach(el => {
+      if (el.textContent) {
+        const span = document.createElement('span');
+        span.textContent = el.textContent;
+        el.textContent = '';
+        el.appendChild(span);
+      }
+    });
+    element.appendChild(ul);
+  }
+
+  removeCloneTextContainer() {
+    const ul = this.getCloneTextContainer();
+    if (ul) {
+      ul.remove();
+    }
+  }
+
+  resetBackgroundColorElement(element: HTMLElement) {
+    element.style.backgroundColor = 'transparent';
+    element.childNodes.forEach(child => {
+      if (child && child instanceof HTMLElement) {
+        child.style.backgroundColor = 'transparent';
+      }
+    });
+  }
+
+  getTextContentWidth(textContent: string, index: number): number {
+    const cloneTextContainer = this.getCloneTextContainer();
+    if (!textContent || !cloneTextContainer) return 0;
+    const span = cloneTextContainer.childNodes[index]
+      ?.firstChild as HTMLElement;
+    if (!span) return 0;
+    return span.offsetWidth;
+  }
+
+  calculateStartPathX(
+    elementWidth: number,
+    textContentWidth: number,
+    textAlign: string,
+  ) {
+    switch (textAlign) {
+      case 'center':
+        return (elementWidth - textContentWidth) / 2;
+      case 'right':
+        return elementWidth - textContentWidth;
+      default:
+        return 0;
+    }
   }
 
   onInput(element: HTMLElement) {
