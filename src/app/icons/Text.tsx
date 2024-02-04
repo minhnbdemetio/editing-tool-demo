@@ -11,7 +11,7 @@ export const Text: React.FC<IconProps> = ({ className }) => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <g clip-path="url(#clip0_739_10124)">
+      <g clipPath="url(#clip0_739_10124)">
         <path
           fill-rule="evenodd"
           clip-rule="evenodd"
