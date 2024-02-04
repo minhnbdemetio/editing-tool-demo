@@ -390,6 +390,7 @@ export class MoveableTextObject
     this.textDecoration.apply(element);
     this.applyOpacity();
     this.applyColor();
+    this.applyFontEffect();
 
     if (this.styleEffect.variant === TextStyleEffect.OUTLINE) {
       this.applyTextGradient(contenteditable);
@@ -408,7 +409,7 @@ export class MoveableTextObject
     }
 
     this.renderTextScale();
-    this.applyFontEffect();
+    
 
     this.applyTextListStyle();
   }
