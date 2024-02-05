@@ -13,7 +13,7 @@ export const LineStartCircle: React.FC<IconProps> = ({ className }) => {
         fill="currentColor"
         fill-rule="evenodd"
         d="M9.75 12a.75.75 0 0 1 .75-.75h10a.75.75 0 0 1 0 1.5h-10a.75.75 0 0 1-.75-.75z"
-        clip-rule="evenodd"
+        clipRule="evenodd"
       ></path>
       <path fill="currentColor" d="M3 12a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"></path>
     </svg>

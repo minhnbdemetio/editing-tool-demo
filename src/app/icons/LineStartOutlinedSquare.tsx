@@ -13,13 +13,13 @@ export const LineStartOutlinedSquare: React.FC<IconProps> = ({ className }) => {
         fill="currentColor"
         fill-rule="evenodd"
         d="M9.75 12a.75.75 0 0 1 .75-.75h10a.75.75 0 0 1 0 1.5h-10a.75.75 0 0 1-.75-.75z"
-        clip-rule="evenodd"
+        clipRule="evenodd"
       ></path>
       <path
         fill="currentColor"
         fill-rule="evenodd"
         d="M4.5 9.5v5h5v-5h-5zM3.5 8a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.5-.5h-7z"
-        clip-rule="evenodd"
+        clipRule="evenodd"
       ></path>
     </svg>
   );
