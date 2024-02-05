@@ -4,10 +4,14 @@ import Image from 'next/image';
 
 import { useAddObjectToActivePage } from '@/app/hooks/usePageObjects';
 import { MoveableLineObject } from '@/app/lib/moveable/MoveableLine';
-import {
-  StrokeDashArraySizes,
-  SvgLineAdornment,
-} from '@/app/utilities/line/Interface.Line';
+import { SvgLineAdornment } from '@/app/utilities/line/Interface.Line';
+import { StrokeDashArraySizes } from '@/app/utilities/Svg.interfaces';
+import { ArrowAdornment } from '@/app/utilities/line/adornment/ArrowAdornment';
+import { LineAdornment } from '@/app/utilities/line/adornment/LineAdornment';
+import { TriangleAdornment } from '@/app/utilities/line/adornment/TriangleAdornment';
+import { CircleAdornment } from '@/app/utilities/line/adornment/CircleAdornment';
+import { RhombusAdornment } from '@/app/utilities/line/adornment/RhombusAdornment';
+import { SquareAdornment } from '@/app/utilities/line/adornment/SquareAdornment';
 
 interface LinesProps {}
 
@@ -25,8 +29,8 @@ export const Lines: React.FC<LinesProps> = () => {
           addObjectToActivePage(
             new MoveableLineObject({
               svgLineOptions: {
-                startAdornment: SvgLineAdornment.Arrow,
-                endAdornment: SvgLineAdornment.Arrow,
+                startAdornment: new ArrowAdornment(),
+                endAdornment: new ArrowAdornment(),
               },
             }),
           );
@@ -36,8 +40,8 @@ export const Lines: React.FC<LinesProps> = () => {
           addObjectToActivePage(
             new MoveableLineObject({
               svgLineOptions: {
-                startAdornment: SvgLineAdornment.Line,
-                endAdornment: SvgLineAdornment.Line,
+                startAdornment: new LineAdornment({ outline: false }),
+                endAdornment: new LineAdornment({ outline: false }),
               },
             }),
           );
@@ -58,69 +62,83 @@ export const Lines: React.FC<LinesProps> = () => {
         case 'dots-closed-triangle': {
           const object = new MoveableLineObject();
           object.line.setStrokeDashArray(StrokeDashArraySizes.Small);
-          object.line.setStartAdornment(SvgLineAdornment.Triangle);
-          object.line.setEndAdornment(SvgLineAdornment.Triangle);
+          object.line.setStartAdornment(
+            new TriangleAdornment({ outline: false }),
+          );
+          object.line.setEndAdornment(
+            new TriangleAdornment({ outline: false }),
+          );
           addObjectToActivePage(object);
           return;
         }
         case 'dots-end-arrow': {
           const object = new MoveableLineObject();
           object.line.setStrokeDashArray(StrokeDashArraySizes.Small);
-          object.line.setEndAdornment(SvgLineAdornment.Arrow);
+          object.line.setEndAdornment(new ArrowAdornment({ outline: false }));
           addObjectToActivePage(object);
           return;
         }
         case 'end-arrow': {
           const object = new MoveableLineObject();
-          object.line.setEndAdornment(SvgLineAdornment.Arrow);
+          object.line.setEndAdornment(new ArrowAdornment({ outline: false }));
           addObjectToActivePage(object);
           return;
         }
         case 'end-triangle': {
           const object = new MoveableLineObject();
-          object.line.setEndAdornment(SvgLineAdornment.Triangle);
+          object.line.setEndAdornment(
+            new TriangleAdornment({ outline: false }),
+          );
           addObjectToActivePage(object);
           return;
         }
         case 'line-closed-circle': {
           const object = new MoveableLineObject();
-          object.line.setEndAdornment(SvgLineAdornment.Circle);
-          object.line.setStartAdornment(SvgLineAdornment.Circle);
+          object.line.setEndAdornment(new CircleAdornment({ outline: false }));
+          object.line.setStartAdornment(
+            new CircleAdornment({ outline: false }),
+          );
           addObjectToActivePage(object);
           return;
         }
         case 'line-closed-outline-circle': {
           const object = new MoveableLineObject();
-          object.line.setEndAdornment(SvgLineAdornment.OutlinedCircle);
-          object.line.setStartAdornment(SvgLineAdornment.OutlinedCircle);
+          object.line.setEndAdornment(new CircleAdornment({ outline: true }));
+          object.line.setStartAdornment(new CircleAdornment({ outline: true }));
           addObjectToActivePage(object);
           return;
         }
         case 'line-closed-outline-rhombus': {
           const object = new MoveableLineObject();
-          object.line.setEndAdornment(SvgLineAdornment.OutlinedRhombus);
-          object.line.setStartAdornment(SvgLineAdornment.OutlinedRhombus);
+          object.line.setEndAdornment(new RhombusAdornment({ outline: true }));
+          object.line.setStartAdornment(
+            new RhombusAdornment({ outline: true }),
+          );
           addObjectToActivePage(object);
           return;
         }
         case 'line-closed-outline-square': {
           const object = new MoveableLineObject();
-          object.line.setEndAdornment(SvgLineAdornment.OutlinedSquare);
-          object.line.setStartAdornment(SvgLineAdornment.OutlinedSquare);
+          object.line.setEndAdornment(new SquareAdornment({ outline: true }));
+          object.line.setStartAdornment(new SquareAdornment({ outline: true }));
           addObjectToActivePage(object);
           return;
         }
         case 'line-closed-rhombus': {
           const object = new MoveableLineObject();
-          object.line.setEndAdornment(SvgLineAdornment.Rhombus);
-          object.line.setStartAdornment(SvgLineAdornment.Rhombus);
+          object.line.setEndAdornment(new RhombusAdornment({ outline: false }));
+          object.line.setStartAdornment(
+            new RhombusAdornment({ outline: false }),
+          );
           addObjectToActivePage(object);
           return;
         }
         case 'line-closed-square': {
           const object = new MoveableLineObject();
-          object.line.setEndAdornment(SvgLineAdornment.Square);
-          object.line.setStartAdornment(SvgLineAdornment.Square);
+          object.line.setEndAdornment(new SquareAdornment({ outline: false }));
+          object.line.setStartAdornment(
+            new SquareAdornment({ outline: false }),
+          );
           addObjectToActivePage(object);
           return;
         }

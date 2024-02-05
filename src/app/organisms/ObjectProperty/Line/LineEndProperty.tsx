@@ -1,5 +1,5 @@
+import { ListLineAdornmentButtons } from '@/app/atoms/ListLineAdornmentButtons';
 import { useActiveMoveableLineObject } from '@/app/hooks/useActiveMoveableObject';
-import { DotsLineStyle } from '@/app/icons/DotsLineStyle';
 import { LineStartArrow } from '@/app/icons/LineStartArrow';
 import { LineStartCircle } from '@/app/icons/LineStartCircle';
 import { LineStartNone } from '@/app/icons/LineStartNone';
@@ -10,14 +10,11 @@ import { LineStartRect } from '@/app/icons/LineStartRect';
 import { LineStartRhombus } from '@/app/icons/LineStartRhombus';
 import { LineStartSquare } from '@/app/icons/LineStartSquare';
 import { LineStartTriangle } from '@/app/icons/LineStartTriangle';
-import { MediumDashedLineStyle } from '@/app/icons/MediumDashedLineStyle';
-import { SmallDashedLineStyle } from '@/app/icons/SmallDashedLineStyle';
-import { SolidLineStyle } from '@/app/icons/SolidLineStyle';
 import { IconProps } from '@/app/types';
 import { SvgLineAdornment } from '@/app/utilities/line/Interface.Line';
+import { Adornment } from '@/app/utilities/line/adornment/Adornment';
 
 import { twMerge } from '@/app/utilities/tailwind';
-import { Slider, Switch } from '@nextui-org/react';
 import { FC, useCallback, useState } from 'react';
 
 const LINE_ENDS: {
@@ -69,15 +66,14 @@ const LINE_ENDS: {
 export const LineEndProperty: FC = () => {
   const activeLineObject = useActiveMoveableLineObject();
 
-  const [lineStart, setLineStart] = useState<SvgLineAdornment>(
-    activeLineObject?.line.getEndAdornment() || SvgLineAdornment.None,
+  const [lineEnd, setLineEnd] = useState<Adornment | undefined>(
+    activeLineObject?.line.getStartAdornment(),
   );
-
   const [] = useState();
 
-  const onChangeStrokeDashArray = useCallback(
-    (adornment: SvgLineAdornment) => {
-      setLineStart(adornment);
+  const changeAdornment = useCallback(
+    (adornment: Adornment | undefined) => {
+      setLineEnd(adornment);
 
       activeLineObject?.line.setEndAdornment(adornment);
       activeLineObject?.updateUI();
@@ -89,22 +85,11 @@ export const LineEndProperty: FC = () => {
 
   return (
     <>
-      <div className="overflow-y-auto">
-        <div className="flex gap-2">
-          {LINE_ENDS.map(({ icon: Icon, id }) => (
-            <button
-              key={id}
-              onClick={() => onChangeStrokeDashArray(id)}
-              className={twMerge(
-                'border-px border-solid rotate-180 border-gray-500 rounded-md px-3 py-3',
-                { 'border-green-400': id === lineStart },
-              )}
-            >
-              <Icon className="mx-auto " />
-            </button>
-          ))}
-        </div>
-      </div>
+      <ListLineAdornmentButtons
+        adornment={lineEnd}
+        onChange={changeAdornment}
+        position="end"
+      />
     </>
   );
 };

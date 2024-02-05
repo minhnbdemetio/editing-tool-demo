@@ -1,17 +1,18 @@
 import { getAngleByPoint } from '../line';
 import { SvgLine } from './Line';
 import {
-  AdornmentDirection,
   BoundingRectPosition,
+  IStraightLine,
   SvgLineType,
 } from './Interface.Line';
 import { LinePoint } from './Point';
+import { AdornmentDirection } from './adornment/Adornment.interfaces';
 
-export class StraightLine extends SvgLine {
+export class StraightLine extends SvgLine implements IStraightLine {
   type: SvgLineType = SvgLineType.Straight;
 
   getLine(): string {
-    const line: string = this.getHorizontalLine(this.getStraightLineWidth(), {
+    const line: string = this.getHorizontalLine(this.getLineWidth(), {
       isFirst: true,
       isLast: true,
     });
@@ -38,9 +39,28 @@ export class StraightLine extends SvgLine {
     return 0;
   }
 
+  getLineWidth() {
+    const start = this.points;
+    const end = start.getNext();
+
+    if (end) {
+      const { x: rightX, y: rightY } = end.getPosition();
+      const { x: leftX, y: leftY } = start.getPosition();
+      const vertical = rightX - leftX;
+      const horizontal = rightY - leftY;
+      let lineWidth = Math.sqrt(
+        Math.pow(vertical, 2) + Math.pow(horizontal, 2),
+      );
+
+      return lineWidth;
+    }
+
+    return 0;
+  }
+
   public getBoundingPosition(relative?: boolean): BoundingRectPosition {
     if (this.type === SvgLineType.Straight && !relative) {
-      const lineWidth = this.getStraightLineWidth();
+      const lineWidth = this.getLineWidth();
       const arrowLength = this.getAdornmentLength();
       return {
         x1: 0,
@@ -63,5 +83,13 @@ export class StraightLine extends SvgLine {
 
   getEndAdornmentDirection(): AdornmentDirection {
     return 'right';
+  }
+
+  getStartAdornmentPosition(): { x: number; y: number } {
+    return { x: this.padding, y: this.padding };
+  }
+
+  getEndAdornmentPosition(): { x: number; y: number } {
+    return { x: this.padding + this.getLineWidth(), y: this.padding };
   }
 }

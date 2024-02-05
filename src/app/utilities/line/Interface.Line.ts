@@ -1,3 +1,6 @@
+import { Adornment } from './adornment/Adornment';
+import { AdornmentDirection } from './adornment/Adornment.interfaces';
+
 export enum SvgLineAdornment {
   Arrow = 'arrow',
   Triangle = 'triangle',
@@ -22,19 +25,6 @@ export enum SvgLineType {
   Elbowed = 'elbowed',
 }
 
-export enum StrokeLineCap {
-  Butt = 'butt',
-  Round = 'round',
-  Square = 'square',
-}
-
-export enum StrokeDashArraySizes {
-  Small = 'small',
-  Medium = 'medium',
-  Large = 'large',
-  None = 'none',
-}
-
 export enum SvgAlignment {
   LEFT = 'left',
   RIGHT = 'right',
@@ -48,30 +38,6 @@ export enum SvgFlip {
   VERTICAL = 'vertical',
   HORIZONTAL = 'horizontal',
 }
-
-export declare type SvgStrokeType =
-  | string
-  | {
-      offset: number;
-      color: string;
-    }[];
-
-export type SvgLineOptions = {
-  strokeWidth?: number;
-  length?: number;
-  stroke?: string;
-  startAdornment?: SvgLineAdornment;
-  endAdornment?: SvgLineAdornment;
-  type?: SvgLineType.Elbowed | SvgLineType.Straight;
-  cornerRounding?: number;
-  strokeDashArray?: StrokeDashArraySizes;
-  shadowDirection?: number;
-  shadowOpacity?: number;
-  shadowDistance?: number;
-  shadowBlur?: number;
-  strokeLineCap?: StrokeLineCap;
-  opacity?: number;
-};
 
 export declare type BoundingRectPosition = {
   x1: number;
@@ -94,11 +60,24 @@ export interface IPoint {
 }
 
 export interface AdornmentLine {
-  startAdornment: SvgLineAdornment;
-  endAdornment: SvgLineAdornment;
+  startAdornment: Adornment | undefined;
+  endAdornment: Adornment | undefined;
 
   getStartAdornmentDirection(): AdornmentDirection;
   getEndAdornmentDirection(): AdornmentDirection;
+  setStartAdornment(adornment: Adornment | undefined): void;
+  setEndAdornment(adornment: Adornment | undefined): void;
+  getStartAdornment(): Adornment | undefined;
+  getEndAdornment(): Adornment | undefined;
+
+  getStartAdornmentPath(): string;
+  getEndAdornmentPath(): string;
+
+  getStartAdornmentPosition(): { x: number; y: number };
+  getEndAdornmentPosition(): { x: number; y: number };
+
+  syncStartAdornmentSvgProperties(): void;
+  syncEndAdornmentSvgProperties(): void;
 }
 
 export interface Shadow {
@@ -109,23 +88,11 @@ export interface Shadow {
   shadowBlur: number;
 }
 
-export interface Gradient {
-  gradientId: string;
-}
-
-export declare type AdornmentDirection = 'up' | 'left' | 'down' | 'right';
-
-export interface ILine extends Gradient, Shadow, AdornmentLine {
-  stroke: SvgStrokeType;
-  strokeWidth: number;
+export interface ILine extends Shadow, AdornmentLine {
   length: number;
   toleranceNumber: number;
   type: SvgLineType;
   padding: number;
-  opacity: number;
-  strokeLineCap: StrokeLineCap;
-  strokeDashArray: [number, number] | undefined;
-  strokeDashArraySize: StrokeDashArraySizes;
   cornerRounding: number;
 
   getLine(): string;
@@ -149,12 +116,13 @@ export interface ILine extends Gradient, Shadow, AdornmentLine {
       nextDx?: number;
     },
   ): string;
-  getStraightLineWidth(): number;
   getDisplayPosition(): { x: number; y: number };
   getRotateAngle(): number;
   getBoundingPosition(relative?: boolean): BoundingRectPosition;
 }
 
-export interface IStraightLine {}
+export interface IStraightLine {
+  getLineWidth(): number;
+}
 
 export interface IElbowedLine {}

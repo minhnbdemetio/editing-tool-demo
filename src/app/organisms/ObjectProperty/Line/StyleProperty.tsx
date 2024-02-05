@@ -7,7 +7,8 @@ import { IconProps } from '@/app/types';
 import {
   StrokeDashArraySizes,
   StrokeLineCap,
-} from '@/app/utilities/line/Interface.Line';
+} from '@/app/utilities/Svg.interfaces';
+
 import { twMerge } from '@/app/utilities/tailwind';
 import { Slider, Switch } from '@nextui-org/react';
 import { FC, useCallback, useState } from 'react';

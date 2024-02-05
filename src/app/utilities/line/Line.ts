@@ -1,78 +1,60 @@
 import {
-  AdornmentDirection,
   BoundingRectPosition,
   ILine,
-  StrokeDashArraySizes,
-  StrokeLineCap,
   SvgAlignment,
   SvgFlip,
-  SvgLineAdornment,
-  SvgLineAdornmentPosition,
   SvgLineType,
-  SvgStrokeType,
 } from './Interface.Line';
 import { LinePoint } from './Point';
 import { v4 as uuidV4 } from 'uuid';
+import { AdornmentDirection } from './adornment/Adornment.interfaces';
+import { SvgStrokeType } from '../Svg.interfaces';
+import { Svg, SvgOptions } from '../Svg';
+import { Adornment } from './adornment/Adornment';
 
 export type SvgLineOptions = {
-  strokeWidth?: number;
   length?: number;
   stroke?: string;
-  startAdornment?: SvgLineAdornment;
-  endAdornment?: SvgLineAdornment;
+  startAdornment?: Adornment;
+  endAdornment?: Adornment;
   type?: SvgLineType.Elbowed | SvgLineType.Straight;
   cornerRounding?: number;
-  strokeDashArray?: StrokeDashArraySizes;
   shadowDirection?: number;
   shadowOpacity?: number;
   shadowDistance?: number;
   shadowBlur?: number;
-  strokeLineCap?: StrokeLineCap;
   opacity?: number;
-};
+} & SvgOptions;
 
-export abstract class SvgLine implements ILine {
-  strokeWidth: number;
+export abstract class SvgLine extends Svg implements ILine {
   length: number;
-  stroke: SvgStrokeType;
-  startAdornment: SvgLineAdornment;
-  endAdornment: SvgLineAdornment;
+  startAdornment: Adornment | undefined;
+  endAdornment: Adornment | undefined;
   padding: number = 6;
   type: SvgLineType;
   cornerRounding: number;
   points: LinePoint;
   endPoint: LinePoint;
   toleranceNumber = 0.5;
-  strokeDashArray: [number, number] | undefined = undefined;
-  strokeDashArraySize: StrokeDashArraySizes = StrokeDashArraySizes.None;
 
   public shadowDirection: number = 0;
   public shadowOpacity: number = 0;
   public shadowDistance: number = 0;
   public shadowBlur: number = 0;
 
-  opacity: number = 100;
-
-  strokeLineCap: StrokeLineCap;
-
   shadowSvgId = uuidV4();
   gradientId = uuidV4();
 
   constructor(options: SvgLineOptions = {}) {
-    this.stroke = options.stroke || '#000';
-    this.strokeWidth = options.strokeWidth || 5;
-    this.startAdornment = options.startAdornment || SvgLineAdornment.None;
-    this.endAdornment = options.endAdornment || SvgLineAdornment.None;
+    super(options);
+
+    this.startAdornment = options.startAdornment;
+    this.endAdornment = options.endAdornment;
     this.length = options.length || 50;
     this.type = options.type || SvgLineType.Straight;
     this.cornerRounding = options.cornerRounding || 10;
 
     this.padding = 50;
-
-    if (options.strokeDashArray)
-      this.setStrokeDashArray(options.strokeDashArray);
-
-    this.strokeLineCap = options.strokeLineCap || StrokeLineCap.Butt;
 
     this.setShadow(
       options || {
@@ -90,36 +72,6 @@ export abstract class SvgLine implements ILine {
 
     this.points = start;
     this.endPoint = end;
-  }
-
-  addPath(
-    d: string,
-    options: { fill?: string; strokeDashArray?: [number, number] } = {},
-  ): string {
-    let pathOptions: string[] = [];
-    if (!!options.fill) pathOptions.push(`fill="${options.fill}"`);
-    if (!!options.strokeDashArray) {
-      pathOptions.push(
-        `stroke-dasharray="${options.strokeDashArray[0]},${options.strokeDashArray[1]}"`,
-      );
-    }
-    return `<path d="${d}" ${pathOptions.join(' ')} />`;
-  }
-
-  public getStartAdornment() {
-    return this.startAdornment;
-  }
-
-  public getEndAdornment() {
-    return this.endAdornment;
-  }
-
-  public getOpacity() {
-    return this.opacity;
-  }
-
-  public setOpacity(opacity: number) {
-    this.opacity = opacity;
   }
 
   getCenterPoint(): number {
@@ -309,66 +261,62 @@ export abstract class SvgLine implements ILine {
     return paths.join(' ');
   }
 
-  abstract getLine(): string;
-  private getAdornment(
-    position: SvgLineAdornmentPosition.Start | SvgLineAdornmentPosition.End,
-  ): string {
-    let start = this.points;
-    const bouding = this.getBoundingPosition();
-
-    if (position === SvgLineAdornmentPosition.End) {
-      start = this.endPoint as LinePoint;
-    }
-
-    let x = start.x - bouding.x1 + this.padding;
-    let y = start.y - bouding.y1 + this.padding;
-
-    let direction: 'right' | 'left' | 'up' | 'down' =
-      position === SvgLineAdornmentPosition.End
-        ? this.getEndAdornmentDirection()
-        : this.getStartAdornmentDirection();
-
-    const isStraightLine = this.getType() === SvgLineType.Straight;
-    if (isStraightLine) {
-      if (position === SvgLineAdornmentPosition.Start) {
-        x = this.padding;
-        y = this.padding;
-      } else {
-        y = this.padding;
-        x = this.padding + this.getStraightLineWidth();
-      }
-    }
-
-    const adornment =
-      position === SvgLineAdornmentPosition.Start
-        ? this.startAdornment
-        : this.endAdornment;
-
-    switch (adornment) {
-      case SvgLineAdornment.Arrow:
-        return this.getArrowAdornment(direction, x, y);
-      case SvgLineAdornment.Triangle:
-        return this.getTriangleAdornment(direction, x, y);
-      case SvgLineAdornment.OutlinedTriangle:
-        return this.getTriangleAdornment(direction, x, y, true);
-      case SvgLineAdornment.Circle:
-        return this.getCircleAdornment(direction, x, y);
-      case SvgLineAdornment.OutlinedCircle:
-        return this.getCircleAdornment(direction, x, y, true);
-      case SvgLineAdornment.Square:
-        return this.getSquareAdornment(direction, x, y);
-      case SvgLineAdornment.OutlinedSquare:
-        return this.getSquareAdornment(direction, x, y, true);
-      case SvgLineAdornment.Rhombus:
-        return this.getRhombusAdornment(direction, x, y);
-      case SvgLineAdornment.OutlinedRhombus:
-        return this.getRhombusAdornment(direction, x, y, true);
-      case SvgLineAdornment.Line:
-        return this.getLineAdornment(direction, x, y, true);
-      default:
-        return '';
-    }
+  setStartAdornment(adornment: Adornment | undefined): void {
+    this.startAdornment = adornment;
   }
+
+  setEndAdornment(adornment: Adornment | undefined): void {
+    this.endAdornment = adornment;
+  }
+
+  getStartAdornment(): Adornment | undefined {
+    return this.startAdornment;
+  }
+  getEndAdornment(): Adornment | undefined {
+    return this.startAdornment;
+  }
+
+  syncEndAdornmentSvgProperties(): void {
+    const direction = this.getEndAdornmentDirection();
+
+    const { x, y } = this.getEndAdornmentPosition();
+
+    this.endAdornment?.setDirection(direction);
+    this.endAdornment?.setLength(this.getAdornmentLength());
+    this.endAdornment?.setStroke(this.stroke);
+    this.endAdornment?.setStrokeWidth(this.strokeWidth);
+    this.endAdornment?.setStrokeDashArray(this.strokeDashArraySize);
+    this.endAdornment?.setStrokeLineCap(this.strokeLineCap);
+    this.endAdornment?.setX(x);
+    this.endAdornment?.setY(y);
+  }
+
+  syncStartAdornmentSvgProperties(): void {
+    const direction = this.getStartAdornmentDirection();
+
+    const { x, y } = this.getStartAdornmentPosition();
+
+    this.startAdornment?.setDirection(direction);
+    this.startAdornment?.setLength(this.getAdornmentLength());
+    this.startAdornment?.setStroke(this.stroke);
+    this.startAdornment?.setStrokeWidth(this.strokeWidth);
+    this.startAdornment?.setStrokeDashArray(this.strokeDashArraySize);
+    this.startAdornment?.setStrokeLineCap(this.strokeLineCap);
+    this.startAdornment?.setX(x);
+    this.startAdornment?.setY(y);
+  }
+
+  getEndAdornmentPath(): string {
+    return this.endAdornment?.toPath() || '';
+  }
+
+  getStartAdornmentPath(): string {
+    return this.startAdornment?.toPath() || '';
+  }
+  abstract getStartAdornmentPosition(): { x: number; y: number };
+  abstract getEndAdornmentPosition(): { x: number; y: number };
+
+  abstract getLine(): string;
 
   abstract getStartAdornmentDirection(): AdornmentDirection;
 
@@ -380,290 +328,9 @@ export abstract class SvgLine implements ILine {
   public getStrokeDashArraySize() {
     return this.strokeDashArraySize;
   }
-  public setStrokeDashArray(size: StrokeDashArraySizes) {
-    this.strokeDashArraySize = size;
-    const strokeWidth = this.getStrokeWidth();
-    switch (size) {
-      case StrokeDashArraySizes.Small: {
-        this.strokeDashArray = [strokeWidth * 1, strokeWidth];
-        break;
-      }
-      case StrokeDashArraySizes.Medium: {
-        this.strokeDashArray = [strokeWidth * 3, strokeWidth];
-        break;
-      }
-      case StrokeDashArraySizes.Large: {
-        this.strokeDashArray = [strokeWidth * 6, strokeWidth];
-        break;
-      }
-      case StrokeDashArraySizes.None: {
-        this.strokeDashArray = undefined;
-      }
-    }
-  }
-
-  private getArrowAdornment(
-    direction: 'up' | 'left' | 'down' | 'right',
-    x: number,
-    y: number,
-  ): string {
-    const arrowLength = this.getAdornmentLength();
-    const arrowSide = arrowLength;
-
-    switch (direction) {
-      case 'up': {
-        return this.addPath(
-          `M ${x - arrowSide} ${
-            y + arrowLength
-          }  l ${arrowSide} ${-arrowSide}  ${arrowSide} ${arrowSide}`,
-          { fill: 'none' },
-        );
-      }
-      case 'left': {
-        return this.addPath(
-          `M ${x + arrowLength} ${
-            y - arrowSide
-          } l ${-arrowSide} ${arrowSide}  ${arrowSide} ${arrowSide}`,
-          { fill: 'none' },
-        );
-      }
-      case 'right': {
-        return this.addPath(
-          `M ${x - arrowLength} ${
-            y - arrowSide
-          } l ${arrowSide} ${arrowSide}  ${-arrowSide} ${arrowSide}`,
-          { fill: 'none' },
-        );
-      }
-      case 'down': {
-        return this.addPath(
-          `M ${x - arrowSide} ${
-            y - arrowLength
-          } l ${arrowSide} ${arrowSide}  ${arrowSide} ${-arrowSide}`,
-          { fill: 'none' },
-        );
-      }
-    }
-  }
 
   getAdornmentLength(): number {
     return this.strokeWidth * 3 - this.strokeWidth / 2;
-  }
-
-  private getStrokeColor(): string {
-    if (typeof this.stroke === 'string') return this.stroke;
-
-    return `url(#${this.gradientId})`;
-  }
-
-  public isStrokeLineCap(strokeLineCap: StrokeLineCap) {
-    return this.strokeLineCap === strokeLineCap;
-  }
-
-  private getTriangleAdornment(
-    direction: 'up' | 'left' | 'down' | 'right',
-    x: number,
-    y: number,
-    outlined?: boolean,
-  ): string {
-    const option = { fill: outlined ? 'none' : this.getStrokeColor() };
-    const arrowLength = this.getAdornmentLength();
-    const arrowSide = arrowLength - this.strokeWidth / 2;
-
-    switch (direction) {
-      case 'up': {
-        return this.addPath(
-          `M ${x} ${y} m ${-this.strokeWidth},${arrowSide} h -${
-            arrowSide / 2
-          } l ${arrowSide} ${-arrowSide} ${arrowSide} ${arrowSide} z`,
-          option,
-        );
-      }
-      case 'left': {
-        return this.addPath(
-          `M ${x} ${y} m ${arrowSide},${-this.strokeWidth} v -${
-            arrowSide / 2
-          } l ${-arrowSide} ${arrowSide} ${arrowSide} ${arrowSide} z`,
-          option,
-        );
-      }
-      case 'right': {
-        return this.addPath(
-          `M ${x} ${y} m ${-arrowSide},${-this.strokeWidth} v -${
-            arrowSide / 2
-          } l ${arrowSide} ${arrowSide} ${-arrowSide} ${arrowSide} z`,
-          option,
-        );
-      }
-      case 'down': {
-        return this.addPath(
-          `M ${x} ${y} m ${-this.strokeWidth},${-arrowSide} h -${
-            arrowSide / 2
-          } l ${arrowSide} ${arrowSide} ${arrowSide} -${arrowSide} z`,
-          option,
-        );
-      }
-    }
-  }
-  private getSquareAdornment(
-    direction: 'up' | 'left' | 'down' | 'right',
-    x: number,
-    y: number,
-    outlined?: boolean,
-  ): string {
-    const option = { fill: outlined ? 'none' : this.getStrokeColor() };
-    const arrowLength = this.getAdornmentLength();
-    const arrowSide = arrowLength * 2;
-
-    switch (direction) {
-      case 'up': {
-        return this.addPath(
-          `M  ${x} ${y}  h -${
-            arrowSide / 2
-          } v ${arrowSide} h ${arrowSide} v -${arrowSide} z`,
-          option,
-        );
-      }
-      case 'left': {
-        return this.addPath(
-          `M  ${x + arrowSide} ${y} l 0 -${
-            arrowSide / 2
-          } -${arrowSide} 0 0 ${arrowSide} ${arrowSide} 0 z`,
-          option,
-        );
-      }
-      case 'right': {
-        return this.addPath(
-          `M  ${x}  ${y} l 0 -${
-            arrowSide / 2
-          } -${arrowSide} 0 0 ${arrowSide} ${arrowSide} 0 z`,
-          option,
-        );
-      }
-      case 'down': {
-        return this.addPath(
-          `M  ${x} ${y} h -${
-            arrowSide / 2
-          } v ${-arrowSide} h ${arrowSide} v ${arrowSide} z`,
-          option,
-        );
-      }
-    }
-  }
-
-  private getRhombusAdornment(
-    direction: 'up' | 'left' | 'down' | 'right',
-    x: number,
-    y: number,
-    outlined?: boolean,
-  ): string {
-    const option = { fill: outlined ? 'none' : this.getStrokeColor() };
-    const rhombusSide = this.getAdornmentLength();
-
-    const triangleSidePadding = 0;
-
-    switch (direction) {
-      case 'up': {
-        return this.addPath(
-          `M ${x} ${y} m 0,${
-            rhombusSide * 2 + triangleSidePadding
-          } l -${rhombusSide} -${rhombusSide} l ${rhombusSide} ${-rhombusSide} l ${rhombusSide} ${rhombusSide} l ${-rhombusSide} ${rhombusSide} z`,
-          option,
-        );
-      }
-      case 'left': {
-        return this.addPath(
-          `M ${x} ${y} m ${
-            rhombusSide * 2 + triangleSidePadding
-          },0 l -${rhombusSide} -${rhombusSide} l -${rhombusSide} ${rhombusSide} l ${rhombusSide} ${rhombusSide} l ${rhombusSide} -${rhombusSide} z`,
-          option,
-        );
-      }
-      case 'right': {
-        return this.addPath(
-          `M ${x} ${y} m ${
-            -rhombusSide * 2 - triangleSidePadding
-          },0 l ${rhombusSide} -${rhombusSide} l ${rhombusSide} ${rhombusSide} l ${-rhombusSide} ${rhombusSide} l ${-rhombusSide} -${rhombusSide} z`,
-          option,
-        );
-      }
-      case 'down': {
-        return this.addPath(
-          `M ${x} ${y} m 0,${
-            -rhombusSide * 2 - triangleSidePadding
-          } l ${rhombusSide} ${rhombusSide} l -${rhombusSide} ${rhombusSide} l ${-rhombusSide} ${-rhombusSide} l ${rhombusSide} -${rhombusSide} z`,
-          option,
-        );
-      }
-    }
-  }
-
-  private getLineAdornment(
-    direction: 'up' | 'left' | 'down' | 'right',
-    x: number,
-    y: number,
-    outlined?: boolean,
-  ): string {
-    const option = { fill: outlined ? 'none' : this.getStrokeColor() };
-    const lineSide = this.getAdornmentLength();
-
-    switch (direction) {
-      case 'down':
-      case 'up': {
-        return this.addPath(
-          `M ${x} ${y} m ${lineSide},0 h ${-lineSide * 2}`,
-          option,
-        );
-      }
-
-      case 'right':
-      case 'left': {
-        return this.addPath(
-          `M ${x} ${y} m 0,${-lineSide} v ${lineSide * 2}`,
-          option,
-        );
-      }
-    }
-  }
-
-  private getCircleAdornment(
-    direction: 'up' | 'left' | 'down' | 'right',
-    x: number,
-    y: number,
-    outlined?: boolean,
-  ): string {
-    const arrowLength = this.getAdornmentLength();
-
-    switch (direction) {
-      case 'up': {
-        return `<circle cx="${x}" cy="${
-          y + arrowLength
-        }" r="${arrowLength}" stroke="black" stroke-width="${
-          this.strokeWidth
-        }" fill="${outlined ? 'none' : 'currentColor'}" />`;
-      }
-      case 'left': {
-        return `<circle cx="${
-          x + arrowLength
-        }" cy="${y}" r="${arrowLength}" stroke="black" stroke-width="${
-          this.strokeWidth
-        }" fill="${outlined ? 'none' : 'currentColor'}" />`;
-      }
-      case 'right': {
-        return `<circle cx="${
-          x - arrowLength
-        }" cy="${y}" r="${arrowLength}" stroke="black" stroke-width="${
-          this.strokeWidth
-        }" fill="${outlined ? 'none' : 'currentColor'}" />`;
-      }
-      case 'down': {
-        return `<circle cx="${x}" cy="${
-          y - arrowLength
-        }" r="${arrowLength}" stroke="black" stroke-width="${
-          this.strokeWidth
-        }" fill="${outlined ? 'none' : 'currentColor'}" />`;
-      }
-    }
   }
 
   private getLineAdornmentPadding(): {
@@ -749,78 +416,18 @@ export abstract class SvgLine implements ILine {
       }
     };
 
-    switch (this.startAdornment) {
-      case SvgLineAdornment.Arrow:
-        setStartPadding(startAdornmentPos, (this.strokeWidth * 1) / 4);
-        break;
-      case SvgLineAdornment.OutlinedSquare:
-      case SvgLineAdornment.OutlinedRhombus:
-      case SvgLineAdornment.OutlinedCircle:
-        setStartPadding(startAdornmentPos, this.getAdornmentLength() * 2);
-        break;
-      case SvgLineAdornment.None:
-      case SvgLineAdornment.Line:
-        setStartPadding(startAdornmentPos, -this.strokeWidth / 2);
-        break;
-
-      default:
-        setStartPadding(startAdornmentPos, this.getAdornmentLength());
+    if (!this.startAdornment) {
+      setStartPadding(startAdornmentPos, -this.strokeWidth / 2);
+    } else {
+      setStartPadding(startAdornmentPos, this.startAdornment.getPadding());
     }
-
-    switch (this.endAdornment) {
-      case SvgLineAdornment.Arrow:
-        setEndPadding(endAdornmentPos, (this.strokeWidth * 1) / 4);
-
-        break;
-      case SvgLineAdornment.OutlinedSquare:
-      case SvgLineAdornment.OutlinedRhombus:
-      case SvgLineAdornment.OutlinedCircle:
-        setEndPadding(endAdornmentPos, this.getAdornmentLength() * 2);
-        break;
-      case SvgLineAdornment.None:
-      case SvgLineAdornment.Line:
-        setEndPadding(endAdornmentPos, -this.strokeWidth / 2);
-        break;
-
-      default:
-        setEndPadding(startAdornmentPos, this.getAdornmentLength());
+    if (!this.endAdornment) {
+      setEndPadding(endAdornmentPos, -this.strokeWidth / 2);
+    } else {
+      setEndPadding(endAdornmentPos, this.endAdornment.getPadding());
     }
 
     return adornmentPadding;
-  }
-
-  getStraightLineWidth() {
-    const start = this.points;
-    const end = start.getNext();
-
-    if (end) {
-      const { x: rightX, y: rightY } = end.getPosition();
-      const { x: leftX, y: leftY } = start.getPosition();
-      const vertical = rightX - leftX;
-      const horizontal = rightY - leftY;
-      let lineWidth = Math.sqrt(
-        Math.pow(vertical, 2) + Math.pow(horizontal, 2),
-      );
-
-      return lineWidth;
-    }
-
-    return 0;
-  }
-
-  private getLinearGradient() {
-    if (typeof this.stroke === 'string') return '';
-
-    return `
-    <linearGradient  id="${this.gradientId}" x1="0%" y1="0%" x2="100%" y2="0%">
-      ${this.stroke.map(
-        gradientStop =>
-          `<stop offset="${gradientStop.offset * 100}%" style="stop-color:${
-            gradientStop.color
-          };stop-opacity:1" />`,
-      )}
-    </linearGradient>
-    `;
   }
 
   private getDimensions: () => { length: number; height: number } = () => {
@@ -834,36 +441,6 @@ export abstract class SvgLine implements ILine {
       height: height + this.padding * 2,
     };
   };
-
-  public setStroke(stroke: SvgStrokeType) {
-    this.stroke = stroke;
-  }
-
-  public getStroke(stroke: string) {
-    this.stroke = stroke;
-  }
-
-  public setStrokeWidth(strokeWidth: number) {
-    this.strokeWidth = strokeWidth;
-  }
-  public getStrokeWidth() {
-    return this.strokeWidth;
-  }
-
-  public setStrokeLineCap(strokeLineCap: StrokeLineCap): void {
-    this.strokeLineCap = strokeLineCap;
-  }
-  public getStrokeLineCap(): StrokeLineCap {
-    return this.strokeLineCap;
-  }
-
-  public setEndAdornment(adornment: SvgLineAdornment) {
-    this.endAdornment = adornment;
-  }
-
-  public setStartAdornment(adornment: SvgLineAdornment) {
-    this.startAdornment = adornment;
-  }
 
   public setCornerRounding(cornerRounding: number): void {
     this.cornerRounding = cornerRounding;
@@ -916,22 +493,6 @@ export abstract class SvgLine implements ILine {
     }
   }
 
-  getSvgStrokeDashArray(): [number, number] | undefined {
-    if (!this.strokeDashArray) return undefined;
-
-    if (this.isStrokeLineCap(StrokeLineCap.Butt)) return this.strokeDashArray;
-
-    if (this.isStrokeLineCap(StrokeLineCap.Round)) {
-      const capLength = this.strokeDashArray[0] - this.strokeWidth;
-      return [
-        capLength < 0 ? 0.1 : capLength,
-        this.strokeDashArray[1] + this.strokeWidth,
-      ];
-    }
-
-    return undefined;
-  }
-
   public getType(): SvgLineType {
     return this.type;
   }
@@ -939,11 +500,14 @@ export abstract class SvgLine implements ILine {
   public toSvg(): string {
     const { length, height } = this.getDimensions();
 
+    this.syncStartAdornmentSvgProperties();
+    this.syncEndAdornmentSvgProperties();
+
     return `
         <svg  height="${height}" width="${length}">
             <defs>
-            ${this.getSvgShadow()}
-            ${this.getLinearGradient()}
+              ${this.getSvgShadow()}
+              ${this.getLinearGradient()}
             </defs>
             <g stroke-location="inside"  opacity="${
               this.opacity / 100
@@ -954,11 +518,10 @@ export abstract class SvgLine implements ILine {
             })" fill="${this.getStrokeColor()}" stroke="${this.getStrokeColor()}"  stroke-width="${
               this.strokeWidth
             }" >
-                ${this.getAdornment(SvgLineAdornmentPosition.Start)}
+                ${this.getStartAdornmentPath()}
                 ${this.getLine()}
-                ${this.getAdornment(SvgLineAdornmentPosition.End)}
+                ${this.getEndAdornmentPath()}
             </g>
-           
         </svg>
     `;
   }
@@ -967,8 +530,6 @@ export abstract class SvgLine implements ILine {
     strokeWidth: number;
     length: number;
     stroke: SvgStrokeType;
-    startAdornment: SvgLineAdornment;
-    endAdornment: SvgLineAdornment;
     type: SvgLineType;
     points: LinePoint;
   } {
@@ -976,8 +537,6 @@ export abstract class SvgLine implements ILine {
       stroke: this.stroke,
       length: this.length,
       strokeWidth: this.strokeWidth,
-      startAdornment: this.startAdornment,
-      endAdornment: this.endAdornment,
       type: this.type,
       points: this.points,
     };
@@ -1359,3 +918,4 @@ export abstract class SvgLine implements ILine {
     }
   }
 }
+//

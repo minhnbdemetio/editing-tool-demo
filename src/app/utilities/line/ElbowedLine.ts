@@ -1,6 +1,7 @@
-import { AdornmentDirection, SvgLineType } from './Interface.Line';
+import { SvgLineType } from './Interface.Line';
 import { SvgLine } from './Line';
 import { LinePoint } from './Point';
+import { AdornmentDirection } from './adornment/Adornment.interfaces';
 
 export class ElbowedLine extends SvgLine {
   type: SvgLineType = SvgLineType.Elbowed;
@@ -105,5 +106,27 @@ export class ElbowedLine extends SvgLine {
     }
 
     return direction;
+  }
+
+  getStartAdornmentPosition(): { x: number; y: number } {
+    const bounding = this.getBoundingPosition();
+
+    const point = this.points;
+
+    return {
+      x: point.x - bounding.x1 + this.padding,
+      y: point.y - bounding.y1 + this.padding,
+    };
+  }
+
+  getEndAdornmentPosition(): { x: number; y: number } {
+    const bounding = this.getBoundingPosition();
+
+    const point = this.endPoint;
+
+    return {
+      x: point.x - bounding.x1 + this.padding,
+      y: point.y - bounding.y1 + this.padding,
+    };
   }
 }
