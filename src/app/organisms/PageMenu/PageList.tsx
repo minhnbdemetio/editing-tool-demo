@@ -19,11 +19,11 @@ export const PageList: FC<PageListProps> = ({ addPage }) => {
         className="flex w-full px-0.5 pb-2 flex-col items-center gap-2 flex-shrink-0 rounded-lg relative cursor-pointer"
         onClick={() => addPage()}
       >
-        <div className="w-full bg-[#EBECF0] pb-[calc(100%)] rounded-lg border flex items-center justify-center"></div>
-        <div className="absolute top-[calc(50%-20px)]">
-          <Add className="w-10 h-10" />
+        <div className="relative w-full bg-[#EBECF0] aspect-[153/137] rounded-lg border flex items-center justify-center">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            <Add className="w-10 h-10" />
+          </div>
         </div>
-        <div className="h-6 flex items-center">Add page</div>
       </div>
     </div>
   );

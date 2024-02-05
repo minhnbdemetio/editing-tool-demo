@@ -91,7 +91,7 @@ export const LineProperty: FC = () => {
               key={id}
               onClick={() => onChangeStrokeDashArray(id)}
               className={twMerge(
-                'border-[1px] border-solid border-gray-500 rounded-md py-1',
+                'border-px border-solid border-gray-500 rounded-md py-1',
                 { 'border-green-400': id === strokeDashArray },
               )}
             >

@@ -1,8 +1,5 @@
 import { CSSProperties, useCallback, useState } from 'react';
-import {
-  MoveableTextObject,
-  TransformDirection,
-} from '../lib/moveable/text/MoveableText';
+import { MoveableTextObject } from '../lib/moveable/text/MoveableText';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { useActivePage } from '../store/active-page';
 import { GradientStop } from '../utilities/color.type';
@@ -18,7 +15,8 @@ import {
   TextEffectOptions,
 } from '../lib/moveable/effects/text/TextEffect';
 import { ShapeEffect } from '../lib/moveable/effects/text/ShapeEffect';
-import { TextVarient } from '../lib/moveable/constant/text';
+import { TextStyle } from '../lib/moveable/text/TextStyle';
+import { TransformDirection } from '../lib/moveable/text/TextFormat';
 
 export const useActiveTextObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
@@ -52,11 +50,7 @@ export const useCopyActiveObject = () => {
   const { activeMoveableObject } = useActiveMoveableObject();
 
   return useCallback(() => {
-    if (activeMoveableObject) {
-      navigator.clipboard.writeText(activeMoveableObject?.id);
-      return true;
-    }
-    return false;
+    activeMoveableObject?.copy();
   }, [activeMoveableObject]);
 };
 
@@ -86,7 +80,6 @@ export const usePasteObject = () => {
 
     if (copiedObject) {
       const clonedObject = copiedObject.clone();
-      clonedObject.setPageId(copiedObject.pageId);
       setPageObjects(copiedObject?.pageId || '', [...allObjects, clonedObject]);
       return true;
     }
@@ -97,10 +90,12 @@ export const usePasteObject = () => {
 
 export const useUpdateFontSize = () => {
   const activeText = useActiveTextObject();
+  const { moveable } = useDesign();
 
   return (fontSize: number) => {
     activeText?.setFontSize(fontSize);
     activeText?.render();
+    moveable?.updateRect();
   };
 };
 
@@ -109,6 +104,7 @@ export const useUpdateTextColor = () => {
 
   return (color: string) => {
     activeText?.setTextColor(color);
+    activeText?.render();
   };
 };
 
@@ -174,7 +170,7 @@ export const useUndoDeleteObject = () => {
     (deletedObject: MoveableObject | null) => {
       if (!deletedObject || !deletedObject.pageId) return false;
       const recreatedObject = deletedObject.clone({
-        htmlString: deletedObject.htmlString!,
+        ...deletedObject.toJSON(),
         id: deletedObject.id,
       });
       recreatedObject.setPageId(deletedObject.pageId);
@@ -334,12 +330,14 @@ export const useToggleListTypeNumberText = (
 };
 
 export const useChangeTextSpacing = (activeText: MoveableTextObject | null) => {
+  const { moveable } = useDesign();
   const handleChangeLetterSpacing = (
     letterSpacing: number,
     callback: Function,
   ) => {
     activeText?.setLetterSpacing(letterSpacing);
     activeText?.render();
+    moveable?.updateRect();
     callback();
     return true;
   };
@@ -384,7 +382,7 @@ type EditableCSSProperty = keyof Omit<
 export const useChangeTextStyles = () => {
   const activeText = useActiveTextObject();
 
-  const handleChangeStyles = (textStyle: TextVarient, callback: Function) => {
+  const handleChangeStyles = (textStyle: TextStyle, callback: Function) => {
     if (!activeText) return false;
     activeText.setTextStyle(textStyle);
     activeText.render();
@@ -499,13 +497,18 @@ export const useToggleLock = () => {
 
 export const useUpdateActiveTextShapeEffect = () => {
   const activeText = useActiveTextObject();
+  const { moveable } = useDesign();
   const handleChangeTextEffect = (effect: ShapeEffect, cb: Function) => {
     const element = activeText?.getElement();
+    const flipperElement = activeText?.getFlipperElement();
     if (!activeText || !element) return false;
     if (!element) return false;
-    activeText.shapeEffect.reset(element);
+    if (flipperElement) {
+      activeText.shapeEffect.reset(flipperElement);
+    }
     activeText.setShapeEffect(effect);
     activeText.render();
+    moveable?.updateRect();
 
     cb();
     return true;
@@ -673,10 +676,12 @@ export const useSetBackgroundImage = () => {
 export const useUpdateTextStretchFont = (
   activeText: MoveableTextObject | null,
 ) => {
+  const { moveable, scale } = useDesign();
   const updateTextStretchFont = (stretchFont: number, callback?: Function) => {
     if (!activeText) return false;
     activeText.setTextScale({ scaleX: stretchFont / 100 });
     activeText.render();
+    moveable?.updateRect();
     callback && callback();
     return true;
   };
@@ -685,15 +690,20 @@ export const useUpdateTextStretchFont = (
 
 export const useUpdateTextStyleEffect = () => {
   const activeText = useActiveTextObject();
+  const { moveable } = useDesign();
   const updateTextStyleEffect = (
     styleEffect: TextEffect,
     callback?: Function,
   ) => {
     const element = activeText?.getElement();
+    const flipperElement = activeText?.getFlipperElement();
     if (!activeText || !element) return false;
-    activeText.styleEffect.reset(element);
+    if (flipperElement) {
+      activeText.styleEffect.reset(flipperElement);
+    }
     activeText.setStyleEffect(styleEffect);
     activeText.render();
+    moveable?.updateRect();
     callback && callback();
     return true;
   };

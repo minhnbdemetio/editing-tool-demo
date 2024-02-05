@@ -11,8 +11,7 @@ import { TransparentModal } from '../atoms/TransparentModal';
 import { SelectedObjectProperty } from './ObjectProperty/SelectedObjectProperty';
 import { useSelectedProperty } from '../store/selected-property';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
-import { Close, Widget, Add } from '@/app/icons';
-import { PageMenu } from './PageMenu';
+import { Backdrop } from '../atoms/Backdrop';
 
 export const Menu: FC = () => {
   const [selectedSection, setSelectedSection] =
@@ -20,91 +19,59 @@ export const Menu: FC = () => {
 
   const [menuExpand, setMenuExpand] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
-  const [openPage, setOpenPage] = useState(false);
   const { activeMoveableObject } = useActiveMoveableObject();
   const { selectedProperty } = useSelectedProperty();
+
+  const onChangeMenu = (key: SideMenuItem['key']) => {
+    setSelectedSection(key);
+    setOpen(true);
+  };
 
   return (
     <>
       <div
         className={twMerge(
-          'absolute duration-300 w-full max-h-[80%] left-0 z-50 flex flex-col-reverse h-full',
+          'fixed bottom-0 duration-300 w-full left-0 z-50 flex flex-col-reverse shadow-menu bg-white',
           {
-            'bottom-0': open,
-            hidden: !open,
+            'max-h-[80%]': open,
           },
-          'desktop:relative desktop:top-0 desktop:left-0 desktop:max-h-none  desktop:h-full desktop:w-fit desktop:flex-row',
+          'desktop:relative desktop:top-0 desktop:left-0 desktop:max-h-none desktop:h-full desktop:w-fit desktop:flex-row',
         )}
       >
         <SideMenu
           menuExpand={menuExpand}
           onMenuCollapse={setMenuExpand}
-          onChange={setSelectedSection}
+          onChange={onChangeMenu}
           selectedSection={selectedSection}
         />
 
-        <MenuContent section={selectedSection} menuExpand={menuExpand} />
+        <MenuContent
+          section={selectedSection}
+          menuExpand={menuExpand}
+          className={clsx({ hidden: !open })}
+          setOpen={setOpen}
+        />
       </div>
 
-      <div
+      <Backdrop
+        open={open}
         onClick={() => {
           setOpen(false);
         }}
-        className={clsx(
-          'absolute top-0 fadein z-20 left-0 w-full h-full bg-[rgba(0,0,0,0.3)]',
-          {
-            'hidden ': !open,
-          },
-          'desktop:hidden',
-        )}
-      ></div>
+        className="desktop:hidden"
+      />
 
       <div
-        className={clsx('py-1 flex items-center fixed bottom-0 z-40 w-full', {
-          hidden: Boolean(selectedProperty) || openPage,
+        className={clsx('py-1 flex items-center fixed bottom-20 z-40 w-full', {
+          hidden: Boolean(selectedProperty),
         })}
       >
-        <button
-          onClick={() => {
-            setOpen(o => !o);
-          }}
-          className={twMerge(
-            'bg-primary1 p-3 rounded-[50%] shadow-lg m-4',
-            'desktop:hidden',
-          )}
-        >
-          <Add className="text-primaryContrast w-[24px] h-[24px]" />
-        </button>
         {activeMoveableObject && <ObjectProperties />}
       </div>
 
-      <div
-        className={clsx('py-1 flex items-center fixed bottom-0 z-40', {
-          'right-0': !Boolean(openPage),
-        })}
-      >
-        <button
-          onClick={() => {
-            setOpenPage(o => !o);
-          }}
-          className={twMerge(
-            'bg-default1 p-3 rounded-[50%] shadow-lg m-4',
-            'desktop:hidden',
-          )}
-        >
-          {openPage ? (
-            <Close className=" w-[24px] h-[24px]" />
-          ) : (
-            <Widget className=" w-[24px] h-[24px]" />
-          )}
-        </button>
-      </div>
-      <div className={twMerge('relative', { hidden: !openPage })}>
-        {openPage && <PageMenu onClose={() => setOpenPage(false)} />}
-      </div>
       <TransparentModal
         className={twMerge(
-          'z-10 fixed bottom-0 max-h-[30%] h-fit overflow-auto',
+          'z-10 fixed bottom-[80px] max-h-[30%] h-fit overflow-auto',
           {
             hidden: !selectedProperty,
           },

@@ -3,8 +3,9 @@ export enum FlipDirection {
   Horizontal = 'horizontal',
 }
 
+export type XYFlipped = { x: boolean; y: boolean };
 export interface CanFlip {
-  flipDirection: { x: boolean; y: boolean };
+  flipXY: XYFlipped;
   flip: (direction: FlipDirection) => void;
   getFlipElement: () => HTMLElement | null;
   getFlipTransform: () => string;

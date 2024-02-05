@@ -1,5 +1,5 @@
 import { useActiveMoveablePhotoObject } from '@/app/hooks/useActiveMoveableObject';
-import {  Slider } from '@nextui-org/react';
+import { Slider } from '@nextui-org/react';
 import { FC, useState } from 'react';
 import { HuePicker } from 'react-color';
 
@@ -9,7 +9,9 @@ export const ManuallyFilterProperty: FC = () => {
   const [contrast, setContrast] = useState(photo?.filter.contrast || 0);
   const [brightness, setBrightness] = useState(photo?.filter.brightness || 0);
   const [saturation, setSaturation] = useState(photo?.filter.saturation || 0);
-  const [temperature, setTemperature] = useState(photo?.filter.temperature || 0);
+  const [temperature, setTemperature] = useState(
+    photo?.filter.temperature || 0,
+  );
   const [vignette, setVignette] = useState(photo?.filter.vignette || 0);
   const [blur, setBlur] = useState(photo?.filter.blur || 0);
   const [hue, setHue] = useState<

@@ -13,6 +13,7 @@ import {
   TEXT_GLITCH_DEFAULT_VALUE,
   TEXT_GLITCH_EFFECT_CSS_VARIABLES,
   TEXT_HOLLOW_DEFAULT_VALUE,
+  TEXT_INNER_ELEMENTS,
   TEXT_LIFT_DEFAULT_VALUE,
   TEXT_LIFT_EFFECT_CSS_VARIABLES,
   TEXT_NEON_DEFAULT_VALUE,
@@ -54,7 +55,7 @@ export class TextShadowEffect extends StyleEffect {
       transparency: option.transparency,
       ...option,
     });
-    this.varient = TextStyleEffect.SHADOW;
+    this.variant = TextStyleEffect.SHADOW;
   }
   apply(element: HTMLElement): void {
     const styles = window.getComputedStyle(element);
@@ -102,7 +103,7 @@ export class TextShadowEffect extends StyleEffect {
 export class TextLiftEffect extends StyleEffect {
   constructor(option: TextEffectOptions = TEXT_LIFT_DEFAULT_VALUE) {
     super(option);
-    this.varient = TextStyleEffect.LIFT;
+    this.variant = TextStyleEffect.LIFT;
   }
   apply(element: HTMLElement): void {
     const { offset = TEXT_LIFT_DEFAULT_VALUE.offset } = this.options;
@@ -134,7 +135,7 @@ export class TextLiftEffect extends StyleEffect {
 export class TextHollowEffect extends StyleEffect {
   constructor(option: TextEffectOptions = TEXT_HOLLOW_DEFAULT_VALUE) {
     super(option);
-    this.varient = TextStyleEffect.HOLLOW;
+    this.variant = TextStyleEffect.HOLLOW;
   }
 
   apply(element: HTMLElement): void {
@@ -158,14 +159,14 @@ export class TextHollowEffect extends StyleEffect {
     element.style.caretColor = 'auto'; // initial value is 'auto'
     element.style.webkitTextStrokeWidth = '0'; // initial value is '0'
     element.style.webkitTextStrokeColor = 'transparent'; // initial value is 'transparent'
-    element.style.webkitTextFillColor = 'black'; // initial value is 'black'
+    element.style.webkitTextFillColor = ''; // initial value is 'black'
   }
 }
 
 export class TextSpliceEffect extends TextHollowEffect {
   constructor(option: TextEffectOptions = TEXT_SPLICE_DEFAULT_VALUE) {
     super(option);
-    this.varient = TextStyleEffect.SPLICE;
+    this.variant = TextStyleEffect.SPLICE;
   }
 
   apply(element: HTMLElement): void {
@@ -215,11 +216,11 @@ export class TextSpliceEffect extends TextHollowEffect {
 export class TextOutlineEffect extends TextHollowEffect {
   constructor(option: TextEffectOptions = TEXT_OUTLINE_DEFAULT_VALUE) {
     super(option);
-    this.varient = TextStyleEffect.OUTLINE;
+    this.variant = TextStyleEffect.OUTLINE;
   }
 
   apply(element: HTMLElement): void {
-    const clonedElementId = `${OUTLINE_EFFECT_CONTAINER}-${element.id}`;
+    const clonedElementId = `${OUTLINE_EFFECT_CONTAINER}-${this.id}`;
     let clonedElement = document.getElementById(clonedElementId);
 
     if (!clonedElement) {
@@ -237,7 +238,7 @@ export class TextOutlineEffect extends TextHollowEffect {
     }
 
     const curveBackgroundContainer = clonedElement.querySelector(
-      `#${CURVE_BACKGROUND_EFFECT_CONTAINER}-${element.id}`,
+      `#${CURVE_BACKGROUND_EFFECT_CONTAINER}-${this.id}`,
     );
 
     if (curveBackgroundContainer) {
@@ -249,7 +250,7 @@ export class TextOutlineEffect extends TextHollowEffect {
 
   reset(el: HTMLElement): void {
     super.reset(el);
-    const clonedElementId = `${OUTLINE_EFFECT_CONTAINER}-${el.id}`;
+    const clonedElementId = `${OUTLINE_EFFECT_CONTAINER}-${this.id}`;
     const clonedElement = document.getElementById(clonedElementId);
     if (clonedElement) {
       clonedElement.remove();
@@ -260,7 +261,7 @@ export class TextOutlineEffect extends TextHollowEffect {
 export class TextEchoEffect extends StyleEffect {
   constructor(option: TextEffectOptions = TEXT_ECHO_DEFAULT_VALUE) {
     super(option);
-    this.varient = TextStyleEffect.ECHO;
+    this.variant = TextStyleEffect.ECHO;
   }
 
   apply(element: HTMLElement): void {
@@ -309,11 +310,7 @@ export class TextEchoEffect extends StyleEffect {
 export class TextGlitchEffect extends StyleEffect {
   constructor(option: TextEffectOptions = TEXT_GLITCH_DEFAULT_VALUE) {
     super(option);
-    this.varient = TextStyleEffect.GLITCH;
-  }
-
-  getTextContainer(element: HTMLElement): HTMLElement | null {
-    return element.querySelector('[contentEditable]');
+    this.variant = TextStyleEffect.GLITCH;
   }
 
   apply(element: HTMLElement): void {
@@ -324,13 +321,13 @@ export class TextGlitchEffect extends StyleEffect {
     const matches = styles.fontSize?.match(/^(\d+(\.\d+)?)px/);
     const MAX_SHADOW = parseFloat(matches?.[1] ?? '0') * 0.0833;
     let glitchContainer = document.getElementById(
-      `${GLITCH_EFFECT_CONTAINER}-${element.id}`,
+      `${GLITCH_EFFECT_CONTAINER}-${this.id}`,
     );
     if (!glitchContainer) {
-      const textContainer = this.getTextContainer(element);
+      const textContainer = this.getTextContainer();
       glitchContainer = textContainer?.cloneNode(true) as HTMLElement | null;
       if (glitchContainer && textContainer) {
-        glitchContainer.id = `${GLITCH_EFFECT_CONTAINER}-${element.id}`;
+        glitchContainer.id = `${GLITCH_EFFECT_CONTAINER}-${this.id}`;
         glitchContainer.style.background = `var(${GRADIENT_BACKGROUND_CSS_VARIABLE})`;
         glitchContainer.style.backgroundClip = 'text';
         glitchContainer.style.webkitTextFillColor = `var(${GRADIENT_WEBKIT_TEXT_FILL_CSS_VARIABLE})`;
@@ -369,7 +366,7 @@ export class TextGlitchEffect extends StyleEffect {
 
   reset(element: HTMLElement): void {
     const glitchContainer = document.getElementById(
-      `${GLITCH_EFFECT_CONTAINER}-${element.id}`,
+      `${GLITCH_EFFECT_CONTAINER}-${this.id}`,
     );
     if (glitchContainer) {
       element.removeChild(glitchContainer);
@@ -385,7 +382,7 @@ export class TextGlitchEffect extends StyleEffect {
 export class TextNeonEffect extends StyleEffect {
   constructor(option: TextEffectOptions = TEXT_NEON_DEFAULT_VALUE) {
     super(option);
-    this.varient = TextStyleEffect.NEON;
+    this.variant = TextStyleEffect.NEON;
   }
 
   apply(element: HTMLElement): void {
@@ -435,29 +432,27 @@ export class TextBackgroundEffect extends StyleEffect {
   boundOnInput: (this: HTMLElement, ev: Event) => void = () => {};
   constructor(option: TextEffectOptions = TEXT_BACKGROUND_DEFAULT_VALUE) {
     super(option);
-    this.varient = TextStyleEffect.BACKGROUND;
+    this.variant = TextStyleEffect.BACKGROUND;
   }
 
   apply(element: HTMLElement): void {
-    const bgEffectId = `${BACKGROUND_EFFECT_CONTAINER}-${element.id}`;
+    const bgEffectId = `${BACKGROUND_EFFECT_CONTAINER}-${this.id}`;
     const {
       color = TEXT_BACKGROUND_DEFAULT_VALUE.color,
       spread = TEXT_BACKGROUND_DEFAULT_VALUE.spread,
       roundness = TEXT_BACKGROUND_DEFAULT_VALUE.roundness,
       transparency = TEXT_BACKGROUND_DEFAULT_VALUE.transparency,
     } = this.options;
-    const textContainer = element.querySelector('[contentEditable]');
-    const firstTextChild = textContainer?.firstElementChild;
-    if (!textContainer || !firstTextChild) return;
-    const textChildStyles = window.getComputedStyle(firstTextChild);
-    const elHeight = parseFloat(
-      textChildStyles.height.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
-    );
-    const textContainerHeight = parseFloat(
+    const textContainer = this.getTextContainer();
+    if (!textContainer) return;
+    this.cloneTextContainer(element, textContainer);
+    const textContainerWidth = parseFloat(
       window
         .getComputedStyle(textContainer)
-        .height.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
+        .width.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
     );
+
+    const textAlign = window.getComputedStyle(textContainer).textAlign;
 
     const bgElement = document.getElementById(bgEffectId);
     if (bgElement) {
@@ -473,31 +468,53 @@ export class TextBackgroundEffect extends StyleEffect {
     svg.style.left = `${-spreadVal}px`;
     svg.style.width = `calc(100% + ${2 * spreadVal}px)`;
     svg.style.zIndex = '-1';
-    svg.style.height = `${textContainerHeight}px`;
+    svg.style.height = `100%`;
     element.appendChild(svg);
     let prevPathWidth = 0;
+    let prevPathHeight = 0;
+    let currentPathHeight = 0;
     const lengthItems = textContainer.childNodes.length;
     textContainer.childNodes.forEach((el, index) => {
+      this.resetBackgroundColorElement(el as HTMLElement);
       let elWidth = 0;
+      const elHeight = parseFloat(
+        window
+          .getComputedStyle(el as HTMLElement)
+          .height.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
+      );
       if (!el.textContent) {
         elWidth = prevPathWidth;
       } else {
         elWidth =
-          this.getTextContentWidth(el.textContent, element) + 2 * spreadVal;
+          this.getTextContentWidth(el.textContent, index) + 2 * spreadVal;
       }
 
       const nextEl = textContainer.childNodes[index + 1];
       const nextPathWidth =
         nextEl && nextEl.textContent
-          ? this.getTextContentWidth(nextEl.textContent, element) +
+          ? this.getTextContentWidth(nextEl.textContent, index + 1) +
             2 * spreadVal
           : prevPathWidth || elWidth;
-      const isRadiusTop = index === 0 || elWidth > prevPathWidth;
+      const isRadiusTop =
+        index === 0 || (elWidth > prevPathWidth && textAlign !== 'right');
       const isRadiusBottom =
-        index === lengthItems - 1 || elWidth > nextPathWidth;
+        index === lengthItems - 1 ||
+        (elWidth > nextPathWidth && textAlign !== 'right');
+      const isRadiusBottomRight =
+        index === lengthItems - 1 ||
+        (elWidth > nextPathWidth && ['right', 'center'].includes(textAlign));
+      const isRadiusTopLeft =
+        index === 0 ||
+        (elWidth > nextPathWidth && ['right', 'center'].includes(textAlign));
+      const startX = this.calculateStartPathX(
+        textContainerWidth,
+        elWidth - 2 * spreadVal,
+        textAlign,
+      );
+      const startY = currentPathHeight;
       prevPathWidth = elWidth;
-      const startX = 0;
-      const startY = elHeight * index;
+      prevPathHeight = elHeight;
+      currentPathHeight += prevPathHeight;
       const path = document.createElementNS(
         'http://www.w3.org/2000/svg',
         'path',
@@ -524,19 +541,19 @@ export class TextBackgroundEffect extends StyleEffect {
               }`
             : ''
         }
-        L ${index === lengthItems - 1 ? startX + roundnessVal : startX} ${
+        L ${isRadiusBottomRight ? startX + roundnessVal : startX} ${
           startY + elHeight
         }
         ${
-          index === lengthItems - 1
+          isRadiusBottomRight
             ? `C ${startX + roundnessVal} ${startY + elHeight}, ${startX} ${
                 startY + elHeight
               }, ${startX} ${startY + elHeight - roundnessVal}`
             : ''
         }
-        L ${startX} ${index === 0 ? startY + roundnessVal : startY}
+        L ${startX} ${isRadiusTopLeft ? startY + roundnessVal : startY}
         ${
-          index === 0
+          isRadiusTopLeft
             ? `C ${startX} ${startY + roundnessVal}, ${startX} ${startY}, ${
                 startX + roundnessVal
               } ${startY}`
@@ -547,6 +564,7 @@ export class TextBackgroundEffect extends StyleEffect {
       path.style.fillOpacity = `${transparency / 100}`;
       svg.appendChild(path);
     });
+    this.removeCloneTextContainer();
     if (!this.isRegisterEventListener) {
       this.boundOnInput = this.onInput.bind(this, element);
       element.addEventListener('input', this.boundOnInput);
@@ -558,26 +576,73 @@ export class TextBackgroundEffect extends StyleEffect {
     el.removeEventListener('input', this.boundOnInput);
     this.isRegisterEventListener = false;
     const backgroundElement = document.getElementById(
-      `${BACKGROUND_EFFECT_CONTAINER}-${el.id}`,
+      `${BACKGROUND_EFFECT_CONTAINER}-${this.id}`,
     );
     if (backgroundElement) {
       el.removeChild(backgroundElement);
     }
   }
 
-  getTextContentWidth(textContent: string, element: HTMLElement): number {
-    if (!textContent) return 0;
-    const span = document.createElement('span');
-    span.textContent = textContent;
-    span.style.position = 'absolute';
-    span.style.visibility = 'hidden';
-    element.appendChild(span);
-    const styles = window.getComputedStyle(span);
-    const width = parseFloat(
-      styles.width.match(/^(\d+(\.\d+)?)px/)?.[1] ?? '0',
+  getCloneTextContainer(): HTMLElement | null {
+    return document.getElementById(
+      `clone-${TEXT_INNER_ELEMENTS.CONTAINER}-${this.id}`,
     );
-    element.removeChild(span);
-    return width;
+  }
+
+  cloneTextContainer(element: HTMLElement, editableElement: HTMLElement) {
+    const ul = editableElement.cloneNode(true) as HTMLElement;
+    ul.id = `clone-${TEXT_INNER_ELEMENTS.CONTAINER}-${this.id}`;
+    ul.style.visibility = 'hidden';
+    ul.style.position = 'absolute';
+    ul.childNodes.forEach(el => {
+      if (el.textContent) {
+        const span = document.createElement('span');
+        span.textContent = el.textContent;
+        el.textContent = '';
+        el.appendChild(span);
+      }
+    });
+    element.appendChild(ul);
+  }
+
+  removeCloneTextContainer() {
+    const ul = this.getCloneTextContainer();
+    if (ul) {
+      ul.remove();
+    }
+  }
+
+  resetBackgroundColorElement(element: HTMLElement) {
+    element.style.backgroundColor = 'transparent';
+    element.childNodes.forEach(child => {
+      if (child && child instanceof HTMLElement) {
+        child.style.backgroundColor = 'transparent';
+      }
+    });
+  }
+
+  getTextContentWidth(textContent: string, index: number): number {
+    const cloneTextContainer = this.getCloneTextContainer();
+    if (!textContent || !cloneTextContainer) return 0;
+    const span = cloneTextContainer.childNodes[index]
+      ?.firstChild as HTMLElement;
+    if (!span) return 0;
+    return span.offsetWidth;
+  }
+
+  calculateStartPathX(
+    elementWidth: number,
+    textContentWidth: number,
+    textAlign: string,
+  ) {
+    switch (textAlign) {
+      case 'center':
+        return (elementWidth - textContentWidth) / 2;
+      case 'right':
+        return elementWidth - textContentWidth;
+      default:
+        return 0;
+    }
   }
 
   onInput(element: HTMLElement) {

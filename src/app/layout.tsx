@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={clsx(inter.className)}>
+      <body className="font-normal text-primaryGray">
         <MediaQueryProvider>
           <Providers>{children}</Providers>
         </MediaQueryProvider>

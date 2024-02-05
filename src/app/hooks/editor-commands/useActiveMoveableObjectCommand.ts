@@ -1,16 +1,5 @@
 import { useActiveMoveableObject } from '@/app/store/active-moveable-object';
 import {
-  useToggleMoveableBoldText,
-  useToggleLineThroughText,
-  useToggleUppercaseText,
-  useToggleUnderlineText,
-  useToggleItalicText,
-  useChangeTextAlign,
-  useToggleListTypeDiscText,
-  useToggleListTypeNumberText,
-  useChangeTextSpacing,
-  useChangeTextLineHeight,
-  useChangeTextTransformOrigin,
   useChangeTextStyles,
   useChangeTextFontStyle,
   useChangeObjectTransform,
@@ -22,22 +11,6 @@ import {
 import { debounce } from 'lodash';
 import { DeleteCommand } from '@/app/lib/command/DeleteCommand';
 import { useExecuteCommand } from './useCommand';
-
-export const useChangeMoveableTextSpacingCommand = () => {
-  const changeLetterSpacing = useChangeTextSpacing();
-  // TODO: Using excute command
-  return changeLetterSpacing;
-};
-
-export const useChangeMoveableTextLineHeightCommand = () => {
-  const changeLineHeight = useChangeTextLineHeight();
-  return debounce(changeLineHeight, 100);
-};
-
-export const useChangeMoveableTextTransformOriginCommand = () => {
-  const changeTextTransformOrigin = useChangeTextTransformOrigin();
-  return changeTextTransformOrigin;
-};
 
 export const useChangeMoveableTextStylesCommand = () => {
   const changeStyles = useChangeTextStyles();

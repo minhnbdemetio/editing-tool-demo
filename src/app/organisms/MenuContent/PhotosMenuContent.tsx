@@ -7,9 +7,9 @@ export const PhotosMenuContent: FC = () => {
   const addObjectToPage = useAddObjectToActivePage();
   const handleAddPhoto = () => {
     addObjectToPage(
-      new MoveablePhoto(
-        'https://iso.500px.com/wp-content/uploads/2015/05/inna_cover.jpeg',
-      ),
+      new MoveablePhoto({
+        src: 'https://iso.500px.com/wp-content/uploads/2015/05/inna_cover.jpeg',
+      }),
     );
   };
 

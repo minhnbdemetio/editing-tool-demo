@@ -1,3 +1,4 @@
+import { v4 } from 'uuid';
 import { MoveableObject, ObjectType } from '../MoveableObject';
 import { MoveableShapeType } from '../editable/EditableShape';
 import { Heart } from '../svg/Heart';
@@ -5,12 +6,7 @@ import { Triangle } from '../svg/Triangle';
 import { MoveableShape } from './MoveableShape';
 
 export class MoveableHeart extends MoveableShape {
-  constructor(options?: {
-    id: string;
-    type?: ObjectType;
-    pageId: string | null;
-    htmlString?: string;
-  }) {
+  constructor(options?: Partial<MoveableHeart>) {
     super(options);
     this.shapeType = MoveableShapeType.Square;
   }
@@ -19,14 +15,14 @@ export class MoveableHeart extends MoveableShape {
     return new Heart({ width: this.width, height: this.height });
   }
 
-  clone(
-    options?: { htmlString: string; id: string } | undefined,
-  ): MoveableObject {
-    const clonedData = this.cloneData();
-
-    return new MoveableHeart({
-      ...this.toJSON(),
-      id: clonedData.cloneObjectId,
-    });
+  clone(options?: Partial<MoveableHeart>): MoveableObject {
+    return new MoveableHeart(
+      options
+        ? options
+        : {
+            ...this.toJSON(),
+            id: v4(),
+          },
+    );
   }
 }

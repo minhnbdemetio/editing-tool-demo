@@ -9,6 +9,8 @@ import { useActivePage } from '../store/active-page';
 import { MovableLineController } from '../molecules/MovableLineController';
 import { usePageSize } from '../store/use-page-size';
 import { useDesign } from '../store/design-objects';
+import { MovableImageCropper } from '../molecules/MovableImageCropper';
+import { useActiveMoveableObject } from '../store/active-moveable-object';
 
 export interface EditablePageProps {
   pageId: string;
@@ -45,6 +47,9 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
     }
   };
 
+  const activeObject = useActiveMoveableObject();
+  console.log(activeObject.activeMoveableObject?.toJSON());
+
   useEffect(() => {
     handleResize();
     window.addEventListener('resize', () => {
@@ -73,7 +78,12 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
               </div>
             ))}
 
-            {isActive && <MovableLineController />}
+            {isActive && (
+              <>
+                <MovableLineController />
+                <MovableImageCropper />
+              </>
+            )}
           </div>
         </div>
       </div>

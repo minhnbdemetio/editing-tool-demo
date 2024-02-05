@@ -9,11 +9,11 @@ import { useDesign } from '../store/design-objects';
 
 interface LayerRenderProps {
   pageObject: MoveableObject;
-  isChoose?: boolean;
+  isChosen?: boolean;
 }
 export const LayerRender: FC<LayerRenderProps> = ({
   pageObject,
-  isChoose = false,
+  isChosen = false,
 }) => {
   const element = pageObject.getElement();
   const activePage = useActivePage();
@@ -42,7 +42,7 @@ export const LayerRender: FC<LayerRenderProps> = ({
       `[id='${activePage?.activePage || ''}'] [id='${objectId}']`,
     );
     if (objectWithId) {
-      if (isChoose) {
+      if (isChosen) {
         if (isSelect(objectId)) {
           setMoveableTargets(
             moveableTargets?.filter(moveableTarget => {

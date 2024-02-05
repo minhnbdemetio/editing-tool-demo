@@ -1,15 +1,11 @@
+import { v4 } from 'uuid';
 import { MoveableObject, ObjectType } from '../MoveableObject';
 import { MoveableShapeType } from '../editable/EditableShape';
 import { Pentagon } from '../svg/Pentagon';
 import { MoveableShape } from './MoveableShape';
 
 export class MoveablePentagon extends MoveableShape {
-  constructor(options?: {
-    id: string;
-    type?: ObjectType;
-    pageId: string | null;
-    htmlString?: string;
-  }) {
+  constructor(options?: Partial<MoveablePentagon>) {
     super(options);
     this.shapeType = MoveableShapeType.Pentagon;
   }
@@ -18,14 +14,14 @@ export class MoveablePentagon extends MoveableShape {
     return new Pentagon({ width: this.width, height: this.height });
   }
 
-  clone(
-    options?: { htmlString: string; id: string } | undefined,
-  ): MoveableObject {
-    const clonedData = this.cloneData();
-
-    return new MoveablePentagon({
-      ...this.toJSON(),
-      id: clonedData.cloneObjectId,
-    });
+  clone(options?: Partial<MoveablePentagon>): MoveableObject {
+    return new MoveablePentagon(
+      options
+        ? options
+        : {
+            ...this.toJSON(),
+            id: v4(),
+          },
+    );
   }
 }

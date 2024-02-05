@@ -22,7 +22,7 @@ export const LineFlipProperty: FC = () => {
               activeLineObject.updateHeadControl();
             }}
             className={twMerge(
-              'border-[1px] border-solid border-gray-500 rounded-md px-3 py-3',
+              'border-px border-solid border-gray-500 rounded-md px-3 py-3',
             )}
           >
             Flip horizontal
@@ -35,7 +35,7 @@ export const LineFlipProperty: FC = () => {
               activeLineObject.updateHeadControl();
             }}
             className={twMerge(
-              'border-[1px] border-solid border-gray-500 rounded-md px-3 py-3',
+              'border-px border-solid border-gray-500 rounded-md px-3 py-3',
             )}
           >
             Flip vertical

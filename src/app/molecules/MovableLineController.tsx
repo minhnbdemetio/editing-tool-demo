@@ -73,7 +73,7 @@ const StraightLineController: React.FC<{
           className="absolute"
         >
           <div
-            className="absolute w-[15px] h-[15px] rounded-[50%] border-[1px] border-gray-50 border-solid"
+            className="absolute w-[15px] h-[15px] rounded-[50%] border-px border-gray-50 border-solid"
             style={{
               background: 'red',
               border: '1px solid #e8e8e8',

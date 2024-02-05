@@ -6,6 +6,7 @@ import { PhotoFilter } from './filters/PhotoFilter';
 import { NoneFilter } from './filters/NoneFilter';
 import { PhotoPosition } from './Croppable';
 import { GradientMask } from './gradient-mask/GradientMask';
+import { v4 as uuid } from 'uuid';
 
 export class MoveablePhoto extends MoveableObject implements EditablePhoto {
   loaded: boolean = false;
@@ -13,29 +14,32 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
   dragStartPoint?: { x: number; y: number };
   gradientMask?: GradientMask;
   cropPosition?: PhotoPosition | undefined;
+  originalSize: { width: number; height: number } = { width: 0, height: 0 };
   isBackground: boolean = false;
   backgroundStartPosition?: PhotoPosition;
   src: string;
   fillOpacity? = 1;
   fillColor?: string | undefined = 'transparent';
-  clone(
-    options?: { htmlString: string; id: string } | undefined,
-  ): MoveableObject {
-    if (options) {
-      return new MoveablePhoto(this.src, options.id, options.htmlString);
-    }
-    const clonedData = this.cloneData();
-    return new MoveablePhoto(
-      this.src,
-      clonedData.cloneObjectId,
-      clonedData.clonedObjectHtml,
-    );
-  }
 
-  constructor(src: string, id?: string, htmlString?: string) {
-    super({ id, htmlString });
+  draftState: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  } = {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  };
+
+  isCropping: boolean = false;
+  cropMaskId: string = uuid();
+
+  constructor(options?: Partial<MoveablePhoto>) {
+    super(options);
     this.type = 'photo';
-    this.src = src;
+    this.src = options?.src || '';
   }
 
   async setupMoveable() {
@@ -58,11 +62,27 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
             document.body.appendChild(image);
 
             process.nextTick(() => {
-              console.log(image.width, image.height);
               this.setHeight(image.height);
               this.setWidth(image.width);
+
+              const svgElement = this.getSvg();
+              const imageElement = svgElement?.querySelector('image');
+
+              if (imageElement) {
+                imageElement.setAttribute('width', image.width + 'px');
+                imageElement.setAttribute('height', image.height + 'px');
+              }
+
+              this.originalSize = {
+                width: image.width,
+                height: image.height,
+              };
+
               this.loaded = true;
               image.remove();
+
+              this.render();
+              this.setViewBox();
 
               response(true);
             });
@@ -75,9 +95,9 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
   }
 
   public getFilterContainer() {
-    return document.querySelector(
-      `div[data-id='${this.id}'] > div > svg > defs > filter`,
-    );
+    const id = `${PHOTO_INNER_ELEMENTS.DEFS}-${this.id}`;
+
+    return document.getElementById(id)?.querySelector('filter');
   }
 
   public getSvg() {
@@ -222,6 +242,13 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
     this.cropPosition = position;
   }
 
+  setIsCropping(isCropping: boolean): void {
+    this.isCropping = isCropping;
+  }
+  getIsCropping(): boolean {
+    return this.isCropping;
+  }
+
   updateCropPosition(xChanged: number, yChanged: number) {
     const element = this.getElement();
     if (!element || !this.cropPosition) return;
@@ -235,6 +262,35 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
     const yOrigin = parseFloat(element.getAttribute('data-origin-y') ?? '0');
     element.setAttribute('data-origin-x', `${xOrigin + xChanged}`);
     element.setAttribute('data-origin-y', `${yOrigin + yChanged}`);
+  }
+
+  crop(position: PhotoPosition) {
+    this.cropPosition = position;
+
+    this.setX(this.x + position.x * this.width);
+    this.setY(this.y + position.y * this.height);
+
+    this.setWidth(position.width * this.width);
+    this.setHeight(position.height * this.height);
+
+    this.setViewBox();
+    this.render();
+
+    this.setIsCropping(false);
+    this.cleanCropMask();
+  }
+
+  rejectCrop(): void {
+    this.setIsCropping(false);
+    this.cleanCropMask();
+
+    this.x = this.draftState.x;
+    this.y = this.draftState.y;
+    this.width = this.draftState.width;
+    this.height = this.draftState.height;
+
+    this.setViewBox();
+    this.render();
   }
 
   removeAllGradientMask() {
@@ -298,9 +354,9 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
       height: pageHeight,
     } = activePageElement.getBoundingClientRect();
 
-    element.style.width = `${(pageHeight * ratio) / scale}px`;
+    element.style.width = `100%`;
     element.style.height = `${pageHeight / scale}px`;
-    element.style.transform = `translate(0px, 0px)`;
+    // element.style.transform = `translate(0px, 0px)`;
     activePageElement.style.overflow = 'hidden';
 
     this.backgroundStartPosition = {
@@ -325,8 +381,8 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
       newFillColorElement.style.position = 'absolute';
       newFillColorElement.style.top = '0';
       newFillColorElement.style.left = '0';
-      newFillColorElement.style.width = '100%';
-      newFillColorElement.style.height = '100%';
+      newFillColorElement.style.width = this.width + 'px';
+      newFillColorElement.style.height = this.height + 'px';
       newFillColorElement.style.backgroundColor =
         this.fillColor || 'transparent';
       newFillColorElement.style.opacity = this.fillOpacity?.toString() || '1';
@@ -360,5 +416,184 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
   }
   hasFillColor() {
     return this.getFillElement()?.style.display === 'block';
+  }
+
+  getOriginalSizeByCropPosition() {
+    if (!this.cropPosition) return { width: this.width, height: this.height };
+    const draft = this.getDraftState();
+
+    const baseWidth = draft.width / this.cropPosition.width;
+    const baseHeight = draft.height / this.cropPosition.height;
+    return {
+      width: baseWidth,
+      height: baseHeight,
+    };
+  }
+
+  getOriginalPositionByCropPosition() {
+    if (!this.cropPosition) return { x: this.x, y: this.y };
+
+    const { width, height } = this.getOriginalSizeByCropPosition();
+
+    const draft = this.getDraftState();
+
+    return {
+      x: draft.x - width * this.cropPosition.x,
+      y: draft.y - height * this.cropPosition.y,
+    };
+  }
+
+  saveDraftState() {
+    this.draftState = {
+      x: this.x,
+      y: this.y,
+      width: this.width,
+      height: this.height,
+    };
+  }
+  getDraftState() {
+    return this.draftState;
+  }
+
+  openCrop() {
+    if (this.getIsCropping()) return;
+
+    this.setIsCropping(true);
+
+    if (this.cropPosition) {
+      this.saveDraftState();
+
+      const { width, height } = this.getOriginalSizeByCropPosition();
+
+      this.x -= width * this.cropPosition.x;
+      this.y -= height * this.cropPosition.y;
+      this.width = width;
+      this.height = height;
+
+      this.setViewBox(true);
+      process.nextTick(() => this.render());
+    }
+  }
+
+  setViewBox(originalSize?: boolean) {
+    const svgElement = this.getSvg();
+
+    if (svgElement) {
+      if (!this.cropPosition || originalSize) {
+        // Show full image
+
+        svgElement.setAttribute(
+          'viewBox',
+          `0 0 ${this.originalSize.width} ${this.originalSize.height}`,
+        );
+      } else {
+        // set image view box by crop position
+        const viewBoxX = this.cropPosition.x * this.originalSize.width;
+        const viewBoxY = this.cropPosition.y * this.originalSize.height;
+        const viewBoxWidth = this.cropPosition.width * this.originalSize.width;
+        const viewBoxHeight =
+          this.cropPosition.height * this.originalSize.height;
+
+        svgElement.setAttribute(
+          'viewBox',
+          `${viewBoxX} ${viewBoxY} ${viewBoxWidth} ${viewBoxHeight}`,
+        );
+      }
+    }
+  }
+
+  setImageDimensions() {
+    const svgElement = this.getSvg();
+    const element = this.getElement();
+
+    if (svgElement && element) {
+      svgElement.setAttribute('width', this.width + 'px');
+      svgElement.setAttribute('height', this.height + 'px');
+      element.style.width = this.width + 'px';
+      element.style.height = this.height + 'px';
+    }
+  }
+
+  cleanCropMask(): void {
+    const maskElement = document.getElementById(this.cropMaskId);
+    const cropMask = document.querySelector(
+      `rect[mask='url(#${this.cropMaskId})']`,
+    );
+    maskElement?.remove();
+    cropMask?.remove();
+  }
+
+  renderCropMask(cropPosition: PhotoPosition): void {
+    if (!this.getIsCropping()) return;
+
+    this.cleanCropMask();
+
+    const svg = this.getSvg();
+
+    const defs = svg?.querySelector('defs');
+    const gTag = document.getElementById(
+      PHOTO_INNER_ELEMENTS.G + '-' + this.id,
+    );
+
+    if (defs && gTag) {
+      const mask = document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'mask',
+      );
+      mask.setAttribute('id', this.cropMaskId);
+
+      const whiteRectMask = document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'rect',
+      );
+      whiteRectMask.setAttribute('width', '100%');
+      whiteRectMask.setAttribute('height', '100%');
+      whiteRectMask.setAttribute('fill', 'white');
+      mask.append(whiteRectMask);
+
+      const blackRectMask = document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'rect',
+      );
+
+      const x = cropPosition.x * 100;
+      const y = cropPosition.y * 100;
+
+      blackRectMask.setAttribute('x', x + '%');
+      blackRectMask.setAttribute('y', y + '%');
+      blackRectMask.setAttribute('width', cropPosition.width * 100 + '%');
+      blackRectMask.setAttribute('height', cropPosition.height * 100 + '%');
+      blackRectMask.setAttribute('fill', 'black');
+      mask.append(blackRectMask);
+
+      const boxRect = document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'rect',
+      );
+
+      boxRect.setAttribute('fill-opacity', '0.5');
+      boxRect.setAttribute('width', '100%');
+      boxRect.setAttribute('height', '100%');
+      boxRect.setAttribute('fill', 'black');
+      boxRect.setAttribute('mask', `url(#${this.cropMaskId})`);
+
+      defs.append(mask);
+      gTag.append(boxRect);
+    }
+  }
+
+  render(): void {
+    const activeElement = this.getElement();
+
+    if (activeElement) {
+      activeElement.style.transform = `translate(${this.x}px,${this.y}px)`;
+    }
+    this.setImageDimensions();
+  }
+
+  clone(options?: Partial<MoveablePhoto>) {
+    return new MoveablePhoto(
+      options ? options : { ...this.toJSON(), id: uuid() },
+    );
   }
 }

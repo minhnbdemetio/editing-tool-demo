@@ -1,16 +1,11 @@
-import { MoveableObject, ObjectType } from '../MoveableObject';
+import { v4 } from 'uuid';
+import { MoveableObject } from '../MoveableObject';
 import { MoveableShapeType } from '../editable/EditableShape';
 import { Arrow } from '../svg/Arrow';
-import { Plus } from '../svg/Plus';
 import { MoveableShape } from './MoveableShape';
 
 export class MoveableArrow extends MoveableShape {
-  constructor(options?: {
-    id: string;
-    type?: ObjectType;
-    pageId: string | null;
-    htmlString?: string;
-  }) {
+  constructor(options?: Partial<MoveableArrow>) {
     super(options);
     this.shapeType = MoveableShapeType.Arrow;
   }
@@ -19,14 +14,14 @@ export class MoveableArrow extends MoveableShape {
     return new Arrow({ width: this.width, height: this.height });
   }
 
-  clone(
-    options?: { htmlString: string; id: string } | undefined,
-  ): MoveableObject {
-    const clonedData = this.cloneData();
-
-    return new MoveableArrow({
-      ...this.toJSON(),
-      id: clonedData.cloneObjectId,
-    });
+  clone(options?: Partial<MoveableArrow>): MoveableObject {
+    return new MoveableArrow(
+      options
+        ? options
+        : {
+            ...this.toJSON(),
+            id: v4(),
+          },
+    );
   }
 }

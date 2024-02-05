@@ -142,11 +142,11 @@ interface SpacingPropertyProps {}
 export const EffectProperty: FC<SpacingPropertyProps> = ({}) => {
   const activeText = useActiveTextObject();
   const [newEffectStyle, setNewEffectStyle] = useState(
-    activeText?.styleEffect?.varient || TextStyleEffect.NONE,
+    activeText?.styleEffect?.variant || TextStyleEffect.NONE,
   );
 
   const [effectShape, setEffectShape] = useState(
-    activeText?.shapeEffect?.varient || TextShapeEffect.NONE,
+    activeText?.shapeEffect?.variant || TextShapeEffect.NONE,
   );
 
   const renderNewEffectComponent = () => {

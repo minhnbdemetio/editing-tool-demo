@@ -65,7 +65,12 @@ import { Archive } from './Archive';
 import { Ruler1 } from './Ruler1';
 import { IconLink } from './IconLink';
 import { IconUnLink } from './IconUnLink';
-
+import { Template } from './Template';
+import { Workspaces } from './Workspaces';
+import { BackgroundColor } from './BackgroundColor';
+import { BackgroundNone } from './BackgroundNone';
+import { ImageIcon } from './ImageIcon';
+import { CountTemplates } from './CountTemplates';
 export {
   Home,
   ChevronLeft,
@@ -134,4 +139,10 @@ export {
   Ruler1,
   IconLink,
   IconUnLink,
+  Template,
+  Workspaces,
+  BackgroundColor,
+  BackgroundNone,
+  ImageIcon,
+  CountTemplates,
 };
