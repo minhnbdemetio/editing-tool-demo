@@ -7,7 +7,7 @@ import { MoveableShape } from './MoveableShape';
 export class MoveableQuadrangle extends MoveableShape {
   constructor(options?: Partial<MoveableQuadrangle>) {
     super(options);
-    this.shapeType = MoveableShapeType.Square;
+    this.shapeType = MoveableShapeType.Quadrangle;
   }
 
   getShape() {

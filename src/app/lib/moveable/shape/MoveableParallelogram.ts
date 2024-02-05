@@ -7,7 +7,7 @@ import { MoveableShape } from './MoveableShape';
 export class MoveableParallelogram extends MoveableShape {
   constructor(options?: Partial<MoveableParallelogram>) {
     super(options);
-    this.shapeType = MoveableShapeType.Square;
+    this.shapeType = MoveableShapeType.Parallelogram;
   }
 
   getShape() {

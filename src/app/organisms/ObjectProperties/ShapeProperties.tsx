@@ -15,6 +15,11 @@ const checkLockedObject = (activeObject: MoveableObject) =>
 
 const SHAPE_PROPERTIES = [
   {
+    label: 'More',
+    value: SelectedProperty.ShapeMore,
+    isShowButton: () => true,
+  },
+  {
     label: 'Color',
     value: SelectedProperty.ShapeColor,
     isShowButton: checkLockedObject,
@@ -72,11 +77,6 @@ const SHAPE_PROPERTIES = [
   {
     label: 'Layer',
     value: SelectedProperty.ShapeLayer,
-    isShowButton: () => true,
-  },
-  {
-    label: 'More',
-    value: SelectedProperty.ShapeMore,
     isShowButton: () => true,
   },
 ];

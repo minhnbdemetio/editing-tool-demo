@@ -1,9 +1,11 @@
 import { useDeleteObjetCommand } from '@/app/hooks/editor-commands/useActiveMoveableObjectCommand';
 import {
   useCopyActiveObject,
+  useObjectCopied,
   usePasteObject,
   useToggleLock,
 } from '@/app/hooks/useActiveMoveableObject';
+import { useAddObjectToActivePage } from '@/app/hooks/usePageObjects';
 import { Duplicate } from '@/app/icons';
 import { Copy } from '@/app/icons/Copy';
 import { Delete } from '@/app/icons/Delete';
@@ -15,12 +17,11 @@ import { FC } from 'react';
 
 export const ShapeMoreProperty: FC = () => {
   const handleCopyObject = useCopyActiveObject();
-  const handlePasteObject = usePasteObject();
   const handleLockObject = useToggleLock();
   const deleteObjectCommand = useDeleteObjetCommand();
-
   const { getActiveMoveableObject } = useActiveMoveableObject();
   const activeMoveableObject = getActiveMoveableObject();
+  const addObjectToActivePage = useAddObjectToActivePage();
 
   const handleDeleteObject = () => {
     if (!activeMoveableObject?.isLocked) {
@@ -28,10 +29,14 @@ export const ShapeMoreProperty: FC = () => {
     }
   };
 
-  const handleDuplicateObject = () => {
-    handleCopyObject();
-    handlePasteObject();
+  const handleDuplicateObject = async () => {
+    const clonedObject = activeMoveableObject?.clone();
+    if (clonedObject) {
+      addObjectToActivePage(clonedObject);
+    }
   };
+
+  const pasteObject = usePasteObject();
 
   return (
     <div className="w-full h-full">
@@ -45,7 +50,7 @@ export const ShapeMoreProperty: FC = () => {
         <Button onClick={handleCopyObject} size="lg" isIconOnly>
           <Copy />
         </Button>
-        <Button onClick={handlePasteObject} size="lg" isIconOnly>
+        <Button onClick={pasteObject} size="lg" isIconOnly>
           <Paste />
         </Button>
         <Button onClick={handleLockObject} size="lg" isIconOnly>

@@ -23,7 +23,7 @@ export abstract class MoveableShape
 
     this.textWrapperId = uuid();
     this.shapeText = new PluggableText(this.textWrapperId);
-
+    this.shapeType = this.shapeType || MoveableShapeType.Square;
     setTimeout(() => {
       this.shapeText.setTextColor('red');
     }, 2000);

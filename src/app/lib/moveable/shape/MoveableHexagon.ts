@@ -7,7 +7,7 @@ import { MoveableShape } from './MoveableShape';
 export class MoveableHexagon extends MoveableShape {
   constructor(options?: Partial<MoveableHexagon>) {
     super(options);
-    this.shapeType = MoveableShapeType.Square;
+    this.shapeType = MoveableShapeType.Hexagon;
   }
 
   getShape() {
