@@ -16,14 +16,14 @@ export const Select: React.FC<IconProps> = ({ className }) => {
         stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
-        stroke-linejoin="round"
+        strokeLinejoin="round"
       />
       <path
         d="M10.7371 9.46267L12.0012 10.9064C12.0284 10.9372 12.0621 10.9615 12.0999 10.9775C12.1377 10.9935 12.1786 11.0008 12.2196 10.9988C12.2606 10.9969 12.3007 10.9858 12.3368 10.9663C12.3729 10.9468 12.4042 10.9195 12.4284 10.8863L14.995 7.33325"
         stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
-        stroke-linejoin="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
