@@ -45,7 +45,7 @@ export class MoveableTextObject
   textDecoration: TextDecorationEffect;
   textListStyle: TextListStyle;
   letterSpacing: number;
-  lineHeight: string;
+  lineHeight: number;
   opacity: number;
   textStyle: TextStyle;
   fontWeight: string;
@@ -70,7 +70,7 @@ export class MoveableTextObject
     this.textStyle = {
       fontSize: TEXT_STYLE_FONT_SIZE.NORMAL,
     };
-    this.lineHeight = '1.5';
+    this.lineHeight = 1.5;
     this.scaleX = DEFAULT_TEXT_SCALE;
     this.scaleY = DEFAULT_TEXT_SCALE;
     this.fontFamily = 'Arial';
@@ -251,7 +251,7 @@ export class MoveableTextObject
     if (!element) return false;
     element.style.letterSpacing = this.letterSpacing + 'px';
   }
-  setLineHeight(lineHeight: string | null) {
+  setLineHeight(lineHeight: number | null) {
     if (!lineHeight) return false;
     this.lineHeight = lineHeight;
   }
