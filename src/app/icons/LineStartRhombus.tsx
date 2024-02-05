@@ -11,7 +11,7 @@ export const LineStartRhombus: React.FC<IconProps> = ({ className }) => {
     >
       <path
         fill="currentColor"
-        fill-rule="evenodd"
+        fillRule="evenodd"
         d="M11.25 12a.75.75 0 0 1 .75-.75h8.5a.75.75 0 0 1 0 1.5H12a.75.75 0 0 1-.75-.75z"
         clipRule="evenodd"
       ></path>

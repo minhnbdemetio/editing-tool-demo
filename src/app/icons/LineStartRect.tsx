@@ -11,13 +11,13 @@ export const LineStartRect: React.FC<IconProps> = ({ className }) => {
     >
       <path
         fill="currentColor"
-        fill-rule="evenodd"
+        fillRule="evenodd"
         d="M3.25 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H4a.75.75 0 0 1-.75-.75z"
         clipRule="evenodd"
       ></path>
       <path
         fill="currentColor"
-        fill-rule="evenodd"
+        fillRule="evenodd"
         d="M3.75 8a.75.75 0 0 1 .75.75v6.5a.75.75 0 0 1-1.5 0v-6.5A.75.75 0 0 1 3.75 8z"
         clipRule="evenodd"
       ></path>
