@@ -77,6 +77,7 @@ export const MoveableTextElement: FC<MoveableTextProps> = ({
         <ul
           id={`${TEXT_INNER_ELEMENTS.CONTAINER}-${object.id}`}
           suppressContentEditableWarning
+          className="w-fit"
         >
           <li>Add a heading</li>
         </ul>

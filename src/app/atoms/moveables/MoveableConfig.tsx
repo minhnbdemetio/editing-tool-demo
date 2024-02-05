@@ -16,8 +16,8 @@ import { FC, useEffect, useRef } from 'react';
 import Moveable from 'react-moveable';
 import Selecto from 'react-selecto';
 
-// kinda magic, but it works
-const FONT_TO_CONTAINER_HEIGHT_RATIO = 0.6;
+// reverse of default line-height: 1.5 or 3/2
+const FONT_TO_CONTAINER_HEIGHT_RATIO = 2 / 3;
 
 export const MoveableConfig: FC = () => {
   const { moveableTargets, setMoveableTargets, getAllObjects, setMovable } =
@@ -162,9 +162,6 @@ export const MoveableConfig: FC = () => {
             const numberOfLines = textContainer.childNodes.length;
             activeMoveableObject.setFontSize(
               (targetHeight / numberOfLines) * FONT_TO_CONTAINER_HEIGHT_RATIO,
-            );
-            activeMoveableObject.setLineHeight(
-              `${targetHeight / numberOfLines}px`,
             );
           }
           e.target.style.width = `${e.width}px`;
