@@ -33,10 +33,9 @@ export const MoveableTextElement: FC<MoveableTextProps> = ({
     let resizeObserver = new ResizeObserver(entries => {
       const element = object.getElement();
       if (!element) return;
-      if (!object.getResizingStatus()) {
-        element.style.width = `${textContainer.clientWidth}px`;
-        element.style.height = `${textContainer.clientHeight}px`;
-      }
+
+      element.style.width = `${textContainer.clientWidth}px`;
+      element.style.height = `${textContainer.clientHeight}px`;
 
       if (object.getPreviousSize().height !== textContainer.clientHeight) {
         object.onUpdateTransformDirection();
@@ -46,8 +45,9 @@ export const MoveableTextElement: FC<MoveableTextProps> = ({
         width: textContainer.clientWidth,
         height: textContainer.clientHeight,
       });
-
-      moveable?.updateRect();
+      if (!object.getResizingStatus()) {
+        moveable?.updateRect();
+      }
     });
 
     // Start observing the div element
@@ -64,10 +64,7 @@ export const MoveableTextElement: FC<MoveableTextProps> = ({
   return (
     <div
       id={object.id}
-      className={clsx(
-        'absolute w-fit break-words whitespace-nowrap',
-        className,
-      )}
+      className={clsx('absolute w-fit', className)}
       style={{ writingMode: 'horizontal-tb' }}
     >
       <div
@@ -77,7 +74,7 @@ export const MoveableTextElement: FC<MoveableTextProps> = ({
         <ul
           id={`${TEXT_INNER_ELEMENTS.CONTAINER}-${object.id}`}
           suppressContentEditableWarning
-          className="w-fit"
+          className="w-full break-words whitespace-break-spaces"
         >
           <li>Add a heading</li>
         </ul>

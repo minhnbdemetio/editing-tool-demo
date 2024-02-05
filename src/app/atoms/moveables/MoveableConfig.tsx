@@ -79,7 +79,7 @@ export const MoveableConfig: FC = () => {
         }}
         throttleResize={1}
         snappable
-        // keepRatio={isText(activeMoveableObject)}
+        keepRatio={isText(activeMoveableObject)}
         rotatable
         snapGridWidth={50}
         onDragStart={e => {
@@ -139,6 +139,7 @@ export const MoveableConfig: FC = () => {
           e.target.style.transform = e.transform;
         }}
         onResize={e => {
+          console.log({ e });
           if (isElementLocked(e.target)) return;
 
           if (isPhoto(activeMoveableObject)) {
@@ -156,16 +157,34 @@ export const MoveableConfig: FC = () => {
             const targetHeight = e.height;
             const textContainer = activeMoveableObject.getTextContainer();
             if (!textContainer) return;
-            const numberOfLines = textContainer.childNodes.length;
-            const fontToHeightRatio =
-              1 / Number(activeMoveableObject.getLineHeight());
-            activeMoveableObject.setFontSize(
-              (targetHeight / numberOfLines) * fontToHeightRatio,
-            );
+            console.log(textContainer.textContent);
+
+            if (!e.direction.includes(0)) {
+              const numberOfLines =
+                textContainer.offsetHeight /
+                Number(
+                  window
+                    .getComputedStyle(textContainer)
+                    .lineHeight.replace('px', ''),
+                );
+              const fontToHeightRatio =
+                1 / Number(activeMoveableObject.getLineHeight());
+              activeMoveableObject.setFontSize(
+                (targetHeight / numberOfLines) * fontToHeightRatio,
+              );
+              e.target.style.width = `${e.width}px`;
+              e.target.style.height = `${e.height}px`;
+              e.target.style.transform = e.drag.transform;
+            } else {
+              e.target.style.width = `${e.width}px`;
+              e.target.style.height = `${textContainer.offsetHeight}px`;
+              e.target.style.transform = e.drag.transform;
+            }
+          } else {
+            e.target.style.width = `${e.width}px`;
+            e.target.style.height = `${e.height}px`;
+            e.target.style.transform = e.drag.transform;
           }
-          e.target.style.width = `${e.width}px`;
-          e.target.style.height = `${e.height}px`;
-          e.target.style.transform = e.drag.transform;
 
           activeMoveableObject?.render();
         }}
