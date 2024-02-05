@@ -1,6 +1,6 @@
 import { useActiveMoveableLineObject } from '@/app/hooks/useActiveMoveableObject';
 import { usePageSize } from '@/app/store/use-page-size';
-import { SvgAlignment } from '@/app/utilities/svg-line';
+import { SvgAlignment } from '@/app/utilities/line/Line';
 import { FC } from 'react';
 
 export const LineAlignProperty: FC = () => {

@@ -6,9 +6,8 @@ import { useAddObjectToActivePage } from '@/app/hooks/usePageObjects';
 import { MoveableLineObject } from '@/app/lib/moveable/MoveableLine';
 import {
   StrokeDashArraySizes,
-  StrokeLineCap,
   SvgLineAdornment,
-} from '@/app/utilities/svg-line';
+} from '@/app/utilities/line/Interface.Line';
 
 interface LinesProps {}
 

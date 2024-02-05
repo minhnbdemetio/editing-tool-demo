@@ -1,5 +1,5 @@
 import { useActiveMoveableLineObject } from '@/app/hooks/useActiveMoveableObject';
-import { SvgFlip } from '@/app/utilities/svg-line';
+import { SvgFlip } from '@/app/utilities/line/Line';
 import { twMerge } from '@/app/utilities/tailwind';
 import { FC, useState } from 'react';
 

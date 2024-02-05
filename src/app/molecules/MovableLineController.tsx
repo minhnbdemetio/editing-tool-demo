@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Draggable } from '../atoms/Draggable';
-import { SvgLineType } from '../utilities/svg-line';
 import { twMerge } from '../utilities/tailwind';
-import { LinePoint } from '../utilities/line-point';
+import { LinePoint } from '../utilities/line/Point';
 import { useActiveMoveableLineObject } from '../hooks/useActiveMoveableObject';
 import { isLine } from '../utilities/moveable';
 import { MoveableLineObject } from '../lib/moveable/MoveableLine';
 import { useForceReloadLineController } from '../store/force-reload-line-controller';
+import { SvgLineType } from '../utilities/line/Interface.Line';
 
 interface MovableLineControllerProps {}
 

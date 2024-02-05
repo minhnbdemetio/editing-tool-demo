@@ -3,7 +3,7 @@ import { LineTypeElbowed } from '@/app/icons/LineTypeElbowed';
 import { LineTypeStraight } from '@/app/icons/LineTypeStraight';
 import { useForceReloadLineController } from '@/app/store/force-reload-line-controller';
 import { IconProps } from '@/app/types';
-import { SvgLineType } from '@/app/utilities/svg-line';
+import { SvgLineType } from '@/app/utilities/line/Interface.Line';
 import { twMerge } from '@/app/utilities/tailwind';
 import { FC, useCallback, useState } from 'react';
 
