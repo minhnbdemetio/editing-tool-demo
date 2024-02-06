@@ -12,7 +12,7 @@ export const Background: React.FC<IconProps> = ({ className }) => {
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
     >
-      <g clip-path="url(#clip0_739_1683)">
+      <g clipPath="url(#clip0_739_1683)">
         <rect width="22" height="22" rx="11" fill="url(#pattern0)" />
       </g>
       <defs>

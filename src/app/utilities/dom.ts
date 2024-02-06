@@ -14,3 +14,19 @@ export const findIdFromString = (htmlString: string) => {
     return null;
   }
 };
+
+export function removeAllChildStyles(
+  element: HTMLElement | Element,
+  isTopLevel = true,
+) {
+  // Remove style attribute from the current element
+  if (!isTopLevel) {
+    element.removeAttribute('style');
+  }
+
+  // Iterate through child elements
+  for (let i = 0; i < element.children.length; i++) {
+    // Recursively remove style attributes from nested elements
+    removeAllChildStyles(element.children[i], false);
+  }
+}
