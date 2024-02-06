@@ -2,7 +2,6 @@ import { MoveableObject } from './MoveableObject';
 import { SvgLine, SvgLineOptions } from '../../utilities/line/Line';
 import { Point } from '../../utilities/line/Point';
 import { v4 } from 'uuid';
-import { StraightLine } from '@/app/utilities/line/StraightLine';
 import { ElbowedLine } from '@/app/utilities/line/ElbowedLine';
 
 export class MoveableLineObject extends MoveableObject {

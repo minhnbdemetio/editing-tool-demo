@@ -1,6 +1,7 @@
 import { SvgLineType } from './Interface.Line';
-import { SvgLine } from './Line';
+import { SvgLine, SvgLineOptions } from './Line';
 import { Point } from './Point';
+import { StraightLine } from './StraightLine';
 import { AdornmentDirection } from './adornment/Adornment.interfaces';
 
 export class ElbowedLine extends SvgLine {
@@ -217,9 +218,11 @@ export class ElbowedLine extends SvgLine {
     this.points.addAfter(this.points.getEnd(), newPoint);
   }
 
-  // toStraight(): StraightLine {
-  //   const straightLine = new StraightLine();
+  public toStraight() {
+    this.type = SvgLineType.Straight;
+    this.points.getHead().setNext(this.points.getEnd());
+    this.points.getEnd().setPrev(this.points.getHead());
 
-  //   return straightLine;
-  // }
+    return new StraightLine(this.toObject());
+  }
 }

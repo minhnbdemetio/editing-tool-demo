@@ -25,6 +25,7 @@ export enum SelectedProperty {
   LineAlign,
   LineShadow,
   LineFlip,
+  LineLayer,
   PhotoNudge,
   PhotoFilter,
   PhotoManualFilter,

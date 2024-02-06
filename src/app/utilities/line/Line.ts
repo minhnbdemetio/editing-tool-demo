@@ -6,17 +6,17 @@ import {
 } from './Interface.Line';
 import { ListPoints, Point } from './Point';
 import { AdornmentDirection } from './adornment/Adornment.interfaces';
-import { SvgStrokeType } from '../Svg.interfaces';
+import { StrokeLineCap } from '../Svg.interfaces';
 import { Svg, SvgOptions } from '../Svg';
 import { Adornment } from './adornment/Adornment';
 
 export type SvgLineOptions = {
   length?: number;
-  stroke?: string;
-  startAdornment?: Adornment;
-  endAdornment?: Adornment;
+  startAdornment?: Adornment | undefined;
+  endAdornment?: Adornment | undefined;
   type?: SvgLineType.Elbowed | SvgLineType.Straight;
   cornerRounding?: number;
+  points?: ListPoints;
 } & SvgOptions;
 
 export abstract class SvgLine extends Svg implements ILine {
@@ -40,10 +40,13 @@ export abstract class SvgLine extends Svg implements ILine {
 
     this.padding = 50;
 
-    const end = new Point(200, 0, null, null);
-    const head = new Point(0, 0, null, end);
-
-    this.points = new ListPoints({ head, end, toleranceNumber: 0.5 });
+    if (options.points) {
+      this.points = options.points;
+    } else {
+      const end = new Point(200, 0, null, null);
+      const head = new Point(0, 0, null, end);
+      this.points = new ListPoints({ head, end, toleranceNumber: 0.5 });
+    }
   }
 
   getVerticalLine(
@@ -168,6 +171,8 @@ export abstract class SvgLine extends Svg implements ILine {
 
       if (isFirst) {
         dx -= startLeft + startRight;
+
+        console.debug({ startLeft, startRight });
         paths.push(`m ${startLeft + startRight} 0`);
       }
 
@@ -240,7 +245,7 @@ export abstract class SvgLine extends Svg implements ILine {
     return this.startAdornment;
   }
   getEndAdornment(): Adornment | undefined {
-    return this.startAdornment;
+    return this.endAdornment;
   }
 
   syncEndAdornmentSvgProperties(): void {
@@ -377,12 +382,18 @@ export abstract class SvgLine extends Svg implements ILine {
     };
 
     if (!this.startAdornment) {
-      setStartPadding(startAdornmentPos, -this.strokeWidth / 2);
+      setStartPadding(
+        startAdornmentPos,
+        this.strokeLineCap === StrokeLineCap.Butt ? -this.strokeWidth / 2 : 0,
+      );
     } else {
       setStartPadding(startAdornmentPos, this.startAdornment.getPadding());
     }
     if (!this.endAdornment) {
-      setEndPadding(endAdornmentPos, -this.strokeWidth / 2);
+      setEndPadding(
+        endAdornmentPos,
+        this.strokeLineCap === StrokeLineCap.Butt ? -this.strokeWidth / 2 : 0,
+      );
     } else {
       setEndPadding(endAdornmentPos, this.endAdornment.getPadding());
     }
@@ -410,53 +421,41 @@ export abstract class SvgLine extends Svg implements ILine {
     this.type = type;
   }
 
-  public toElbowed() {
-    if (this.type === SvgLineType.Straight) {
-      this.type = SvgLineType.Elbowed;
-      this.convertPointsToElbowed();
-    }
-  }
-
-  public toStraight() {
-    if (this.type === SvgLineType.Elbowed) {
-      // this.type = SvgLineType.Straight;
-      // this.points.setNext(this.endPoint);
-      // this.endPoint.setPrev(this.points);
-    }
-  }
-
-  private convertPointsToElbowed() {
-    let point: Point | null = this.points.getHead();
-
-    while (point) {
-      const nextPosition = point.getNext()?.getPosition();
-
-      if (nextPosition) {
-        let pointPosition = point.getPosition();
-        const isVerticalStraightLine = pointPosition.x === nextPosition.x;
-        const isHorizontalStraightLine = pointPosition.y === nextPosition.y;
-
-        if (!isHorizontalStraightLine && !isVerticalStraightLine) {
-          const middle = new Point(
-            pointPosition.x,
-            nextPosition.y,
-            point,
-            point.getNext(),
-          );
-          point.getNext()?.setPrev(middle);
-          point.setNext(middle);
-        }
-      }
-
-      point = point.getNext();
-    }
-  }
-
   public getType(): SvgLineType {
     return this.type;
   }
 
+  setPadding() {
+    const {
+      endBottom,
+      endLeft,
+      endRight,
+      endTop,
+      startBottom,
+      startLeft,
+      startRight,
+      startTop,
+    } = this.getLineAdornmentPadding();
+
+    this.padding =
+      (Math.max(
+        endBottom,
+        endLeft,
+        endRight,
+        endTop,
+        startBottom,
+        startLeft,
+        startRight,
+        startTop,
+        100,
+      ) *
+        3) /
+      2;
+  }
+
   public toSvg(): string {
+    this.setPadding();
+
     const { width: length, height } = this.getDimensions();
 
     this.syncStartAdornmentSvgProperties();
@@ -485,19 +484,18 @@ export abstract class SvgLine extends Svg implements ILine {
     `;
   }
 
-  public toObject(): {
-    strokeWidth: number;
-    length: number;
-    stroke: SvgStrokeType;
-    type: SvgLineType;
-    points: ListPoints;
-  } {
+  public toObject() {
     return {
-      stroke: this.stroke,
+      ...super.toObject(),
+
       length: this.length,
-      strokeWidth: this.strokeWidth,
+      startAdornment: this.startAdornment,
+      endAdornment: this.endAdornment,
+      padding: this.padding,
       type: this.type,
+      cornerRounding: this.cornerRounding,
       points: this.points,
+      toleranceNumber: this.toleranceNumber,
     };
   }
 

@@ -5,6 +5,8 @@ import {
   SvgLineType,
 } from './Interface.Line';
 import { AdornmentDirection } from './adornment/Adornment.interfaces';
+import { Point } from './Point';
+import { ElbowedLine } from './ElbowedLine';
 
 export class StraightLine extends SvgLine implements IStraightLine {
   type: SvgLineType = SvgLineType.Straight;
@@ -122,5 +124,39 @@ export class StraightLine extends SvgLine implements IStraightLine {
 
   getEndAdornmentPosition(): { x: number; y: number } {
     return { x: this.padding + this.getLineWidth(), y: this.padding };
+  }
+
+  public toElbowed() {
+    this.type = SvgLineType.Elbowed;
+    this.convertPointsToElbowed();
+
+    return new ElbowedLine(this.toObject());
+  }
+
+  convertPointsToElbowed() {
+    let point: Point | null = this.points.getHead();
+
+    while (point) {
+      const nextPosition = point.getNext()?.getPosition();
+
+      if (nextPosition) {
+        let pointPosition = point.getPosition();
+        const isVerticalStraightLine = pointPosition.x === nextPosition.x;
+        const isHorizontalStraightLine = pointPosition.y === nextPosition.y;
+
+        if (!isHorizontalStraightLine && !isVerticalStraightLine) {
+          const middle = new Point(
+            pointPosition.x,
+            nextPosition.y,
+            point,
+            point.getNext(),
+          );
+          point.getNext()?.setPrev(middle);
+          point.setNext(middle);
+        }
+      }
+
+      point = point.getNext();
+    }
   }
 }

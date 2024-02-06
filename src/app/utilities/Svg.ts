@@ -16,7 +16,7 @@ interface ISvg {
 }
 
 export type SvgOptions = {
-  stroke?: string;
+  stroke?: SvgStrokeType;
   opacity?: number;
   strokeLineCap?: StrokeLineCap;
   strokeDashArray?: StrokeDashArraySizes;
@@ -144,6 +144,8 @@ export class Svg implements ISvg, Gradient {
 
   public setStrokeWidth(strokeWidth: number) {
     this.strokeWidth = strokeWidth;
+
+    this.setStrokeDashArray(this.strokeDashArraySize);
   }
   public getStrokeWidth() {
     return this.strokeWidth;
@@ -247,5 +249,29 @@ export class Svg implements ISvg, Gradient {
   getCenterPoint(): number {
     const { height } = this.getDimensions();
     return height / 2;
+  }
+
+  getOpacity(): number {
+    return this.opacity;
+  }
+
+  setOpacity(opacity: number) {
+    this.opacity = opacity;
+  }
+
+  toObject() {
+    return {
+      stroke: this.stroke,
+      strokeWidth: this.strokeWidth,
+      opacity: this.opacity,
+      strokeLineCap: this.strokeLineCap,
+      strokeDashArray: this.strokeDashArraySize,
+      shadowDirection: this.shadowDirection,
+      shadowOpacity: this.shadowOpacity,
+      shadowDistance: this.shadowDistance,
+      shadowBlur: this.shadowBlur,
+      width: this.width,
+      height: this.height,
+    };
   }
 }

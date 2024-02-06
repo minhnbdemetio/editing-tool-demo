@@ -67,7 +67,7 @@ export const LineEndProperty: FC = () => {
   const activeLineObject = useActiveMoveableLineObject();
 
   const [lineEnd, setLineEnd] = useState<Adornment | undefined>(
-    activeLineObject?.line.getStartAdornment(),
+    activeLineObject?.line.getEndAdornment(),
   );
   const [] = useState();
 

@@ -10,24 +10,24 @@ export class CircleAdornment extends Adornment {
     return {
       up: `<circle cx="${x}" cy="${
         y + arrowLength
-      }" r="${arrowLength}" stroke="black" stroke-width="${
+      }" r="${arrowLength}" stroke="${this.stroke}" stroke-width="${
         this.strokeWidth
-      }" fill="${this.outline ? 'none' : 'currentColor'}" />`,
+      }" fill="${this.outline ? 'none' : this.stroke}" />`,
       down: `<circle cx="${x}" cy="${
         y - arrowLength
-      }" r="${arrowLength}" stroke="black" stroke-width="${
+      }" r="${arrowLength}" stroke="${this.stroke}" stroke-width="${
         this.strokeWidth
-      }" fill="${this.outline ? 'none' : 'currentColor'}" />`,
+      }" fill="${this.outline ? 'none' : this.stroke}" />`,
       left: `<circle cx="${
         x + arrowLength
-      }" cy="${y}" r="${arrowLength}" stroke="black" stroke-width="${
+      }" cy="${y}" r="${arrowLength}" stroke="${this.stroke}" stroke-width="${
         this.strokeWidth
-      }" fill="${this.outline ? 'none' : 'currentColor'}" />`,
+      }" fill="${this.outline ? 'none' : this.stroke}" />`,
       right: `<circle cx="${
         x - arrowLength
-      }" cy="${y}" r="${arrowLength}" stroke="black" stroke-width="${
+      }" cy="${y}" r="${arrowLength}" stroke="${this.stroke}" stroke-width="${
         this.strokeWidth
-      }" fill="${this.outline ? 'none' : 'currentColor'}" />`,
+      }" fill="${this.outline ? 'none' : this.stroke}" />`,
     };
   }
 

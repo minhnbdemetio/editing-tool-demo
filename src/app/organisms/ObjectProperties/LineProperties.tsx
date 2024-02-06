@@ -39,7 +39,9 @@ export const LineProperties: FC = () => {
       <Button onClick={() => setSelectedProperty(SelectedProperty.LineFlip)}>
         Flip
       </Button>
-      <Button>Position</Button>
+      <Button onClick={() => setSelectedProperty(SelectedProperty.TextLayers)}>
+        Layer
+      </Button>
       <Button onClick={() => setSelectedProperty(SelectedProperty.LineNudge)}>
         Nudge
       </Button>

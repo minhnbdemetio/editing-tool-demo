@@ -3,7 +3,9 @@ import { LineTypeElbowed } from '@/app/icons/LineTypeElbowed';
 import { LineTypeStraight } from '@/app/icons/LineTypeStraight';
 import { useForceReloadLineController } from '@/app/store/force-reload-line-controller';
 import { IconProps } from '@/app/types';
+import { ElbowedLine } from '@/app/utilities/line/ElbowedLine';
 import { SvgLineType } from '@/app/utilities/line/Interface.Line';
+import { StraightLine } from '@/app/utilities/line/StraightLine';
 import { twMerge } from '@/app/utilities/tailwind';
 import { FC, useCallback, useState } from 'react';
 
@@ -36,10 +38,16 @@ export const LineTypeProperty: FC = () => {
     (type: SvgLineType) => {
       setLineType(type);
 
-      if (type === SvgLineType.Straight) {
-        activeLineObject?.line.toStraight();
-      } else if (type === SvgLineType.Elbowed) {
-        activeLineObject?.line.toElbowed();
+      if (
+        type === SvgLineType.Straight &&
+        activeLineObject?.line instanceof ElbowedLine
+      ) {
+        activeLineObject.line = (activeLineObject?.line).toStraight();
+      } else if (
+        type === SvgLineType.Elbowed &&
+        activeLineObject?.line instanceof StraightLine
+      ) {
+        activeLineObject.line = activeLineObject?.line.toElbowed();
       }
       activeLineObject?.updateUI();
       reload();
