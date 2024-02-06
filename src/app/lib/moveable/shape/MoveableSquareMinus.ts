@@ -13,22 +13,8 @@ export class MoveableSquareMinus extends MoveableShape {
     all?: Corner;
   };
 
-  constructor(options?: {
-    id?: string;
-    type?: ObjectType;
-    pageId?: string | null;
-    htmlString?: string;
-    width?: number;
-    height?: number;
-    corners?: {
-      tl?: Corner;
-      tr?: Corner;
-      bl?: Corner;
-      br?: Corner;
-      all?: Corner;
-    };
-  }) {
-    super(options as any);
+  constructor(options?: Partial<MoveableSquareMinus>) {
+    super(options);
     this.shapeType = MoveableShapeType.Minus;
 
     this.corners = options?.corners;
@@ -44,16 +30,10 @@ export class MoveableSquareMinus extends MoveableShape {
     });
   }
 
-  clone(
-    options?: { htmlString: string; id: string } | undefined,
-  ): MoveableObject {
+  clone(options?: Partial<MoveableSquareMinus>): MoveableObject {
     if (options) {
-      return new MoveableSquareMinus({
-        ...this.toJSON(),
-        id: uuidv4(),
-      });
+      return new MoveableSquareMinus(options);
     }
-    const clonedData = this.cloneData();
 
     return new MoveableSquareMinus({
       ...this.toJSON(),
