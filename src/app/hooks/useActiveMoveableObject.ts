@@ -54,6 +54,20 @@ export const useCopyActiveObject = () => {
   }, [activeMoveableObject]);
 };
 
+export const useObjectCopied = () => {
+  const { getAllObjects, setPageObjects } = useDesign();
+
+  return useCallback(async () => {
+    const allObjects = getAllObjects();
+    const copiedObjectId = await navigator.clipboard.readText();
+    const copiedObject = allObjects.find(
+      object => object.id === copiedObjectId,
+    );
+
+    return copiedObject;
+  }, [getAllObjects, setPageObjects]);
+};
+
 export const usePasteObject = () => {
   const { getAllObjects, setPageObjects } = useDesign();
 
