@@ -13,21 +13,7 @@ export class MoveableSquareRT extends MoveableShape {
     all?: Corner;
   };
 
-  constructor(options?: {
-    id?: string;
-    type?: ObjectType;
-    pageId?: string | null;
-    htmlString?: string;
-    width?: number;
-    height?: number;
-    corners?: {
-      tl?: Corner;
-      tr?: Corner;
-      bl?: Corner;
-      br?: Corner;
-      all?: Corner;
-    };
-  }) {
+  constructor(options?: Partial<MoveableSquareRT>) {
     super(options as any);
     this.shapeType = MoveableShapeType.SquareRT;
 
@@ -45,16 +31,10 @@ export class MoveableSquareRT extends MoveableShape {
     });
   }
 
-  clone(
-    options?: { htmlString: string; id: string } | undefined,
-  ): MoveableObject {
+  clone(options?: Partial<MoveableSquareRT>): MoveableObject {
     if (options) {
-      return new MoveableSquareRT({
-        ...this.toJSON(),
-        id: uuidv4(),
-      });
+      return new MoveableSquareRT(options);
     }
-    const clonedData = this.cloneData();
 
     return new MoveableSquareRT({
       ...this.toJSON(),

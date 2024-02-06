@@ -76,7 +76,6 @@ const PHOTO_MENU_PROPERTIES = [
     label: 'Reset background',
     value: SelectedProperty.PhotoBackground,
     isShowButton: (activeObject: MoveablePhoto) => {
-      console.log('checkshowbutton', activeObject.isBackground);
       return checkLockedObject(activeObject) && activeObject.isBackground;
     },
   },

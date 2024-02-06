@@ -1,4 +1,4 @@
-import { MoveableObject, ObjectType } from '../MoveableObject';
+import { MoveableObject } from '../MoveableObject';
 import { MoveableShapeType } from '../editable/EditableShape';
 import { Corner, CornerType, Square } from '../svg/Square';
 import { MoveableShape } from './MoveableShape';
@@ -13,22 +13,8 @@ export class MoveableInvertedRoundSquare extends MoveableShape {
     all?: Corner;
   };
 
-  constructor(options?: {
-    id?: string;
-    type?: ObjectType;
-    pageId?: string | null;
-    htmlString?: string;
-    width?: number;
-    height?: number;
-    corners?: {
-      tl?: Corner;
-      tr?: Corner;
-      bl?: Corner;
-      br?: Corner;
-      all?: Corner;
-    };
-  }) {
-    super(options as any);
+  constructor(options?: Partial<MoveableInvertedRoundSquare>) {
+    super(options);
     this.shapeType = MoveableShapeType.InvertedRoundSquare;
 
     this.corners = { all: { type: CornerType.InvertedRound, size: 20 } };
@@ -42,16 +28,10 @@ export class MoveableInvertedRoundSquare extends MoveableShape {
     });
   }
 
-  clone(
-    options?: { htmlString: string; id: string } | undefined,
-  ): MoveableObject {
+  clone(options?: Partial<MoveableInvertedRoundSquare>): MoveableObject {
     if (options) {
-      return new MoveableInvertedRoundSquare({
-        ...this.toJSON(),
-        id: uuidv4(),
-      });
+      return new MoveableInvertedRoundSquare(options);
     }
-    const clonedData = this.cloneData();
 
     return new MoveableInvertedRoundSquare({
       ...this.toJSON(),

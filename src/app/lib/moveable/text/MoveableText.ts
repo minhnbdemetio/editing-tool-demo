@@ -409,7 +409,6 @@ export class MoveableTextObject
     }
 
     this.renderTextScale();
-    
 
     this.applyTextListStyle();
   }

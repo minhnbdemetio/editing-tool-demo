@@ -1,4 +1,4 @@
-import { MoveableObject, ObjectType } from '../MoveableObject';
+import { MoveableObject } from '../MoveableObject';
 import { MoveableShapeType } from '../editable/EditableShape';
 import { Corner, CornerType, Square } from '../svg/Square';
 import { MoveableShape } from './MoveableShape';
@@ -13,22 +13,8 @@ export class MoveableSquareCutT extends MoveableShape {
     all?: Corner;
   };
 
-  constructor(options?: {
-    id?: string;
-    type?: ObjectType;
-    pageId?: string | null;
-    htmlString?: string;
-    width?: number;
-    height?: number;
-    corners?: {
-      tl?: Corner;
-      tr?: Corner;
-      bl?: Corner;
-      br?: Corner;
-      all?: Corner;
-    };
-  }) {
-    super(options as any);
+  constructor(options?: Partial<MoveableSquareCutT>) {
+    super(options);
     this.shapeType = MoveableShapeType.SquareCutT;
 
     this.corners = {
@@ -45,16 +31,10 @@ export class MoveableSquareCutT extends MoveableShape {
     });
   }
 
-  clone(
-    options?: { htmlString: string; id: string } | undefined,
-  ): MoveableObject {
+  clone(options?: Partial<MoveableSquareCutT>): MoveableObject {
     if (options) {
-      return new MoveableSquareCutT({
-        ...this.toJSON(),
-        id: uuidv4(),
-      });
+      return new MoveableSquareCutT(options);
     }
-    const clonedData = this.cloneData();
 
     return new MoveableSquareCutT({
       ...this.toJSON(),

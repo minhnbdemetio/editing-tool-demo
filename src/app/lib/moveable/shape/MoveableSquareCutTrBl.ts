@@ -13,22 +13,8 @@ export class MoveableSquareCutTrBl extends MoveableShape {
     all?: Corner;
   };
 
-  constructor(options?: {
-    id?: string;
-    type?: ObjectType;
-    pageId?: string | null;
-    htmlString?: string;
-    width?: number;
-    height?: number;
-    corners?: {
-      tl?: Corner;
-      tr?: Corner;
-      bl?: Corner;
-      br?: Corner;
-      all?: Corner;
-    };
-  }) {
-    super(options as any);
+  constructor(options?: Partial<MoveableSquareCutTrBl>) {
+    super(options);
     this.shapeType = MoveableShapeType.SquareCutTrBl;
 
     this.corners = {
@@ -45,16 +31,10 @@ export class MoveableSquareCutTrBl extends MoveableShape {
     });
   }
 
-  clone(
-    options?: { htmlString: string; id: string } | undefined,
-  ): MoveableObject {
+  clone(options?: Partial<MoveableSquareCutTrBl>): MoveableObject {
     if (options) {
-      return new MoveableSquareCutTrBl({
-        ...this.toJSON(),
-        id: uuidv4(),
-      });
+      return new MoveableSquareCutTrBl(options);
     }
-    const clonedData = this.cloneData();
 
     return new MoveableSquareCutTrBl({
       ...this.toJSON(),
