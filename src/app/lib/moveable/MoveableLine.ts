@@ -1,6 +1,6 @@
 import { MoveableObject } from './MoveableObject';
 import { SvgLine, SvgLineOptions } from '../../utilities/line/Line';
-import { LinePoint } from '../../utilities/line/Point';
+import { Point } from '../../utilities/line/Point';
 import { v4 } from 'uuid';
 import { StraightLine } from '@/app/utilities/line/StraightLine';
 import { ElbowedLine } from '@/app/utilities/line/ElbowedLine';
@@ -17,7 +17,7 @@ export class MoveableLineObject extends MoveableObject {
     options?: Partial<MoveableLineObject> & { svgLineOptions?: SvgLineOptions },
   ) {
     super(options);
-    this.line = new StraightLine(options?.svgLineOptions);
+    this.line = new ElbowedLine(options?.svgLineOptions);
     this.type = 'line';
   }
 
@@ -41,14 +41,23 @@ export class MoveableLineObject extends MoveableObject {
     }
   }
 
-  public updatePointerControllerUI(hide?: boolean) {
-    let point: LinePoint | undefined | null = this.line.points;
+  public updatePointerControllerUI({
+    hide,
+    exceptId,
+  }: { hide?: boolean; exceptId?: string } = {}) {
+    let point: Point | undefined | null = this.line.points.getHead();
 
     while (point) {
       const next = point.getNext();
 
       if (next) {
-        const id = point.id + next.id;
+        const id = point.id + ',' + next.id;
+
+        if (id === exceptId) {
+          point = point.getNext();
+          continue;
+        }
+
         const element = document.getElementById(id);
 
         if (hide && element) {
@@ -59,9 +68,9 @@ export class MoveableLineObject extends MoveableObject {
 
         if (point.hasNextCurve() || point.hasPrevCurve()) {
           if (element) {
-            element.style.transform = `translate(${(point.x + next.x) / 2}px, ${
-              (point.y + next.y) / 2
-            }px)`;
+            element.style.left = (point.x + next.x) / 2 + 'px';
+            element.style.top = (point.y + next.y) / 2 + 'px';
+
             element.style.display = 'block';
           }
         } else {
@@ -76,12 +85,12 @@ export class MoveableLineObject extends MoveableObject {
   }
 
   public updateHeadControl(hide?: boolean) {
-    const start = this.line.points;
-    const end = this.line.endPoint;
+    const start = this.line.points.getHead();
+    const end = this.line.points.getEnd();
 
     if (start && end) {
-      const startElement = document.getElementById('head-' + start.id);
-      const endElement = document.getElementById('head-' + end.id);
+      const startElement = document.getElementById(start.id);
+      const endElement = document.getElementById(end.id);
 
       if (hide) {
         if (startElement) startElement.style.display = `none`;
@@ -92,12 +101,14 @@ export class MoveableLineObject extends MoveableObject {
 
       if (startElement) {
         startElement.style.display = `block`;
-        startElement.style.transform = ` translate(${start?.x}px, ${start?.y}px)`;
+        startElement.style.left = start.x + 'px';
+        startElement.style.top = start.y + 'px';
       }
 
       if (endElement) {
         endElement.style.display = `block`;
-        endElement.style.transform = ` translate(${end?.x}px, ${end?.y}px)`;
+        endElement.style.left = end.x + 'px';
+        endElement.style.top = end.y + 'px';
       }
     }
   }

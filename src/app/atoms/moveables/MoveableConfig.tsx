@@ -1,5 +1,8 @@
 import { MOVEABLE_TARGET_CLASS } from '@/app/constants/moveable';
-import { DATA_LOCKED } from '@/app/lib/moveable/constant/object';
+import {
+  DATA_LOCKED,
+  DATA_NO_SELECTO,
+} from '@/app/lib/moveable/constant/object';
 import { BottomToolbar } from '@/app/molecules/ObjectToolbar/BottomToolbar';
 import { TopToolbar } from '@/app/molecules/ObjectToolbar/TopToolbar';
 import { SELECTO_ID, EDITOR_CONTAINER } from '@/app/organisms/Editor';
@@ -49,8 +52,14 @@ export const MoveableConfig: FC = () => {
           ratio={0}
           onDragStart={e => {
             const target = e.inputEvent.target;
+
+            console.debug(e.inputEvent.target);
+
             if (target.getAttribute(DATA_LOCKED) === 'true') return;
-            if (moveableRef.current!.isMoveableElement(target)) {
+            if (
+              moveableRef.current!.isMoveableElement(target) ||
+              target.getAttribute(DATA_NO_SELECTO) === 'true'
+            ) {
               e.preventDrag();
             }
           }}
@@ -59,7 +68,10 @@ export const MoveableConfig: FC = () => {
               .getElementById(EDITOR_CONTAINER)
               ?.contains(e.inputEvent.target);
 
-            if (isClickInsideEditorContainer) {
+            if (
+              isClickInsideEditorContainer &&
+              e.inputEvent.target.getAttribute(DATA_NO_SELECTO) !== 'true'
+            ) {
               setMoveableTargets(e.selected);
             }
           }}
@@ -109,7 +121,7 @@ export const MoveableConfig: FC = () => {
             const xChanged = matrix.m41 - activeMoveableObject.dragStartPoint.x;
             const yChanged = matrix.m42 - activeMoveableObject.dragStartPoint.y;
 
-            activeMoveableObject.line?.moveAllPoints({
+            activeMoveableObject.line?.points.moveAll({
               x: xChanged,
               y: yChanged,
             });
@@ -126,7 +138,7 @@ export const MoveableConfig: FC = () => {
         onDrag={e => {
           if (isLine(activeMoveableObject)) {
             activeMoveableObject.updateHeadControl(true);
-            activeMoveableObject.updatePointerControllerUI(true);
+            activeMoveableObject.updatePointerControllerUI({ hide: true });
           }
 
           if (isElementLocked(e.target)) return;

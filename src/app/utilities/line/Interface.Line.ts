@@ -125,4 +125,6 @@ export interface IStraightLine {
   getLineWidth(): number;
 }
 
-export interface IElbowedLine {}
+export interface IElbowedLine {
+  mergeStraightLine(): void;
+}

@@ -1,11 +1,9 @@
-import { getAngleByPoint } from '../line';
 import { SvgLine } from './Line';
 import {
   BoundingRectPosition,
   IStraightLine,
   SvgLineType,
 } from './Interface.Line';
-import { LinePoint } from './Point';
 import { AdornmentDirection } from './adornment/Adornment.interfaces';
 
 export class StraightLine extends SvgLine implements IStraightLine {
@@ -23,24 +21,57 @@ export class StraightLine extends SvgLine implements IStraightLine {
   }
 
   getDisplayPosition() {
-    return this.points.getPosition();
+    return this.points.getHead().getPosition();
   }
 
+  getAngleByPoint = (
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    position: 'start' | 'end',
+  ) => {
+    const verticalHeight = Math.abs(y2 - y1);
+    const horizontalWidth = Math.abs(x2 - x1);
+
+    const tanRatio = verticalHeight / horizontalWidth;
+
+    const basicAngle = Math.atan(tanRatio) * (180 / Math.PI) - 90;
+
+    let angle = -basicAngle;
+
+    if (y2 > y1 && x2 > x1) {
+      angle = 180 - angle;
+    }
+
+    if (y2 > y1 && x1 > x2) {
+      angle += 180;
+    }
+
+    if (x2 < x1 && y2 < y1) {
+      angle = -angle;
+    }
+
+    if (position === 'start') return 180 + angle;
+
+    return angle;
+  };
+
   getRotateAngle(): number {
-    const start = this.points;
+    const start = this.points.getHead();
     const end = start.getNext();
 
     if (end) {
       const { x: leftX, y: leftY } = start.getPosition();
       const { x: rightX, y: rightY } = end.getPosition();
-      return getAngleByPoint(leftX, leftY, rightX, rightY, 'end') - 90;
+      return this.getAngleByPoint(leftX, leftY, rightX, rightY, 'end') - 90;
     }
 
     return 0;
   }
 
   getLineWidth() {
-    const start = this.points;
+    const start = this.points.getHead();
     const end = start.getNext();
 
     if (end) {

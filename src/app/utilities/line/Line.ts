@@ -2,11 +2,9 @@ import {
   BoundingRectPosition,
   ILine,
   SvgAlignment,
-  SvgFlip,
   SvgLineType,
 } from './Interface.Line';
-import { LinePoint } from './Point';
-import { v4 as uuidV4 } from 'uuid';
+import { ListPoints, Point } from './Point';
 import { AdornmentDirection } from './adornment/Adornment.interfaces';
 import { SvgStrokeType } from '../Svg.interfaces';
 import { Svg, SvgOptions } from '../Svg';
@@ -19,11 +17,6 @@ export type SvgLineOptions = {
   endAdornment?: Adornment;
   type?: SvgLineType.Elbowed | SvgLineType.Straight;
   cornerRounding?: number;
-  shadowDirection?: number;
-  shadowOpacity?: number;
-  shadowDistance?: number;
-  shadowBlur?: number;
-  opacity?: number;
 } & SvgOptions;
 
 export abstract class SvgLine extends Svg implements ILine {
@@ -33,17 +26,8 @@ export abstract class SvgLine extends Svg implements ILine {
   padding: number = 6;
   type: SvgLineType;
   cornerRounding: number;
-  points: LinePoint;
-  endPoint: LinePoint;
+  points: ListPoints;
   toleranceNumber = 0.5;
-
-  public shadowDirection: number = 0;
-  public shadowOpacity: number = 0;
-  public shadowDistance: number = 0;
-  public shadowBlur: number = 0;
-
-  shadowSvgId = uuidV4();
-  gradientId = uuidV4();
 
   constructor(options: SvgLineOptions = {}) {
     super(options);
@@ -56,27 +40,10 @@ export abstract class SvgLine extends Svg implements ILine {
 
     this.padding = 50;
 
-    this.setShadow(
-      options || {
-        shadowBlur: 0,
-        shadowDirection: 0,
-        shadowDistance: 0,
-        shadowOpacity: 100,
-      },
-    );
+    const end = new Point(200, 0, null, null);
+    const head = new Point(0, 0, null, end);
 
-    const end = new LinePoint(200, 0, null, null);
-    const start = new LinePoint(0, 0, null, end);
-
-    end.setPrev(start);
-
-    this.points = start;
-    this.endPoint = end;
-  }
-
-  getCenterPoint(): number {
-    const { height } = this.getDimensions();
-    return height / 2;
+    this.points = new ListPoints({ head, end, toleranceNumber: 0.5 });
   }
 
   getVerticalLine(
@@ -322,13 +289,6 @@ export abstract class SvgLine extends Svg implements ILine {
 
   abstract getEndAdornmentDirection(): AdornmentDirection;
 
-  public getStrokeDashArray() {
-    return this.strokeDashArray;
-  }
-  public getStrokeDashArraySize() {
-    return this.strokeDashArraySize;
-  }
-
   getAdornmentLength(): number {
     return this.strokeWidth * 3 - this.strokeWidth / 2;
   }
@@ -430,14 +390,14 @@ export abstract class SvgLine extends Svg implements ILine {
     return adornmentPadding;
   }
 
-  private getDimensions: () => { length: number; height: number } = () => {
+  getDimensions: () => { width: number; height: number } = () => {
     const bounding = this.getBoundingPosition();
 
     const width = Math.abs(bounding.x2 - bounding.x1);
     const height = Math.abs(bounding.y3 - bounding.y1);
 
     return {
-      length: width + this.padding * 2,
+      width: width + this.padding * 2,
       height: height + this.padding * 2,
     };
   };
@@ -459,15 +419,14 @@ export abstract class SvgLine extends Svg implements ILine {
 
   public toStraight() {
     if (this.type === SvgLineType.Elbowed) {
-      this.type = SvgLineType.Straight;
-
-      this.points.setNext(this.endPoint);
-      this.endPoint.setPrev(this.points);
+      // this.type = SvgLineType.Straight;
+      // this.points.setNext(this.endPoint);
+      // this.endPoint.setPrev(this.points);
     }
   }
 
   private convertPointsToElbowed() {
-    let point: LinePoint | null = this.points;
+    let point: Point | null = this.points.getHead();
 
     while (point) {
       const nextPosition = point.getNext()?.getPosition();
@@ -478,7 +437,7 @@ export abstract class SvgLine extends Svg implements ILine {
         const isHorizontalStraightLine = pointPosition.y === nextPosition.y;
 
         if (!isHorizontalStraightLine && !isVerticalStraightLine) {
-          const middle = new LinePoint(
+          const middle = new Point(
             pointPosition.x,
             nextPosition.y,
             point,
@@ -498,7 +457,7 @@ export abstract class SvgLine extends Svg implements ILine {
   }
 
   public toSvg(): string {
-    const { length, height } = this.getDimensions();
+    const { width: length, height } = this.getDimensions();
 
     this.syncStartAdornmentSvgProperties();
     this.syncEndAdornmentSvgProperties();
@@ -506,7 +465,7 @@ export abstract class SvgLine extends Svg implements ILine {
     return `
         <svg  height="${height}" width="${length}">
             <defs>
-              ${this.getSvgShadow()}
+              ${this.getShadowFilter()}
               ${this.getLinearGradient()}
             </defs>
             <g stroke-location="inside"  opacity="${
@@ -531,7 +490,7 @@ export abstract class SvgLine extends Svg implements ILine {
     length: number;
     stroke: SvgStrokeType;
     type: SvgLineType;
-    points: LinePoint;
+    points: ListPoints;
   } {
     return {
       stroke: this.stroke,
@@ -542,46 +501,8 @@ export abstract class SvgLine extends Svg implements ILine {
     };
   }
 
-  public moveAllPoints(change: { x: number; y: number }) {
-    let point: LinePoint | null = this.points;
-
-    while (point) {
-      point.x += change.x;
-      point.y += change.y;
-
-      point = point.getNext();
-    }
-  }
-
-  public getPoints() {
-    let points: { id: string; x: number; y: number }[] = [];
-    let point: LinePoint | null = this.points;
-
-    while (point) {
-      points.push({ id: point.id, x: point.x, y: point.y });
-      point = point.getNext();
-    }
-
-    return points;
-  }
-
-  public getPointById = (id: string) => {
-    let targetPoint: LinePoint | null = null;
-    let point: LinePoint | null = this.points;
-
-    while (targetPoint == null && point) {
-      if (id === point.id) {
-        targetPoint = point;
-      }
-
-      point = point.getNext();
-    }
-
-    return targetPoint;
-  };
-
   public updatePoint(id: string, x: number, y: number) {
-    const point = this.getPointById(id);
+    const point = this.points.findById(id);
 
     if (point) {
       point.x = x;
@@ -594,240 +515,7 @@ export abstract class SvgLine extends Svg implements ILine {
   abstract getRotateAngle(): number;
 
   public getBoundingPosition(relative?: boolean): BoundingRectPosition {
-    let bounding: BoundingRectPosition = {
-      x1: 1000000,
-      y1: 1000000,
-      x2: -100000,
-      y2: 100000,
-      x3: 100000,
-      y3: -100000,
-      x4: -100000,
-      y4: -100000,
-    };
-
-    let point: null | LinePoint = this.points;
-
-    while (point !== null) {
-      const { x, y } = point.getPosition();
-
-      if (x < bounding.x1) bounding.x1 = x;
-      if (y < bounding.y1) bounding.y1 = y;
-
-      if (x > bounding.x2) bounding.x2 = x;
-      if (y < bounding.y2) bounding.y2 = y;
-
-      if (x < bounding.x3) bounding.x3 = x;
-      if (y > bounding.y3) bounding.y3 = y;
-
-      if (x > bounding.x4) bounding.x4 = x;
-      if (y > bounding.y4) bounding.y4 = y;
-      point = point.getNext();
-    }
-
-    return bounding;
-  }
-
-  public getElbowedLinePositions() {
-    if (this.type !== SvgLineType.Elbowed) return [];
-
-    const positions: {
-      x1: number;
-      y1: number;
-      startId: string;
-      endId: string;
-      y2: number;
-      x2: number;
-    }[] = [];
-
-    let point: null | LinePoint = this.points;
-
-    while (point) {
-      const next = point.getNext();
-
-      if (next) {
-        positions.push({
-          startId: point.id,
-          x1: point.x,
-          y1: point.y,
-          endId: next.id,
-          x2: next.x,
-          y2: next.y,
-        });
-      }
-
-      point = point.getNext();
-    }
-
-    return positions;
-  }
-
-  public updateElbowedPoints(
-    startId: string,
-    endId: string,
-    point: { x?: number; y?: number },
-  ) {
-    if (this.getType() === SvgLineType.Elbowed && startId && endId) {
-      const start = this.getPointById(startId);
-      const end = start?.getNext();
-      if (start && end) {
-        if (point.y) {
-          start.y = point.y;
-          end.y = point.y;
-        }
-        if (point.x) {
-          start.x = point.x;
-          end.x = point.x;
-        }
-      }
-    }
-  }
-
-  public createPrevFor(id: string, x: number, y: number) {
-    const point = this.getPointById(id);
-
-    if (point && !point.getPrev()) {
-      const newHead = new LinePoint(x, y, null, this.points);
-      this.points.setPrev(newHead);
-      this.points = newHead;
-    }
-  }
-
-  public createNewEnd(id: string, x: number, y: number) {
-    const point = this.getPointById(id);
-
-    if (point && !point.getNext()) {
-      const newPoint = new LinePoint(x, y, point, point.getNext());
-      point.setNext(newPoint);
-
-      if (!newPoint.getNext()) this.endPoint = newPoint;
-    }
-  }
-
-  public removePoint(id: string) {
-    const point = this.getPointById(id);
-
-    if (point) {
-      if (point.getPrev()) {
-        if (point.getNext()) {
-          const prev = point.getPrev();
-          const next = point.getNext();
-          prev?.setNext(next);
-          next?.setPrev(prev);
-        } else {
-          const prev = point.getPrev();
-          prev?.setNext(null);
-          this.endPoint = prev as LinePoint;
-        }
-      } else {
-        this.points = this.points.getNext() as LinePoint;
-        this.points.setPrev(null);
-      }
-    }
-  }
-
-  public mergeStraightLine() {
-    if (this.getType() === SvgLineType.Elbowed) {
-      let point: null | LinePoint = this.points;
-
-      while (point) {
-        const next = point.getNext();
-        const prev = point.getPrev();
-
-        if (next && prev) {
-          if (
-            (Math.abs(next.x - point.x) <= this.toleranceNumber &&
-              Math.abs(prev.x - point.x) <= this.toleranceNumber) ||
-            (Math.abs(next.y - point.y) <= this.toleranceNumber &&
-              Math.abs(prev.y - point.y) <= this.toleranceNumber)
-          ) {
-            this.removePoint(point.id);
-          }
-        }
-
-        point = next;
-      }
-    }
-  }
-
-  public setShadow(options: {
-    shadowDirection?: number;
-    shadowOpacity?: number;
-    shadowDistance?: number;
-    shadowBlur?: number;
-  }) {
-    if (options.shadowBlur) this.shadowBlur = options.shadowBlur || 0;
-    if (options.shadowOpacity)
-      this.shadowOpacity = options.shadowOpacity || 100;
-    if (options.shadowDistance)
-      this.shadowDistance = options.shadowDistance || 0;
-    if (options.shadowDirection)
-      this.shadowDirection = options.shadowDirection || 0;
-  }
-  public getShadowPosition(): { dx: number; dy: number } {
-    const distance = (this.shadowDistance / 100) * this.strokeWidth;
-    let angle = this.shadowDirection;
-
-    const isLeft = angle >= 45 && angle < 135;
-    const isTop = angle >= 135 && angle < 225;
-    const isRight = angle >= 225 && angle < 315;
-
-    const getPosition = (_angle: number) => {
-      let result: number;
-      angle -= 45;
-
-      result = Math.sin((_angle * Math.PI) / 180) * distance;
-
-      return result;
-    };
-
-    if (isLeft) {
-      return { dx: -distance, dy: -getPosition(angle - 90) };
-    }
-    if (isTop) {
-      return { dy: -distance, dx: getPosition(angle - 180) };
-    }
-    if (isRight) {
-      return { dx: distance, dy: getPosition(angle - 270) };
-    }
-
-    return { dy: distance, dx: -getPosition(angle) };
-  }
-
-  public getSvgShadow() {
-    const { dx, dy } = this.getShadowPosition();
-
-    const blur = (this.shadowBlur / 100) * 4;
-    const opacity = this.shadowOpacity / 100;
-
-    if (this.shadowDistance === 0) return ``;
-
-    return `
-   
-      <filter  id="${this.shadowSvgId}" x="-40%" y="-40%" width="200%" height="200%">
-        <feDropShadow  dx="${dx}" dy="${dy}"  flood-opacity="${opacity}"  in="offOut"  stdDeviation="${blur}"  />
-      </filter>
-      
-    `;
-  }
-
-  public getClosest(reference: number, vector: 'x' | 'y'): LinePoint {
-    let closestLeftPoint = this.points;
-    let smallestDifference = 100000;
-
-    let point: null | LinePoint = this.points;
-
-    while (point) {
-      const differ = Math.abs(reference - point[vector]);
-
-      if (differ < smallestDifference) {
-        closestLeftPoint = point;
-        smallestDifference = differ;
-      }
-
-      point = point.getNext();
-    }
-
-    return closestLeftPoint;
+    return this.points.getBoundingPosition();
   }
 
   public align(
@@ -838,22 +526,22 @@ export abstract class SvgLine extends Svg implements ILine {
 
     switch (alignment) {
       case SvgAlignment.LEFT: {
-        let closestLeftPoint = this.getClosest(0, 'x');
-        this.moveAllPoints({ x: -closestLeftPoint.x + halfStrokeWidth, y: 0 });
+        let closestLeftPoint = this.points.getClosestPoint(0, 'x');
+        this.points.moveAll({ x: -closestLeftPoint.x + halfStrokeWidth, y: 0 });
 
         return;
       }
       case SvgAlignment.TOP: {
-        let closestLeftTop = this.getClosest(0, 'y');
+        let closestLeftTop = this.points.getClosestPoint(0, 'y');
 
-        this.moveAllPoints({ y: -closestLeftTop.y + halfStrokeWidth, x: 0 });
+        this.points.moveAll({ y: -closestLeftTop.y + halfStrokeWidth, x: 0 });
         return;
       }
       case SvgAlignment.RIGHT: {
         if (!setting?.width) throw new Error('Width is required!');
-        let closestLeftRight = this.getClosest(setting.width, 'x');
+        let closestLeftRight = this.points.getClosestPoint(setting.width, 'x');
 
-        this.moveAllPoints({
+        this.points.moveAll({
           x: setting.width - closestLeftRight.x - halfStrokeWidth,
           y: 0,
         });
@@ -861,9 +549,9 @@ export abstract class SvgLine extends Svg implements ILine {
       }
       case SvgAlignment.BOTTOM: {
         if (!setting?.height) throw new Error('Height is required!');
-        let closestLeftRight = this.getClosest(setting.height, 'x');
+        let closestLeftRight = this.points.getClosestPoint(setting.height, 'x');
 
-        this.moveAllPoints({
+        this.points.moveAll({
           y: setting.height - closestLeftRight.y - halfStrokeWidth,
           x: 0,
         });
@@ -879,7 +567,7 @@ export abstract class SvgLine extends Svg implements ILine {
         const difference = pageCenter - elementCenter;
 
         if (Math.abs(difference) > 1) {
-          this.moveAllPoints({ x: difference, y: 0 });
+          this.points.moveAll({ x: difference, y: 0 });
         }
         return;
       }
@@ -894,28 +582,11 @@ export abstract class SvgLine extends Svg implements ILine {
         const difference = pageCenter - elementCenter;
 
         if (Math.abs(difference) > 1) {
-          this.moveAllPoints({ y: difference, x: 0 });
+          this.points.moveAll({ y: difference, x: 0 });
         }
 
         return;
       }
     }
   }
-
-  public flip(direction: SvgFlip) {
-    const { x2, x1, y4, y2 } = this.getBoundingPosition(true);
-    let point: null | LinePoint = this.points;
-
-    while (point) {
-      if (direction === SvgFlip.HORIZONTAL) {
-        point.x = x2 - point.x + x1;
-      }
-      if (direction === SvgFlip.VERTICAL) {
-        point.y = y4 - point.y + y2;
-      }
-
-      point = point.getNext();
-    }
-  }
 }
-//

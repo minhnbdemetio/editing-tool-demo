@@ -21,6 +21,12 @@ export type SvgOptions = {
   strokeLineCap?: StrokeLineCap;
   strokeDashArray?: StrokeDashArraySizes;
   strokeWidth?: number;
+  shadowDirection?: number;
+  shadowOpacity?: number;
+  shadowDistance?: number;
+  shadowBlur?: number;
+  width?: number;
+  height?: number;
 };
 
 export class Svg implements ISvg, Gradient {
@@ -32,7 +38,16 @@ export class Svg implements ISvg, Gradient {
   strokeDashArray: [number, number] | undefined;
   strokeDashArraySize: StrokeDashArraySizes = StrokeDashArraySizes.None;
 
-  gradientId: string;
+  public shadowDirection: number = 0;
+  public shadowOpacity: number = 0;
+  public shadowDistance: number = 0;
+  public shadowBlur: number = 0;
+
+  shadowSvgId = v4();
+  gradientId: string = v4();
+
+  width: number;
+  height: number;
 
   constructor(options: SvgOptions) {
     this.stroke = options.stroke || '#000';
@@ -45,6 +60,78 @@ export class Svg implements ISvg, Gradient {
       this.setStrokeDashArray(options.strokeDashArray);
 
     this.gradientId = v4();
+
+    this.setShadow(
+      options || {
+        shadowBlur: 0,
+        shadowDirection: 0,
+        shadowDistance: 0,
+        shadowOpacity: 100,
+      },
+    );
+
+    this.width = options.width || 0;
+    this.height = options.height || 0;
+  }
+
+  public setShadow(options: {
+    shadowDirection?: number;
+    shadowOpacity?: number;
+    shadowDistance?: number;
+    shadowBlur?: number;
+  }) {
+    if (options.shadowBlur) this.shadowBlur = options.shadowBlur || 0;
+    if (options.shadowOpacity)
+      this.shadowOpacity = options.shadowOpacity || 100;
+    if (options.shadowDistance)
+      this.shadowDistance = options.shadowDistance || 0;
+    if (options.shadowDirection)
+      this.shadowDirection = options.shadowDirection || 0;
+  }
+
+  public getShadowPosition(): { dx: number; dy: number } {
+    const distance = (this.shadowDistance / 100) * this.strokeWidth;
+    let angle = this.shadowDirection;
+
+    const isLeft = angle >= 45 && angle < 135;
+    const isTop = angle >= 135 && angle < 225;
+    const isRight = angle >= 225 && angle < 315;
+
+    const getPosition = (_angle: number) => {
+      let result: number;
+      angle -= 45;
+
+      result = Math.sin((_angle * Math.PI) / 180) * distance;
+
+      return result;
+    };
+
+    if (isLeft) {
+      return { dx: -distance, dy: -getPosition(angle - 90) };
+    }
+    if (isTop) {
+      return { dy: -distance, dx: getPosition(angle - 180) };
+    }
+    if (isRight) {
+      return { dx: distance, dy: getPosition(angle - 270) };
+    }
+
+    return { dy: distance, dx: -getPosition(angle) };
+  }
+
+  public getShadowFilter() {
+    const { dx, dy } = this.getShadowPosition();
+
+    const blur = (this.shadowBlur / 100) * 4;
+    const opacity = this.shadowOpacity / 100;
+
+    if (this.shadowDistance === 0) return ``;
+
+    return `
+      <filter  id="${this.shadowSvgId}" x="-40%" y="-40%" width="200%" height="200%">
+        <feDropShadow  dx="${dx}" dy="${dy}"  flood-opacity="${opacity}"  in="offOut"  stdDeviation="${blur}"  />
+      </filter>
+    `;
   }
 
   public setStroke(stroke: SvgStrokeType) {
@@ -67,6 +154,13 @@ export class Svg implements ISvg, Gradient {
   }
   public getStrokeLineCap(): StrokeLineCap {
     return this.strokeLineCap;
+  }
+
+  public getStrokeDashArray() {
+    return this.strokeDashArray;
+  }
+  public getStrokeDashArraySize() {
+    return this.strokeDashArraySize;
   }
 
   public setStrokeDashArray(size: StrokeDashArraySizes) {
@@ -144,5 +238,14 @@ export class Svg implements ISvg, Gradient {
       )}
     </linearGradient>
     `;
+  }
+
+  getDimensions(): { width: number; height: number } {
+    return { width: this.width, height: this.height };
+  }
+
+  getCenterPoint(): number {
+    const { height } = this.getDimensions();
+    return height / 2;
   }
 }

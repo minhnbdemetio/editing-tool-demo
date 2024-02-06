@@ -1,4 +1,4 @@
-import { Barcode, CloudArrowUp, Text } from '@/app/icons';
+import { Barcode, CloudArrowUp, Photo, Text } from '@/app/icons';
 import { Elements } from '@/app/icons/Elements';
 import { Workspaces } from '@/app/icons/Workspaces';
 import { BackgroundColor, Template } from '@/app/icons';
@@ -59,11 +59,11 @@ export const SideMenuItems: SideMenuItem[] = [
     icon: Barcode,
     label: 'QR/Barcode',
   },
-  // {
-  //   key: 'photos',
-  //   icon: Photo,
-  //   label: 'Photos',
-  // },
+  {
+    key: 'photos',
+    icon: Photo,
+    label: 'Photos',
+  },
   // {
   //   key: 'creator',
   //   icon: UserPlus,
