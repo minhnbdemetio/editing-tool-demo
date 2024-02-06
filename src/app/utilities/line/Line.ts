@@ -172,7 +172,6 @@ export abstract class SvgLine extends Svg implements ILine {
       if (isFirst) {
         dx -= startLeft + startRight;
 
-        console.debug({ startLeft, startRight });
         paths.push(`m ${startLeft + startRight} 0`);
       }
 

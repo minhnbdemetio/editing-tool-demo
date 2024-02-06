@@ -53,8 +53,6 @@ export const MoveableConfig: FC = () => {
           onDragStart={e => {
             const target = e.inputEvent.target;
 
-            console.debug(e.inputEvent.target);
-
             if (target.getAttribute(DATA_LOCKED) === 'true') return;
             if (
               moveableRef.current!.isMoveableElement(target) ||

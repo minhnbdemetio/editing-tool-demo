@@ -70,7 +70,6 @@ const StraightLineController: React.FC<{
   );
   const handleDragMove = useCallback(
     (e: DragMoveEvent) => {
-      console.debug({ data: e.active.data });
       const point = line.points.findById(e.active.id.toString());
 
       if (point && draftState) {
@@ -141,8 +140,6 @@ const ElbowedLineController: React.FC<{
   const startPoint = line.points.getHead();
   const endPoint = line.points.getEnd();
 
-  console.debug({ endPoint });
-
   const scale = useDesign(s => s.scale);
 
   const linePositions = line.getLinePositions();
@@ -186,7 +183,6 @@ const ElbowedLineController: React.FC<{
   const onDragBridgePointStart = ({ active }: DragStartEvent) => {
     if (!line.points) return;
     const startId = active.id.toString().split(',')[0];
-    console.debug({ startId });
 
     const point = line.points.findById(startId || '');
 
@@ -281,8 +277,6 @@ const ElbowedLineController: React.FC<{
           }
           point.setX(newX);
         }
-
-        console.debug(line.points.toData());
       }
 
       activeMoveableObject.updatePointerControllerUI();

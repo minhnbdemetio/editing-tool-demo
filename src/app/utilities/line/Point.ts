@@ -190,8 +190,6 @@ export class ListPoints implements IListPoints {
 
     this.end = point;
     this.end.setNext(null);
-
-    console.debug({ setEnd: this.end });
   }
   remove(point: Point): void {
     if (point) {

@@ -129,8 +129,6 @@ export class Square extends SvgShape {
   getPath(): string {
     const padding = this.strokeWidth / 2;
 
-    console.debug(this.corners);
-
     const topLeftCornerSize = this.getCornerSize(this.corners.tl);
     const bottomLeftCornerSize = this.getCornerSize(this.corners.bl);
     const bottomRightCornerSize = this.getCornerSize(this.corners.br);
