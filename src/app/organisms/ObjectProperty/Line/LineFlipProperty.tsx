@@ -1,5 +1,5 @@
 import { useActiveMoveableLineObject } from '@/app/hooks/useActiveMoveableObject';
-import { SvgFlip } from '@/app/utilities/svg-line';
+import { SvgFlip } from '@/app/utilities/line/Interface.Line';
 import { twMerge } from '@/app/utilities/tailwind';
 import { FC, useState } from 'react';
 
@@ -16,7 +16,7 @@ export const LineFlipProperty: FC = () => {
         <div className="flex gap-2 justify-center">
           <button
             onClick={() => {
-              activeLineObject.line.flip(SvgFlip.HORIZONTAL);
+              activeLineObject.line.points.flip(SvgFlip.HORIZONTAL);
               activeLineObject.updateUI();
               activeLineObject.updatePointerControllerUI();
               activeLineObject.updateHeadControl();
@@ -29,7 +29,7 @@ export const LineFlipProperty: FC = () => {
           </button>
           <button
             onClick={() => {
-              activeLineObject.line.flip(SvgFlip.VERTICAL);
+              activeLineObject.line.points.flip(SvgFlip.VERTICAL);
               activeLineObject.updateUI();
               activeLineObject.updatePointerControllerUI();
               activeLineObject.updateHeadControl();

@@ -4,7 +4,11 @@ import { MediumDashedLineStyle } from '@/app/icons/MediumDashedLineStyle';
 import { SmallDashedLineStyle } from '@/app/icons/SmallDashedLineStyle';
 import { SolidLineStyle } from '@/app/icons/SolidLineStyle';
 import { IconProps } from '@/app/types';
-import { StrokeDashArraySizes, StrokeLineCap } from '@/app/utilities/svg-line';
+import {
+  StrokeDashArraySizes,
+  StrokeLineCap,
+} from '@/app/utilities/Svg.interfaces';
+
 import { twMerge } from '@/app/utilities/tailwind';
 import { Slider, Switch } from '@nextui-org/react';
 import { FC, useCallback, useState } from 'react';

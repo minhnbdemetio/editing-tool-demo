@@ -51,8 +51,6 @@ export class FivePointStar extends Pentagon {
             y: current.y + deltaY / 2 + Math.abs(starDeltaY),
           };
 
-          console.debug({ starCoordinate });
-
           starCoordinates.push(starCoordinate);
         }
         if (i === 1) {
@@ -75,8 +73,6 @@ export class FivePointStar extends Pentagon {
             x: current.x + deltaX / 2 - Math.abs(starDeltaX),
             y: current.y + deltaY / 2 - Math.abs(starDeltaY),
           };
-
-          console.debug({ starCoordinate });
 
           starCoordinates.push(starCoordinate);
         }

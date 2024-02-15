@@ -162,6 +162,7 @@ export const SelectedObjectProperty: FC = () => {
       case SelectedProperty.ShapeAlign: {
         return <ShapeAlignProperty />;
       }
+      case SelectedProperty.LineLayer:
       case SelectedProperty.ShapeLayer: {
         return <LayerProperty />;
       }

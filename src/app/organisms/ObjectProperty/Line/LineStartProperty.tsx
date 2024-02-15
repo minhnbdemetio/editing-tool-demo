@@ -1,3 +1,4 @@
+import { ListLineAdornmentButtons } from '@/app/atoms/ListLineAdornmentButtons';
 import { useActiveMoveableLineObject } from '@/app/hooks/useActiveMoveableObject';
 import { DotsLineStyle } from '@/app/icons/DotsLineStyle';
 import { LineStartArrow } from '@/app/icons/LineStartArrow';
@@ -14,72 +15,22 @@ import { MediumDashedLineStyle } from '@/app/icons/MediumDashedLineStyle';
 import { SmallDashedLineStyle } from '@/app/icons/SmallDashedLineStyle';
 import { SolidLineStyle } from '@/app/icons/SolidLineStyle';
 import { IconProps } from '@/app/types';
-import {
-  StrokeDashArraySizes,
-  StrokeLineCap,
-  SvgLineAdornment,
-} from '@/app/utilities/svg-line';
+import { SvgLineAdornment } from '@/app/utilities/line/Interface.Line';
+import { Adornment } from '@/app/utilities/line/adornment/Adornment';
 import { twMerge } from '@/app/utilities/tailwind';
-import { Slider, Switch } from '@nextui-org/react';
 import { FC, useCallback, useState } from 'react';
-
-const LINE_STARTS: {
-  icon: React.FC<IconProps>;
-  id: SvgLineAdornment;
-}[] = [
-  {
-    id: SvgLineAdornment.None,
-    icon: LineStartNone,
-  },
-  {
-    id: SvgLineAdornment.Line,
-    icon: LineStartRect,
-  },
-  {
-    id: SvgLineAdornment.Arrow,
-    icon: LineStartArrow,
-  },
-  {
-    id: SvgLineAdornment.Triangle,
-    icon: LineStartTriangle,
-  },
-  {
-    id: SvgLineAdornment.OutlinedCircle,
-    icon: LineStartOutlinedCircle,
-  },
-  {
-    id: SvgLineAdornment.Circle,
-    icon: LineStartCircle,
-  },
-  {
-    id: SvgLineAdornment.OutlinedSquare,
-    icon: LineStartOutlinedSquare,
-  },
-  {
-    id: SvgLineAdornment.Square,
-    icon: LineStartSquare,
-  },
-  {
-    id: SvgLineAdornment.OutlinedRhombus,
-    icon: LineStartOutlinedRhombus,
-  },
-  {
-    id: SvgLineAdornment.Rhombus,
-    icon: LineStartRhombus,
-  },
-];
 
 export const LineStartProperty: FC = () => {
   const activeLineObject = useActiveMoveableLineObject();
 
-  const [lineStart, setLineStart] = useState<SvgLineAdornment>(
-    activeLineObject?.line.getStartAdornment() || SvgLineAdornment.None,
+  const [lineStart, setLineStart] = useState<Adornment | undefined>(
+    activeLineObject?.line.getStartAdornment(),
   );
 
   const [] = useState();
 
-  const onChangeStrokeDashArray = useCallback(
-    (adornment: SvgLineAdornment) => {
+  const changeAdornment = useCallback(
+    (adornment: Adornment | undefined) => {
       setLineStart(adornment);
 
       activeLineObject?.line.setStartAdornment(adornment);
@@ -92,22 +43,10 @@ export const LineStartProperty: FC = () => {
 
   return (
     <>
-      <div className="overflow-y-auto">
-        <div className="flex gap-2">
-          {LINE_STARTS.map(({ icon: Icon, id }) => (
-            <button
-              key={id}
-              onClick={() => onChangeStrokeDashArray(id)}
-              className={twMerge(
-                'border-px border-solid border-gray-500 rounded-md px-3 py-3',
-                { 'border-green-400': id === lineStart },
-              )}
-            >
-              <Icon className="mx-auto " />
-            </button>
-          ))}
-        </div>
-      </div>
+      <ListLineAdornmentButtons
+        adornment={lineStart}
+        onChange={changeAdornment}
+      />
     </>
   );
 };

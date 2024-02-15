@@ -3,7 +3,7 @@
 import { FC, useCallback, useEffect } from 'react';
 import { Button } from '../atoms/Button';
 import { EditablePage } from './EditablePage';
-import { useDrop } from 'react-dnd';
+import { DndContext, useDrop } from 'react-dnd';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { MoveableConfig } from '../atoms/moveables/MoveableConfig';
 import { useAddPage, usePages } from '../hooks/usePage';

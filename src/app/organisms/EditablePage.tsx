@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { withCurrentPage } from '../hocs/withCurrentPage';
 import { MoveableObjectElement } from '../atoms/moveables/MoveableObjectElement';
 import { CuttingZoneReminder } from '../molecules/CuttingZoneReminder';
@@ -56,7 +56,7 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   return (
     <CuttingZoneReminder>
       <div onMouseDown={() => setActivePage(pageId)} ref={containerRef}>
-        <div className="relative" ref={layerRef}>
+        <div className="relative overflow-hidden" ref={layerRef}>
           <div
             style={{
               transform: `scale(${scale})`,
