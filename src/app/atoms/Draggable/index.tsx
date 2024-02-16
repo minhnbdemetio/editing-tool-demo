@@ -1,9 +1,5 @@
 import Moveable from 'moveable';
-import React, {
-  HtmlHTMLAttributes,
-  useEffect,
-  useRef,
-} from 'react';
+import React, { HtmlHTMLAttributes, useEffect, useRef } from 'react';
 import './style.scss';
 import { useActivePage } from '@/app/store/active-page';
 
@@ -16,6 +12,14 @@ declare type DraggableProps = Omit<
   style?: any;
   dragStyle?: 'free' | 'xOnly' | 'yOnly';
   id?: string;
+  max?: {
+    x?: number;
+    y?: number;
+  };
+  min?: {
+    x?: number;
+    y?: number;
+  };
 };
 
 export function Draggable({
@@ -25,6 +29,9 @@ export function Draggable({
   style,
   children,
   onDragEnd,
+  onDragStart,
+  min,
+  max,
   ...rest
 }: DraggableProps) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -46,20 +53,38 @@ export function Draggable({
         var matrix = new WebKitCSSMatrix(e.target.style.transform);
         var newMatrix = new WebKitCSSMatrix(e.transform);
 
-        if (!dragStyle || dragStyle === 'free') {
-          onDrag({ x: matrix.m41, y: matrix.m42 }, e.target as HTMLElement);
-          e.target.style.transform = e.transform;
-        } else if (dragStyle === 'xOnly') {
-          e.target.style.transform = `translate(${newMatrix.m41}px, ${matrix.m42}px)`;
-          onDrag({ x: newMatrix.m41, y: matrix.m42 }, e.target as HTMLElement);
-        } else if (dragStyle === 'yOnly') {
-          e.target.style.transform = `translate(${matrix.m41}px, ${newMatrix.m42}px)`;
-          onDrag({ x: matrix.m41, y: newMatrix.m42 }, e.target as HTMLElement);
+        const isGreaterThanMaxX = !!max?.x && max.x < matrix.m41;
+        const isSmallerThanMinX = !!min?.x && min.x > matrix.m41;
+
+        const isInboundX = !isGreaterThanMaxX && !isSmallerThanMinX;
+
+        if (isInboundX) {
+          if (!dragStyle || dragStyle === 'free') {
+            onDrag({ x: matrix.m41, y: matrix.m42 }, e.target as HTMLElement);
+            e.target.style.transform = e.transform;
+          } else if (dragStyle === 'xOnly') {
+            e.target.style.transform = `translate(${newMatrix.m41}px, ${matrix.m42}px)`;
+            onDrag(
+              { x: newMatrix.m41, y: matrix.m42 },
+              e.target as HTMLElement,
+            );
+          } else if (dragStyle === 'yOnly') {
+            e.target.style.transform = `translate(${matrix.m41}px, ${newMatrix.m42}px)`;
+            onDrag(
+              { x: matrix.m41, y: newMatrix.m42 },
+              e.target as HTMLElement,
+            );
+          }
         }
       });
       moveable.on('dragEnd', function (e) {
         if (onDragEnd) {
           onDragEnd(e.target as HTMLElement);
+        }
+      });
+      moveable.on('dragStart', function (e) {
+        if (onDragStart) {
+          onDragStart(e.target as any);
         }
       });
     }

@@ -1,12 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { Draggable } from '../atoms/Draggable';
-import { SvgLineType } from '../utilities/svg-line';
-import { twMerge } from '../utilities/tailwind';
-import { LinePoint } from '../utilities/line-point';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Draggable as DndDraggable } from '../atoms/DndDraggable';
+import { Point } from '../utilities/line/Point';
 import { useActiveMoveableLineObject } from '../hooks/useActiveMoveableObject';
 import { isLine } from '../utilities/moveable';
 import { MoveableLineObject } from '../lib/moveable/MoveableLine';
 import { useForceReloadLineController } from '../store/force-reload-line-controller';
+import { SvgLineType } from '../utilities/line/Interface.Line';
+import { ElbowedLine } from '../utilities/line/ElbowedLine';
+import {
+  DndContext,
+  DragEndEvent,
+  DragMoveEvent,
+  DragStartEvent,
+  Modifier,
+} from '@dnd-kit/core';
+import { restrictToWindowEdges } from '@dnd-kit/modifiers';
+import { useDesign } from '../store/design-objects';
+import { StraightLine } from '../utilities/line/StraightLine';
+import { twMerge } from '../utilities/tailwind';
 
 interface MovableLineControllerProps {}
 
@@ -15,6 +26,7 @@ const StraightLineController: React.FC<{
   activeMoveableObject: MoveableLineObject;
 }> = ({ forceReload, activeMoveableObject }) => {
   const [anchorRef, setAnchorRef] = useState<HTMLDivElement | null>(null);
+  const scale = useDesign(s => s.scale);
 
   useEffect(() => {
     const isLine = activeMoveableObject?.type === 'line';
@@ -31,57 +43,78 @@ const StraightLineController: React.FC<{
     }
   }, [activeMoveableObject]);
 
+  const scaledDndModifiers: Modifier = useCallback(
+    ({ transform }) => {
+      transform.x = transform.x / scale;
+      transform.y = transform.y / scale;
+      return transform;
+    },
+    [scale],
+  );
+
+  const line = useMemo(
+    () => activeMoveableObject.line as StraightLine,
+    [activeMoveableObject],
+  );
+
+  const [draftState, setDraftState] = useState<
+    { id: string; x: number; y: number } | undefined
+  >(undefined);
+  const handleDragStart = useCallback(
+    (e: DragStartEvent) => {
+      const point = line.points.findById(e.active.id.toString());
+
+      if (point) setDraftState(point.toObject());
+    },
+    [line],
+  );
+  const handleDragMove = useCallback(
+    (e: DragMoveEvent) => {
+      const point = line.points.findById(e.active.id.toString());
+
+      if (point && draftState) {
+        point.setX(draftState.x + e.delta.x);
+        point.setY(draftState.y + e.delta.y);
+      }
+
+      activeMoveableObject.updateUI();
+    },
+    [line, draftState, activeMoveableObject],
+  );
+
+  const handleDragEnd = useCallback(() => {
+    setDraftState(undefined);
+  }, []);
+
   if (!anchorRef) return null;
 
-  const points = activeMoveableObject?.line?.getPoints() || [];
-
-  const handleMove = (pointId: string, point: { x: number; y: number }) => {
-    const lineObject = activeMoveableObject;
-
-    if (lineObject && lineObject.line) {
-      lineObject.line.updatePoint(pointId, point.x, point.y);
-
-      lineObject.updateUI();
-    }
-  };
+  const points = line.points.toArray() || [];
 
   return (
     <>
-      <button
-        onClick={() => {
-          const lineObject = activeMoveableObject;
-          if (lineObject && lineObject.line) {
-            lineObject.line?.toElbowed();
-            const { x, y } = lineObject.line?.getDisplayPosition();
-            anchorRef.style.transform = `translate(${x}px, ${y}px) rotate(${lineObject.line.getRotateAngle()}deg)`;
-            forceReload();
-          }
-        }}
-      >
-        To elbowed
-      </button>
-
-      {points.map(point => (
-        <Draggable
-          id={`head-` + point.id}
-          key={point.id}
-          style={{
-            background: 'red',
-            transform: `translate(${point.x}px, ${point.y}px)`,
-          }}
-          onDrag={e => handleMove(point.id, e)}
-          className="absolute"
+      <div>
+        <DndContext
+          onDragStart={handleDragStart}
+          onDragMove={handleDragMove}
+          onDragEnd={handleDragEnd}
+          modifiers={[restrictToWindowEdges, scaledDndModifiers]}
         >
-          <div
-            className="absolute w-[15px] h-[15px] rounded-[50%] border-[1px] border-gray-50 border-solid"
-            style={{
-              background: 'red',
-              border: '1px solid #e8e8e8',
-              transform: `translate(-50%, -100%)`,
-            }}
-          ></div>
-        </Draggable>
-      ))}
+          {points.map(point => (
+            <DndDraggable key={point.id} id={point.id} x={point.x} y={point.y}>
+              <div
+                data-no-selecto="true"
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: '50%',
+                  background: 'red',
+                  transform: 'translate(-50%, -50%)',
+                }}
+              ></div>
+            </DndDraggable>
+          ))}
+        </DndContext>
+      </div>
     </>
   );
 };
@@ -92,232 +125,238 @@ const ElbowedLineController: React.FC<{
 }> = ({ forceReload, activeMoveableObject }) => {
   const [anchorRef, setAnchorRef] = useState<HTMLDivElement | null>(null);
 
+  const line = useMemo(
+    () => activeMoveableObject.line as ElbowedLine,
+    [activeMoveableObject.line],
+  );
+
   useEffect(() => {
-    const isLine = activeMoveableObject?.type === 'line';
-
-    if (isLine) {
-      const activeLineMovable = activeMoveableObject;
-
-      setAnchorRef(
-        (document.getElementById(activeLineMovable.id) as HTMLDivElement) ||
-          null,
-      );
-    } else {
-      setAnchorRef(null);
-    }
+    setAnchorRef(
+      (document.getElementById(activeMoveableObject.id) as HTMLDivElement) ||
+        null,
+    );
   }, [activeMoveableObject]);
 
-  const startPoint = activeMoveableObject.line.points;
-  const endPoint = activeMoveableObject.line.endPoint;
+  const startPoint = line.points.getHead();
+  const endPoint = line.points.getEnd();
 
-  const linePositions = activeMoveableObject.line.getElbowedLinePositions();
+  const scale = useDesign(s => s.scale);
 
-  if (!anchorRef) return null;
+  const linePositions = line.getLinePositions();
 
-  const onDragFreePoint = (
-    id: string,
-    newHeadId: string,
-    e: { x: number; y: number },
-    referencePoint: LinePoint,
-    onCreateHead: (id: string, x: number, y: number) => void,
-    onRemoveNewHead: () => void,
-  ) => {
-    const point = activeMoveableObject.line.getPointById(id);
-
-    if (point && referencePoint) {
-      const isVertical = point.isEqual(point.x, referencePoint.x);
-      const isHorizontal = point.isEqual(point.y, referencePoint.y);
-
-      if (isVertical) {
-        activeMoveableObject.line.updatePoint(id, referencePoint.x, e.y);
-
-        if (Math.abs(e.x - referencePoint.x) >= 20) {
-          if (!newHeadId) {
-            onCreateHead(id, e.x, e.y);
-          } else {
-            activeMoveableObject.line.updatePoint(newHeadId, e.x, e.y);
-          }
+  const scaledDndModifiers: Modifier = useCallback(
+    ({ transform, activatorEvent }) => {
+      transform.x = transform.x / scale;
+      transform.y = transform.y / scale;
+      return transform;
+    },
+    [scale],
+  );
+  const moveStraightOnly: Modifier = useCallback(
+    ({ transform, activatorEvent }) => {
+      const target = activatorEvent?.target as HTMLDivElement;
+      const direction = target?.getAttribute('data-direction');
+      if (direction) {
+        if (direction === 'y') {
+          transform.x = 0;
         } else {
-          if (newHeadId) {
-            onRemoveNewHead();
-          }
-        }
-      } else if (isHorizontal) {
-        activeMoveableObject.line.updatePoint(id, e.x, referencePoint.y);
-
-        if (Math.abs(e.y - referencePoint.y) >= 20) {
-          if (!newHeadId) {
-            onCreateHead(id, e.x, e.y);
-          } else {
-            activeMoveableObject.line.updatePoint(newHeadId, e.x, e.y);
-          }
-        } else {
-          if (newHeadId) {
-            onRemoveNewHead();
-          }
+          transform.y = 0;
         }
       }
+      return transform;
+    },
+    [],
+  );
 
-      activeMoveableObject.updateUI();
+  const [draftState, setDraftState] = useState<
+    | {
+        id: string;
+        x: number;
+        y: number;
+        isHead?: boolean;
+        isEnd?: boolean;
+        direction?: 'vertical' | 'horizontal';
+      }
+    | undefined
+  >(undefined);
 
-      activeMoveableObject.updatePointerControllerUI();
+  const onDragBridgePointStart = ({ active }: DragStartEvent) => {
+    if (!line.points) return;
+    const startId = active.id.toString().split(',')[0];
+
+    const point = line.points.findById(startId || '');
+
+    if (point) {
+      setDraftState({ id: active.id.toString(), x: point.x, y: point.y });
     }
   };
 
+  const onDragBridgePointMove = ({
+    delta,
+    active,
+    activatorEvent,
+  }: DragMoveEvent) => {
+    const target = activatorEvent?.target as HTMLDivElement;
+    const direction = target?.getAttribute('data-direction');
+
+    if (direction && draftState) {
+      const points = active.id
+        .toString()
+        .split(',')
+        .map(id => line.points.findById(id));
+      if (direction === 'y') {
+        points.forEach(p => p?.setY(draftState.y + delta.y));
+      } else {
+        points.forEach(p => p?.setX(draftState.x + delta.x));
+      }
+
+      activeMoveableObject.updateUI();
+      activeMoveableObject.updatePointerControllerUI({
+        exceptId: active.id.toString(),
+      });
+      activeMoveableObject.updateHeadControl();
+    }
+  };
+
+  const onStartDragHead = useCallback(
+    (e: DragStartEvent) => {
+      const point = line.points.findById(e.active.id.toString());
+      const referencePoint = point?.isHead()
+        ? point?.getNext()
+        : point?.getPrev();
+
+      if (point)
+        setDraftState({
+          ...point.toObject(),
+          isHead: point.isHead(),
+          isEnd: point.isEnd(),
+          direction: point?.isEqualX(referencePoint as Point)
+            ? 'vertical'
+            : 'horizontal',
+        });
+    },
+    [line],
+  );
+  const onHeadDragMove = useCallback(
+    ({ delta, active }: DragMoveEvent) => {
+      const BREAKPOINT = 20;
+
+      const point = line.points.findById(draftState?.id || '');
+
+      if (draftState && point) {
+        const newY = draftState.y + delta.y;
+        const newX = draftState.x + delta.x;
+
+        const newHead = draftState.isHead ? point.getPrev() : point.getNext();
+        newHead?.setX(newX);
+        newHead?.setY(newY);
+
+        const createHead = () => {
+          const newPoint = new Point(newX, newY, null, point);
+
+          if (draftState.isHead) {
+            line.points.addBefore(point, newPoint);
+          } else {
+            line.points.addAfter(point, newPoint);
+          }
+        };
+
+        if (draftState.direction === 'vertical') {
+          if (Math.abs(delta.x) >= BREAKPOINT) {
+            if (!newHead) createHead();
+          } else {
+            if (newHead) line.points.remove(newHead);
+          }
+
+          point.setY(newY);
+        } else {
+          if (Math.abs(delta.y) >= BREAKPOINT) {
+            if (!newHead) createHead();
+          } else {
+            if (newHead) line.points.remove(newHead);
+          }
+          point.setX(newX);
+        }
+      }
+
+      activeMoveableObject.updatePointerControllerUI();
+
+      activeMoveableObject.updateUI();
+    },
+    [line, draftState, activeMoveableObject],
+  );
+
+  if (!anchorRef) return null;
+
   return (
     <>
-      {startPoint && (
-        <Draggable
-          id={`head-` + startPoint.id}
-          onDragEnd={target => {
-            activeMoveableObject.line.mergeStraightLine();
+      <DndContext
+        onDragStart={onStartDragHead}
+        onDragMove={onHeadDragMove}
+        onDragEnd={() => setDraftState(undefined)}
+        modifiers={[scaledDndModifiers]}
+      >
+        {startPoint && (
+          <DndDraggable id={startPoint.id} x={startPoint.x} y={startPoint.y}>
+            <div
+              data-no-selecto="true"
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: '50%',
+                background: 'red',
+                transform: 'translate(-50%, -50%)',
+              }}
+            ></div>
+          </DndDraggable>
+        )}
+        {endPoint && (
+          <DndDraggable id={endPoint.id} x={endPoint.x} y={endPoint.y}>
+            <div
+              data-no-selecto="true"
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: '50%',
+                background: 'red',
+                transform: 'translate(-50%, -50%)',
+              }}
+            ></div>
+          </DndDraggable>
+        )}
+      </DndContext>
 
-            const newHead = target.getAttribute('data-new-head') || '';
-            if (newHead) {
-              target.setAttribute('data-target', newHead);
-              target.setAttribute('id', newHead);
-              target.setAttribute('data-new-head', '');
-              forceReload();
-            }
-          }}
-          data-target={startPoint.id}
-          onDrag={(e, target) => {
-            const id = target.getAttribute('data-target') || '';
-            const newHeadId = target.getAttribute('data-new-head') || '';
-            onDragFreePoint(
-              id,
-              newHeadId,
-              e,
-              activeMoveableObject.line
-                ?.getPointById(id)
-                ?.getNext() as LinePoint,
-              (_, x, y) => {
-                activeMoveableObject.line?.createPrevFor(id, x, y);
-                target.setAttribute(
-                  'data-new-head',
-                  activeMoveableObject.line?.points?.id || '',
-                );
-              },
-              () => {
-                if (activeMoveableObject.line) {
-                  activeMoveableObject.line.removePoint(newHeadId);
-                  target.setAttribute('data-new-head', '');
-                }
-              },
-            );
-          }}
-          style={{
-            transform: ` translate(${startPoint?.x}px, ${startPoint?.y}px)`,
-            width: 'fit-content',
-          }}
-        >
-          <div className="w-[15px] h-[15px] bg-[red] rounded-[50%]"></div>
-        </Draggable>
-      )}
-      {linePositions?.map(pos => (
-        <Draggable
-          onDragEnd={() => {
-            activeMoveableObject?.line?.mergeStraightLine();
-            activeMoveableObject.updatePointerControllerUI();
-          }}
-          id={pos.startId + pos.endId}
-          style={{
-            transform: ` translate(${(pos.x1 + pos.x2) / 2}px, ${
-              (pos.y1 + pos.y2) / 2
-            }px)`,
-          }}
-          key={pos.startId + pos.endId}
-          onDrag={point => {
-            if (activeMoveableObject.line) {
-              if (pos.y2 === pos.y1) {
-                activeMoveableObject.line.updateElbowedPoints(
-                  pos.startId,
-                  pos.endId,
+      <DndContext
+        onDragStart={onDragBridgePointStart}
+        onDragMove={onDragBridgePointMove}
+        onDragEnd={() => {
+          setDraftState(undefined);
+          line.mergeStraightLine();
+        }}
+        modifiers={[moveStraightOnly, scaledDndModifiers]}
+      >
+        {linePositions?.length > 1 &&
+          linePositions?.map(pos => (
+            <DndDraggable
+              key={pos.endId + pos.startId}
+              id={pos.startId + ',' + pos.endId}
+              x={(pos.x1 + pos.x2) / 2}
+              y={(pos.y1 + pos.y2) / 2}
+            >
+              <div
+                data-no-selecto="true"
+                data-direction={pos.y2 === pos.y1 ? 'y' : 'x'}
+                className={twMerge(
+                  'bg-red-500 rounded-md -translate-x-1/2 -translate-y-1/2',
                   {
-                    y: point.y,
+                    'w-[20px] h-[5px] ': pos.y2 === pos.y1,
+                    'w-[5px] h-[20px] ': pos.x2 === pos.x1,
                   },
-                );
-              }
-              if (pos.x2 === pos.x1) {
-                activeMoveableObject.line.updateElbowedPoints(
-                  pos.startId,
-                  pos.endId,
-                  {
-                    x: point.x,
-                  },
-                );
-              }
-
-              activeMoveableObject.updateUI();
-
-              activeMoveableObject.updateHeadControl();
-            }
-          }}
-          dragStyle={pos.y2 === pos.y1 ? 'yOnly' : 'xOnly'}
-        >
-          <div
-            style={{
-              background: 'red',
-              // transform: `translate(${activeMoveableObject.line?.padding}px, ${activeMoveableObject.line?.padding}px)`,
-            }}
-            className={twMerge('bg-red absolute rounded-md', {
-              'w-[30px] h-[10px] ': pos.y2 === pos.y1,
-              'h-[30px] w-[10px] -translate-y-1/2': pos.x2 === pos.x1,
-            })}
-          ></div>
-        </Draggable>
-      ))}
-      {endPoint && (
-        <Draggable
-          id={`head-` + endPoint.id}
-          onDragEnd={target => {
-            activeMoveableObject.line?.mergeStraightLine();
-            const newHead = target.getAttribute('data-new-end') || '';
-            if (newHead) {
-              target.setAttribute('data-target', newHead);
-              target.setAttribute('id', newHead);
-              target.setAttribute('data-new-end', '');
-              forceReload();
-            }
-          }}
-          data-target={endPoint.id}
-          onDrag={(e, target) => {
-            const id = target.getAttribute('data-target') || '';
-            const newHeadId = target.getAttribute('data-new-end') || '';
-            onDragFreePoint(
-              id,
-              newHeadId,
-              e,
-              activeMoveableObject.line
-                ?.getPointById(id)
-                ?.getPrev() as LinePoint,
-              (_, x, y) => {
-                activeMoveableObject.line?.createNewEnd(id, x, y);
-                target.setAttribute(
-                  'data-new-end',
-                  activeMoveableObject.line?.endPoint?.id || '',
-                );
-              },
-              () => {
-                if (activeMoveableObject.line) {
-                  activeMoveableObject.line.removePoint(newHeadId);
-                  target.setAttribute('data-new-end', '');
-                }
-              },
-            );
-          }}
-          style={{
-            transform: ` translate(${endPoint?.x}px, ${endPoint?.y}px)`,
-          }}
-        >
-          <div
-            // style={{
-            //   transform: `translate(${activeMoveableObject.line?.padding}px, ${activeMoveableObject.line?.padding}px)`,
-            // }}
-            className="w-[15px] h-[15px] bg-[red] rounded-[50%]"
-          ></div>
-        </Draggable>
-      )}
+                )}
+              ></div>
+            </DndDraggable>
+          ))}
+      </DndContext>
     </>
   );
 };

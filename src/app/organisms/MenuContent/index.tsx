@@ -5,15 +5,28 @@ import clsx from 'clsx';
 import { ElementsMenuContent } from './ElementsMenuContent';
 import { TextMenuContent } from './TextMenuContent';
 import { UploadMenuContent } from './UploadMenuContent';
+import { twMerge } from 'tailwind-merge';
+import { BackgroundMenuContent } from './BackgroundMenuContent';
+import { WorkspacesMenuContent } from './WorkspacesMenuContent';
 
 interface MenuContentProps {
   section: string;
   menuExpand: boolean;
+  className?: string;
+  setOpen: (val: boolean) => void;
 }
 
-export const MenuContent: FC<MenuContentProps> = ({ section, menuExpand }) => {
+export const MenuContent: FC<MenuContentProps> = ({
+  section,
+  menuExpand,
+  className,
+  setOpen,
+}) => {
   const renderMenuContentComponent = () => {
     switch (section) {
+      case 'backgrounds': {
+        return <BackgroundMenuContent />;
+      }
       case 'templates': {
         return <TemplatesMenuContent />;
       }
@@ -29,6 +42,9 @@ export const MenuContent: FC<MenuContentProps> = ({ section, menuExpand }) => {
       case 'text': {
         return <TextMenuContent />;
       }
+      case 'workspaces': {
+        return <WorkspacesMenuContent setOpen={setOpen} />;
+      }
       default: {
         return <ElementsMenuContent />;
       }
@@ -37,12 +53,15 @@ export const MenuContent: FC<MenuContentProps> = ({ section, menuExpand }) => {
 
   return (
     <div
-      className={clsx(
-        'z-20 w-full h-full rounded-t-xl bg-white min-h-0',
-        {
-          hidden: menuExpand,
-        },
-        'desktop:relative desktop:left-0 desktop:rounded-t-none desktop:w-[360px]',
+      className={twMerge(
+        clsx(
+          'z-20 w-full h-full rounded-t-xl bg-white min-h-0 overflow-auto',
+          {
+            hidden: menuExpand,
+          },
+          'desktop:relative desktop:left-0 desktop:rounded-t-none desktop:w-[360px]',
+          className,
+        ),
       )}
     >
       {renderMenuContentComponent()}

@@ -1,4 +1,4 @@
-import { TextDecoration } from '../../text/MoveableText';
+import { TextDecoration } from '../../text/TextFormat';
 import { TextEffect } from './TextEffect';
 
 export class TextDecorationEffect extends TextEffect {

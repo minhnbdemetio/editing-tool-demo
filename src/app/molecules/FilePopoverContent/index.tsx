@@ -24,16 +24,19 @@ export const FilePopoverContent: React.FC = () => {
       )}
       {fileContentActive === 'edit' && (
         <>
-          <MenuGroup>
-            <MenuItem hover={false}>
+          <MenuGroup className="py-0">
+            <MenuItem
+              hover={false}
+              className="flex items-center text-default11 py-3 border-default9/15"
+            >
               <button
                 onClick={() => {
                   setFileContentActive('common');
                 }}
               >
-                <ChevronLeft className="w-4 h-4 cursor-pointer" />
+                <ChevronLeft className="w-4 h-3 stroke-2" />
               </button>
-              <p className="text-default5 font-normal text-base leading-[140%]">
+              <p className="text-default5 font-normal text-smd leading-4.5">
                 Are you looking for “A4” size?
               </p>{' '}
             </MenuItem>

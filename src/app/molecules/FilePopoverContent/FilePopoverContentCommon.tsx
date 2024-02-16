@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Archive, Book, Open, Ruler1 } from '@/app/icons';
 import { EditableTextField } from '../../atoms/EditableTextField';
 import { MenuGroup } from '../../atoms/MenuGroup';
 import { MenuItem } from '../../atoms/MenuItem';
-import { Button } from '../../atoms/Button';
-import { Switch, Textarea } from '@nextui-org/react';
+import { Switch } from '@nextui-org/react';
 import { FileContentActive } from '.';
+import { FilePopoverAction } from './FilePopoverAction';
+import { FILE_POPOVER_ITEMS } from './items';
+import clsx from 'clsx';
 
 interface FilePopoverContentCommonProps {
   setFileContentActive: (value: FileContentActive) => void;
@@ -17,95 +18,55 @@ export const FilePopoverContentCommon: React.FC<
   const [isPreview, setIsPreview] = useState<boolean>(true);
   return (
     <>
-      <MenuGroup>
-        <MenuItem hover={false}>
-          <EditableTextField fallbackValue="Please enter a title" />
+      <MenuGroup className="py-0">
+        <MenuItem hover={false} className="pt-3 pb-3.5">
+          <EditableTextField fallbackValue="Untitled" />
         </MenuItem>
       </MenuGroup>
 
-      <MenuGroup>
+      <MenuGroup className="border-default9/15 gap-6 flex flex-col pt-4 pb-6">
+        {FILE_POPOVER_ITEMS.map(item => (
+          <MenuItem key={item.id} className="py-0">
+            <FilePopoverAction
+              label={item.label}
+              Icon={item.icon}
+              actionLabel={item.actionLabel}
+              onClick={() => setFileContentActive(item.id)}
+            />
+          </MenuItem>
+        ))}
+
         <MenuItem>
-          <div className="w-full flex gap-6 items-center justify-between">
-            <div className="text-xs leading-[1.4]">
-              Request a design Go to the design request screen
+          <div className="w-full flex gap-3 items-center justify-between">
+            <div className="flex-1 text-smm text-pirmaryGray leading-4 whitespace-pre-wrap">
+              Preview
             </div>
-            <Button
-              color="secondary"
-              className="min-w-[135px]"
-              startContent={<Book />}
-              onClick={() => setFileContentActive('request')}
-            >
-              Request
-            </Button>
-          </div>
-        </MenuItem>
-        <MenuItem>
-          <div className="w-full flex gap-3 items-center justify-between">
-            <div className="text-xs leading-[1.4]">
-              Save your work here! You can load previously worked content and
-              continue working on it
-            </div>
-            <Button
-              color="secondary"
-              className="min-w-[135px]"
-              startContent={<Open />}
-              onClick={() => setFileContentActive('editPc')}
-            >
-              Edit on PC
-            </Button>
-          </div>
-        </MenuItem>
-        <MenuItem>
-          <div className="w-full flex gap-3 items-center justify-between">
-            <div className="text-xs leading-[1.4]">Open your saved work</div>
-            <Button
-              color="secondary"
-              className="min-w-[135px]"
-              startContent={<Archive />}
-              onClick={() => setFileContentActive('load')}
-            >
-              Load
-            </Button>
-          </div>
-        </MenuItem>
-        <MenuItem>
-          <div className="w-full flex gap-3 items-center justify-between">
-            <div className="text-xs leading-[1.4]">
-              Cutting size: 90mm x 50mm Printing size: 94mm x 54mm
-            </div>
-            <Button
-              color="secondary"
-              className="min-w-[135px]"
-              startContent={<Ruler1 />}
-              onClick={() => setFileContentActive('edit')}
-            >
-              Edit
-            </Button>
-          </div>
-        </MenuItem>
-        <MenuItem>
-          <div className="w-full flex gap-3 items-center justify-between">
-            <div className="text-xs leading-[1.4]">Preview</div>
             <Switch
               isSelected={isPreview}
               onValueChange={value => {
                 setIsPreview(value);
               }}
               classNames={{
-                wrapper: 'group-data-[selected=true]:!bg-green-500 bg-black',
+                wrapper:
+                  'group-data-[selected=true]:bg-lime-450 bg-black shadow-switch',
+                thumb: 'bg-gradient-to-b from-white to-[#E8EAEA] shadow-thumb',
               }}
             ></Switch>
           </div>
         </MenuItem>
+
         <MenuItem>
-          <div className="w-full">
-            <div className="text-xs leading-[1.4] w-full mb-3">Guide</div>
-            <Textarea
-              key={'bordered'}
-              variant={'bordered'}
+          <div className="w-full space-y-2 text-none">
+            <div className="flex-1 text-smm text-pirmaryGray leading-4 whitespace-pre-wrap">
+              Guide
+            </div>
+            <textarea
               placeholder="Placeholder"
-              className="col-span-12 md:col-span-6 mb-6 md:mb-0"
-              minRows={6}
+              className={clsx(
+                'w-full border-default4 h-[271px] py-2.5 px-3.5 rounded-[10px] border-px',
+                'text-md leading-5',
+              )}
+              style={{ resize: 'none' }}
             />
           </div>
         </MenuItem>

@@ -1,3 +1,5 @@
+import { SvgShape } from '../svg/SvgShape';
+import { PluggableText } from '../text/PluggableText';
 import { Editable } from './Editable';
 
 export enum MoveableShapeType {
@@ -11,14 +13,32 @@ export enum MoveableShapeType {
   FivePointStar,
   SixPointStar,
   EightPointStart,
+  Plus,
+  Arrow,
+  RoundedSquare,
+  Parallelogram,
+  Quadrangle,
+  InvertedRoundSquare,
+  SquareCutTr,
+  SquareCutT,
+  SquareCutTrBl,
+  SquareRT,
+  Minus,
 }
 
-export interface EditableShape extends Editable {
+export interface TextShape {
+  shapeText: PluggableText;
+  textWrapperId: string;
+
+  editShapeText: () => void;
+}
+
+export interface EditableShape extends Editable, TextShape {
   shapeType: MoveableShapeType;
   shapeCornerRounding: number;
   shapeColor: string;
   shapeOutline: string;
   shapeShadow: string;
-  shapeText: undefined;
-  getShape(): string;
+
+  getShape(): SvgShape;
 }

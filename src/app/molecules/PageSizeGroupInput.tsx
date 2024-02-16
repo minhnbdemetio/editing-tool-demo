@@ -123,11 +123,7 @@ export const PageSizeGroupInput: React.FC<PageSizeGroupInputProps> = ({
   return (
     <>
       <div className="flex items-center gap-2 justify-between">
-        {label && (
-          <p className="text-[#48505F] text-xs font-normal leading-normal">
-            {label}
-          </p>
-        )}
+        {label && <p className="text-smm leading-4 font-normal">{label}</p>}
         <div className="flex items-center gap-2">
           <Tooltip
             showArrow
@@ -139,7 +135,7 @@ export const PageSizeGroupInput: React.FC<PageSizeGroupInputProps> = ({
               value={inputWidth}
               type="number"
               onChange={handleChangeWidth}
-              className="w-14 h-8 border-[1px] border-border border-solid text-sm rounded-lg font-normal text-black-500  p-2"
+              className="hide-arrow-number-input w-12 h-8 border-px border-border border-solid text-smm rounded font-normal text-black-500 pl-3.5 py-2"
             />
           </Tooltip>
           <button type="button" onClick={() => setRatioLocked(!ratioLocked)}>
@@ -159,14 +155,14 @@ export const PageSizeGroupInput: React.FC<PageSizeGroupInputProps> = ({
               value={inputHeight}
               type="number"
               onChange={handleChangeHeight}
-              className="w-14 h-8 border-[1px] border-border border-solid text-sm rounded-lg font-normal text-black-500  p-2"
+              className="hide-arrow-number-input w-12 h-8 border-px border-border border-solid text-smm rounded font-normal text-black-500 pl-3.5 py-2"
             />
           </Tooltip>
 
           <select
             value={unit}
             onChange={handleChangeUnit}
-            className="w-14 h-8 border-[1px] border-border border-solid text-sm rounded-lg font-normal text-black-500  p-2"
+            className="w-18 h-8 border-px border-border border-solid text-smm rounded font-normal text-black-500 px-3"
           >
             {Object.values(UNITS).map(u => (
               <option key={u} value={u}>

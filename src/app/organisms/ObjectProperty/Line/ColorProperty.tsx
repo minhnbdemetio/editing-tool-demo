@@ -225,8 +225,6 @@ const GRADIENT_OPTIONS = [
 export const ColorProperty: FC = () => {
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
   const activeLineObject = useActiveMoveableLineObject();
-  // const changeColorCommand = useUpdateTextColor();
-  // const changeColorGradient = useUpdateTextGradientColor();
 
   const { activePage } = useActivePage();
   const [palette, setPalette] = useState<Array<string>>([]);
@@ -271,7 +269,7 @@ export const ColorProperty: FC = () => {
       <div className="overflow-y-scroll h-full">
         {colorPickerOpen ? (
           <div>
-            <TextColorPicker />
+            <TextColorPicker onSelectColor={onChangeLineColor} />
           </div>
         ) : (
           <div className="flex flex-col">

@@ -9,7 +9,7 @@ export const LineNudgeProperty: FC<NudgePropertyProps> = ({}) => {
 
   const handleChangeTransform = (x: number, y: number) => {
     if (activeLine) {
-      activeLine.line.moveAllPoints({ x, y });
+      activeLine.line.points.moveAll({ x, y });
       activeLine.updateUI();
       activeLine.updatePointerControllerUI();
       activeLine.updateHeadControl();

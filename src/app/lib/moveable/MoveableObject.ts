@@ -5,10 +5,9 @@ import { DATA_LOCKED, OBJECT_INNER_ELEMENTS } from './constant/object';
 import { Importable } from './Importable';
 import { ClipboardOperation } from './ClipboardOperation';
 import { Exportable } from './Exportable';
-import { Effect } from './effects/Effect';
-import { GradientStop } from '@/app/utilities/color.type';
 import { Editable } from './editable/Editable';
-import { FlipDirection } from './editable/CanFlip';
+import { FlipDirection, XYFlipped } from './editable/CanFlip';
+import { isElementLocked } from '@/app/utilities/moveable';
 
 export const MAX_FIND_ELEMENT_ATTEMPTS = 100;
 export type ObjectType = 'rectangle' | 'text' | 'line' | 'photo' | 'shape';
@@ -19,26 +18,29 @@ export abstract class MoveableObject
   id: string = uuidv4();
   type?: ObjectType;
   htmlString?: string;
-  pageId: string | null = null;
-  isLocked = false;
-  x = 0;
-  y = 0;
-  width = 0;
-  height = 0;
-  opacity = 100;
-  flipDirection = { x: false, y: false };
-  effect: Effect | undefined;
+  pageId: string | null;
+  isLocked;
+  x;
+  y;
+  width: number;
+  height: number;
+  opacity;
+  flipXY;
   color: string | undefined;
-  gradient: GradientStop[] | undefined;
 
-  constructor(options?: { id?: string; htmlString?: string }) {
+  constructor(options?: Partial<MoveableObject>) {
     this.id = options?.id || uuidv4();
     this.htmlString = options?.htmlString;
+    this.width = options?.width || 100;
+    this.height = options?.height || 100;
+    this.pageId = null;
+    this.isLocked = false;
+    this.x = 0;
+    this.y = 0;
+    this.opacity = 100;
+    this.flipXY = { x: false, y: false };
   }
 
-  createElementFromJSON(jsonString: string) {
-    return;
-  }
   setId(id: string) {
     this.id = id;
   }
@@ -102,48 +104,19 @@ export abstract class MoveableObject
   getY() {
     return this.y;
   }
-  setEffect(effect: Effect | undefined) {
-    this.effect = effect;
-  }
-  getEffect() {
-    return this.effect;
-  }
   setColor(color: string | undefined) {
     this.color = color;
   }
   getColor() {
     return this.color;
   }
-  setGradient(gradientStops: GradientStop[] | undefined) {
-    this.gradient = gradientStops;
+  setFlipXY(flipXY: XYFlipped) {
+    this.flipXY = flipXY;
   }
-  getGradient() {
-    return this.gradient;
+  getFlipXY() {
+    return this.flipXY;
   }
-  copy() {}
-  abstract clone(options?: { htmlString: string; id: string }): MoveableObject;
-  cloneData() {
-    const outerHtml = this.toHtmlString();
-    const cloneObjectId = uuidv4();
-    const clonedObjectHtml = outerHtml.replaceAll(this.id, cloneObjectId);
-    return { cloneObjectId, clonedObjectHtml };
-  }
-  delete() {}
-  getElement() {
-    let attempt = 0;
-    let element = null;
-    while (attempt < MAX_FIND_ELEMENT_ATTEMPTS) {
-      const elementById = document.getElementById(this.id);
-      if (elementById) {
-        element = elementById;
-        break;
-      } else {
-        attempt++;
-      }
-    }
 
-    return element;
-  }
   createElementFromHtml() {
     if (!this.htmlString) return null;
     const elementIdFromString = findIdFromString(this.htmlString);
@@ -165,6 +138,23 @@ export abstract class MoveableObject
     this.setHtmlString();
     return '';
   }
+
+  getElement() {
+    let attempt = 0;
+    let element = null;
+    while (attempt < MAX_FIND_ELEMENT_ATTEMPTS) {
+      const elementById = document.getElementById(this.id);
+      if (elementById) {
+        element = elementById;
+        break;
+      } else {
+        attempt++;
+      }
+    }
+
+    return element;
+  }
+
   async setupMoveable() {
     const element = this.getElement();
     if (!element?.classList.contains(MOVEABLE_TARGET_CLASS)) {
@@ -186,8 +176,8 @@ export abstract class MoveableObject
 
   public getFlipScaleRatio(): { x: number; y: number } {
     return {
-      x: this.flipDirection.x ? -1 : 1,
-      y: this.flipDirection.y ? -1 : 1,
+      x: this.flipXY.x ? -1 : 1,
+      y: this.flipXY.y ? -1 : 1,
     };
   }
 
@@ -205,30 +195,56 @@ export abstract class MoveableObject
 
   flip(direction: FlipDirection) {
     const flipElement = this.getFlipElement();
-    if (flipElement) {
-      flipElement.style.transform = this.getFlipTransform();
-    }
+
     if (direction === FlipDirection.Horizontal) {
-      this.flipDirection.x = !this.flipDirection.x;
+      this.flipXY.x = !this.flipXY.x;
     }
     if (direction === FlipDirection.Vertical) {
-      this.flipDirection.y = !this.flipDirection.y;
+      this.flipXY.y = !this.flipXY.y;
+    }
+
+    if (flipElement) {
+      flipElement.style.transform = this.getFlipTransform();
     }
   }
 
   toJSON() {
-    return {
-      id: this.id,
-      type: this.type,
-      htmlString: this.htmlString,
-      pageId: this.pageId,
-      isLocked: this.isLocked,
-      x: this.x,
-      y: this.y,
-      width: this.width,
-      height: this.height,
-      opacity: this.opacity,
-      flipDirection: this.flipDirection,
-    };
+    const attributes: Record<string, any> = {};
+
+    for (const key in this) {
+      if (this.hasOwnProperty(key) && typeof this[key] !== 'function') {
+        attributes[key] = this[key];
+      }
+    }
+
+    const superClass = Object.getPrototypeOf(this);
+    if (
+      superClass &&
+      superClass.getAttributes &&
+      typeof superClass.getAttributes === 'function'
+    ) {
+      const superAttributes = superClass.getAttributes.call(this);
+      Object.assign(attributes, superAttributes);
+    }
+
+    return attributes;
+  }
+  createElementFromJSON(jsonString: string) {}
+  loadFromJSON(jsonString: string) {
+    const attributes = JSON.parse(jsonString) as Record<string, any>;
+    for (const key in this) {
+      if (attributes.hasOwnProperty(key)) {
+        this[key] = attributes[key];
+      }
+    }
+  }
+
+  copy() {
+    navigator.clipboard.writeText(this.id);
+  }
+  abstract clone(options?: Partial<MoveableObject>): MoveableObject;
+  delete() {}
+  render() {
+    this.setIsLocked(isElementLocked(this.getElement()));
   }
 }

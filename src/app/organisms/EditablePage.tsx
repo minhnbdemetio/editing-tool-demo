@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { withCurrentPage } from '../hocs/withCurrentPage';
 import { MoveableObjectElement } from '../atoms/moveables/MoveableObjectElement';
 import { CuttingZoneReminder } from '../molecules/CuttingZoneReminder';
@@ -9,6 +9,7 @@ import { useActivePage } from '../store/active-page';
 import { MovableLineController } from '../molecules/MovableLineController';
 import { usePageSize } from '../store/use-page-size';
 import { useDesign } from '../store/design-objects';
+import { MovableImageCropper } from '../molecules/MovableImageCropper';
 
 export interface EditablePageProps {
   pageId: string;
@@ -55,7 +56,7 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   return (
     <CuttingZoneReminder>
       <div onMouseDown={() => setActivePage(pageId)} ref={containerRef}>
-        <div className="relative" ref={layerRef}>
+        <div className="relative overflow-hidden" ref={layerRef}>
           <div
             style={{
               transform: `scale(${scale})`,
@@ -73,7 +74,12 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
               </div>
             ))}
 
-            {isActive && <MovableLineController />}
+            {isActive && (
+              <>
+                <MovableLineController />
+                <MovableImageCropper />
+              </>
+            )}
           </div>
         </div>
       </div>

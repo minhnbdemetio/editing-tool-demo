@@ -1,28 +1,18 @@
-import { TextVarient } from '../constant/text';
+import { v4 } from 'uuid';
+import { TEXT_STYLE_FONT_SIZE, TextVariant } from '../constant/text';
 import { MoveableTextObject } from './MoveableText';
 
 export class MoveableHeadingTextObject extends MoveableTextObject {
-  constructor(options?: { id: string; htmlString: string }) {
+  constructor(options?: Partial<MoveableHeadingTextObject>) {
     super(options);
-    this.variant = TextVarient.HEADING;
-    this.fontSize = 30;
-    this.lineHeight = this.fontSize * 1.5;
-    this.textStyle = TextVarient.HEADING;
+    this.variant = TextVariant.HEADING;
+    this.textStyle.fontSize = TEXT_STYLE_FONT_SIZE.HEADING;
   }
-  clone(options?: {
-    htmlString: string;
-    id: string;
-  }): MoveableHeadingTextObject {
-    if (options) {
-      return new MoveableHeadingTextObject({
-        id: options.id,
-        htmlString: options.htmlString,
-      });
-    }
-    const clonedData = this.cloneData();
-    return new MoveableHeadingTextObject({
-      id: clonedData.cloneObjectId,
-      htmlString: clonedData.clonedObjectHtml,
-    });
+  clone(
+    options?: Partial<MoveableHeadingTextObject>,
+  ): MoveableHeadingTextObject {
+    return new MoveableHeadingTextObject(
+      options ? options : { ...this.toJSON(), id: v4() },
+    );
   }
 }

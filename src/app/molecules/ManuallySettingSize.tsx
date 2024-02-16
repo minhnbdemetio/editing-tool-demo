@@ -110,7 +110,7 @@ export const ManuallySettingSize: React.FC<ManuallySettingSizeProps> = () => {
     [pageSize, pageSizeForm],
   );
   return (
-    <div className="w-full px-9 ">
+    <div className="w-full pl-[34px] pr-4">
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 gap-1">
           <PageSizeGroupInput

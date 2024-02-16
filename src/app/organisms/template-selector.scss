@@ -5,7 +5,8 @@
     }
   }
 }
-#editor-container[data-active-element-type='line'] {
+#editor-container[data-active-element-type='line'],
+#editor-container[data-image-cropping='true'] {
   .moveable-control {
     display: none !important;
   }

@@ -1,30 +1,42 @@
+import { v4 } from 'uuid';
 import { MoveableObject, ObjectType } from '../MoveableObject';
 import { MoveableShapeType } from '../editable/EditableShape';
+import { Corner, Square } from '../svg/Square';
 import { MoveableShape } from './MoveableShape';
+import { v4 as uuidv4 } from 'uuid';
 
 export class MoveableSquare extends MoveableShape {
-  constructor(options?: {
-    id: string;
-    type?: ObjectType;
-    pageId: string | null;
-    htmlString?: string;
-  }) {
-    super(options);
+  public corners?: {
+    tl?: Corner;
+    tr?: Corner;
+    bl?: Corner;
+    br?: Corner;
+    all?: Corner;
+  };
+
+  constructor(options?: Partial<MoveableSquare>) {
+    super(options as any);
     this.shapeType = MoveableShapeType.Square;
+
+    this.corners = options?.corners;
   }
 
   getShape() {
-    return '<path d="M0,0V952.2H952.2V0Z" fill="currentColor"  isInit="true"></path>';
+    return new Square({
+      width: this.width,
+      height: this.height,
+      corners: this.corners,
+    });
   }
 
-  clone(
-    options?: { htmlString: string; id: string } | undefined,
-  ): MoveableObject {
-    const clonedData = this.cloneData();
-
-    return new MoveableSquare({
-      ...this.toJSON(),
-      id: clonedData.cloneObjectId,
-    });
+  clone(options?: Partial<MoveableSquare>): MoveableObject {
+    return new MoveableSquare(
+      options
+        ? options
+        : {
+            ...this.toJSON(),
+            id: v4(),
+          },
+    );
   }
 }

@@ -30,7 +30,7 @@ export const ColorFilterSetting: React.FC<ColorFilterSettingProps> = ({
     <div className="grid grid-cols-7 gap-2">
       <div
         className={twMerge(
-          'w-full h-auto aspect-square rounded-[50%] border-border overflow-hidden border-[1px] border-solid',
+          'w-full h-auto aspect-square rounded-[50%] border-border overflow-hidden border-px border-solid',
           {
             'p-[2px] border-green-500 border-[2px]': false,
           },
@@ -42,7 +42,7 @@ export const ColorFilterSetting: React.FC<ColorFilterSettingProps> = ({
           }}
           className={twMerge(
             `w-full h-auto aspect-square rounded-[50%] !scale-100`,
-            `border-border border-[1px] border-solid`,
+            `border-border border-px border-solid`,
 
             {
               'p-1 border-green-500 border-[2px]':
@@ -82,7 +82,7 @@ export const ColorFilterSetting: React.FC<ColorFilterSettingProps> = ({
           key={color}
           onClick={() => onChange(color)}
           className={twMerge(
-            'w-full h-auto aspect-square rounded-[50%] border-border overflow-hidden border-[1px] border-solid',
+            'w-full h-auto aspect-square rounded-[50%] border-border overflow-hidden border-px border-solid',
             {
               'p-[2px] border-green-500 border-[2px]':
                 hasColor && color === selected,
