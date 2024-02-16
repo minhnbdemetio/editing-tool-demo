@@ -16,7 +16,7 @@ export const UploadMenuContent: FC = () => {
     new Uppy({ id: 'file-uploader', autoProceed: true, debug: true }).use(
       RemoteSources,
       {
-        companionUrl: 'https://companion.uppy.io',
+        companionUrl: 'http://localhost:3000/companion',
         sources: ['GoogleDrive'],
       },
     ),
