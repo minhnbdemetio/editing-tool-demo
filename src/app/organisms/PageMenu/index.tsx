@@ -7,6 +7,7 @@ import { useActivePage } from '@/app/store/active-page';
 import { PageList } from './PageList';
 import { Close } from '@/app/icons';
 import { VerticalDivider } from '../VerticalDivider';
+import { useSelectMultiplePages } from '@/app/store/select-multiple-pages';
 
 interface PageMenuProps {
   onClose: () => void;
@@ -21,29 +22,55 @@ export const PageMenu: FC<PageMenuProps> = ({ onClose }) => {
   const addPage = useAddPage();
   const clonePage = useClonePage();
   const deletePage = useDeletePage();
-  const { activePage, setActivePage } = useActivePage();
+  const { activePage } = useActivePage();
+  const {
+    activePages,
+    isEnabledSelectMultiple,
+    setActivePages,
+    setIsEnabledSelectMultiple,
+  } = useSelectMultiplePages();
 
   const handleAddPage = useCallback(() => {
-    addPage([]);
-  }, [addPage]);
-
-  const handleClonePage = () => {
-    clonePage(activePage);
-  };
+    if (isEnabledSelectMultiple) {
+      activePages.forEach(() => addPage([]));
+    } else {
+      addPage([]);
+    }
+  }, [isEnabledSelectMultiple, activePages, addPage]);
 
   const handleClickAction = (action: PageMenuAction) => {
     switch (action) {
       case 'addPage':
         handleAddPage();
+
         break;
       case 'duplicate':
-        handleClonePage();
+        if (isEnabledSelectMultiple) {
+          activePages.forEach(page => {
+            clonePage(page);
+          });
+        } else if (activePage) {
+          clonePage(activePage);
+        }
+
         break;
       case 'delete':
-        activePage && deletePage(activePage);
+        if (isEnabledSelectMultiple) {
+          activePages.forEach(page => deletePage(page));
+
+          setActivePages([]);
+        } else if (activePage) {
+          deletePage(activePage);
+        }
+
         break;
       case 'select':
-        // TODO: Update action
+        setIsEnabledSelectMultiple(!isEnabledSelectMultiple);
+
+        if (isEnabledSelectMultiple) {
+          setActivePages([]);
+        }
+
         break;
     }
   };
@@ -57,7 +84,7 @@ export const PageMenu: FC<PageMenuProps> = ({ onClose }) => {
     >
       <div
         className={clsx(
-          'w-full h-19 bg-white flex flex-row gap-3 px-4 items-center shadow-menu',
+          'w-full min-h-19 bg-white flex flex-row gap-3 px-4 items-center shadow-menu',
           'desktop:hidden',
         )}
       >
@@ -84,19 +111,35 @@ export const PageMenu: FC<PageMenuProps> = ({ onClose }) => {
                 scrollTo(e);
                 handleClickAction(key);
               }}
-              className={twMerge(
-                'w-auto items-center flex justify-center flex-col aspect-[66/76] h-full text-primaryGray',
-                'desktop:h-auto desktop:w-full desktop:py-1 desktop:aspect-square',
-                {
-                  'bg-green-200 text-primary': false,
-                },
-              )}
               key={key}
+              className="w-auto aspect-[66/76] py-2 desktop:aspect-square desktop:py-1"
             >
-              <Icon className="w-[22px] h-[22px] mx-auto mb-1 text-[#48505F]" />
-              <p className="w-full leading-[15px] text-xs font-normal  text-center whitespace-nowrap  overflow-hidden text-ellipsis">
-                {label}
-              </p>
+              <span
+                className={twMerge(
+                  'w-full h-full items-center flex justify-center flex-col text-primaryGray',
+                  {
+                    'bg-[#8493AE]/[0.16] rounded-lg':
+                      isEnabledSelectMultiple && key === 'select',
+                  },
+                )}
+              >
+                <div className="relative">
+                  <Icon className="w-[22px] h-[22px] mx-auto mb-1 text-[#48505F]" />
+                  {key === 'select' && isEnabledSelectMultiple ? (
+                    <span
+                      className={clsx(
+                        'w-4 h-4 rounded-full bg-error text-white text-xs leading-snug font-bold',
+                        'absolute top-0 right-0 translate-x-1/2 -translate-y-1/2',
+                      )}
+                    >
+                      {activePages.length}
+                    </span>
+                  ) : null}
+                </div>
+                <p className="w-full leading-[15px] text-xs font-normal  text-center whitespace-nowrap  overflow-hidden text-ellipsis">
+                  {label}
+                </p>
+              </span>
             </button>
           ))}
         </div>

@@ -19,9 +19,9 @@ export const ListRecommendedSizes: React.FC<ListRecommendedSizesProps> = ({
         {sizes.map(size => (
           <li onClick={() => onSelect(size)} key={size.id}>
             <button className="px-[34px] group w-full">
-              <p className="flex items-center gap-2">
-                {size.label}{' '}
-                <span className="text-sm text-gray-[200] hidden group-hover:inline-block duration-200">
+              <p className="flex items-center gap-6 text-smm leading-4">
+                <span>{size.label}</span>
+                <span className="group-hover:inline-block duration-200 text-default4">
                   {size.width} x {size.height} {size.unit}
                 </span>
               </p>

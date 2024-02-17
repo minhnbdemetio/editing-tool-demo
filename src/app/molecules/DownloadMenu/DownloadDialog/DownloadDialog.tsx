@@ -1,13 +1,14 @@
-import { BottomSheet } from '../../BottomSheet';
-import { ModalBody, ModalHeader, ModalProps } from '@nextui-org/react';
+import { BottomSheet, BottomSheetProps } from '../../../atoms/BottomSheet';
+import { ModalBody, ModalHeader } from '@nextui-org/react';
 import { ChevronLeft } from '@/app/icons';
 import { MenuGroup } from '@/app/atoms/MenuGroup';
 import { useState } from 'react';
 import { DownloadOptionContent } from './DownloadOptionContent';
 import { FileTypeContent } from './FileTypeContent';
 import { SelectPageContent } from './SelectPageContent';
+import { FILE_TYPES, FileType } from './items';
 
-interface Props extends Omit<ModalProps, 'children'> {
+interface Props extends BottomSheetProps {
   showActionMenu: () => void;
 }
 
@@ -21,31 +22,57 @@ export const DownloadDialog = ({ showActionMenu, ...props }: Props) => {
   const [activeContent, setActiveContent] = useState<DownloadContentType>(
     DownloadContentType.LIST_OPTIONS,
   );
+  const [selectedPages, setSelectedPages] = useState<string[]>([]);
+  const [selectedFileType, setSelectedFileType] = useState<FileType>(
+    FILE_TYPES[0],
+  );
 
   const onBack = () => {
     switch (activeContent) {
       case DownloadContentType.LIST_OPTIONS: {
-        return showActionMenu;
+        return showActionMenu();
       }
 
       default: {
-        return () => setActiveContent(DownloadContentType.LIST_OPTIONS);
+        return setActiveContent(DownloadContentType.LIST_OPTIONS);
       }
     }
+  };
+
+  const onSelectType = (type: FileType) => {
+    setSelectedFileType(type);
+    onBack();
   };
 
   const getActiveContent = () => {
     switch (activeContent) {
       case DownloadContentType.FILE_TYPE: {
-        return <FileTypeContent />;
+        return (
+          <FileTypeContent
+            selectedFileType={selectedFileType}
+            onSelect={onSelectType}
+          />
+        );
       }
 
       case DownloadContentType.SELECT_PAGE: {
-        return <SelectPageContent />;
+        return (
+          <SelectPageContent
+            selectedPages={selectedPages}
+            setSelectedPages={setSelectedPages}
+            onBack={onBack}
+          />
+        );
       }
 
       default: {
-        return <DownloadOptionContent setActiveContent={setActiveContent} />;
+        return (
+          <DownloadOptionContent
+            selectedPages={selectedPages}
+            selectedFileType={selectedFileType}
+            setActiveContent={setActiveContent}
+          />
+        );
       }
     }
   };
@@ -54,7 +81,7 @@ export const DownloadDialog = ({ showActionMenu, ...props }: Props) => {
     <BottomSheet hideBackdrop {...props}>
       <MenuGroup className="py-0">
         <ModalHeader className="flex justify-center items-center text-default11 pt-3 pb-2 border-default9/15">
-          <button onClick={onBack()} className="absolute left-3">
+          <button onClick={onBack} className="absolute left-3">
             <ChevronLeft className="w-4 h-4 stroke-2" />
           </button>
           <span className="text-primaryGray font-bold text-md leading-5">

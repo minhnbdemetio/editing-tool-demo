@@ -130,6 +130,8 @@ const config: Config = {
         default10: '#E8EAEA',
         default11: '#200E32',
         default12: '#7B808E',
+        default13: '#EBECF0',
+        tertiary: '#A8C5FA',
         lime: {
           450: '#76EE59',
         },

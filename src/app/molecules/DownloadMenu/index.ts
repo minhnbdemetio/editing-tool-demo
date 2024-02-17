@@ -1,1 +1,1 @@
-export * from './DownloadMenuDialog';
+export * from './DownloadMenu';

@@ -33,19 +33,20 @@ export const SideMenu: FC<SideMenuProps> = ({
   return (
     <div
       className={clsx(
-        'w-full h-19 bg-white flex flex-row overflow-x-auto px-4',
+        'w-full min-h-19 bg-white flex flex-row px-4',
         'desktop:flex desktop:flex-col desktop:h-full desktop:w-[56px] desktop:px-0',
       )}
     >
       <div
         ref={listRef}
         className={twMerge(
-          'w-full h-full overflow-auto flex gap-3 items-center',
+          'w-full h-full flex gap-3 items-center overflow-y-hidden',
           'desktop:flex-col desktop:flex-auto desktop:mt-4 desktop:h-[calc(100%-100px)]',
         )}
       >
-        {!openPage
-          ? SideMenuItems.map(({ icon: Icon, key, label }) => (
+        {!openPage ? (
+          <div className="flex desktop:flex-col overflow-x-auto gap-3 no-scrollbar">
+            {SideMenuItems.map(({ icon: Icon, key, label }) => (
               <button
                 onClick={e => {
                   e.persist();
@@ -65,8 +66,9 @@ export const SideMenu: FC<SideMenuProps> = ({
                   {label}
                 </p>
               </button>
-            ))
-          : null}
+            ))}
+          </div>
+        ) : null}
 
         <VerticalDivider />
 

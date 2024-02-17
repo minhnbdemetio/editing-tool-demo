@@ -1,12 +1,10 @@
-import {
-  Button,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  ModalProps,
-} from '@nextui-org/react';
+import { ModalProps } from '@nextui-org/react';
 import { ModalType } from './DownloadMenu';
+import { Cart } from '@/app/icons/Cart';
+import { Wallet } from '@/app/icons/Wallet';
+import { Download } from '@/app/icons';
+import { Button } from '@/app/atoms/Button';
+import { CenterModal } from '../../atoms/CenterModal';
 
 interface Props extends Omit<ModalProps, 'children'> {
   setActiveModal: (type: ModalType) => void;
@@ -18,46 +16,39 @@ export const DownloadMenuDialog = ({
   ...props
 }: Props) => {
   return (
-    <Modal
-      placement="center"
-      classNames={{
-        wrapper: 'items-center',
-      }}
+    <CenterModal
       hideCloseButton
+      header="Would you like to?"
+      classes={{
+        header: 'justify-center py-6',
+        body: 'pb-8',
+      }}
       {...props}
     >
-      <ModalContent className="rounded-[20px] max-w-[89%] items-center">
-        {onClose => (
-          <>
-            <ModalHeader className="text-sml leading-[27px] pt-4 pb-6">
-              Would you like to?
-            </ModalHeader>
-            <ModalBody className="text-smd leading-4.5 pt-0 pb-9 w-full">
-              <Button
-                color="primary"
-                className="rounded-lg block"
-                onClick={onClose}
-              >
-                Add to cart
-              </Button>
-              <Button
-                color="primary"
-                className="rounded-lg block"
-                onClick={onClose}
-              >
-                Make payment
-              </Button>
-              <Button
-                color="primary"
-                className="rounded-lg block"
-                onClick={() => setActiveModal(ModalType.DOWNLOAD)}
-              >
-                Download
-              </Button>
-            </ModalBody>
-          </>
-        )}
-      </ModalContent>
-    </Modal>
+      <Button
+        color="primary"
+        onClick={props.onClose}
+        className="flex gap-2 font-medium"
+      >
+        <Cart />
+        <span>Add to cart</span>
+      </Button>
+      <Button
+        color="primary"
+        className="flex gap-2 font-medium"
+        onClick={props.onClose}
+      >
+        <Wallet />
+        <span>Make payment</span>
+      </Button>
+      <Button
+        color="primary"
+        className="flex gap-2 font-medium"
+        onClick={() => setActiveModal(ModalType.DOWNLOAD)}
+      >
+        <Download />
+        <span>Download</span>
+      </Button>
+    </CenterModal>
   );
 };

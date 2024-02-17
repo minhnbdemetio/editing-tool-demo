@@ -1,8 +1,8 @@
 import { ModalProps } from '@nextui-org/react';
 import { useState } from 'react';
 import { DownloadConfirmDialog } from './DownloadConfirmDialog';
-import { DownloadMenuDialog } from '.';
 import { DownloadDialog } from './DownloadDialog';
+import { DownloadMenuDialog } from './DownloadMenuDialog';
 
 export const enum ModalType {
   CONFIRM = 'confirm',
