@@ -1,7 +1,6 @@
-import { ModalProps } from '@nextui-org/react';
-import { CenterModal } from '../../atoms/CenterModal';
+import { CenterModal, CenterModalProps } from '../../atoms/CenterModal';
 
-interface Props extends Omit<ModalProps, 'children'> {
+interface Props extends Omit<CenterModalProps, 'children'> {
   onConfirm: () => void;
 }
 
@@ -12,7 +11,6 @@ export const DownloadConfirmDialog = ({
 }: Props) => {
   return (
     <CenterModal
-      hideCloseButton
       header="Confirmation"
       footer={
         <>

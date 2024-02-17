@@ -1,12 +1,11 @@
-import { ModalProps } from '@nextui-org/react';
 import { ModalType } from './DownloadMenu';
 import { Cart } from '@/app/icons/Cart';
 import { Wallet } from '@/app/icons/Wallet';
 import { Download } from '@/app/icons';
 import { Button } from '@/app/atoms/Button';
-import { CenterModal } from '../../atoms/CenterModal';
+import { CenterModal, CenterModalProps } from '../../atoms/CenterModal';
 
-interface Props extends Omit<ModalProps, 'children'> {
+interface Props extends Omit<CenterModalProps, 'children'> {
   setActiveModal: (type: ModalType) => void;
 }
 
@@ -17,7 +16,6 @@ export const DownloadMenuDialog = ({
 }: Props) => {
   return (
     <CenterModal
-      hideCloseButton
       header="Would you like to?"
       classes={{
         header: 'justify-center py-6',
