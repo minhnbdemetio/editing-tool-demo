@@ -13,7 +13,6 @@ export const RequestDesignModal = (props: Props) => {
     <CenterModal
       header="Request a design"
       classes={{ header: 'py-6 justify-center' }}
-      hideCloseButton
       {...props}
     >
       <div className="flex flex-col gap-6">
