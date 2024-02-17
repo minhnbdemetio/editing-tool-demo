@@ -1,11 +1,14 @@
 import { ChevronRight } from '@/app/icons';
-import { PngFile } from '@/app/icons/PngFile';
-import { Button, ButtonProps } from '@nextui-org/react';
+import { ButtonProps } from '@nextui-org/react';
 import { twMerge } from 'tailwind-merge';
 import { DownloadContentType } from '.';
 import { DownloadOptionWrapper } from './DownloadOptionWrapper';
+import { Button } from '@/app/atoms/Button';
+import { FileType } from './items';
 
 type Props = {
+  selectedPages: string[];
+  selectedFileType: FileType;
   setActiveContent: (type: DownloadContentType) => void;
 };
 
@@ -23,16 +26,23 @@ const DownloadOption = ({ className, children, ...props }: ButtonProps) => (
   </Button>
 );
 
-export const DownloadOptionContent = ({ setActiveContent }: Props) => {
+export const DownloadOptionContent = ({
+  selectedPages,
+  selectedFileType,
+  setActiveContent,
+}: Props) => {
+  const FileTypeIcon = selectedFileType.icon;
+
   return (
     <>
       <DownloadOptionWrapper label="File type">
         <DownloadOption
           onClick={() => setActiveContent(DownloadContentType.FILE_TYPE)}
+          className="flex"
         >
           <span className="flex items-center gap-1">
-            <PngFile />
-            <span>PNG</span>
+            <FileTypeIcon />
+            <span>{selectedFileType.label}</span>
           </span>
         </DownloadOption>
       </DownloadOptionWrapper>
@@ -40,8 +50,9 @@ export const DownloadOptionContent = ({ setActiveContent }: Props) => {
       <DownloadOptionWrapper label="Select Page">
         <DownloadOption
           onClick={() => setActiveContent(DownloadContentType.SELECT_PAGE)}
+          className="flex"
         >
-          <span>All pages (4)</span>
+          <span>All pages ({selectedPages.length})</span>
         </DownloadOption>
       </DownloadOptionWrapper>
 

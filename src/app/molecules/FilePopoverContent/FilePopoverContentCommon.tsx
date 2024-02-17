@@ -24,7 +24,7 @@ export const FilePopoverContentCommon: React.FC<
         </MenuItem>
       </MenuGroup>
 
-      <MenuGroup className="border-default9/15 gap-6 flex flex-col pt-4 pb-6">
+      <MenuGroup className="flex-1 overflow-y-auto border-default9/15 gap-6 flex flex-col pt-4 pb-6 border-b-0">
         {FILE_POPOVER_ITEMS.map(item => (
           <MenuItem key={item.id} className="py-0">
             <FilePopoverAction
@@ -36,7 +36,7 @@ export const FilePopoverContentCommon: React.FC<
           </MenuItem>
         ))}
 
-        <MenuItem>
+        <MenuItem className="py-0">
           <div className="w-full flex gap-3 items-center justify-between">
             <div className="flex-1 text-smm text-pirmaryGray leading-4 whitespace-pre-wrap">
               Preview
@@ -55,19 +55,20 @@ export const FilePopoverContentCommon: React.FC<
           </div>
         </MenuItem>
 
-        <MenuItem>
-          <div className="w-full space-y-2 text-none">
-            <div className="flex-1 text-smm text-pirmaryGray leading-4 whitespace-pre-wrap">
+        <MenuItem className="py-0 grow items-start [&>div:first-child]:h-full [&>div:first-child]:items-start">
+          <div className="w-full h-full flex flex-col gap-2 text-none">
+            <div className="text-smm text-pirmaryGray leading-4 whitespace-pre-wrap">
               Guide
             </div>
-            <textarea
-              placeholder="Placeholder"
+            <div
               className={clsx(
-                'w-full border-default4 h-[271px] py-2.5 px-3.5 rounded-[10px] border-px',
-                'text-md leading-5',
+                'w-full flex-1 border-default4 py-2.5 px-3.5 rounded-[10px] border-px',
+                'text-md leading-5 whitespace-pre-wrap break-words text-default5',
               )}
               style={{ resize: 'none' }}
-            />
+            >
+              Placeholder
+            </div>
           </div>
         </MenuItem>
       </MenuGroup>

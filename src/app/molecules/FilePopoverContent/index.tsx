@@ -4,6 +4,8 @@ import { MenuGroup } from '../../atoms/MenuGroup';
 import { MenuItem } from '../../atoms/MenuItem';
 import { FilePopoverContentCommon } from './FilePopoverContentCommon';
 import { BackgroundSizeSetting } from '../BackgroundSizeSetting';
+import { RequestDesignModal } from '../RequestDesignModal';
+import { twMerge } from 'tailwind-merge';
 
 export type FileContentActive =
   | 'request'
@@ -12,13 +14,31 @@ export type FileContentActive =
   | 'edit'
   | 'common';
 
-export const FilePopoverContent: React.FC = () => {
+interface Props {
+  className?: string;
+}
+
+export const FilePopoverContent: React.FC<Props> = ({ className }) => {
   const [isPreview, setIsPreview] = useState<boolean>(true);
   const [fileContentActive, setFileContentActive] =
     useState<FileContentActive>('common');
 
+  if (fileContentActive === 'request') {
+    return (
+      <RequestDesignModal
+        isOpen={fileContentActive === 'request'}
+        onClose={() => setFileContentActive('common')}
+      />
+    );
+  }
+
   return (
-    <div className="h-full min-h-[70vh] overflow-auto w-full">
+    <div
+      className={twMerge(
+        'h-screen overflow-auto w-full flex flex-col',
+        className,
+      )}
+    >
       {fileContentActive === 'common' && (
         <FilePopoverContentCommon setFileContentActive={setFileContentActive} />
       )}
@@ -36,9 +56,6 @@ export const FilePopoverContent: React.FC = () => {
               >
                 <ChevronLeft className="w-4 h-3 stroke-2" />
               </button>
-              <p className="text-default5 font-normal text-smd leading-4.5">
-                Are you looking for “A4” size?
-              </p>{' '}
             </MenuItem>
           </MenuGroup>
           <BackgroundSizeSetting />

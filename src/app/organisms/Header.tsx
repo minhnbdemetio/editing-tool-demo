@@ -25,7 +25,7 @@ import {
   useRedoCommand,
   useUndoCommand,
 } from '../hooks/editor-commands/useCommand';
-import { DownloadMenu } from '../molecules/DownloadMenu/DownloadMenu';
+import { DownloadMenu } from '../molecules/DownloadMenu';
 
 export const Header: FC = () => {
   const [openModal, setOpenModal] = useState<

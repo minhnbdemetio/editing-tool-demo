@@ -1,38 +1,41 @@
-import React from 'react';
 import { DownloadOptionWrapper } from './DownloadOptionWrapper';
 import { PngFile } from '@/app/icons/PngFile';
-import { PdfFile } from '@/app/icons/PdfFile';
 import { Button } from '@nextui-org/react';
+import { FILE_TYPES, FileType } from './items';
+import { twMerge } from 'tailwind-merge';
+import clsx from 'clsx';
 
-type Props = {};
+type Props = {
+  selectedFileType: FileType;
+  onSelect: (type: FileType) => void;
+};
 
-export const FileTypeContent = (props: Props) => {
+export const FileTypeContent = ({ selectedFileType, onSelect }: Props) => {
   return (
     <div>
       <DownloadOptionWrapper label="File type">
-        <Button
-          variant="bordered"
-          className="text-primaryGray border border-border rounded-lg w-full flex justify-start items-start gap-2 py-4 h-auto"
-        >
-          <PngFile />
-          <span className="flex flex-col gap-0.5 items-start">
-            <span className="font-bold">PNG</span>
-            <span className="text-smm leading-4">
-              Best for complex images, illustrations
+        {FILE_TYPES.map(type => (
+          <Button
+            key={type.value}
+            variant="bordered"
+            className={twMerge(
+              clsx(
+                'text-primaryGray border border-border rounded-lg w-full flex justify-start items-start gap-2 py-4 h-auto',
+                {
+                  'border-primary1 bg-tertiary/20':
+                    selectedFileType.value === type.value,
+                },
+              ),
+            )}
+            onClick={() => onSelect(type)}
+          >
+            <PngFile />
+            <span className="flex flex-col gap-0.5 items-start">
+              <span className="font-bold">{type.label}</span>
+              <span className="text-smm leading-4">{type.description}</span>
             </span>
-          </span>
-        </Button>
-
-        <Button
-          variant="bordered"
-          className="text-primaryGray border border-border rounded-lg w-full flex justify-start items-start gap-2 py-4 h-auto"
-        >
-          <PdfFile />
-          <span className="flex flex-col gap-0.5 items-start">
-            <span className="font-bold">PDF</span>
-            <span className="text-smm leading-4">Best for printing</span>
-          </span>
-        </Button>
+          </Button>
+        ))}
       </DownloadOptionWrapper>
     </div>
   );

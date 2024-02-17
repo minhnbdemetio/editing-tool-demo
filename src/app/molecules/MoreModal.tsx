@@ -1,18 +1,16 @@
-import { Modal, ModalContent, ModalProps } from '@nextui-org/react';
 import React from 'react';
-
-import clsx from 'clsx';
-import { twMerge } from '../utilities/tailwind';
 import { FilePopoverContent } from './FilePopoverContent';
-import { Backdrop } from '../atoms/Backdrop';
-import { BottomSheet } from './BottomSheet';
+import { BottomSheet, BottomSheetProps } from '../atoms/BottomSheet';
 
-interface MoreModalProps extends Omit<ModalProps, 'children'> {}
+interface MoreModalProps extends BottomSheetProps {}
 
 export const MoreModal: React.FC<MoreModalProps> = props => {
   return (
-    <BottomSheet {...props}>
-      <FilePopoverContent />
+    <BottomSheet
+      className="[&:not(:has(.file-popover-content))]:hidden"
+      {...props}
+    >
+      <FilePopoverContent className="file-popover-content" />
     </BottomSheet>
   );
 };
