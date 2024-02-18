@@ -7,7 +7,7 @@ import { SwipeDirection, useSwipeHandler } from '../hooks/useSwipeHandler';
 
 export interface BottomSheetProps
   extends PropsWithChildren<Omit<ModalProps, 'children'>> {
-  isOpen: boolean;
+  isOpen?: boolean;
   onClose: () => void;
   hideBackdrop?: boolean;
   className?: string;

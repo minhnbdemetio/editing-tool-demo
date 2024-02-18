@@ -10,7 +10,7 @@ import { ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 export interface CenterModalProps extends ModalProps {
-  isOpen: boolean;
+  isOpen?: boolean;
   onClose: () => void;
   header?: string | ReactNode;
   footer?: ReactNode;
