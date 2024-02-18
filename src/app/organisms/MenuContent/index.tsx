@@ -4,6 +4,7 @@ import { PhotosMenuContent } from './PhotosMenuContent';
 import clsx from 'clsx';
 import { ElementsMenuContent } from './ElementsMenuContent';
 import { TextMenuContent } from './TextMenuContent';
+import { UploadMenuContent } from './UploadMenuContent';
 import { twMerge } from 'tailwind-merge';
 import { BackgroundMenuContent } from './BackgroundMenuContent';
 import { WorkspacesMenuContent } from './WorkspacesMenuContent';
@@ -31,6 +32,9 @@ export const MenuContent: FC<MenuContentProps> = ({
       }
       case 'photos': {
         return <PhotosMenuContent />;
+      }
+      case 'upload': {
+        return <UploadMenuContent />;
       }
       case 'elements': {
         return <ElementsMenuContent />;
