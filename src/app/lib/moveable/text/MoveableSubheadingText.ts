@@ -5,6 +5,7 @@ import { MoveableTextObject } from './MoveableText';
 export class MoveableSubheadingTextObject extends MoveableTextObject {
   constructor(options?: Partial<MoveableSubheadingTextObject>) {
     super(options);
+    this.text = 'Add a subheading';
     this.variant = TextVariant.SUBHEADING;
     this.textStyle.fontSize = TEXT_STYLE_FONT_SIZE.SUBHEADING;
   }

@@ -30,6 +30,7 @@ export class MoveableTextObject
   extends MoveableObject
   implements EditableText, TextFormat
 {
+  text: string;
   variant?: TextVariant;
   gradientStops?: GradientStop[];
   transformDirection: string;
@@ -62,18 +63,19 @@ export class MoveableTextObject
 
   constructor(options?: Partial<MoveableTextObject>) {
     super(options);
+    this.text = options?.text || 'Some text';
     this.type = 'text';
     this.variant = TextVariant.NORMAL;
     this.transformDirection = 'bottom';
     this.styleEffect = new StyleEffect();
     this.shapeEffect = new ShapeEffect();
     this.textStyle = {
-      fontSize: TEXT_STYLE_FONT_SIZE.NORMAL,
+      fontSize: options?.textStyle?.fontSize || TEXT_STYLE_FONT_SIZE.NORMAL,
     };
     this.lineHeight = 1.5;
     this.scaleX = DEFAULT_TEXT_SCALE;
     this.scaleY = DEFAULT_TEXT_SCALE;
-    this.fontFamily = 'Arial';
+    this.fontFamily = options?.fontFamily || 'Arial';
     this.fontStyle = 'normal';
     this.textTransform = 'none';
     this.textAlign = 'left';
@@ -380,6 +382,7 @@ export class MoveableTextObject
   };
 
   render() {
+    super.render();
     const element = this.getElement();
     const contenteditable = this.getTextContainer();
     const flipperElement = this.getFlipperElement();

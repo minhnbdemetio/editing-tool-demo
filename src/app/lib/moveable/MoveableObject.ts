@@ -20,8 +20,8 @@ export abstract class MoveableObject
   htmlString?: string;
   pageId: string | null;
   isLocked;
-  x;
-  y;
+  x: number;
+  y: number;
   width: number;
   height: number;
   opacity;
@@ -35,8 +35,8 @@ export abstract class MoveableObject
     this.height = options?.height || 100;
     this.pageId = null;
     this.isLocked = false;
-    this.x = 0;
-    this.y = 0;
+    this.x = options?.x || 0;
+    this.y = options?.y || 0;
     this.opacity = 100;
     this.flipXY = { x: false, y: false };
   }
@@ -245,6 +245,11 @@ export abstract class MoveableObject
   abstract clone(options?: Partial<MoveableObject>): MoveableObject;
   delete() {}
   render() {
+    const activeElement = this.getElement();
+
+    if (activeElement) {
+      activeElement.style.transform = `translate(${this.x}px,${this.y}px)`;
+    }
     this.setIsLocked(isElementLocked(this.getElement()));
   }
 }

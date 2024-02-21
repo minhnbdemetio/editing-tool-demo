@@ -4,7 +4,10 @@ import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { withCurrentPage } from '../hocs/withCurrentPage';
 import { MoveableObjectElement } from '../atoms/moveables/MoveableObjectElement';
 import { CuttingZoneReminder } from '../molecules/CuttingZoneReminder';
-import { useCurrentPageObjects } from '../hooks/usePageObjects';
+import {
+  useAddObjectToPage,
+  useCurrentPageObjects,
+} from '../hooks/usePageObjects';
 import { useActivePage } from '../store/active-page';
 import { MovableLineController } from '../molecules/MovableLineController';
 import { usePageSize } from '../store/use-page-size';
@@ -17,9 +20,10 @@ export interface EditablePageProps {
 
 const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   const [pageObjects] = useCurrentPageObjects();
+  const addObjectToActivePage = useAddObjectToPage(pageId);
 
   const { setActivePage, activePage } = useActivePage();
-  const { workingWidthPixels, workingHeightPixels } = usePageSize();
+  const { workingWidthPixels, workingHeightPixels, update } = usePageSize();
 
   useEffect(() => {
     setActivePage(pageId);
@@ -32,7 +36,7 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
   const pageRef = useRef<HTMLDivElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
 
-  const handleResize = () => {
+  const handleResize = useCallback(() => {
     const containerWidth = containerRef.current?.clientWidth;
     const containerHeight = containerRef.current?.clientHeight;
     if (containerWidth && containerHeight) {
@@ -44,13 +48,16 @@ const EditableCanvas: FC<EditablePageProps> = ({ pageId }) => {
         }px`;
       }
     }
-  };
+  }, [setScale, workingHeightPixels, workingWidthPixels]);
 
   useEffect(() => {
     handleResize();
     window.addEventListener('resize', () => {
       handleResize();
     });
+    return () => {
+      window.removeEventListener('resize', () => {});
+    };
   }, []);
 
   return (

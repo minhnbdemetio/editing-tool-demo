@@ -27,28 +27,31 @@ export const useAddObjectToCurrentPage = (object: MoveableObject) => {
 };
 
 export const usePageObjectsById = (pageId: string | null) => {
-  const { designObjects, setPageObjects: setDesignObjects } = useDesign();
+  const { designObjects, setPageObjects, getPageObjects } = useDesign();
 
   return useMemo(() => {
     if (!pageId) {
-      return [null, null];
+      return [null, null, null];
     }
     return [
       designObjects[pageId]?.objects || [],
-      (objects: MoveableObject[]) => setDesignObjects(pageId, objects),
+      (objects: MoveableObject[]) => setPageObjects(pageId, objects),
+      getPageObjects,
     ] as const;
-  }, [designObjects, pageId, setDesignObjects]);
+  }, [designObjects, pageId, setPageObjects, getPageObjects]);
 };
 
 export const useAddObjectToPage = (pageId: string | null) => {
-  const [pageObjects, setPageObjects] = usePageObjectsById(pageId);
+  const [_, setPageObjects, getPageObjects] = usePageObjectsById(pageId);
 
   return useCallback(
     (object: MoveableObject) => {
-      if (!pageObjects || !setPageObjects) return;
+      if (!setPageObjects || !getPageObjects || !pageId) return;
+      const pageObjects = getPageObjects(pageId) || [];
+
       setPageObjects([...pageObjects, object]);
     },
-    [pageObjects, setPageObjects],
+    [getPageObjects, pageId, setPageObjects],
   );
 };
 

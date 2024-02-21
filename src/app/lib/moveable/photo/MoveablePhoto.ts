@@ -62,20 +62,20 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
             document.body.appendChild(image);
 
             process.nextTick(() => {
-              this.setHeight(image.height);
-              this.setWidth(image.width);
+              // this.setHeight(image.height);
+              // this.setWidth(image.width);
 
               const svgElement = this.getSvg();
               const imageElement = svgElement?.querySelector('image');
 
               if (imageElement) {
-                imageElement.setAttribute('width', image.width + 'px');
-                imageElement.setAttribute('height', image.height + 'px');
+                imageElement.setAttribute('width', this.width + 'px');
+                imageElement.setAttribute('height', this.height + 'px');
               }
 
               this.originalSize = {
-                width: image.width,
-                height: image.height,
+                width: this.width,
+                height: this.height,
               };
 
               this.loaded = true;
@@ -583,11 +583,7 @@ export class MoveablePhoto extends MoveableObject implements EditablePhoto {
   }
 
   render(): void {
-    const activeElement = this.getElement();
-
-    if (activeElement) {
-      activeElement.style.transform = `translate(${this.x}px,${this.y}px)`;
-    }
+    super.render();
     this.setImageDimensions();
   }
 

@@ -5,6 +5,7 @@ import { MoveableTextObject } from './MoveableText';
 export class MoveableBodyTextObject extends MoveableTextObject {
   constructor(options?: Partial<MoveableBodyTextObject>) {
     super(options);
+    this.text = 'Add a body text';
     this.variant = TextVariant.BODY;
     this.textStyle.fontSize = TEXT_STYLE_FONT_SIZE.BODY_TEXT;
   }

@@ -33,9 +33,8 @@ export const MoveableTextElement: FC<MoveableTextProps> = ({
     let resizeObserver = new ResizeObserver(entries => {
       const element = object.getElement();
       if (!element) return;
-
-      element.style.width = `${textContainer.clientWidth}px`;
-      element.style.height = `${textContainer.clientHeight}px`;
+      element.style.width = window.getComputedStyle(textContainer).width;
+      element.style.height = window.getComputedStyle(textContainer).height;
 
       if (object.getPreviousSize().height !== textContainer.clientHeight) {
         object.onUpdateTransformDirection();
@@ -76,7 +75,7 @@ export const MoveableTextElement: FC<MoveableTextProps> = ({
           suppressContentEditableWarning
           className="w-full break-words whitespace-break-spaces"
         >
-          <li>Add a heading</li>
+          <li>{object.text}</li>
         </ul>
       </div>
     </div>

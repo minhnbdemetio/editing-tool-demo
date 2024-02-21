@@ -149,7 +149,6 @@ export const MoveableConfig: FC = () => {
           e.target.style.transform = e.transform;
         }}
         onResize={e => {
-          console.log({ e });
           if (isElementLocked(e.target)) return;
 
           if (isPhoto(activeMoveableObject)) {
@@ -167,7 +166,6 @@ export const MoveableConfig: FC = () => {
             const targetHeight = e.height;
             const textContainer = activeMoveableObject.getTextContainer();
             if (!textContainer) return;
-            console.log(textContainer.textContent);
 
             if (!e.direction.includes(0)) {
               const numberOfLines =
@@ -178,7 +176,7 @@ export const MoveableConfig: FC = () => {
                     .lineHeight.replace('px', ''),
                 );
               const fontToHeightRatio =
-                1 / Number(activeMoveableObject.getLineHeight());
+                1 / activeMoveableObject.getLineHeight();
               activeMoveableObject.setFontSize(
                 (targetHeight / numberOfLines) * fontToHeightRatio,
               );

@@ -5,6 +5,7 @@ import { MoveableTextObject } from './MoveableText';
 export class MoveableHeadingTextObject extends MoveableTextObject {
   constructor(options?: Partial<MoveableHeadingTextObject>) {
     super(options);
+    this.text = 'Add a heading';
     this.variant = TextVariant.HEADING;
     this.textStyle.fontSize = TEXT_STYLE_FONT_SIZE.HEADING;
   }
