@@ -26,6 +26,13 @@ export const useAddPage = () => {
   );
 };
 
+export const useDeleteAllPages = () => {
+  const { setDesignObjects } = useDesign();
+  return useCallback(() => {
+    setDesignObjects({});
+  }, [setDesignObjects]);
+};
+
 export const useClonePage = () => {
   const addPage = useAddPage();
   const { getPageObjects } = useDesign();

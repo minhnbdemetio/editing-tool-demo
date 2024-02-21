@@ -6,7 +6,7 @@ import { EditablePage } from './EditablePage';
 import { useDrop } from 'react-dnd';
 import { useActiveMoveableObject } from '../store/active-moveable-object';
 import { MoveableConfig } from '../atoms/moveables/MoveableConfig';
-import { useAddPage, usePages } from '../hooks/usePage';
+import { useAddPage, useDeleteAllPages, usePages } from '../hooks/usePage';
 import { useActivePage } from '../store/active-page';
 import { twMerge } from '../utilities/tailwind';
 import { Add } from '@/app/icons';
@@ -14,7 +14,6 @@ import { useImageCropping } from '../store/image-cropping';
 import axios from 'axios';
 import { MoveableTextObject } from '../lib/moveable/text/MoveableText';
 import { MoveablePhoto } from '../lib/moveable/photo/MoveablePhoto';
-import { useDesign } from '../store/design-objects';
 import { usePageSize } from '../store/use-page-size';
 import { MoveableObject } from '../lib/moveable/MoveableObject';
 
@@ -24,6 +23,7 @@ export const EDITOR_CONTAINER = 'editor-container';
 export const Editor: FC = () => {
   const pages = usePages();
   const addPage = useAddPage();
+  const deleteAllPages = useDeleteAllPages();
   const { activeMoveableObject } = useActiveMoveableObject();
   const { activePage } = useActivePage();
   const { update } = usePageSize();
@@ -48,55 +48,59 @@ export const Editor: FC = () => {
   //   }
   // }, [pages, handleAddPage]);
 
-  useEffect(() => {
-    const loadFromPDF = async () => {
-      const extractionRes = await axios.post(
-        `${process.env.NEXT_PUBLIC_EXTRACTOR_API_ENPOINT}/extract`,
-        {},
-        { headers: {} },
-      );
-      const pages = extractionRes.data as any;
+  const loadFromPDF = async (file: File | null | undefined) => {
+    if (!file) return;
+    deleteAllPages();
+    const formData = new FormData();
+    formData.append('pdf', file);
+    const extractionRes = await axios({
+      url: `${process.env.NEXT_PUBLIC_EXTRACTOR_API_ENDPOINT}/extract`,
+      data: formData,
+      headers: {
+        'Content-Type': `multipart/form-data;`,
+      },
+      method: 'post',
+    });
+    const pages = extractionRes.data as any;
 
-      for (const page of pages) {
-        const pageText = page.text;
-        const pageImages = page.images;
-        const pageObjects: MoveableObject[] = [];
-        for (const extractedText of pageText) {
-          pageObjects.push(
-            new MoveableTextObject({
-              text: extractedText.text,
-              x: extractedText.x0,
-              y: extractedText.y0,
-              textStyle: {
-                fontSize: extractedText.size,
-              },
-              fontFamily: extractedText.font,
-              color: extractedText.color,
-            }),
-          );
-        }
-        for (const image of pageImages) {
-          pageObjects.push(
-            new MoveablePhoto({
-              src: `data:image/png;base64,${image.data}`,
-              x: image.x0,
-              y: image.y0,
-              width: image.width,
-              height: image.height,
-            }),
-          );
-        }
-        addPage(pageObjects);
+    for (const page of pages) {
+      const pageText = page.text;
+      const pageImages = page.images;
+      const pageObjects: MoveableObject[] = [];
+      for (const extractedText of pageText) {
+        pageObjects.push(
+          new MoveableTextObject({
+            text: extractedText.text,
+            x: extractedText.x0,
+            y: extractedText.y0,
+            textStyle: {
+              fontSize: extractedText.size,
+            },
+            fontFamily: extractedText.font,
+            color: extractedText.color,
+          }),
+        );
       }
+      for (const image of pageImages) {
+        pageObjects.push(
+          new MoveablePhoto({
+            src: `data:image/png;base64,${image.data}`,
+            x: image.x0,
+            y: image.y0,
+            width: image.width,
+            height: image.height,
+          }),
+        );
+      }
+      addPage(pageObjects);
+    }
 
-      const firstPage = pages[0];
-      update({
-        workingWidthPixels: firstPage.info.width,
-        workingHeightPixels: firstPage.info.height,
-      });
-    };
-    loadFromPDF();
-  }, []);
+    const firstPage = pages[0];
+    update({
+      workingWidthPixels: firstPage.info.width,
+      workingHeightPixels: firstPage.info.height,
+    });
+  };
 
   return (
     <div
@@ -112,6 +116,10 @@ export const Editor: FC = () => {
       <div className="w-full flex justify-center">
         <div className="max-w-[640px] w-full">
           <div className="flex flex-col gap-10 h-full">
+            <input
+              type="file"
+              onChange={e => loadFromPDF(e.target.files?.item(0))}
+            />
             {pages.map(pageId => (
               <div
                 className={twMerge('editable-page', {
