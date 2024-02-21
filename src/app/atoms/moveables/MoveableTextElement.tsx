@@ -33,8 +33,6 @@ export const MoveableTextElement: FC<MoveableTextProps> = ({
     let resizeObserver = new ResizeObserver(entries => {
       const element = object.getElement();
       if (!element) return;
-      element.style.width = window.getComputedStyle(textContainer).width;
-      element.style.height = window.getComputedStyle(textContainer).height;
 
       if (object.getPreviousSize().height !== textContainer.clientHeight) {
         object.onUpdateTransformDirection();
