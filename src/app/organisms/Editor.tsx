@@ -51,7 +51,7 @@ export const Editor: FC = () => {
   useEffect(() => {
     const loadFromPDF = async () => {
       const extractionRes = await axios.post(
-        'http://127.0.0.1:5000/extract',
+        `${process.env.NEXT_PUBLIC_EXTRACTOR_API_ENPOINT}/extract`,
         {},
         { headers: {} },
       );
